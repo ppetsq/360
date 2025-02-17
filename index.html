@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="styles.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Overlook Hotel - Virtual Showroom</title>
@@ -162,37 +163,28 @@
         };
 
         let viewer;
+        let hasUserInteracted = false;
+
         window.onload = function () {
             viewer = new PhotoSphereViewer.Viewer({
                 container: document.querySelector('#viewer'),
-                panorama: images.day,
+                panorama: images.off, // Start with 'off' scene
                 navbar: false,
                 touchmoveTwoFingers: true,
             });
-            setActiveButton('day');
-
-            // Start with a zoom-out effect
-            viewer.zoom(80);
-            setTimeout(() => {
-                viewer.zoom(50);
-            }, 1500);
-
-            setTimeout(() => {
-                let rotationSpeed = 0.05;
-                let interval = setInterval(() => {
-                    if (rotationSpeed < 0.2) {
-                        rotationSpeed += 0.01;
-                        viewer.startAutorotate(rotationSpeed);
-                    } else {
-                        clearInterval(interval);
-                    }
-                }, 500);
-            }, 2000);
+            setActiveButton('off');
         };
 
         function changeView(mode) {
             viewer.setPanorama(images[mode]);
             setActiveButton(mode);
+
+            if (!hasUserInteracted) {
+                hasUserInteracted = true;
+                setTimeout(() => {
+                    viewer.startAutorotate(0.1); // Start slow auto-panning only after user selection
+                }, 1000);
+            }
         }
 
         function setActiveButton(mode) {
