@@ -36,33 +36,45 @@
     <script>
         window.onload = function () {
             console.log("Checking if PhotoSphereViewer is loaded:", typeof PhotoSphereViewer);
-    
+
             if (typeof PhotoSphereViewer === "undefined") {
                 console.error("❌ PhotoSphereViewer failed to load. Check your script sources.");
                 return;
             }
-    
+
             const images = {
                 day: "https://assets.360.petsq.works/Overlook/overlook_day_fixed.jpg",
                 evening: "https://assets.360.petsq.works/Overlook/overlook_evening.jpg",
                 night: "https://assets.360.petsq.works/Overlook/overlook_night.jpg",
                 off: "https://assets.360.petsq.works/Overlook/overlook_off.jpg"
             };
-    
-            // Initialize viewer correctly
-            const viewer = new PhotoSphereViewer.Viewer({
+
+            let viewer = new PhotoSphereViewer.Viewer({
                 container: document.querySelector('#viewer'),
                 panorama: images.day,
                 navbar: false,
-                touchmoveTwoFingers: true
+                touchmoveTwoFingers: true,
+                defaultLongLat: { longitude: 0, latitude: 0 },
+                moveSpeed: 0.1, // Slower movement for a smooth auto-pan effect
+                autorotateSpeed: "1rpm", // Auto-pan speed
+                autorotateLat: 0 // Keep it level
             });
-    
+
             function changeView(mode) {
                 viewer.setPanorama(images[mode]);
             }
-    
+
             // Attach function to window so buttons work
             window.changeView = changeView;
+
+            // Auto-cycle through lighting modes every 7 seconds
+            const sceneOrder = ['day', 'evening', 'night', 'off'];
+            let currentScene = 0;
+            
+            setInterval(() => {
+                currentScene = (currentScene + 1) % sceneOrder.length;
+                changeView(sceneOrder[currentScene]);
+            }, 7000); // Change scene every 7 seconds
         };
     </script>
 </body>
