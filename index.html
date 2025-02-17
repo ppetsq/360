@@ -198,18 +198,21 @@
         }
 
         function toggleDescription() {
+    console.log("toggleDescription function is running!"); // Debugging log
     const description = document.getElementById("description");
 
     if (description.style.opacity === "1" || description.style.opacity === "") {
+        console.log("Hiding description"); // Debugging log
         description.style.opacity = "0";
         setTimeout(() => {
             description.style.visibility = "hidden";
-        }, 500); // Delay hiding until fade-out is done
+        }, 500);
     } else {
+        console.log("Showing description"); // Debugging log
         description.style.visibility = "visible";
         setTimeout(() => {
             description.style.opacity = "1";
-        }, 10); // Small delay to trigger the fade-in smoothly
+        }, 10);
     }
 }
     </script>
