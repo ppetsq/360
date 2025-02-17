@@ -13,8 +13,8 @@
     <link rel="stylesheet" href="libs/photo-sphere-viewer.min.css">
     <script src="libs/photo-sphere-viewer.min.js"></script>
     
-    <!-- Google Font (More Personal, Less Corporate) -->
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=EB+Garamond:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
         * {
@@ -48,10 +48,8 @@
             top: 40px;
             left: 40px;
             width: calc(100% - 80px);
-            height: calc(100% - 80px);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             align-items: flex-start;
             pointer-events: none;
             opacity: 0;
@@ -69,9 +67,18 @@
             font-size: 78px;
             font-weight: 700;
             text-transform: uppercase;
+            max-width: 100%;
+            word-wrap: break-word;
+            line-height: 1.1;
         }
         .description {
-            display: none;
+            font-family: 'EB Garamond', serif;
+            font-size: 20px;
+            font-weight: 400;
+            max-width: 600px;
+            margin-top: 10px;
+            line-height: 1.4;
+            word-wrap: break-word;
         }
         .controls {
             position: absolute;
@@ -80,30 +87,22 @@
             display: flex;
             gap: 12px;
         }
-        @media (max-width: 768px) {
+        @media (max-width: 810px) {
             .title {
                 font-size: 48px;
+                line-height: 1.05;
+            }
+            .description {
+                font-size: 16px;
             }
             .controls {
                 position: absolute;
                 bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
+                right: 20px;
                 display: flex;
                 flex-wrap: nowrap;
                 gap: 5%;
-                width: 90%;
-                justify-content: center;
-            }
-            .controls button {
-                flex-grow: 1;
-                text-align: center;
-            }
-            .overlay {
-                top: 20px;
-                left: 20px;
-                width: calc(100% - 40px);
-                height: calc(100% - 40px);
+                justify-content: flex-end;
             }
         }
         button {
@@ -139,14 +138,16 @@
     <div class="viewer-container" id="viewer"></div>
     <div class="overlay">
         <h1 class="title">THE OVERLOOK HOTEL</h1>
-        <div class="controls">
-            <button id="btn-day" onclick="changeView('day')">Day</button>
-            <button id="btn-evening" onclick="changeView('evening')">Evening</button>
-            <button id="btn-night" onclick="changeView('night')">Night</button>
-            <button id="btn-off" onclick="changeView('off')">Off</button>
-        </div>
+        <p class="description">Step inside this historic suite, where time stands still and the past lingers in the dimly lit corridors. Offering absolute solitude, this room is perfect for those seeking inspiration—or perhaps an eternal stay. Previous guests have described their experience as ‘mind-bending’ and ‘unforgettable’—though we can’t quite recall who they were. Just remember: all work and no play makes for an uneventful stay.</p>
     </div>
-    
+    <div class="controls">
+        <button id="btn-day" onclick="changeView('day')">Day</button>
+        <button id="btn-evening" onclick="changeView('evening')">Evening</button>
+        <button id="btn-night" onclick="changeView('night')">Night</button>
+        <button id="btn-off" onclick="changeView('off')">Off</button>
+    </div>
+</body>
+</html>
     <script>
         const images = {
             day: "https://assets.360.petsq.works/Overlook/overlook_day_fixed.jpg",
