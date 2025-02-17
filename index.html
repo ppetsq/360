@@ -49,14 +49,12 @@
                 off: "https://assets.360.petsq.works/Overlook/overlook_off.jpg"
             };
     
-            // Initialize viewer correctly with auto-pan enabled
+            // Initialize viewer correctly
             const viewer = new PhotoSphereViewer.Viewer({
                 container: document.querySelector('#viewer'),
                 panorama: images.day,
                 navbar: false,
                 touchmoveTwoFingers: true,
-                autorotateSpeed: 1, // Enables smooth auto-panning
-                autorotateLat: 0, // Keeps it level
             });
     
             function changeView(mode) {
@@ -65,6 +63,11 @@
     
             // Attach function to window so buttons work
             window.changeView = changeView;
+    
+            // Start auto-rotation after the viewer is ready
+            viewer.once('ready', function() {
+                viewer.startAutorotate(1); // Rotates at 1 degree per second
+            });
     
             // Auto-cycle through lighting modes every 7 seconds
             const sceneOrder = ['day', 'evening', 'night', 'off'];
