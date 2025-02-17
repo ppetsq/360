@@ -27,24 +27,34 @@
     </div>
     
     <script>
-        const images = {
-            day: "https://assets.360.petsq.works/Overlook/overlook_day.jpg",
-            evening: "https://assets.360.petsq.works/Overlook/overlook_evening.jpg",
-            night: "https://assets.360.petsq.works/Overlook/overlook_night.jpg",
-            off: "https://assets.360.petsq.works/Overlook/overlook_off.jpg"
+        window.onload = function () {
+            if (typeof PhotoSphereViewer === "undefined") {
+                console.error("PhotoSphereViewer failed to load.");
+                return;
+            }
+    
+            const images = {
+                day: "https://assets.360.petsq.works/Overlook/overlook_day.jpg",
+                evening: "https://assets.360.petsq.works/Overlook/overlook_evening.jpg",
+                night: "https://assets.360.petsq.works/Overlook/overlook_night.jpg",
+                off: "https://assets.360.petsq.works/Overlook/overlook_off.jpg"
+            };
+    
+            let viewer = new PhotoSphereViewer.Viewer({
+                container: document.querySelector('#viewer'),
+                panorama: images.day,
+                navbar: false,
+                loadingImg: 'https://cdnjs.cloudflare.com/ajax/libs/Photo-Sphere-Viewer/4.2.0/assets/loading.gif',
+                mousemove: true
+            });
+    
+            function changeView(mode) {
+                viewer.setPanorama(images[mode]);
+            }
+    
+            // Attach changeView to window so buttons work
+            window.changeView = changeView;
         };
-
-        let viewer = new PhotoSphereViewer.Viewer({
-            container: document.querySelector('#viewer'),
-            panorama: images.day,
-            navbar: false,
-            loadingImg: 'https://cdnjs.cloudflare.com/ajax/libs/Photo-Sphere-Viewer/4.2.0/assets/loading.gif',
-            mousemove: true
-        });
-
-        function changeView(mode) {
-            viewer.setPanorama(images[mode]);
-        }
     </script>
 </body>
 </html>
