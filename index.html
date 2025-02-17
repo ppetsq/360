@@ -13,71 +13,180 @@
     <link rel="stylesheet" href="libs/photo-sphere-viewer.min.css">
     <script src="libs/photo-sphere-viewer.min.js"></script>
     
+    <!-- Google Font (More Personal, Less Corporate) -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { text-align: center; background-color: #121212; color: white; font-family: Arial, sans-serif; }
-        .viewer-container { width: 100vw; height: 80vh; }
-        .controls { margin-top: 10px; }
-        button { background: #ff9800; border: none; padding: 10px; margin: 5px; cursor: pointer; color: white; font-size: 1rem; }
-        button:hover { background: #ffa726; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Syne', sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+        }
+        .viewer-container {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0;
+            animation: fadeInRoom 2s ease-out forwards;
+        }
+        @keyframes fadeInRoom {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .overlay {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            width: calc(100% - 80px);
+            height: calc(100% - 80px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+            pointer-events: none;
+            opacity: 0;
+            animation: fadeInUI 0.8s ease-out forwards 0.5s;
+        }
+        @keyframes fadeInUI {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .title {
+            font-size: 78px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .description {
+            display: none;
+        }
+        .controls {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            gap: 12px;
+        }
+        @media (max-width: 768px) {
+            .title {
+                font-size: 48px;
+            }
+            .controls {
+                position: absolute;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                flex-wrap: nowrap;
+                gap: 5%;
+                width: 90%;
+                justify-content: center;
+            }
+            .controls button {
+                flex-grow: 1;
+                text-align: center;
+            }
+            .overlay {
+                top: 20px;
+                left: 20px;
+                width: calc(100% - 40px);
+                height: calc(100% - 40px);
+            }
+        }
+        button {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease-in-out;
+            pointer-events: auto;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 6px rgba(255, 255, 255, 0.1);
+        }
+        button.active {
+            background: #EF5900;
+            border: 1px solid rgba(239, 89, 0, 0.7);
+            box-shadow: 0 2px 10px rgba(239, 89, 0, 0.5);
+            transform: scale(1.05);
+        }
+        button:hover {
+            background: rgba(239, 89, 0, 0.3);
+            border: 1px solid rgba(239, 89, 0, 0.5);
+            box-shadow: 0 3px 6px rgba(239, 89, 0, 0.2);
+        }
     </style>
 </head>
 <body>
-    <h1>The Overlook Hotel - Virtual Showroom</h1>
-    <p>Explore the different lighting modes of The Overlook Hotel.</p>
     <div class="viewer-container" id="viewer"></div>
-    
-    <div class="controls">
-        <button onclick="changeView('day')">Day</button>
-        <button onclick="changeView('evening')">Evening</button>
-        <button onclick="changeView('night')">Night</button>
-        <button onclick="changeView('off')">Off</button>
+    <div class="overlay">
+        <h1 class="title">THE OVERLOOK HOTEL</h1>
+        <div class="controls">
+            <button id="btn-day" onclick="changeView('day')">Day</button>
+            <button id="btn-evening" onclick="changeView('evening')">Evening</button>
+            <button id="btn-night" onclick="changeView('night')">Night</button>
+            <button id="btn-off" onclick="changeView('off')">Off</button>
+        </div>
     </div>
     
     <script>
+        const images = {
+            day: "https://assets.360.petsq.works/Overlook/overlook_day_fixed.jpg",
+            evening: "https://assets.360.petsq.works/Overlook/overlook_evening.jpg",
+            night: "https://assets.360.petsq.works/Overlook/overlook_night.jpg",
+            off: "https://assets.360.petsq.works/Overlook/overlook_off.jpg"
+        };
+
+        let viewer;
         window.onload = function () {
-            console.log("Checking if PhotoSphereViewer is loaded:", typeof PhotoSphereViewer);
-    
-            if (typeof PhotoSphereViewer === "undefined") {
-                console.error("❌ PhotoSphereViewer failed to load. Check your script sources.");
-                return;
-            }
-    
-            const images = {
-                day: "https://assets.360.petsq.works/Overlook/overlook_day_fixed.jpg",
-                evening: "https://assets.360.petsq.works/Overlook/overlook_evening.jpg",
-                night: "https://assets.360.petsq.works/Overlook/overlook_night.jpg",
-                off: "https://assets.360.petsq.works/Overlook/overlook_off.jpg"
-            };
-    
-            // Initialize viewer correctly
-            const viewer = new PhotoSphereViewer.Viewer({
+            viewer = new PhotoSphereViewer.Viewer({
                 container: document.querySelector('#viewer'),
                 panorama: images.day,
                 navbar: false,
                 touchmoveTwoFingers: true,
             });
-    
-            function changeView(mode) {
-                viewer.setPanorama(images[mode]);
-            }
-    
-            // Attach function to window so buttons work
-            window.changeView = changeView;
-    
-            // Start auto-rotation after the viewer is ready
-            viewer.once('ready', function() {
-                viewer.startAutorotate(1); // Rotates at 1 degree per second
-            });
-    
-            // Auto-cycle through lighting modes every 7 seconds
-            const sceneOrder = ['day', 'evening', 'night', 'off'];
-            let currentScene = 0;
-    
-            setInterval(() => {
-                currentScene = (currentScene + 1) % sceneOrder.length;
-                changeView(sceneOrder[currentScene]);
-            }, 7000); // Change scene every 7 seconds
+            setActiveButton('day');
+
+            setTimeout(() => {
+                let rotationSpeed = 0.05;
+                let interval = setInterval(() => {
+                    if (rotationSpeed < 0.2) {
+                        rotationSpeed += 0.01;
+                        viewer.startAutorotate(rotationSpeed);
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 500);
+            }, 2000);
         };
+
+        function changeView(mode) {
+            viewer.setPanorama(images[mode]);
+            setActiveButton(mode);
+        }
+
+        function setActiveButton(mode) {
+            document.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${mode}`).classList.add('active');
+        }
     </script>
 </body>
 </html>
