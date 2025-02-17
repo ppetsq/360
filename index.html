@@ -144,8 +144,8 @@
 <body>
     <div class="viewer-container" id="viewer"></div>
     <div class="overlay">
-        <h1 class="title">THE OVERLOOK HOTEL</h1>
-        <p class="description">Step inside this historic suite, where time stands still and the past lingers in the dimly lit corridors. Offering absolute solitude, this room is perfect for those seeking inspiration—or perhaps an eternal stay. Previous guests have described their experience as ‘mind-bending’ and ‘unforgettable’—though we can’t quite recall who they were. Just remember: all work and no play makes for an uneventful stay.</p>
+        <h1 class="title" onclick="toggleDescription()">THE OVERLOOK HOTEL</h1>
+        <p class="description" id="description">Step inside this historic suite, where time stands still and the past lingers in the dimly lit corridors. Offering absolute solitude, this room is perfect for those seeking inspiration—or perhaps an eternal stay. Previous guests have described their experience as ‘mind-bending’ and ‘unforgettable’—though we can’t quite recall who they were. Just remember: all work and no play makes for an uneventful stay.</p>
     </div>
     <div class="controls">
         <button id="btn-day" onclick="changeView('day')">Day</button>
@@ -166,14 +166,19 @@
         let hasUserInteracted = false;
 
         window.onload = function () {
-            viewer = new PhotoSphereViewer.Viewer({
-                container: document.querySelector('#viewer'),
-                panorama: images.off, // Start with 'off' scene
-                navbar: false,
-                touchmoveTwoFingers: true,
-            });
-            setActiveButton('off');
-        };
+    viewer = new PhotoSphereViewer.Viewer({
+        container: document.querySelector('#viewer'),
+        panorama: images.off, // Start with 'off' scene
+        navbar: false,
+        touchmoveTwoFingers: false,
+    });
+    setActiveButton('off');
+
+    // Ensure zoom level is set after the viewer is ready
+    viewer.once('ready', () => {
+        viewer.zoom(0); // Adjust this value to set the initial zoom-out level
+    });
+};
 
         function changeView(mode) {
             viewer.setPanorama(images[mode]);
@@ -191,6 +196,22 @@
             document.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`btn-${mode}`).classList.add('active');
         }
+
+        function toggleDescription() {
+    const description = document.getElementById("description");
+
+    if (description.style.opacity === "1" || description.style.opacity === "") {
+        description.style.opacity = "0";
+        setTimeout(() => {
+            description.style.visibility = "hidden";
+        }, 500); // Delay hiding until fade-out is done
+    } else {
+        description.style.visibility = "visible";
+        setTimeout(() => {
+            description.style.opacity = "1";
+        }, 10); // Small delay to trigger the fade-in smoothly
+    }
+}
     </script>
 </body>
 </html>
