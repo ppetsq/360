@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Overlook Hotel - Virtual Showroom</title>
-    <script src="panoCompressed.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Photo-Sphere-Viewer/4.2.0/photo-sphere-viewer.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Photo-Sphere-Viewer/4.2.0/photo-sphere-viewer.min.css">
     <style>
         body { text-align: center; background-color: #121212; color: white; font-family: Arial, sans-serif; }
         .viewer-container { width: 100vw; height: 80vh; }
@@ -15,8 +16,8 @@
 </head>
 <body>
     <h1>The Overlook Hotel - Virtual Showroom</h1>
-    <p>xplore the different lighting modes of The Overlook Hotel.</p>
-    <div class="viewer-container" id="pano"></div>
+    <p>Explore the different lighting modes of The Overlook Hotel.</p>
+    <div class="viewer-container" id="viewer"></div>
     
     <div class="controls">
         <button onclick="changeView('day')">Day</button>
@@ -26,7 +27,6 @@
     </div>
     
     <script>
-        let viewer;
         const images = {
             day: "https://assets.360.petsq.works/Overlook/overlook_day.jpg",
             evening: "https://assets.360.petsq.works/Overlook/overlook_evening.jpg",
@@ -34,17 +34,17 @@
             off: "https://assets.360.petsq.works/Overlook/overlook_off.jpg"
         };
 
-        function initializeViewer() {
-            viewer = new pano2vrPlayer("pano");
-            viewer.loadPanorama(images.day);
-            viewer.setMouseControl(true); // Enable mouse drag for desktop
-        }
+        let viewer = new PhotoSphereViewer.Viewer({
+            container: document.querySelector('#viewer'),
+            panorama: images.day,
+            navbar: false,
+            loadingImg: 'https://cdnjs.cloudflare.com/ajax/libs/Photo-Sphere-Viewer/4.2.0/assets/loading.gif',
+            mousemove: true
+        });
 
         function changeView(mode) {
-            viewer.loadPanorama(images[mode]);
+            viewer.setPanorama(images[mode]);
         }
-
-        window.onload = initializeViewer;
     </script>
 </body>
 </html>
