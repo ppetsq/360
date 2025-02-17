@@ -1,5 +1,50 @@
 <!DOCTYPE html>
-<html>
-<head><title>360 Showroom</title></head>
-<body><h1>Coming Soon</h1></body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Overlook Hotel - Virtual Showroom</title>
+    <script src="panoCompressed.js"></script>
+    <style>
+        body { text-align: center; background-color: #121212; color: white; font-family: Arial, sans-serif; }
+        .viewer-container { width: 100vw; height: 80vh; }
+        .controls { margin-top: 10px; }
+        button { background: #ff9800; border: none; padding: 10px; margin: 5px; cursor: pointer; color: white; font-size: 1rem; }
+        button:hover { background: #ffa726; }
+    </style>
+</head>
+<body>
+    <h1>The Overlook Hotel - Virtual Showroom</h1>
+    <p>xplore the different lighting modes of The Overlook Hotel.</p>
+    <div class="viewer-container" id="pano"></div>
+    
+    <div class="controls">
+        <button onclick="changeView('day')">Day</button>
+        <button onclick="changeView('evening')">Evening</button>
+        <button onclick="changeView('night')">Night</button>
+        <button onclick="changeView('off')">Off</button>
+    </div>
+    
+    <script>
+        let viewer;
+        const images = {
+            day: "https://assets.360.petsq.works/Overlook/overlook_day.jpg",
+            evening: "https://assets.360.petsq.works/Overlook/overlook_evening.jpg",
+            night: "https://assets.360.petsq.works/Overlook/overlook_night.jpg",
+            off: "https://assets.360.petsq.works/Overlook/overlook_off.jpg"
+        };
+
+        function initializeViewer() {
+            viewer = new pano2vrPlayer("pano");
+            viewer.loadPanorama(images.day);
+            viewer.setMouseControl(true); // Enable mouse drag for desktop
+        }
+
+        function changeView(mode) {
+            viewer.loadPanorama(images[mode]);
+        }
+
+        window.onload = initializeViewer;
+    </script>
+</body>
 </html>
