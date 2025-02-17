@@ -4,8 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Overlook Hotel - Virtual Showroom</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Photo-Sphere-Viewer/4.2.0/photo-sphere-viewer.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Photo-Sphere-Viewer/4.2.0/photo-sphere-viewer.min.css">
+    
+    <!-- Load dependencies locally -->
+    <script src="libs/three.min.js"></script>
+    <script src="libs/uevent.min.js"></script>
+    
+    <!-- Load PhotoSphereViewer locally -->
+    <link rel="stylesheet" href="libs/photo-sphere-viewer.min.css">
+    <script src="libs/photo-sphere-viewer.min.js"></script>
+    
     <style>
         body { text-align: center; background-color: #121212; color: white; font-family: Arial, sans-serif; }
         .viewer-container { width: 100vw; height: 80vh; }
@@ -28,8 +35,10 @@
     
     <script>
         window.onload = function () {
+            console.log("Checking if PhotoSphereViewer is loaded:", typeof PhotoSphereViewer);
+    
             if (typeof PhotoSphereViewer === "undefined") {
-                console.error("PhotoSphereViewer failed to load.");
+                console.error("❌ PhotoSphereViewer failed to load. Check your script sources.");
                 return;
             }
     
@@ -40,19 +49,19 @@
                 off: "https://assets.360.petsq.works/Overlook/overlook_off.jpg"
             };
     
-            let viewer = new PhotoSphereViewer.Viewer({
+            // Initialize viewer correctly
+            const viewer = new PhotoSphereViewer.Viewer({
                 container: document.querySelector('#viewer'),
                 panorama: images.day,
                 navbar: false,
-                loadingImg: 'https://cdnjs.cloudflare.com/ajax/libs/Photo-Sphere-Viewer/4.2.0/assets/loading.gif',
-                mousemove: true
+                touchmoveTwoFingers: true
             });
     
             function changeView(mode) {
                 viewer.setPanorama(images[mode]);
             }
     
-            // Attach changeView to window so buttons work
+            // Attach function to window so buttons work
             window.changeView = changeView;
         };
     </script>
