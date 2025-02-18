@@ -32,6 +32,8 @@
     transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
     opacity: 1;
     visibility: visible;
+    position: relative; /* Ensures it layers correctly */
+    z-index: 5; /* Keep it above background elements */
 }
 
 @media (max-width: 810px) {

@@ -201,34 +201,19 @@
     const description = document.getElementById("description");
 
     if (description.style.opacity === "1" || description.style.opacity === "") {
+        console.log("Hiding description");
         description.style.opacity = "0";
         setTimeout(() => {
             description.style.visibility = "hidden";
         }, 500); // Delay hiding until fade-out is done
     } else {
+        console.log("Showing description");
         description.style.visibility = "visible";
         setTimeout(() => {
             description.style.opacity = "1";
         }, 10); // Small delay to trigger the fade-in smoothly
     }
 }
-document.addEventListener("DOMContentLoaded", function () {
-    console.log("DOM fully loaded, adding event listener...");
-    
-    let title = document.querySelector(".title");
-    
-    if (title) {
-        title.addEventListener("click", function () {
-            console.log("Title clicked!");
-            toggleDescription();
-        });
-    } else {
-        console.log("Error: Title element not found.");
-    }
-});
-document.querySelector(".title").addEventListener("click", function() {
-    console.log("✅ Title was clicked!");
-});
     </script>
 </body>
 </html>
