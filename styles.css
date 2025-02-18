@@ -62,3 +62,6 @@
 .title, .description {
     pointer-events: auto; /* Allows clicks inside */
 }
+.psv-canvas {
+    pointer-events: none; /* Allows clicks to go through the canvas */
+}
