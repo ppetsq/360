@@ -166,13 +166,6 @@
         let hasUserInteracted = false;
 
         window.onload = function () {
-    console.log("Window loaded, adding event listener...");
-    document.querySelector(".title").addEventListener("click", function() {
-        console.log("Title clicked!");
-        toggleDescription();
-    });
-};
-; {
     viewer = new PhotoSphereViewer.Viewer({
         container: document.querySelector('#viewer'),
         panorama: images.off, // Start with 'off' scene
@@ -222,6 +215,20 @@
         }, 10);
     }
 }
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("DOM fully loaded, adding event listener...");
+    
+    let title = document.querySelector(".title");
+    
+    if (title) {
+        title.addEventListener("click", function () {
+            console.log("Title clicked!");
+            toggleDescription();
+        });
+    } else {
+        console.log("Error: Title element not found.");
+    }
+});
     </script>
 </body>
 </html>
