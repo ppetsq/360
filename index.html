@@ -166,6 +166,8 @@
         let hasUserInteracted = false;
 
         window.onload = function () {
+    document.querySelector(".title").addEventListener("click", toggleDescription);
+}; {
     viewer = new PhotoSphereViewer.Viewer({
         container: document.querySelector('#viewer'),
         panorama: images.off, // Start with 'off' scene
