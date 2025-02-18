@@ -40,11 +40,12 @@
     }
 }
 .title {
-    cursor: pointer; /* Makes it clear that the text is clickable */
-    pointer-events: auto; /* Ensures clicks are not blocked */
-    z-index: 10; /* Ensures it's above the 360 viewer */
-    position: relative; /* Helps control stacking */
+    position: relative; /* Ensures it's above the viewer */
+    z-index: 20; /* Bring it above the 360 viewer */
+    pointer-events: auto; /* Allows clicks */
+    cursor: pointer; /* Make it visually clickable */
 }
+
 .overlay {
     position: absolute;
     top: 40px;
