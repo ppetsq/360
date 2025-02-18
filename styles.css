@@ -45,3 +45,10 @@
     z-index: 10; /* Ensures it's above the 360 viewer */
     position: relative; /* Helps control stacking */
 }
+.overlay {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    z-index: 20; /* Make sure it's above the 360 viewer */
+    pointer-events: auto; /* Allow interactions */
+}
