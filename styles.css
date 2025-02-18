@@ -48,7 +48,6 @@
     pointer-events: auto; /* Ensures clicks are allowed */
     background-color: rgba(0, 0, 0, 0.01); /* Invisible area to register clicks */
     display: inline-block; /* Ensures it has a clickable area */
-    padding: 10px 15px; /* Increases the clickable zone */
 }
 
 .overlay {
