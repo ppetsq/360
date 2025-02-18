@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/overlook/overlook_styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Overlook Hotel - Virtual Showroom</title>
+    
+    <!-- Load dependencies locally -->
+    <script src="libs/three.min.js"></script>
+    <script src="libs/uevent.min.js"></script>
+    
+    <!-- Load PhotoSphereViewer locally -->
+    <link rel="stylesheet" href="libs/photo-sphere-viewer.min.css">
+    <script src="libs/photo-sphere-viewer.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=EB+Garamond:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Syne', sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+        }
+        .viewer-container {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0;
+            animation: fadeInRoom 2s ease-out forwards;
+        }
+        @keyframes fadeInRoom {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .overlay {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            width: calc(100% - 80px);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            pointer-events: none;
+            opacity: 0;
+            animation: fadeInUI 0.8s ease-out forwards 0.5s;
+        }
+        @keyframes fadeInUI {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .title {
+            font-size: 78px;
+            font-weight: 700;
+            text-transform: uppercase;
+            max-width: 100%;
+            word-wrap: break-word;
+            line-height: 1.1;
+        }
+        .description {
+            font-family: 'EB Garamond', serif;
+            font-size: 20px;
+            font-weight: 400;
+            max-width: 600px;
+            margin-top: 10px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .controls {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: nowrap;
+        }
+        @media (max-width: 810px) {
+            .title {
+                font-size: 48px;
+                line-height: 1.05;
+            }
+            .description {
+                font-size: 16px;
+            }
+            .controls {
+                position: absolute;
+                bottom: 20px;
+                right: 20px;
+                display: flex;
+                flex-wrap: nowrap;
+                gap: 5%;
+                justify-content: center;
+                width: 90%;
+            }
+            .controls button {
+                flex-grow: 1;
+                text-align: center;
+                max-width: 25%;
+            }
+        }
+        button {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease-in-out;
+            pointer-events: auto;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 6px rgba(255, 255, 255, 0.1);
+        }
+        button.active {
+            background: #EF5900;
+            border: 1px solid rgba(239, 89, 0, 0.7);
+            box-shadow: 0 2px 10px rgba(239, 89, 0, 0.5);
+            transform: scale(1.05);
+        }
+        button:active, button:focus {
+            outline: none;
+            box-shadow: 0 3px 8px rgba(239, 89, 0, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <div class="viewer-container" id="viewer"></div>
+    <div class="overlay">
+        <h1 class="title" onclick="toggleDescription()">THE OVERLOOK HOTEL</h1>
+        <p class="description" id="description">Step inside this historic suite, where time stands still and the past lingers in the dimly lit corridors. Offering absolute solitude, this room is perfect for those seeking inspiration—or perhaps an eternal stay. Previous guests have described their experience as ‘mind-bending’ and ‘unforgettable’—though we can’t quite recall who they were. Just remember: all work and no play makes for an uneventful stay.</p>
+    </div>
+    <div class="controls">
+        <button id="btn-day" onclick="changeView('day')">Day</button>
+        <button id="btn-evening" onclick="changeView('evening')">Evening</button>
+        <button id="btn-night" onclick="changeView('night')">Night</button>
+        <button id="btn-off" onclick="changeView('off')">Off</button>
+    </div>
+    
+    <script>
+        const images = {
+            day: "https://assets.360.petsq.works/Overlook/overlook_day_fixed.jpg",
+            evening: "https://assets.360.petsq.works/Overlook/overlook_evening.jpg",
+            night: "https://assets.360.petsq.works/Overlook/overlook_night.jpg",
+            off: "https://assets.360.petsq.works/Overlook/overlook_off.jpg"
+        };
+
+        let viewer;
+        let hasUserInteracted = false;
+
+        window.onload = function () {
+    viewer = new PhotoSphereViewer.Viewer({
+        container: document.querySelector('#viewer'),
+        panorama: images.off, // Start with 'off' scene
+        navbar: false,
+        touchmoveTwoFingers: false,
+    });
+    setActiveButton('off');
+
+    // Ensure zoom level is set after the viewer is ready
+    viewer.once('ready', () => {
+        viewer.zoom(0); // Adjust this value to set the initial zoom-out level
+    });
+};
+
+        function changeView(mode) {
+            viewer.setPanorama(images[mode]);
+            setActiveButton(mode);
+
+            if (!hasUserInteracted) {
+                hasUserInteracted = true;
+                setTimeout(() => {
+                    viewer.startAutorotate(0.1); // Start slow auto-panning only after user selection
+                }, 1000);
+            }
+        }
+
+        function setActiveButton(mode) {
+            document.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${mode}`).classList.add('active');
+        }
+
+        function toggleDescription() {
+    const description = document.getElementById("description");
+
+    if (description.style.opacity === "1" || description.style.opacity === "") {
+        console.log("Hiding description");
+        description.style.opacity = "0";
+        setTimeout(() => {
+            description.style.visibility = "hidden";
+        }, 500); // Delay hiding until fade-out is done
+    } else {
+        console.log("Showing description");
+        description.style.visibility = "visible";
+        setTimeout(() => {
+            description.style.opacity = "1";
+        }, 10); // Small delay to trigger the fade-in smoothly
+    }
+}
+    </script>
+</body>
+</html>

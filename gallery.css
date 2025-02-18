@@ -1,0 +1,188 @@
+#gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3-column grid */
+    gap: 30px; /* Adds spacing between items */
+    padding: 30px;
+    justify-content: center;
+    max-width: 1000px; /* Limits width */
+    margin: 0 auto; /* Centers the gallery */
+}
+
+/* Responsive tweaks */
+@media (max-width: 810px) {
+    #gallery {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 800px;
+    }
+}
+
+@media (max-width: 500px) {
+    #gallery {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+    }
+}
+
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.image-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 1;
+}
+
+.image-container img {
+    width: 125%; /* Zoom in by 15% */
+    height: 125%; /* Keeps proportion */
+    object-fit: cover;
+    position: absolute;
+    top: -7.5%; /* Centers the zoomed-in effect */
+    left: -7.5%;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.img-on {
+    opacity: 0;
+}
+
+.gallery-item:hover .img-on {
+    opacity: 1;
+}
+
+.gallery-item:hover .img-off {
+    opacity: 0;
+}
+
+.room-name {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 2rem; /* Increased font size */
+    font-weight: bold;
+    font-family: 'Syne', sans-serif;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.gallery-item:hover .room-name {
+    opacity: 1;
+}
+
+/* Responsive fixes */
+@media (max-width: 810px) {
+    #gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    #gallery {
+        grid-template-columns: 1fr;
+    }
+}
+/* Restore background texture */
+body {
+    background-color: #111; /* Dark base */
+    background-image: url('https://assets.360.petsq.works/background-texture.jpg'); /* Update with correct path */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-family: 'Syne', sans-serif;
+    color: white;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure full viewport height */
+}
+/* Restore previous fonts */
+h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 3rem;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#gallery-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1000px; /* Match the grid width */
+    margin: 0 auto; /* Center it */
+    padding: 50px 50px 0px 50px; /* Add some spacing */
+}
+
+#gallery-title {
+    font-size: 4rem;
+    font-weight: bold;
+    text-align: left;
+}
+body {
+    background-color: #050505;
+    font-family: 'Syne', sans-serif;
+    color: white;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+#gallery-description {
+    font-family: 'EB Garamond', serif !important;
+    font-size: 1.2rem;
+    text-align: left;
+    max-width: 600px;
+    margin-top: 0px;
+    color: rgba(255,255,255,0.8);
+}
+#brand-colors {
+    position: absolute;
+    top: 20px; /* Adjust padding from the top */
+    right: 20px; /* Adjust padding from the right */
+    display: flex;
+    gap: 8px; /* Space between the rectangles */
+}
+#brand-colors-link {
+    text-decoration: none; /* Remove underline */
+    display: inline-block;
+}
+
+#brand-colors-link:hover {
+    opacity: 0.8; /* Subtle fade effect on hover */
+    transition: opacity 0.3s ease-in-out;
+}
+.color-box {
+    width: 12px;  /* Adjust size */
+    height: 12px;
+    border-radius: 4px; /* Rounded corners */
+}
+#footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6); /* Subtle text color */
+    padding: 20px 0; /* Adds padding above & below */
+    margin-top: auto;
+    position: relative;
+    z-index: 10; /* Ensure it's not hidden behind other elements */
+}
+#footer a {
+    text-decoration: none; /* Removes underline */
+    color: rgba(255, 255, 255, 0.6); /* Keeps it subtle */
+    transition: color 0.3s ease-in-out;
+}
+
+#footer a:hover {
+    color: #FFDF4D; /* Changes to brand yellow on hover */
+}
+.color-orange { background-color: #EF5900; }
+.color-yellow { background-color: #FFDF4D; }
+.color-green { background-color: #87D156; }
