@@ -40,16 +40,18 @@
     }
 }
 .title {
-    position: relative; /* Ensures it's above the viewer */
-    z-index: 20; /* Bring it above the 360 viewer */
-    pointer-events: auto; /* Allows clicks */
-    cursor: pointer; /* Make it visually clickable */
+    position: relative;
+    z-index: 40; /* Even higher than the overlay */
+    pointer-events: auto; /* Ensure it can be clicked */
+    cursor: pointer; /* Show it’s clickable */
+    background: rgba(0, 0, 0, 0.01); /* Invisible background to ensure it’s registered as clickable */
 }
 
 .overlay {
     position: absolute;
     top: 40px;
     left: 40px;
-    z-index: 20; /* Make sure it's above the 360 viewer */
+    z-index: 30; /* Move above viewer */
     pointer-events: auto; /* Allow interactions */
+    width: 100%; /* Ensure it covers the full width */
 }
