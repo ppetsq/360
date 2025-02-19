@@ -142,6 +142,15 @@
     </style>
 </head>
 <body>
+    <div id="fade-overlay"></div>
+
+    <script>
+        window.addEventListener("load", function() {
+            setTimeout(() => {
+                document.getElementById("fade-overlay").style.opacity = "0";
+            }, 200); // Small delay to make sure the fade effect is noticeable
+        });
+    </script>
     <div class="viewer-container" id="viewer"></div>
     <div class="overlay">
         <h1 class="title" onclick="toggleDescription()">THE OVERLOOK HOTEL</h1>
@@ -171,6 +180,8 @@
         panorama: images.off, // Start with 'off' scene
         navbar: false,
         touchmoveTwoFingers: false,
+        loadingTxt: '',
+        loadingImg: null,
     });
     setActiveButton('off');
 
