@@ -91,7 +91,7 @@
         }
         @media (max-width: 810px) {
             .title {
-                font-size: 48px;
+                font-size: 44px;
                 line-height: 1.05;
             }
             .description {
@@ -196,6 +196,23 @@ document.getElementById("viewer").addEventListener("click", function () {
     }
     isPanningActive = !isPanningActive; // Toggle state
 });
+
+// Declare isPanning globally so both click & touch can access it
+let isPanning = false;
+
+// Ensure play/pause works on both desktop and mobile
+viewer.container.addEventListener("click", togglePanning);
+viewer.container.addEventListener("touchend", togglePanning); // Add touch event for mobile
+
+function togglePanning() {
+    if (isPanning) {
+        viewer.stopAutorotate();
+    } else {
+        viewer.startAutorotate(0.1); // Adjust speed if needed
+    }
+    isPanning = !isPanning;
+}
+
     // Ensure zoom level is set after the viewer is ready
     viewer.once('ready', () => {
         viewer.zoom(0); // Adjust this value to set the initial zoom-out level
