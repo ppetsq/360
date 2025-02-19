@@ -173,6 +173,7 @@
 
         let viewer;
         let hasUserInteracted = false;
+        
 
         window.onload = function () {
     viewer = new PhotoSphereViewer.Viewer({
@@ -184,7 +185,17 @@
         loadingImg: null,
     });
     setActiveButton('off');
+    
+    let isPanningActive = false; // Keeps track of the state
 
+document.getElementById("viewer").addEventListener("click", function () {
+    if (isPanningActive) {
+        viewer.stopAutorotate();
+    } else {
+        viewer.startAutorotate(0.1); // Adjust speed if needed
+    }
+    isPanningActive = !isPanningActive; // Toggle state
+});
     // Ensure zoom level is set after the viewer is ready
     viewer.once('ready', () => {
         viewer.zoom(0); // Adjust this value to set the initial zoom-out level
