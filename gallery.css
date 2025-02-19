@@ -213,7 +213,7 @@ body {
 
 /* ========== BRAND COLORS (TOP RIGHT) ========== */
 #brand-colors {
-    opacity: 0.3;
+    opacity: 1;
     position: absolute;
     top: 20px;
     right: 20px;
@@ -227,7 +227,7 @@ body {
 }
 
 #brand-colors-link:hover {
-    opacity: 100;
+    opacity: 50;
     transition: opacity 0.3s ease-in-out;
 }
 
