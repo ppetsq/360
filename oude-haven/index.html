@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/overlook/overlook_styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360° Viewer</title>
+    
+    <!-- Load dependencies locally -->
+    <script src="libs/three.min.js"></script>
+    <script src="libs/uevent.min.js"></script>
+    
+    <!-- Load PhotoSphereViewer locally -->
+    <link rel="stylesheet" href="libs/photo-sphere-viewer.min.css">
+    <script src="libs/photo-sphere-viewer.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=EB+Garamond:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Syne', sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+        }
+        .viewer-container {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0;
+            animation: fadeInRoom 2s ease-out forwards;
+        }
+        @keyframes fadeInRoom {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .overlay {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            width: calc(100% - 80px);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            pointer-events: none;
+            opacity: 0;
+            animation: fadeInUI 0.8s ease-out forwards 0.5s;
+        }
+        @keyframes fadeInUI {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .title {
+            font-size: 78px;
+            font-weight: 700;
+            text-transform: uppercase;
+            max-width: 100%;
+            word-wrap: break-word;
+            line-height: 1.1;
+            cursor: pointer;
+        }
+        .description {
+            font-family: 'EB Garamond', serif;
+            font-size: 20px;
+            font-weight: 400;
+            max-width: 600px;
+            margin-top: 10px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        @media (max-width: 810px) {
+            .title {
+                font-size: 44px;
+                line-height: 1.05;
+            }
+            .description {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="fade-overlay"></div>
+    <a href="https://petsq.works" id="brand-colors-link">
+        <div id="brand-colors">
+            <div class="color-box color-green"></div>
+            <div class="color-box color-yellow"></div>
+            <div class="color-box color-orange"></div>
+        </div>
+    </a>
+    <script>
+        window.addEventListener("load", function() {
+            setTimeout(() => {
+                document.getElementById("fade-overlay").style.opacity = "0";
+            }, 200);
+        });
+    </script>
+    <div class="viewer-container" id="viewer"></div>
+    <div class="overlay">
+        <h1 class="title" onclick="toggleDescription()">OUDE HAVEN</h1>
+        <p class="coordinates">51.918266° N, 4.490053° E</p>
+        <p class="description" id="description">Beneath Rotterdam’s towering skyline, Oude Haven whispers its past through creaking masts and flickering reflections. Time slows here—boats nod in silent agreement, and the city hums just out of reach. Watch closely. Something, or someone, always lingers.</p>
+    </div>
+    <script>
+        const imageSrc = "https://assets.360.petsq.works/rotterdam/rotterdam_oudehaven.jpg"; // Replace with your uploaded image URL
+        let viewer;
+        let isPanning = false;
+        window.onload = function () {
+    viewer = new PhotoSphereViewer.Viewer({
+        container: document.querySelector('#viewer'),
+        panorama: imageSrc,
+        navbar: false,
+        touchmoveTwoFingers: false,
+        loadingTxt: '',
+        loadingImg: null,
+        defaultZoomLvl: 0,  // Keeps the zoom level fixed
+    });
+    viewer.once('ready', () => {
+        console.log("✅ Viewer loaded, forcing static initial position...");
+        // ✅ Use "setPanorama()" to re-load the same image but with the correct position
+        viewer.setPanorama(imageSrc, {
+            longitude: 2.5,  // Left/Right
+            latitude: -0.0,  // Up/Down
+            zoom: 0
+        });
+        console.log("✅ Initial position set instantly.");
+    });
+    viewer.container.addEventListener("click", togglePanning);
+    viewer.container.addEventListener("touchend", togglePanning);
+};
+        function togglePanning() {
+            if (isPanning) {
+                viewer.stopAutorotate();
+            } else {
+                viewer.startAutorotate(0.1);
+            }
+            isPanning = !isPanning;
+        }
+        function toggleDescription() {
+            const description = document.getElementById("description");
+            if (description.style.opacity === "1" || description.style.opacity === "") {
+                description.style.opacity = "0";
+                setTimeout(() => {
+                    description.style.visibility = "hidden";
+                }, 500);
+            } else {
+                description.style.visibility = "visible";
+                setTimeout(() => {
+                    description.style.opacity = "1";
+                }, 10);
+            }
+        }
+    </script>
+</body>
+</html>
