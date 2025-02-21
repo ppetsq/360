@@ -3,15 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>360° Video Experience</title>
+    <title>BLAAK</title>
 
     <!-- Load dependencies -->
     <script src="libs/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.136.0/examples/js/controls/OrbitControls.js"></script>
-
-    <!-- Load Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=EB+Garamond:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
 
     <style>
         * {
@@ -20,56 +16,40 @@
             box-sizing: border-box;
         }
         body {
-            font-family: 'Syne', sans-serif;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
             background-color: #000;
             color: #fff;
             overflow: hidden;
         }
+        canvas {
+            display: block;
+        }
         .overlay {
             position: absolute;
-            top: 40px;
-            left: 40px;
-            width: calc(100% - 80px);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            pointer-events: none;
-            opacity: 0;
-            animation: fadeInUI 0.8s ease-out forwards 0.5s;
+            top: 20px;
+            left: 20px;
+            background: transparent;
+            padding: 10px 15px;
+            border-radius: 6px;
         }
         .title {
-            font-size: 78px;
-            font-weight: 700;
-            text-transform: uppercase;
-            max-width: 100%;
-            word-wrap: break-word;
-            line-height: 1.1;
-            cursor: pointer;
+            font-size: 48px;
+            font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            font: 200px;
+            font-weight: bold;
+            margin: 0;
         }
         .description {
-            font-family: 'EB Garamond', serif;
-            font-size: 20px;
-            font-weight: 400;
-            max-width: 600px;
-            margin-top: 10px;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-        @media (max-width: 810px) {
-            .title {
-                font-size: 44px;
-                line-height: 1.05;
-            }
-            .description {
-                font-size: 16px;
-            }
+            font-size: 16px;
+            margin: 5px 0 0;
         }
     </style>
 </head>
 <body>
+
     <div class="overlay">
-        <h1 class="title" onclick="toggleDescription()">BLAAK</h1>
-        <p class="description">Tap to start/stop auto-rotation. Scroll to zoom.</p>
+        <h1 class="title">BLAAK</h1>
+        <p class="description">51.919929, 4.489521</p>
     </div>
 
     <script>
@@ -91,8 +71,7 @@
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
             controls.rotateSpeed = 0.5;
-            controls.enableZoom = true;
-            controls.zoomSpeed = 1.2;
+            controls.enableZoom = false;
             controls.enablePan = false;
             controls.enableRotate = true;
             
@@ -141,7 +120,7 @@
         function animate() {
             requestAnimationFrame(animate);
             if (isRotating) {
-                scene.rotation.y -= 0.002;
+                scene.rotation.y -= 0.001; // Adjust rotation speed
             }
             controls.update();
             renderer.render(scene, camera);
