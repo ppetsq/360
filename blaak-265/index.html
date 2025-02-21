@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLAAK</title>
+
+    <!-- Load dependencies -->
+    <script src="libs/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.136.0/examples/js/controls/OrbitControls.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+        .overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: transparent;
+            padding: 10px 15px;
+            border-radius: 6px;
+        }
+        .title {
+            font-size: 48px;
+            font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            font: 200px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .description {
+            font-size: 16px;
+            margin: 5px 0 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay">
+        <h1 class="title">BLAAK</h1>
+        <p class="description">51.919929, 4.489521</p>
+    </div>
+
+    <script>
+        let scene, camera, renderer, video, texture, material, sphere, controls;
+        let isRotating = true;
+
+        function init() {
+            console.log("✅ Initializing 360° Video Viewer...");
+
+            // Create scene, camera, renderer
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // Initialize OrbitControls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.rotateSpeed = 0.5;
+            controls.enableZoom = false;
+            controls.enablePan = false;
+            controls.enableRotate = true;
+            
+            // Load video
+            video = document.createElement('video');
+            video.src = "https://assets.360.petsq.works/rotterdam/rotterdam_blaak_265.mp4";
+            video.loop = true;
+            video.muted = true;
+            video.crossOrigin = "anonymous";
+            video.setAttribute('webkit-playsinline', '');
+            video.setAttribute('playsinline', '');
+            document.body.appendChild(video);
+
+            // Create video texture (only when video is loaded)
+            video.oncanplaythrough = function () {
+                console.log("✅ Video Loaded, applying texture...");
+
+                texture = new THREE.VideoTexture(video);
+                texture.minFilter = THREE.LinearFilter;
+                texture.magFilter = THREE.LinearFilter;
+                texture.format = THREE.RGBFormat;
+                texture.needsUpdate = true;
+
+                // Create sphere and apply video texture
+                const geometry = new THREE.SphereGeometry(500, 60, 40);
+                geometry.scale(-1, 1, 1);
+                material = new THREE.MeshBasicMaterial({ map: texture });
+                sphere = new THREE.Mesh(geometry, material);
+                scene.add(sphere);
+
+                // Set initial camera position
+                camera.position.set(0, 0, 0.1);
+                camera.lookAt(sphere.position);
+                controls.target.set(0, 0, 0);
+                controls.update();
+
+                console.log("✅ Starting animation...");
+                video.play();
+                animate();
+            };
+
+            // Add event listener to toggle auto-rotation
+            document.body.addEventListener("click", toggleAutoRotation);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (isRotating) {
+                scene.rotation.y -= 0.001; // Adjust rotation speed
+            }
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        function toggleAutoRotation() {
+            isRotating = !isRotating;
+            console.log(isRotating ? "▶️ Auto-Rotation Started" : "⏸ Auto-Rotation Stopped");
+        }
+
+        // Start initialization when page loads
+        window.onload = init;
+    </script>
+</body>
+</html>
