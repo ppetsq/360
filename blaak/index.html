@@ -13,18 +13,28 @@
         .coordinates { font-size: 18px; font-family: 'Space Mono', monospace; color: rgba(255, 255, 255, 0.7); }
         .description { font-family: 'EB Garamond', serif; font-size: 18px; line-height: 1.4; max-width: 500px; }
         .a-enter-vr {display: none !important;}
+        #fade-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 9999;
+            transition: opacity 2s ease-out;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Overlay Text -->
+    <div id="fade-overlay"></div>
+
     <div class="overlay">
         <h1 class="title">BLAAK</h1>
         <p class="coordinates">51.919929° N, 4.489521° E</p>
         <p class="description">A moment frozen in motion—subway trains gliding past, neon reflections in steel, the hum of city life echoing underground. Blaak station is where past meets the future, in a loop of silent movement.</p>
     </div>
 
-    <!-- A-Frame Scene -->
     <a-scene device-orientation-permission-ui="enabled: false" touch-action="none">
         <a-assets>
             <video id="blaakVideo" muted playsinline webkit-playsinline loop>
@@ -38,10 +48,8 @@
             <a-camera id="camera" wasd-controls-enabled="false"></a-camera>
         </a-entity>
 
-        <!-- Video Sphere -->
         <a-videosphere src="#blaakVideo" rotation="0 180 0" animation="property: rotation; to: 0 540 0; loop: true; dur: 50000; easing: linear"></a-videosphere>
 
-        <!-- Camera & Controls -->
         <a-camera   look-controls="enabled: true; touchEnabled: true; mouseEnabled: true; reverseMouseDrag: false;" 
                     position="0 1.6 0" 
                     user-height="1.6"
@@ -53,7 +61,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             const video = document.getElementById('blaakVideo');
 
-            // Try to autoplay when user interacts
             function tryPlay() {
                 video.play().then(() => {
                     console.log("✅ Video started playing");
@@ -62,43 +69,32 @@
                 });
             }
 
-            // Start playing when page loads
             tryPlay();
 
-            // Also play on first tap/click
             document.body.addEventListener('click', tryPlay);
+
+            const fadeOverlay = document.getElementById('fade-overlay');
+            fadeOverlay.style.opacity = '0';
+            setTimeout(() => {
+                fadeOverlay.style.display = 'none';
+            }, 2000);
         });
 
         document.addEventListener("DOMContentLoaded", function () {
-    const camera = document.querySelector("[camera]");
-    if (camera) {
-        camera.setAttribute("look-controls", {
-            enabled: true,
-            touchEnabled: true,
-            mouseEnabled: true,
-            reverseMouseDrag: false
+            const camera = document.querySelector("[camera]");
+            if (camera) {
+                camera.setAttribute("look-controls", {
+                    enabled: true,
+                    touchEnabled: true,
+                    mouseEnabled: true,
+                    reverseMouseDrag: false
+                });
+                console.log("✅ Full 360° touch controls enabled.");
+            }
         });
-        console.log("✅ Full 360° touch controls enabled.");
-    }
-});
+        
+        // Remove the custom touch event script from the previous attempts.
+        // Look-controls should be handling the touch movement correctly.
     </script>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        let cameraRig = document.getElementById('rig');
-        let lastY = 0;
-
-        document.addEventListener('touchstart', function (event) {
-            lastY = event.touches[0].clientY;
-        });
-
-        document.addEventListener('touchmove', function (event) {
-            let deltaY = event.touches[0].clientY - lastY;
-            cameraRig.object3D.rotation.x += deltaY * -0.002;
-            lastY = event.touches[0].clientY;
-        });
-    });
-</script>
-
 </body>
 </html>
