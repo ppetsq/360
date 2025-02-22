@@ -25,7 +25,7 @@
     </div>
 
     <!-- A-Frame Scene -->
-    <a-scene device-orientation-permission-ui="enabled: false">
+    <a-scene device-orientation-permission-ui="enabled: false" touch-action="none">
         <a-assets>
             <video id="blaakVideo" muted playsinline webkit-playsinline loop>
                 <source src="https://assets.360.petsq.works/rotterdam/rotterdam_blaak.mp4" 
@@ -42,7 +42,10 @@
         <a-videosphere src="#blaakVideo" rotation="0 180 0" animation="property: rotation; to: 0 540 0; loop: true; dur: 50000; easing: linear"></a-videosphere>
 
         <!-- Camera & Controls -->
-        <a-camera look-controls="reverseMouseDrag: false; touchEnabled: true; mouseEnabled: true; magicWindowTrackingEnabled: false;">
+        <a-camera   look-controls="enabled: true; touchEnabled: true; mouseEnabled: true; reverseMouseDrag: false;" 
+                    position="0 1.6 0" 
+                    user-height="1.6"
+                    wasd-controls-enabled="false">
         </a-camera>
     </a-scene>
 
@@ -65,24 +68,37 @@
             // Also play on first tap/click
             document.body.addEventListener('click', tryPlay);
         });
+
+        document.addEventListener("DOMContentLoaded", function () {
+    const camera = document.querySelector("[camera]");
+    if (camera) {
+        camera.setAttribute("look-controls", {
+            enabled: true,
+            touchEnabled: true,
+            mouseEnabled: true,
+            reverseMouseDrag: false
+        });
+        console.log("✅ Full 360° touch controls enabled.");
+    }
+});
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            let cameraRig = document.getElementById('rig');
-            let lastY = 0;
+    document.addEventListener('DOMContentLoaded', function () {
+        let cameraRig = document.getElementById('rig');
+        let lastY = 0;
 
-            document.addEventListener('touchstart', function (event) {
-                lastY = event.touches[0].clientY;
-            });
-
-            document.addEventListener('touchmove', function (event) {
-                let deltaY = event.touches[0].clientY - lastY;
-                cameraRig.object3D.rotation.x += deltaY * -0.002;
-                lastY = event.touches[0].clientY;
-            });
+        document.addEventListener('touchstart', function (event) {
+            lastY = event.touches[0].clientY;
         });
-    </script>
+
+        document.addEventListener('touchmove', function (event) {
+            let deltaY = event.touches[0].clientY - lastY;
+            cameraRig.object3D.rotation.x += deltaY * -0.002;
+            lastY = event.touches[0].clientY;
+        });
+    });
+</script>
 
 </body>
 </html>
