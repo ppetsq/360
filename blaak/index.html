@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BLAAK</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=EB+Garamond:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Syne', sans-serif; background-color: #000; color: #fff; text-align: center; }
-        .overlay { position: absolute; top: 40px; left: 40px; z-index: 10; text-align: left; }
-        .title { font-size: 64px; font-weight: bold; text-transform: uppercase; margin: 0; }
-        .coordinates { font-size: 18px; font-family: 'Space Mono', monospace; color: rgba(255, 255, 255, 0.7); }
-        .description { font-family: 'EB Garamond', serif; font-size: 18px; line-height: 1.4; max-width: 500px; }
-        .a-enter-vr {display: none !important;}
+        .a-enter-vr { display: none !important; }
+
+        /* 🔥 Fade-In Effect */
         #fade-overlay {
             position: fixed;
             top: 0;
@@ -21,45 +27,164 @@
             height: 100%;
             background-color: black;
             z-index: 9999;
+            opacity: 1;
             transition: opacity 2s ease-out;
         }
+
+        /* 📌 Overlay Styling */
+        .overlay { 
+            position: absolute; 
+            top: 40px; 
+            left: 40px; 
+            z-index: 100;
+            width: calc(100% - 80px);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            pointer-events: auto;
+            opacity: 0;
+            animation: fadeInUI 0.8s ease-out forwards 0.5s;
+            gap: 15px; /* ✅ Proper spacing */
+        }
+
+        @keyframes fadeInUI {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 🏷️ Title Styling */
+        .title {
+            font-size: 78px;
+            font-weight: 700;
+            text-transform: uppercase;
+            max-width: 100%;
+            word-wrap: break-word;
+            line-height: 1.1;
+            cursor: pointer;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+            text-align: left;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        /* ✅ Subtle hover effect */
+        .title:hover {
+            opacity: 0.70;
+        }
+
+        /* 📍 Coordinates Styling */
+        .coordinates {
+            font-size: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            text-align: left;
+        }
+
+        /* 📝 Description Styling */
+        .description { 
+            font-family: 'Cormorant Garamond', serif; 
+            font-size: 18px; 
+            font-weight: 400; 
+            max-width: 600px; 
+            margin-top: 0px; 
+            line-height: 1.4; 
+            word-wrap: break-word;
+            opacity: 1; 
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+            text-align: left;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        @media (max-width: 810px) {
+            .title { font-size: 40px; line-height: 1.05; }
+            .coordinates { font-size: 14px; }
+            .description { font-size: 16px; }
+        }
+
+        /* 🎨 Brand Colors */
+        #brand-colors {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            align-self: flex-end;
+            padding-bottom: 0px; /* ✅ Ensures proper spacing */
+        }
+
+        .color-box {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            transition: opacity 0.3s ease-in-out;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        /* ✅ Remove margin from the last element */
+        .color-box:last-child {
+            margin-right: 0;
+        }
+
+        /* ✅ Hover effect for all boxes */
+        @media (hover: hover) {
+            #brand-colors:hover .color-box {
+                opacity: 0.5;
+            }
+        }
+
+        .color-green { background-color: #87D156; }
+        .color-yellow { background-color: #FFDF4D; }
+        .color-orange { background-color: #EF5900; }
+
     </style>
+
 </head>
 <body>
 
+    <!-- 🔥 Fade-In Effect -->
     <div id="fade-overlay"></div>
 
+    <!-- Overlay Text -->
     <div class="overlay">
-        <h1 class="title">BLAAK</h1>
+        <div id="brand-colors">
+            <a href="https://petsq.works" id="brand-colors-link" target="_blank" rel="noopener noreferrer">
+                <div class="color-box color-green"></div>
+                <div class="color-box color-yellow"></div>
+                <div class="color-box color-orange"></div>
+            </a>
+        </div>
+        <h1 class="title" onclick="toggleDescription()">BLAAK TRAIN STATION</h1>
         <p class="coordinates">51.919929° N, 4.489521° E</p>
-        <p class="description">A moment frozen in motion—subway trains gliding past, neon reflections in steel, the hum of city life echoing underground. Blaak station is where past meets the future, in a loop of silent movement.</p>
+        <p class="description" id="description">A moment frozen in motion—subway trains gliding past, neon reflections in steel, the hum of city life echoing underground. Blaak station is where past meets the future, in a loop of silent movement.</p>
     </div>
 
-    <a-scene device-orientation-permission-ui="enabled: false" touch-action="none">
+    <!-- A-Frame Scene -->
+    <a-scene 
+        device-orientation-permission-ui="enabled: false"
+        touch-action="none"
+        vr-mode-ui="enabled: false">
+
         <a-assets>
-            <video id="blaakVideo" muted playsinline webkit-playsinline loop>
-                <source src="https://assets.360.petsq.works/rotterdam/rotterdam_blaak.mp4" 
-                        type="video/mp4"
-                        crossorigin="anonymous">
+            <video id="blaakVideo" muted playsinline webkit-playsinline loop crossorigin="anonymous">
+                <source src="https://assets.360.petsq.works/rotterdam/rotterdam_blaak.mp4" type="video/mp4">
             </video>
         </a-assets>
 
-        <a-entity id="rig" position="0 1.6 0">
-            <a-camera id="camera" wasd-controls-enabled="false"></a-camera>
-        </a-entity>
+        <!-- ✅ FIXED CAMERA SYSTEM -->
+        <a-camera id="camera" look-controls wasd-controls="enabled: false"></a-camera>
 
-        <a-videosphere src="#blaakVideo" rotation="0 180 0" animation="property: rotation; to: 0 540 0; loop: true; dur: 50000; easing: linear"></a-videosphere>
+        <!-- ✅ VIDEO SPHERE WITH SMOOTHER ROTATION -->
+        <a-videosphere src="#blaakVideo" rotation="0 180 0"
+            animation="property: rotation; to: 0 540 0; loop: true; dur: 50000; easing: linear">
+        </a-videosphere>
 
-        <a-camera   look-controls="enabled: true; touchEnabled: true; mouseEnabled: true; reverseMouseDrag: false;" 
-                    position="0 1.6 0" 
-                    user-height="1.6"
-                    wasd-controls-enabled="false">
-        </a-camera>
     </a-scene>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const video = document.getElementById('blaakVideo');
+            const fadeOverlay = document.getElementById('fade-overlay');
 
             function tryPlay() {
                 video.play().then(() => {
@@ -70,31 +195,32 @@
             }
 
             tryPlay();
-
             document.body.addEventListener('click', tryPlay);
 
-            const fadeOverlay = document.getElementById('fade-overlay');
+            // ✅ Fade out the overlay
             fadeOverlay.style.opacity = '0';
-            setTimeout(() => {
+            fadeOverlay.addEventListener('transitionend', () => {
                 fadeOverlay.style.display = 'none';
-            }, 2000);
+            });
+
+            // ✅ Enable 360° touch controls
+            const scene = document.querySelector('a-scene');
+            scene.addEventListener('loaded', () => {
+                const camera = document.querySelector('[camera]');
+                if (camera) {
+                    camera.setAttribute('look-controls', 'enabled: true; touchEnabled: true; mouseEnabled: true; reverseMouseDrag: false;');
+                    console.log("✅ Full 360° touch controls enabled.");
+                }
+            });
         });
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const camera = document.querySelector("[camera]");
-            if (camera) {
-                camera.setAttribute("look-controls", {
-                    enabled: true,
-                    touchEnabled: true,
-                    mouseEnabled: true,
-                    reverseMouseDrag: false
-                });
-                console.log("✅ Full 360° touch controls enabled.");
-            }
-        });
-        
-        // Remove the custom touch event script from the previous attempts.
-        // Look-controls should be handling the touch movement correctly.
+        // ✅ Toggle Description
+        function toggleDescription() {
+            const description = document.getElementById('description');
+            description.style.opacity = description.style.opacity === "1" ? "0" : "1";
+            description.style.visibility = description.style.opacity === "1" ? "visible" : "hidden";
+        }
     </script>
+
 </body>
 </html>
