@@ -4,110 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BLAAK</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/three@0.136.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.136.0/examples/js/controls/OrbitControls.js"></script>
-
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; background-color: #000; color: #fff; overflow: hidden; }
-        canvas { display: block; }
-        .overlay { position: absolute; top: 20px; left: 20px; background: transparent; padding: 10px 15px; border-radius: 6px; }
-        .title { font-size: 48px; font-weight: bold; margin: 0; }
-        .description { font-size: 16px; margin: 5px 0 0; }
+        body { font-family: 'Syne', sans-serif; background-color: #000; color: #fff; text-align: center; }
+        .overlay { position: absolute; top: 40px; left: 40px; z-index: 10; text-align: left; }
+        .title { font-size: 64px; font-weight: bold; text-transform: uppercase; margin: 0; }
+        .coordinates { font-size: 18px; font-family: 'Space Mono', monospace; color: rgba(255, 255, 255, 0.7); }
+        .description { font-family: 'EB Garamond', serif; font-size: 18px; line-height: 1.4; max-width: 500px; }
     </style>
 </head>
 <body>
+
+    <!-- Overlay Text -->
     <div class="overlay">
         <h1 class="title">BLAAK</h1>
-        <p class="description">51.919929, 4.489521</p>
+        <p class="coordinates">51.919929° N, 4.489521° E</p>
+        <p class="description">A moment frozen in motion—subway trains gliding past, neon reflections in steel, the hum of city life echoing underground. Blaak station is where past meets the future, in a loop of silent movement.</p>
     </div>
 
+    <!-- A-Frame Scene -->
+    <a-scene>
+        <a-assets>
+            <video id="blaakVideo" muted playsinline webkit-playsinline loop>
+                <source src="https://assets.360.petsq.works/rotterdam/rotterdam_blaak.mp4" type="video/mp4">
+            </video>
+        </a-assets>
+
+        <!-- Video Sphere -->
+        <a-videosphere src="#blaakVideo" rotation="0 180 0"></a-videosphere>
+
+        <!-- Camera & Controls -->
+        <a-camera position="0 1.6 0">
+        </a-camera>
+    </a-scene>
+
     <script>
-        let scene, camera, renderer, video, texture, material, sphere, controls;
-        let isRotating = true;
-        let rotationSpeed = 0.001; // Adjust this value for rotation speed
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('blaakVideo');
 
-        function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
-
-            // Mobile-friendly controls (TouchControls or pointer events)
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.rotateSpeed = 0.2; // Adjust for touch sensitivity
-            controls.enableZoom = false;
-            controls.enablePan = false;
-            controls.enableRotate = true;
-            controls.invertY = true; // Invert Y-axis for drag direction
-
-            video = document.createElement('video');
-            video.src = "https://assets.360.petsq.works/rotterdam/rotterdam_blaak.mp4";
-            video.loop = true;
-            video.muted = true;
-            video.crossOrigin = "anonymous";
-            video.setAttribute('webkit-playsinline', '');
-            video.setAttribute('playsinline', '');
-            document.body.appendChild(video);
-
-
-            video.oncanplaythrough = function () {
-                texture = new THREE.VideoTexture(video);
-                texture.minFilter = THREE.LinearFilter;
-                texture.magFilter = THREE.LinearFilter;
-                texture.format = THREE.RGBFormat;
-                texture.needsUpdate = true;
-
-                const geometry = new THREE.SphereGeometry(500, 60, 40);
-                geometry.scale(-1, 1, 1);
-                material = new THREE.MeshBasicMaterial({ map: texture });
-                sphere = new THREE.Mesh(geometry, material);
-                scene.add(sphere);
-
-                camera.position.set(0, 0, 0.1);
-                camera.lookAt(sphere.position);
-                controls.target.set(0, 0, 0);
-                controls.update();
-
-                video.play();
-                animate();
-            };
-
-            // Toggle auto-rotation with touch or click
-            document.body.addEventListener("touchstart", toggleAutoRotation); // Mobile
-            document.body.addEventListener("mousedown", toggleAutoRotation);  // Desktop
-
-            // Resize handling
-            window.addEventListener('resize', onWindowResize, false);
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            if (isRotating) {
-                sphere.rotation.y -= rotationSpeed; // Rotate the sphere
+            // Try to autoplay when user interacts
+            function tryPlay() {
+                video.play().then(() => {
+                    console.log("✅ Video started playing");
+                }).catch(err => {
+                    console.log("❌ Autoplay blocked, waiting for user action...");
+                });
             }
-            controls.update();
-            renderer.render(scene, camera);
-        }
 
-        function toggleAutoRotation(event) {
-            isRotating = !isRotating;
-            console.log(isRotating ? "▶️ Auto-Rotation Started" : "⏸ Auto-Rotation Stopped");
-            event.preventDefault(); // Prevent default touch/click behavior
-        }
+            // Start playing when page loads
+            tryPlay();
 
-        window.onload = init;
+            // Also play on first tap/click
+            document.body.addEventListener('click', tryPlay);
+        });
     </script>
+
 </body>
 </html>
