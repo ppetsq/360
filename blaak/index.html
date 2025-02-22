@@ -12,6 +12,7 @@
         .title { font-size: 64px; font-weight: bold; text-transform: uppercase; margin: 0; }
         .coordinates { font-size: 18px; font-family: 'Space Mono', monospace; color: rgba(255, 255, 255, 0.7); }
         .description { font-family: 'EB Garamond', serif; font-size: 18px; line-height: 1.4; max-width: 500px; }
+        .a-enter-vr {display: none !important;}
     </style>
 </head>
 <body>
@@ -27,12 +28,14 @@
     <a-scene>
         <a-assets>
             <video id="blaakVideo" muted playsinline webkit-playsinline loop>
-                <source src="https://assets.360.petsq.works/rotterdam/rotterdam_blaak.mp4" type="video/mp4">
+                <source src="https://assets.360.petsq.works/rotterdam/rotterdam_blaak.mp4" 
+                        type="video/mp4"
+                        crossorigin="anonymous">
             </video>
         </a-assets>
 
         <!-- Video Sphere -->
-        <a-videosphere src="#blaakVideo" rotation="0 180 0"></a-videosphere>
+        <a-videosphere src="#blaakVideo" rotation="0 180 0" animation="property: rotation; to: 0 540 0; loop: true; dur: 50000; easing: linear"></a-videosphere>
 
         <!-- Camera & Controls -->
         <a-camera position="0 1.6 0">
