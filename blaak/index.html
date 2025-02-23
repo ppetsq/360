@@ -18,6 +18,21 @@
         body { font-family: 'Syne', sans-serif; background-color: #000; color: #fff; text-align: center; }
         .a-enter-vr { display: none !important; }
 
+        body, html {
+    touch-action: manipulation !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-touch-callout: none !important;
+}
+
+        .title, .coordinates, .description, #brand-colors-link {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    z-index: 99999 !important;
+    position: relative !important;
+}
+
+
         /* 🔥 Fade-In Effect */
         #fade-overlay {
             position: fixed;
@@ -29,6 +44,7 @@
             z-index: 9999;
             opacity: 1;
             transition: opacity 2s ease-out;
+            pointer-events: none !important;
         }
 
         /* 📌 Overlay Styling */
@@ -171,7 +187,8 @@
     <a-scene 
         device-orientation-permission-ui="enabled: false"
         touch-action="none"
-        vr-mode-ui="enabled: false">
+        vr-mode-ui="enabled: false"
+        cursor="rayOrigin: mouse">
 
         <a-assets>
             <video id="blaakVideo" muted playsinline webkit-playsinline loop crossorigin="anonymous">
@@ -180,7 +197,10 @@
         </a-assets>
 
         <!-- ✅ FIXED CAMERA SYSTEM -->
-        <a-camera id="camera" look-controls wasd-controls="enabled: false"></a-camera>
+        <a-camera   id="camera" 
+                    look-controls wasd-controls="enabled: false"
+                    look-controls="enabled: true; touchEnabled: true; mouseEnabled: true; reverseMouseDrag: false; magicWindowTrackingEnabled: false;">
+        </a-camera>
 
         <!-- ✅ VIDEO SPHERE WITH SMOOTHER ROTATION -->
         <a-videosphere src="#blaakVideo" rotation="0 180 0"
@@ -226,6 +246,19 @@
                 scene.focus(); // ✅ Ensures the scene is interactive immediately
             }, 100);
         });
+        document.addEventListener("DOMContentLoaded", function () {
+    const camera = document.querySelector("[camera]");
+    if (camera) {
+        camera.setAttribute("look-controls", {
+            enabled: true,
+            touchEnabled: true,
+            mouseEnabled: true,
+            reverseMouseDrag: false,
+            magicWindowTrackingEnabled: false
+        });
+        console.log("✅ Full 360° touch controls enabled.");
+    }
+});
     </script>
 
 </body>
