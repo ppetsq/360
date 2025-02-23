@@ -179,6 +179,55 @@
     display: none !important;
 }
 
+/* ✅ Modern, Greyish, Transparent, Slightly Blurred Back Button */
+.back-button {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background: rgba(50, 50, 50, 0.4); /* ✅ Semi-transparent dark grey */
+    color: rgba(255, 255, 255, 0.8); /* ✅ Slightly faded white */
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    backdrop-filter: blur(8px); /* ✅ Subtle blur effect */
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease;
+    margin-bottom: 12px; /* ✅ Adds some space below */
+}
+
+/* ✅ Hover Effect */
+.back-button:hover {
+    background: rgba(50, 50, 50, 0.7); /* ✅ Darker on hover */
+    color: #fff; /* ✅ Fully white text */
+}
+
+/* ✅ Fixes Vertical Alignment of Button & Coordinates */
+.nav-container {
+    display: flex;
+    align-items: center; /* ✅ Ensures vertical centering */
+    gap: 12px; /* ✅ Adds spacing between elements */
+    height: 100%; /* ✅ Ensures it fills the available space */
+}
+
+/* ✅ Modern, Greyish, Transparent, Slightly Blurred Back Button */
+.back-button {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background: rgba(50, 50, 50, 0.4); /* ✅ Semi-transparent dark grey */
+    color: rgba(255, 255, 255, 0.8); /* ✅ Slightly faded white */
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    backdrop-filter: blur(8px); /* ✅ Subtle blur effect */
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ✅ Hover Effect */
+.back-button:hover {
+    background: rgba(50, 50, 50, 0.7); /* ✅ Darker on hover */
+    color: #fff; /* ✅ Fully white text */
+}
+
     </style>
 </head>
 <body>
@@ -193,7 +242,10 @@
             </a>
         </div>
         <h1 class="title" onclick="toggleDescription()">UNDER THE BRIDGE</h1>
-        <p class="coordinates">51.918266° N, 4.490053° E</p>
+        <div class="nav-container">
+            <button class="back-button" onclick="goBack()">← back</button>
+            <p class="coordinates">51.918266° N, 4.490053° E</p>
+        </div>
         <p class="description" id="description">Beneath the weight of steel and concrete, the city hums with a different rhythm. Footsteps echo against the pillars, bicycles glide past without a sound, and the water below moves like it’s keeping secrets. Under the bridge, Rotterdam isn’t just a place—it’s a feeling, caught somewhere between transit and stillness. Look around. Stay a while. You might see something no one else has.</p>
     </div>
     <div class="viewer-container" id="viewer"></div>
@@ -313,6 +365,10 @@
         coordElement.style.opacity = "1"; // 🔥 Fade in when the real coords appear
     }, 2000); // Adjust timing as needed
 });
+
+function goBack() {
+    window.history.back(); // ✅ Takes the user back to the previous page
+}
 
     </script>
 </body>

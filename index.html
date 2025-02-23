@@ -1,108 +1,333 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;700&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>360 Gallery</title>
-    <link rel="stylesheet" href="gallery.css">
-    <script src="gallery.js"></script>
+    <title>Boutique360</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400&family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ✅ Global Styles */
+        html, body {
+            background-color: #0a0a0a;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'JetBrains Mono', monospace;
+            color: #fff;
+            text-align: left;
+        }
+
+        /* ✅ Page Container */
+        .container {
+            padding: 50px;
+            flex-grow: 1;
+        }
+
+        /* ✅ Title */
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 64px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            transition: opacity 0.2s ease-in-out;
+            user-select: none;
+        }
+
+        /* ✅ Title Hover Effect */
+        h1:hover {
+            opacity: 0.7;
+        }
+
+
+
+        /* ✅ Subheadings */
+        b {
+            font-size: 16px;
+            text-transform: uppercase;
+            display: block;
+            margin-top: 24px;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        /* ✅ List & Links */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-left: 0;
+        }
+
+        li {
+            margin: 8px 0;
+            text-transform: lowercase;
+        }
+
+        a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            opacity: 0.8;
+        }
+
+        /* ✅ Coordinates Glitch Effect */
+        .coords {
+            color: #4da6ff;
+            font-size: 12px;
+            margin-left: 12px;
+            display: inline-block;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .glitch {
+            animation: glitchAnim 0.5s steps(6, end) infinite;
+            color: #4da6ff !important;
+        }
+
+        @keyframes glitchAnim {
+            0%, 100% { opacity: 1; }
+            25% { opacity: 0.8; }
+            50% { opacity: 1; }
+            75% { opacity: 0.9; }
+        }
+
+        /* ✅ Footer */
+        footer {
+            margin-top: auto;
+            font-size: 12px;
+            opacity: 0.5;
+            padding: 50px 50px;
+        }
+
+        /* ✅ Brand Colors */
+        #brand-colors {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            display: flex;
+            gap: 6px;
+            pointer-events: auto;
+        }
+
+        #brand-colors-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            border: none;
+        }
+
+/* ✅ Brand Color Boxes - Adds Proper Spacing */
+.color-box {
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    transition: opacity 0.3s ease-in-out;
+    display: inline-block;
+    margin-right: 8px; /* ✅ Adds proper spacing */
+}
+
+/* ✅ Remove extra margin from the last element */
+.color-box:last-child {
+    margin-right: 0;
+}
+
+        .color-green { background-color: #87D156; }
+        .color-yellow { background-color: #FFDF4D; }
+        .color-orange { background-color: #EF5900; }
+
+        /* ✅ Hover Effect for Brand Colors */
+        @media (hover: hover) {
+            #brand-colors:hover .color-box { opacity: 0.5; }
+        }
+
+
+        /* ✅ Mobile Fix: Ensure Coordinates Move to a New Line */
+@media (max-width: 810px) {
+    /* ✅ Reduce title size slightly */
+    h1 {
+        font-size: 36px;
+        line-height: 1.1;
+    }
+
+    /* ✅ Ensure list items have proper spacing */
+    ul {
+        margin-bottom: 16px; /* Adds extra spacing */
+    }
+
+    li {
+        display: flex;
+        flex-direction: column; /* ✅ Moves coordinates below the location */
+        gap: 4px; /* ✅ Adds space between text & coordinates */
+        margin-bottom: 14px; /* ✅ Extra spacing between list items */
+    }
+
+    .coords {
+        margin-left: 0; /* ✅ Remove left margin */
+        font-size: 12px;
+        opacity: 0.8;
+    }
+}
+
+@media (max-width: 810px) {
+    /* ✅ Adds space below brand colors */
+    #brand-colors {
+        margin-bottom: 32px;
+    }
+
+    /* ✅ Adds space below title */
+    h1 {
+        margin-bottom: 32px;
+        text-align: right; /* ✅ Align title to the right */
+        font-size: 32px;
+    }
+
+    /* ✅ Adds space between sections (Video, Image, Contact) */
+    b {
+        margin-top: 40px; /* Pushes sections further apart */
+        margin-bottom: 12px; /* Ensures clean separation */
+    }
+
+    /* ✅ Ensures footer has breathing room */
+    footer {
+        padding-top: 24px;
+    }
+}
+
+/* ✅ Add More Space Between Sections on Desktop */
+@media (min-width: 811px) {
+    b {
+        margin-top: 50px; /* ✅ Creates more space above each category */
+        display: block;
+    }
+}
+
+/* ✅ Use the Title Font (Syne) but Lighter */
+strong {
+    font-size: 20px;
+    text-transform: uppercase;
+    font-family: 'Syne', sans-serif; /* ✅ Same as title */
+    font-weight: 500; /* ✅ Lighter than the title */
+    display: block;
+    margin-top: 50px;
+    margin-bottom: 8px;
+    opacity: 0.7; /* ✅ Slight fade for a softer look */
+}
+
+/* ✅ Full Page Fade-In Effect */
+body {
+    opacity: 0;
+    animation: fadeIn 1.5s ease-out forwards, ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+    </style>
 </head>
 <body>
-    <a href="https://petsq.works" id="brand-colors-link">
-        <div id="brand-colors">
+
+    <div id="brand-colors">
+        <a href="https://petsq.works" id="brand-colors-link" target="_blank" rel="noopener noreferrer">
             <div class="color-box color-green"></div>
             <div class="color-box color-yellow"></div>
             <div class="color-box color-orange"></div>
-        </div>
-    </a>
-    <header>
-        <div id="gallery-container">
-            <div>
-                <h1 id="gallery-title">
-                    360° GALLERY
-                </h1>
-                <p id="gallery-description">a hidden collection of hotel rooms across europe, each with a story to tell. step inside and see how lighting transforms the mood.</p>
-            </div>
-        </div>
-    </header>
-    <main class="gallery">
-        <div class="grid">
-            <div id="gallery"></div>
+        </a>
+    </div>
 
-            <script>
-    const projects = ["bob", "cuber", "hub", "kamppi", "lahti", "lapland", "overlook", "union", "valo"];
-    const gallery = document.getElementById("gallery");
+    <div class="container">
+        <h1>Boutique360</h1>
 
-    projects.forEach(project => {
-        const item = document.createElement("div");
-        item.classList.add("gallery-item");
+        <strong>360Video</strong>
+        <ul>
+            <li>
+                <a href="/video/blaak/" onmouseenter="startGlitch(this)" onmouseleave="stopGlitch(this)">Blaak Train Station</a>
+                <span class="coords" data-coords="51.9240° N, 4.4880° E">51.9240° N, 4.4880° E</span>
+            </li>
+            <li>
+                <a href="/video/cube-houses/" onmouseenter="startGlitch(this)" onmouseleave="stopGlitch(this)">Cube Houses</a>
+                <span class="coords" data-coords="51.9225° N, 4.4883° E">51.9225° N, 4.4883° E</span>
+            </li>
+        </ul>
+        <strong>360Image</strong>
+        <ul>
+            <li>
+                <a href="/image/overlook/" onmouseenter="startGlitch(this)" onmouseleave="stopGlitch(this)">The Overlook Hotel</a>
+                <span class="coords" data-coords="39.7392° N, 105.9903° W">39.7392° N, 105.9903° W</span>
+            </li>
+            <li>
+                <a href="/image/static/kubuswoningen/" onmouseenter="startGlitch(this)" onmouseleave="stopGlitch(this)">Kubuswoningen</a>
+                <span class="coords" data-coords="51.9225° N, 4.4883° E">51.9225° N, 4.4883° E</span>
+            </li>
+            <li>
+                <a href="/image/static/oude-haven" onmouseenter="startGlitch(this)" onmouseleave="stopGlitch(this)">Oude Haven</a>
+                <span class="coords" data-coords="51.9228° N, 4.4896° E">51.9228° N, 4.4896° E</span>
+            </li>
+            <li>
+                <a href="/image/static/rotterdam/" onmouseenter="startGlitch(this)" onmouseleave="stopGlitch(this)">Onder de Brug</a>
+                <span class="coords" data-coords="51.9183° N, 4.4901° E">51.9183° N, 4.4901° E</span>
+            </li>
+        </ul>
 
-        item.innerHTML = `
-            <a href="https://360.petsq.works/overlook">
-                <div class="image-container">
-                    <img src="https://assets.360.petsq.works/preview/${project}-preview-off.jpg" class="img-off" alt="${project}">
-                    <img src="https://assets.360.petsq.works/preview/${project}-preview-on.jpg" class="img-on" alt="${project}">
-                </div>
-                <span class="room-name">${project.toUpperCase()}</span>
-            </a>
-        `;
+        <strong>Contact</strong>
+        <p><a href="https://petsq.works/contact" class="email" target="_blank" rel="noopener noreferrer">hello@petsq.works</a></p>
+    </div>
 
-        gallery.appendChild(item);
-    });
+    <footer>petsq.works 2025 ©</footer>
 
-    // ✅ FIX 1: NO DEFAULT ACTIVE STATE ON DESKTOP
-    document.querySelectorAll(".gallery-item").forEach(item => {
-        item.querySelector(".img-on").style.opacity = "0";
-        item.querySelector(".img-off").style.opacity = "1";
-    });
+<script>
+    function startGlitch(link) {
+    const coords = link.nextElementSibling;
+    if (!coords) return; // ✅ Prevent errors if no coordinates exist
 
-    // ✅ FIX 2: CORRECT MOBILE SLOT MACHINE EFFECT + ASPECT RATIO
-    function updateFocus() {
-        const items = document.querySelectorAll(".gallery-item");
-        let closest = null;
-        let closestDistance = Number.MAX_VALUE;
-        const viewportCenter = window.innerHeight / 2;
+    coords.classList.add("glitch");
 
-        items.forEach(item => {
-            const rect = item.getBoundingClientRect();
-            const distance = Math.abs(rect.top + rect.height / 2 - viewportCenter);
+    let realCoords = coords.getAttribute("data-coords");
+    let interval = setInterval(() => {
+        coords.textContent = generateFakeCoords(realCoords);
+    }, 100); // ✅ Flicker every 100ms
 
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                closest = item;
-            }
-        });
+    link.dataset.interval = interval;
 
-        items.forEach(item => {
-            item.classList.remove("focused");
-            item.querySelector(".img-on").style.opacity = "0"; 
-            item.querySelector(".img-off").style.opacity = "1";
-        });
+    // ✅ Stop glitch after 1.5 seconds
+    setTimeout(() => {
+        stopGlitch(link);
+    }, 1500);
+}
 
-        if (closest) {
-            closest.classList.add("focused");
-            closest.querySelector(".img-on").style.opacity = "1";
-            closest.querySelector(".img-off").style.opacity = "0";
+function stopGlitch(link) {
+    const coords = link.nextElementSibling;
+    if (!coords) return; // ✅ Prevent errors
+
+    coords.classList.remove("glitch");
+    clearInterval(link.dataset.interval); // ✅ Stop flickering
+    coords.textContent = coords.getAttribute("data-coords"); // ✅ Restore real coordinates
+}
+
+function generateFakeCoords(realCoords) {
+    let fakeCoords = "";
+    for (let i = 0; i < realCoords.length; i++) {
+        if (realCoords[i] === " " || realCoords[i] === "°" || realCoords[i] === ",") {
+            fakeCoords += realCoords[i]; // ✅ Preserve spaces & symbols
+        } else {
+            fakeCoords += Math.floor(Math.random() * 10); // ✅ Replace digits with random numbers
         }
     }
-
-    // 🚀 INITIATE LISTENERS
-    window.addEventListener("scroll", updateFocus);
-    window.addEventListener("resize", updateFocus);
-    document.addEventListener("DOMContentLoaded", () => {
-        updateFocus();
-        
-        // ✅ FIX 3: FORCE MOBILE IMAGES TO 2:1 RATIO
-        document.querySelectorAll(".image-container img").forEach(img => {
-            img.style.aspectRatio = "2 / 1";
-            img.style.objectFit = "cover";
-        });
-    });
+    return fakeCoords;
+}
 </script>
-    <footer id="footer">
-        <p>© <a href="https://petsq.works/">petsq.works</a> 2025</p>
-    </footer>
 </body>
 </html>

@@ -190,6 +190,33 @@
         .color-yellow { background-color: #FFDF4D; }
         .color-orange { background-color: #EF5900; }
 
+        /* ✅ Aligns Back Button & Coordinates */
+.nav-container {
+    display: flex;
+    align-items: center; /* ✅ Ensures vertical alignment */
+    gap: 12px; /* ✅ Adds spacing between elements */
+}
+
+/* ✅ Modern, Greyish, Transparent, Slightly Blurred Back Button */
+.back-button {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background: rgba(50, 50, 50, 0.4); /* ✅ Semi-transparent dark grey */
+    color: rgba(255, 255, 255, 0.8); /* ✅ Slightly faded white */
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    backdrop-filter: blur(8px); /* ✅ Subtle blur effect */
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ✅ Hover Effect */
+.back-button:hover {
+    background: rgba(50, 50, 50, 0.7); /* ✅ Darker on hover */
+    color: #fff; /* ✅ Fully white text */
+}
+
     </style>
 
 </head>
@@ -208,7 +235,10 @@
             </a>
         </div>
         <h1 class="title" onclick="toggleDescription()">CUBE HOUSES</h1>
-        <p class="coordinates">51.920189° N, 4.490428° E</p>
+        <div class="nav-container">
+            <button class="back-button" onclick="goBack()">← Back</button>
+            <p class="coordinates">51.920189° N, 4.490428° E</p>
+        </div>
         <p class="description" id="description">A dizzying experiment in geometry—these tilted cubes defy logic, balancing on their corners like a surrealist dream. Step inside the puzzle, where walls become floors and gravity is just a suggestion. Look up, look down—nothing here is quite as it seems.</p>
     </div>
 
@@ -377,6 +407,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log("✅ Scroll & pinch zoom enabled!");
     });
+
+    function goBack() {
+    window.history.back(); // ✅ Takes the user back to the previous page
+}
 
     </script>
 

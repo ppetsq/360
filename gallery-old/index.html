@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360 Gallery</title>
+    <link rel="stylesheet" href="gallery.css">
+    <script src="gallery.js"></script>
+</head>
+<body>
+    <a href="https://petsq.works" id="brand-colors-link">
+        <div id="brand-colors">
+            <div class="color-box color-green"></div>
+            <div class="color-box color-yellow"></div>
+            <div class="color-box color-orange"></div>
+        </div>
+    </a>
+    <header>
+        <div id="gallery-container">
+            <div>
+                <h1 id="gallery-title">
+                    360° GALLERY
+                </h1>
+                <p id="gallery-description">a hidden collection of hotel rooms across europe, each with a story to tell. step inside and see how lighting transforms the mood.</p>
+            </div>
+        </div>
+    </header>
+    <main class="gallery">
+        <div class="grid">
+            <div id="gallery"></div>
+
+            <script>
+    const projects = ["bob", "cuber", "hub", "kamppi", "lahti", "lapland", "overlook", "union", "valo"];
+    const gallery = document.getElementById("gallery");
+
+    projects.forEach(project => {
+        const item = document.createElement("div");
+        item.classList.add("gallery-item");
+
+        item.innerHTML = `
+            <a href="https://360.petsq.works/overlook">
+                <div class="image-container">
+                    <img src="https://assets.360.petsq.works/preview/${project}-preview-off.jpg" class="img-off" alt="${project}">
+                    <img src="https://assets.360.petsq.works/preview/${project}-preview-on.jpg" class="img-on" alt="${project}">
+                </div>
+                <span class="room-name">${project.toUpperCase()}</span>
+            </a>
+        `;
+
+        gallery.appendChild(item);
+    });
+
+    // ✅ FIX 1: NO DEFAULT ACTIVE STATE ON DESKTOP
+    document.querySelectorAll(".gallery-item").forEach(item => {
+        item.querySelector(".img-on").style.opacity = "0";
+        item.querySelector(".img-off").style.opacity = "1";
+    });
+
+    // ✅ FIX 2: CORRECT MOBILE SLOT MACHINE EFFECT + ASPECT RATIO
+    function updateFocus() {
+        const items = document.querySelectorAll(".gallery-item");
+        let closest = null;
+        let closestDistance = Number.MAX_VALUE;
+        const viewportCenter = window.innerHeight / 2;
+
+        items.forEach(item => {
+            const rect = item.getBoundingClientRect();
+            const distance = Math.abs(rect.top + rect.height / 2 - viewportCenter);
+
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closest = item;
+            }
+        });
+
+        items.forEach(item => {
+            item.classList.remove("focused");
+            item.querySelector(".img-on").style.opacity = "0"; 
+            item.querySelector(".img-off").style.opacity = "1";
+        });
+
+        if (closest) {
+            closest.classList.add("focused");
+            closest.querySelector(".img-on").style.opacity = "1";
+            closest.querySelector(".img-off").style.opacity = "0";
+        }
+    }
+
+    // 🚀 INITIATE LISTENERS
+    window.addEventListener("scroll", updateFocus);
+    window.addEventListener("resize", updateFocus);
+    document.addEventListener("DOMContentLoaded", () => {
+        updateFocus();
+        
+        // ✅ FIX 3: FORCE MOBILE IMAGES TO 2:1 RATIO
+        document.querySelectorAll(".image-container img").forEach(img => {
+            img.style.aspectRatio = "2 / 1";
+            img.style.objectFit = "cover";
+        });
+    });
+</script>
+    <footer id="footer">
+        <p>© <a href="https://petsq.works/">petsq.works</a> 2025</p>
+    </footer>
+</body>
+</html>
