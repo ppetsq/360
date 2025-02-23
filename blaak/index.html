@@ -106,11 +106,19 @@
         /* 🎨 Brand Colors */
         #brand-colors {
             display: flex;
-            gap: 12px;
+            gap: 12px !important;
             justify-content: flex-end;
             align-self: flex-end;
             padding-bottom: 20px; /* ✅ Ensures proper spacing */
         }
+
+        #brand-colors-link {
+            display: flex; /* ✅ Ensures it only wraps its content */
+            align-items: center; /* ✅ Keeps alignment */
+            text-decoration: none; /* ✅ Removes any weird text artifacts */
+            outline: none; /* ✅ Prevents focus outlines */
+            border: none; /* ✅ Just in case */
+}
 
         .color-box {
             width: 12px;
