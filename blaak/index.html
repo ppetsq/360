@@ -32,6 +32,32 @@
     position: relative !important;
 }
 
+@keyframes glitch {
+    0% { opacity: 0; transform: translateX(-2px); }
+    10% { opacity: 1; transform: translateX(0px); }
+    20% { transform: translateX(2px); }
+    30% { opacity: 0.5; transform: translateX(-2px); }
+    40% { transform: translateX(1px); }
+    50% { opacity: 1; transform: translateX(0px); }
+    60% { opacity: 0.7; transform: translateX(-1px); }
+    70% { transform: translateX(1px); }
+    80% { opacity: 1; transform: translateX(0px); }
+    90% { opacity: 0.9; transform: translateX(-1px); }
+    100% { opacity: 1; transform: translateX(0px); }
+}
+
+.coordinates {
+    font-size: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: left;
+    opacity: 0;
+    animation: glitch 1.5s steps(10, end) forwards;
+    transition: opacity 1s ease-in-out; /* Smooth transition */
+}
 
         /* 🔥 Fade-In Effect */
         #fade-overlay {
@@ -83,9 +109,12 @@
         }
 
         /* ✅ Subtle hover effect */
-        .title:hover {
-            opacity: 0.70;
-        }
+        .title {
+    transition: opacity 0.2s ease-in-out;
+}
+.title.hovered {
+    opacity: 0.70;
+}
 
         /* 📍 Coordinates Styling */
         .coordinates {
@@ -199,7 +228,8 @@
         <!-- ✅ FIXED CAMERA SYSTEM -->
         <a-camera   id="camera" 
                     look-controls wasd-controls="enabled: false"
-                    look-controls="enabled: true; touchEnabled: true; mouseEnabled: true; reverseMouseDrag: false; magicWindowTrackingEnabled: false;">
+                    look-controls="enabled: true; touchEnabled: true; mouseEnabled: true; reverseMouseDrag: false; magicWindowTrackingEnabled: false;"
+                    zoom-speed="0.5">
         </a-camera>
 
         <!-- ✅ VIDEO SPHERE WITH SMOOTHER ROTATION -->
@@ -259,6 +289,95 @@
         console.log("✅ Full 360° touch controls enabled.");
     }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const coordElement = document.querySelector(".coordinates");
+    const realCoords = "51.919929° N, 4.489521° E"; // Actual coordinates
+    let fakeCoords = "";
+
+    function generateFakeCoords() {
+        fakeCoords = "";
+        for (let i = 0; i < realCoords.length; i++) {
+            if (realCoords[i] === " " || realCoords[i] === "°" || realCoords[i] === ",") {
+                fakeCoords += realCoords[i]; // Preserve spaces and symbols
+            } else {
+                fakeCoords += Math.floor(Math.random() * 10); // Random digits
+            }
+        }
+        coordElement.textContent = fakeCoords;
+    }
+
+    let interval = setInterval(generateFakeCoords, 80); // Fake numbers flicker
+
+    setTimeout(() => {
+        clearInterval(interval); // Stop fake numbers
+        coordElement.textContent = realCoords; // Set real coords
+        coordElement.style.opacity = "1"; // 🔥 Fade in when the real coords appear
+    }, 2000); // Adjust timing as needed
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const title = document.querySelector(".title");
+
+    // ✅ Desktop: Handle hover normally
+    title.addEventListener("mouseenter", () => {
+        title.classList.add("hovered");
+    });
+    title.addEventListener("mouseleave", () => {
+        title.classList.remove("hovered");
+    });
+
+    // ✅ Mobile: Apply opacity on tap, then reset it after a short delay
+    title.addEventListener("click", () => {
+        title.classList.add("hovered");
+        setTimeout(() => {
+            title.classList.remove("hovered");
+        }, 500); // Adjust delay as needed
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+        const cameraEl = document.querySelector('#camera');
+        let zoomLevel = 1; // Default zoom
+
+        function updateZoom() {
+            cameraEl.setAttribute('camera', 'zoom', zoomLevel);
+        }
+
+        // ✅ Mouse scroll zoom
+        window.addEventListener('wheel', (event) => {
+            zoomLevel -= event.deltaY * 0.0002; // Adjust zoom speed
+            zoomLevel = Math.max(0.8, Math.min(1.5, zoomLevel)); // Limit zoom range
+            updateZoom();
+        });
+
+        // ✅ Pinch zoom on mobile
+        let lastDistance = null;
+
+        window.addEventListener('touchmove', (event) => {
+            if (event.touches.length === 2) { 
+                const dx = event.touches[0].pageX - event.touches[1].pageX;
+                const dy = event.touches[0].pageY - event.touches[1].pageY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (lastDistance) {
+                    const zoomChange = (distance - lastDistance) * 0.005;
+                    zoomLevel += zoomChange;
+                    zoomLevel = Math.max(0.4, Math.min(1.8, zoomLevel)); // Keep zoom controlled
+                    updateZoom();
+                }
+
+                lastDistance = distance;
+            }
+        });
+
+        window.addEventListener('touchend', () => {
+            lastDistance = null; // Reset pinch distance
+        });
+
+        console.log("✅ Scroll & pinch zoom enabled!");
+    });
+
     </script>
 
 </body>
