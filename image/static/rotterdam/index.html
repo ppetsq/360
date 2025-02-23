@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="/overlook/overlook_styles.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>360° Viewer</title>
@@ -100,22 +99,19 @@
     100% { opacity: 1; transform: translateX(0px); }
 }
 
-        .coordinates {
-            font-size: 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 300;
-            color: rgba(255, 255, 255, 0.7);
-            text-transform: uppercase;
-            text-align: left;
-            opacity: 0;
-            animation: glitch 1.5s steps(10, end) forwards;
-            margin-bottom: 20px;
-        }
-
-        @keyframes glitch {
-            0% { opacity: 0; transform: translateX(-2px); }
-            100% { opacity: 1; transform: translateX(0px); }
-        }
+.coordinates {
+    font-size: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: left;
+    opacity: 0;
+    animation: glitch 1.5s steps(10, end) forwards;
+    transition: opacity 1s ease-in-out; /* Smooth transition */
+    margin-bottom: 16px;
+}
         
         /* ✅ Description */
         .description { 
@@ -197,32 +193,48 @@
     <div class="viewer-container" id="viewer"></div>
 
     <script>
-        const imageSrc = "https://assets.360.petsq.works/rotterdam/rotterdam_ug.jpg"; // Replace with your uploaded image URL
+        const imageSrc = "https://assets.360.petsq.works/rotterdam/rotterdam_ug.jpg"; // ✅ Correct image source
         let viewer;
         let isPanning = false;
-        window.onload = function () {
-    viewer = new PhotoSphereViewer.Viewer({
-        container: document.querySelector('#viewer'),
-        panorama: imageSrc,
-        navbar: false,
-        touchmoveTwoFingers: false,
-        loadingTxt: '',
-        loadingImg: null,
-        defaultZoomLvl: 0,  // Keeps the zoom level fixed
-    });
-    viewer.once('ready', () => {
-        console.log("✅ Viewer loaded, forcing static initial position...");
-        // ✅ Use "setPanorama()" to re-load the same image but with the correct position
-        viewer.setPanorama(imageSrc, {
-            longitude: 2.5,  // Left/Right
-            latitude: -0.0,  // Up/Down
-            zoom: 0
+    
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("✅ DOM Loaded, initializing viewer...");
+    
+            // ✅ Ensure the viewer container exists before proceeding
+            const viewerContainer = document.querySelector('#viewer');
+            if (!viewerContainer) {
+                console.error("❌ Viewer container not found!");
+                return;
+            }
+    
+            // ✅ Initialize PhotoSphereViewer
+            viewer = new PhotoSphereViewer.Viewer({
+                container: viewerContainer,
+                panorama: imageSrc,
+                navbar: false,
+                touchmoveTwoFingers: false,
+                loadingTxt: '',
+                loadingImg: null,
+                defaultZoomLvl: 20 // ✅ Ensures the zoom level is correctly set
+            });
+    
+            // ✅ Ensure viewer is fully ready before modifying settings
+            viewer.once('ready', () => {
+                console.log("✅ Viewer loaded successfully!");
+    
+                viewer.zoom(20);  // ✅ Set correct zoom level
+                viewer.rotate({ longitude: 2.0, latitude: 0 });  // ✅ Adjust initial camera view
+                viewer.startAutorotate(0.1);  // ✅ Start auto-panning
+    
+                // ✅ Ensure UI elements are visible after loading
+                document.querySelector(".overlay").style.opacity = "1";
+            });
+    
+            // ✅ Handle click/touch to pause/play auto-panning
+            viewerContainer.addEventListener("click", togglePanning);
+            viewerContainer.addEventListener("touchend", togglePanning);
         });
-        console.log("✅ Initial position set instantly.");
-    });
-    viewer.container.addEventListener("click", togglePanning);
-    viewer.container.addEventListener("touchend", togglePanning);
-};
+    
         function togglePanning() {
             if (isPanning) {
                 viewer.stopAutorotate();
@@ -231,40 +243,69 @@
             }
             isPanning = !isPanning;
         }
+    
         function toggleDescription() {
-    const description = document.getElementById("description");
+            const description = document.getElementById("description");
+            if (!description) return;
+    
+            if (description.style.opacity === "1" || description.style.opacity === "") {
+                description.style.opacity = "0";
+                setTimeout(() => {
+                    description.style.visibility = "hidden";
+                }, 500);
+            } else {
+                description.style.visibility = "visible";
+                setTimeout(() => {
+                    description.style.opacity = "1";
+                }, 10);
+            }
+        }
+    
+        document.addEventListener("DOMContentLoaded", () => {
+            const title = document.querySelector(".title");
+            if (!title) return;
+    
+            // ✅ Desktop hover effect
+            title.addEventListener("mouseenter", () => {
+                title.classList.add("hovered");
+            });
+            title.addEventListener("mouseleave", () => {
+                title.classList.remove("hovered");
+            });
+    
+            // ✅ Mobile tap effect
+            title.addEventListener("click", () => {
+                title.classList.add("hovered");
+                setTimeout(() => {
+                    title.classList.remove("hovered");
+                }, 500);
+            });
+        });
 
-    if (description.style.opacity === "1" || description.style.opacity === "") {
-        description.style.opacity = "0";
-        setTimeout(() => {
-            description.style.visibility = "hidden";
-        }, 500); // Matches CSS transition duration
-    } else {
-        description.style.visibility = "visible";
-        setTimeout(() => {
-            description.style.opacity = "1";
-        }, 10); // Small delay ensures smooth transition
+        document.addEventListener("DOMContentLoaded", function () {
+    const coordElement = document.querySelector(".coordinates");
+    const realCoords = "51.918266° N, 4.490053° E"; // Actual coordinates
+    let fakeCoords = "";
+
+    function generateFakeCoords() {
+        fakeCoords = "";
+        for (let i = 0; i < realCoords.length; i++) {
+            if (realCoords[i] === " " || realCoords[i] === "°" || realCoords[i] === ",") {
+                fakeCoords += realCoords[i]; // Preserve spaces and symbols
+            } else {
+                fakeCoords += Math.floor(Math.random() * 10); // Random digits
+            }
+        }
+        coordElement.textContent = fakeCoords;
     }
-}
 
-document.addEventListener("DOMContentLoaded", () => {
-    const title = document.querySelector(".title");
+    let interval = setInterval(generateFakeCoords, 80); // Fake numbers flicker
 
-    // ✅ Desktop: Handle hover normally
-    title.addEventListener("mouseenter", () => {
-        title.classList.add("hovered");
-    });
-    title.addEventListener("mouseleave", () => {
-        title.classList.remove("hovered");
-    });
-
-    // ✅ Mobile: Apply opacity on tap, then reset it after a short delay
-    title.addEventListener("click", () => {
-        title.classList.add("hovered");
-        setTimeout(() => {
-            title.classList.remove("hovered");
-        }, 500); // Adjust delay as needed
-    });
+    setTimeout(() => {
+        clearInterval(interval); // Stop fake numbers
+        coordElement.textContent = realCoords; // Set real coords
+        coordElement.style.opacity = "1"; // 🔥 Fade in when the real coords appear
+    }, 2000); // Adjust timing as needed
 });
 
     </script>
