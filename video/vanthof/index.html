@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Van ‘t Hof demo</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=EB+Garamond:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Syne', sans-serif; background-color: #000; color: #fff; text-align: center; }
+        .a-enter-vr { display: none !important; }
+
+        body, html {
+    touch-action: manipulation !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-touch-callout: none !important;
+}
+
+        .title, .coordinates, .description, #brand-colors-link {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    z-index: 99999 !important;
+    position: relative !important;
+}
+
+@keyframes glitch {
+    0% { opacity: 0; transform: translateX(-2px); }
+    10% { opacity: 1; transform: translateX(0px); }
+    20% { transform: translateX(2px); }
+    30% { opacity: 0.5; transform: translateX(-2px); }
+    40% { transform: translateX(1px); }
+    50% { opacity: 1; transform: translateX(0px); }
+    60% { opacity: 0.7; transform: translateX(-1px); }
+    70% { transform: translateX(1px); }
+    80% { opacity: 1; transform: translateX(0px); }
+    90% { opacity: 0.9; transform: translateX(-1px); }
+    100% { opacity: 1; transform: translateX(0px); }
+}
+
+.coordinates {
+    font-size: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: left;
+    text-decoration: none; /* Removes default underline */
+    transition: color 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+/* ✅ Subtle hover effect */
+.coordinates:hover {
+    color: rgba(255, 255, 255, 1); /* Turns fully white */
+}
+
+        /* 🔥 Fade-In Effect */
+        #fade-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 2s ease-out;
+            pointer-events: none !important;
+        }
+
+        /* 📌 Overlay Styling */
+        .overlay { 
+            position: absolute; 
+            top: 40px; 
+            left: 40px; 
+            z-index: 100;
+            width: calc(100% - 80px);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            pointer-events: auto;
+            opacity: 0;
+            animation: fadeInUI 0.8s ease-out forwards 0.5s;
+            gap: 15px; /* ✅ Proper spacing */
+        }
+
+        @keyframes fadeInUI {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 🏷️ Title Styling */
+        .title {
+            font-size: 78px;
+            font-weight: 700;
+            max-width: 100%;
+            word-wrap: break-word;
+            line-height: 1.1;
+            cursor: pointer;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+            text-align: left;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        /* ✅ Subtle hover effect */
+        .title {
+    transition: opacity 0.2s ease-in-out;
+}
+.title.hovered {
+    opacity: 0.70;
+}
+
+        /* 📍 Coordinates Styling */
+
+        /* 📝 Description Styling */
+        .description { 
+            font-family: 'Cormorant Garamond', serif; 
+            font-size: 18px; 
+            font-weight: 400; 
+            max-width: 600px; 
+            margin-top: 0px; 
+            line-height: 1.4; 
+            word-wrap: break-word;
+            opacity: 1; 
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+            text-align: left;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        @media (max-width: 810px) {
+            .title { font-size: 40px; line-height: 1.05; }
+            .coordinates { font-size: 14px; }
+            .description { font-size: 16px; }
+        }
+
+        /* 🎨 Brand Colors */
+        #brand-colors {
+            display: flex;
+            gap: 12px !important;
+            justify-content: flex-end;
+            align-self: flex-end;
+            padding-bottom: 20px; /* ✅ Ensures proper spacing */
+        }
+
+        #brand-colors-link {
+            display: flex; /* ✅ Ensures it only wraps its content */
+            align-items: center; /* ✅ Keeps alignment */
+            text-decoration: none; /* ✅ Removes any weird text artifacts */
+            outline: none; /* ✅ Prevents focus outlines */
+            border: none; /* ✅ Just in case */
+}
+
+        .color-box {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            transition: opacity 0.3s ease-in-out;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        /* ✅ Remove margin from the last element */
+        .color-box:last-child {
+            margin-right: 0;
+        }
+
+        /* ✅ Hover effect for all boxes */
+        @media (hover: hover) {
+            #brand-colors:hover .color-box {
+                opacity: 0.5;
+            }
+        }
+
+        .color-green { background-color: #87D156; }
+        .color-yellow { background-color: #FFDF4D; }
+        .color-orange { background-color: #EF5900; }
+
+        /* ✅ Aligns Back Button & Coordinates */
+.nav-container {
+    display: flex;
+    align-items: center; /* ✅ Ensures vertical alignment */
+    gap: 12px; /* ✅ Adds spacing between elements */
+}
+
+/* ✅ Modern, Greyish, Transparent, Slightly Blurred Back Button */
+.back-button {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background: rgba(50, 50, 50, 0.4); /* ✅ Semi-transparent dark grey */
+    color: rgba(255, 255, 255, 0.8); /* ✅ Slightly faded white */
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    backdrop-filter: blur(8px); /* ✅ Subtle blur effect */
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ✅ Hover Effect */
+.back-button:hover {
+    background: rgba(50, 50, 50, 0.7); /* ✅ Darker on hover */
+    color: #fff; /* ✅ Fully white text */
+}
+
+    </style>
+
+</head>
+<body>
+
+    <!-- 🔥 Fade-In Effect -->
+    <div id="fade-overlay"></div>
+
+    <!-- Overlay Text -->
+    <div class="overlay">
+        <div id="brand-colors">
+            <a href="https://petsq.works" id="brand-colors-link" target="_blank" rel="noopener noreferrer">
+                <div class="color-box color-green"></div>
+                <div class="color-box color-yellow"></div>
+                <div class="color-box color-orange"></div>
+            </a>
+        </div>
+        <h1 class="title" onclick="toggleDescription()">Van 't Hof</h1>
+        <div class="nav-container">
+            <a href="https://vanthoffoodgroup.com" class="coordinates" target="_blank" rel="noopener noreferrer">vanthoffoodgroup.com</a>
+        </div>
+        <p class="description" id="description">Echt genieten begint met een verse loempia. De perfecte combinatie van knapperig, goudbruin flensje en een rijke, verse vulling maakt elke hap onweerstaanbaar. Bij elke bijt proef je de zorg en aandacht die in het ambachtelijke bereidingsproces is gestoken. Het is een moment van pure smaakbeleving, waarbij de frisse groenten en de delicate kruiden samenkomen in een harmonieuze mix.</p>
+    </div>
+
+    <!-- A-Frame Scene -->
+    <a-scene 
+        device-orientation-permission-ui="enabled: false"
+        touch-action="none"
+        vr-mode-ui="enabled: false"
+        cursor="rayOrigin: mouse">
+
+        <a-assets>
+            <video id="blaakVideo" muted playsinline webkit-playsinline loop crossorigin="anonymous">
+                <source src="https://assets.360.petsq.works/vanthof/vanthof-demo.mp4" type="video/mp4">
+            </video>
+        </a-assets>
+
+        <!-- ✅ FIXED CAMERA SYSTEM -->
+        <a-camera   id="camera" 
+                    look-controls wasd-controls="enabled: false"
+                    look-controls="enabled: true; touchEnabled: true; mouseEnabled: true; reverseMouseDrag: false; magicWindowTrackingEnabled: false;"
+                    zoom-speed="0.5">
+        </a-camera>
+
+        <!-- ✅ VIDEO SPHERE WITH SMOOTHER ROTATION -->
+        <a-videosphere src="#blaakVideo" rotation="0 180 0"
+            animation="property: rotation; to: 0 540 0; loop: true; dur: 50000; easing: linear">
+        </a-videosphere>
+
+    </a-scene>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('blaakVideo');
+            const fadeOverlay = document.getElementById('fade-overlay');
+            const description = document.getElementById('description');
+            const title = document.querySelector('.title');
+    
+            // ✅ Ensure video plays automatically without requiring interaction
+            function tryPlay() {
+                video.play().then(() => {
+                    console.log("✅ Video started playing");
+                }).catch(err => {
+                    console.log("❌ Autoplay blocked, waiting for user action...");
+                });
+            }
+    
+            tryPlay(); // ✅ Attempt autoplay on page load
+    
+            // ✅ Instantly fade out overlay after load
+            fadeOverlay.style.opacity = '0';
+            fadeOverlay.addEventListener('transitionend', () => {
+                fadeOverlay.style.display = 'none';
+            });
+    
+            // ✅ Fix: Ensure First Click on Title Works Immediately
+            title.addEventListener('click', (event) => {
+                event.stopPropagation(); // ✅ Prevents any unwanted interference
+                description.style.opacity = (description.style.opacity === "1" || description.style.opacity === "") ? "0" : "1";
+                description.style.visibility = (description.style.opacity === "1") ? "visible" : "hidden";
+            });
+    
+            // ✅ Fix: Prevent A-Frame from Blocking First Clicks
+            setTimeout(() => {
+                const scene = document.querySelector('a-scene');
+                scene.focus(); // ✅ Ensures the scene is interactive immediately
+            }, 100);
+        });
+        document.addEventListener("DOMContentLoaded", function () {
+    const camera = document.querySelector("[camera]");
+    if (camera) {
+        camera.setAttribute("look-controls", {
+            enabled: true,
+            touchEnabled: true,
+            mouseEnabled: true,
+            reverseMouseDrag: false,
+            magicWindowTrackingEnabled: false
+        });
+        console.log("✅ Full 360° touch controls enabled.");
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const coordElement = document.querySelector(".coordinates");
+    const realCoords = "vanthoffoodgroup.com"; // Actual coordinates
+    let fakeCoords = "";
+
+    function generateFakeCoords() {
+        fakeCoords = "";
+        for (let i = 0; i < realCoords.length; i++) {
+            if (realCoords[i] === " " || realCoords[i] === "°" || realCoords[i] === ",") {
+                fakeCoords += realCoords[i]; // Preserve spaces and symbols
+            } else {
+                fakeCoords += Math.floor(Math.random() * 10); // Random digits
+            }
+        }
+        coordElement.textContent = fakeCoords;
+    }
+
+    let interval = setInterval(generateFakeCoords, 80); // Fake numbers flicker
+
+    setTimeout(() => {
+        clearInterval(interval); // Stop fake numbers
+        coordElement.textContent = realCoords; // Set real coords
+        coordElement.style.opacity = "1"; // 🔥 Fade in when the real coords appear
+    }, 2000); // Adjust timing as needed
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const title = document.querySelector(".title");
+
+    // ✅ Desktop: Handle hover normally
+    title.addEventListener("mouseenter", () => {
+        title.classList.add("hovered");
+    });
+    title.addEventListener("mouseleave", () => {
+        title.classList.remove("hovered");
+    });
+
+    // ✅ Mobile: Apply opacity on tap, then reset it after a short delay
+    title.addEventListener("click", () => {
+        title.classList.add("hovered");
+        setTimeout(() => {
+            title.classList.remove("hovered");
+        }, 500); // Adjust delay as needed
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+        const cameraEl = document.querySelector('#camera');
+        let zoomLevel = 1; // Default zoom
+
+        function updateZoom() {
+            cameraEl.setAttribute('camera', 'zoom', zoomLevel);
+        }
+
+        // ✅ Mouse scroll zoom
+        window.addEventListener('wheel', (event) => {
+            zoomLevel -= event.deltaY * 0.0002; // Adjust zoom speed
+            zoomLevel = Math.max(0.8, Math.min(1.5, zoomLevel)); // Limit zoom range
+            updateZoom();
+        });
+
+        // ✅ Pinch zoom on mobile
+        let lastDistance = null;
+
+        window.addEventListener('touchmove', (event) => {
+            if (event.touches.length === 2) { 
+                const dx = event.touches[0].pageX - event.touches[1].pageX;
+                const dy = event.touches[0].pageY - event.touches[1].pageY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (lastDistance) {
+                    const zoomChange = (distance - lastDistance) * 0.005;
+                    zoomLevel += zoomChange;
+                    zoomLevel = Math.max(0.4, Math.min(1.8, zoomLevel)); // Keep zoom controlled
+                    updateZoom();
+                }
+
+                lastDistance = distance;
+            }
+        });
+
+        window.addEventListener('touchend', () => {
+            lastDistance = null; // Reset pinch distance
+        });
+
+        console.log("✅ Scroll & pinch zoom enabled!");
+    });
+
+    function goBack() {
+    window.history.back(); // ✅ Takes the user back to the previous page
+}
+
+    </script>
+
+</body>
+</html>
