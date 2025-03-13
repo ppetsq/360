@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W70.club 360°</title>
+    
+    <!-- Load dependencies locally -->
+    <script src="libs/three.min.js"></script>
+    <script src="libs/uevent.min.js"></script>
+    
+    <!-- Load PhotoSphereViewer locally -->
+    <link rel="stylesheet" href="libs/photo-sphere-viewer.min.css">
+    <script src="libs/photo-sphere-viewer.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Syne', sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+        }
+        .viewer-container {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0; /* Start invisible */
+            transition: opacity 1.5s ease-in-out; /* Smooth fade-in */
+        }
+
+        /* UI Container */
+        .ui-container {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            right: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            z-index: 9999;
+            opacity: 0;
+            animation: fadeInUI 1s ease-out forwards 0.5s;
+        }
+        
+        /* Bottom Navigation Container */
+        .bottom-navigation {
+            position: fixed;
+            bottom: 40px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            animation: fadeInUI 1s ease-out forwards 0.5s;
+        }
+        
+        @keyframes fadeInUI {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 60px;
+            font-weight: 700;
+            line-height: 1.1;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Brand Colors */
+        #brand-colors {
+            display: flex;
+            gap: 0px !important;
+            flex-direction: row;
+        }
+
+        #brand-colors-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            border: none;
+        }
+
+        .color-box {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            transition: opacity 0.3s ease-in-out;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .color-box:last-child {
+            margin-right: 0;
+        }
+
+        .color-green { background-color: #87D156; }
+        .color-yellow { background-color: #FFDF4D; }
+        .color-orange { background-color: #EF5900; }
+
+        /* Hover Effect for All Colors */
+        @media (hover: hover) {
+            #brand-colors:hover .color-box { opacity: 0.5; }
+        }
+
+        .psv-loader-container {
+            display: none !important;
+        }
+
+        /* Navigation */
+        .navigation {
+            display: flex;
+            gap: 16px;
+        }
+
+        /* Safari-specific fix */
+        @supports (-webkit-backdrop-filter: none) {
+            .navigation {
+                transform: translateZ(0); /* Create stacking context at container level */
+            }
+        }
+        
+        .nav-button {
+            font-family: 'Syne', sans-serif;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transform: translateZ(0); /* Force hardware acceleration */
+            margin: 0; /* Ensure no default margins */
+            overflow: hidden; /* Contain any effects */
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-button.active {
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-icon {
+            display: flex;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease-out;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid transparent;
+            border-top-color: #87D156;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .ui-container {
+                top: 20px;
+                left: 20px;
+                right: 20px;
+                gap: 16px;
+            }
+            
+            .bottom-navigation {
+                bottom: 20px;
+            }
+            
+            .title {
+                font-size: 36px;
+            }
+            
+            .nav-button {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="ui-container">
+        <div class="header">
+            <a href="https://www.w70.club/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
+                <h1 class="title">W70.club</h1>
+            </a>
+            <div id="brand-colors">
+                <a href="https://petsq.works" id="brand-colors-link" target="_blank" rel="noopener noreferrer">
+                    <div class="color-box color-green"></div>
+                    <div class="color-box color-yellow"></div>
+                    <div class="color-box color-orange"></div>
+                </a>
+            </div>
+        </div>
+        
+
+    </div>
+    
+    <div class="bottom-navigation">
+        <div class="navigation">
+            <button class="nav-button active" id="club-button" onclick="handleNavigationClick('club')">
+                <div class="nav-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </div>
+                club
+            </button>
+            <button class="nav-button" id="etage16-button" onclick="handleNavigationClick('etage16')">
+                <div class="nav-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <circle cx="12" cy="14" r="3"></circle>
+                    </svg>
+                </div>
+                etage 16
+            </button>
+        </div>
+    </div>
+    
+    <div class="viewer-container" id="viewer"></div>
+
+    <script>
+        // Configuration for viewpoints
+        const viewpoints = {
+            club: {
+                panorama: "https://assets.360.petsq.works/w70/club1.jpg",
+                name: "Club",
+                initialPosition: { longitude: 0, latitude: 0 } // Default starting position
+            },
+            etage16: {
+                panorama: "https://assets.360.petsq.works/w70/sky1.jpg",
+                name: "Etage 16",
+                initialPosition: { longitude: -0.5, latitude: 0 } // Default starting position
+            }
+        };
+
+        let viewer;
+        let currentLocation = "club";
+        let isPanning = false;
+        let isTransitioning = false;
+        
+        // Go back to using the library's rotation method but with a very small value
+        const ROTATION_SPEED = 0.005; // Adjust this value to control speed
+        
+        // Update navigation UI
+        function updateNavigation() {
+            // Update location buttons
+            document.getElementById('club-button').classList.toggle('active', currentLocation === 'club');
+            document.getElementById('etage16-button').classList.toggle('active', currentLocation === 'etage16');
+        }
+        
+        // Handle navigation button clicks
+        function handleNavigationClick(location) {
+            // Stop event propagation to prevent togglePanning from being called
+            event.stopPropagation();
+            switchLocation(location);
+        }
+        
+        // Handle click events on the viewer
+        function togglePanning(e) {
+            // Don't toggle if we're in transition
+            if (isTransitioning) return;
+            
+            // Only respond to direct clicks on the viewer, not UI elements
+            if (e && (e.target.closest('.ui-container') || e.target.closest('.nav-button'))) {
+                return;
+            }
+            
+            if (isPanning) {
+                viewer.stopAutorotate();
+                isPanning = false;
+            } else {
+                // Use a very small value for slow rotation
+                viewer.startAutorotate(ROTATION_SPEED);
+                isPanning = true;
+            }
+        }
+        
+        // Switch between locations
+        function switchLocation(location) {
+            if (isTransitioning || currentLocation === location) return;
+            isTransitioning = true;
+            
+            // Update navigation UI immediately to prevent flash
+            currentLocation = location;
+            updateNavigation();
+            
+            // Always stop rotation immediately for consistent behavior
+            viewer.stopAutorotate();
+            isPanning = false;
+            
+            // Fade out the viewer
+            document.querySelector(".viewer-container").style.opacity = "0";
+            
+            // Wait for fade-out to complete
+            setTimeout(() => {
+                // Change panorama with no transition effect
+                const viewpoint = viewpoints[location];
+                
+                viewer.setPanorama(viewpoint.panorama, {
+                    showLoader: false,
+                    transition: false
+                }).then(() => {
+                    // Reset position and zoom
+                    viewer.zoom(20);
+                    viewer.rotate(viewpoint.initialPosition);
+                    
+                    // Fade in the viewer
+                    document.querySelector(".viewer-container").style.opacity = "1";
+                    
+                    // After fully visible, start rotation again
+                    setTimeout(() => {
+                        viewer.startAutorotate(ROTATION_SPEED);
+                        isPanning = true;
+                        isTransitioning = false;
+                    }, 1000);
+                });
+            }, 800);
+        }
+        
+        // Initialize the viewer
+        document.addEventListener("DOMContentLoaded", () => {
+            initializeViewer();
+            updateNavigation();
+        });
+
+        // Initialize PhotoSphereViewer
+        function initializeViewer() {
+            const viewerContainer = document.querySelector('#viewer');
+            if (!viewerContainer) {
+                console.error("Viewer container not found!");
+                return;
+            }
+            
+            const initialViewpoint = viewpoints[currentLocation];
+            
+            viewer = new PhotoSphereViewer.Viewer({
+                container: viewerContainer,
+                panorama: initialViewpoint.panorama,
+                navbar: false,
+                touchmoveTwoFingers: false,
+                loadingTxt: '',
+                loadingImg: null,
+                defaultZoomLvl: 20
+            });
+
+            viewer.once('ready', () => {
+                viewer.zoom(20);
+                viewer.rotate(initialViewpoint.initialPosition);
+                
+                // Start rotation after a short delay
+                setTimeout(() => {
+                    viewer.startAutorotate(ROTATION_SPEED);
+                    isPanning = true;
+                    
+                    viewerContainer.style.opacity = "1";
+                    setTimeout(() => {
+                        document.getElementById('loading-overlay').style.opacity = '0';
+                        setTimeout(() => {
+                            document.getElementById('loading-overlay').style.display = 'none';
+                        }, 800);
+                    }, 500);
+                }, 300);
+            });
+            
+            // Handle click/touch to pause/play auto-panning
+            viewerContainer.addEventListener("click", togglePanning);
+            viewerContainer.addEventListener("touchend", togglePanning);
+        }
+    </script>
+</body>
+</html>
