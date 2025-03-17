@@ -2,11 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="Box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hidden UI notification -->
+        <div id="ui-hidden-notification">Double-tap to show controls</div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>
     <title>Van 't Hof Production Line - 360° Experience</title>
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Oswald:wght@700&display=swap" rel="stylesheet">
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
@@ -26,55 +45,65 @@
         <!-- Video container - will be replaced by Three.js -->
         <div id="video-container"></div>
         
-        <!-- Logo -->
-        <div class="logo-container">
-            <img src="https://assets.360.petsq.works/vanthof/Van-t-Hof_logo-1024x1024.png" alt="Van 't Hof Logo" class="logo">
-        </div>
-        
         <!-- UI Overlay -->
         <div class="ui-overlay">
-            <!-- Title Bar -->
-            <div class="title-bar">
-                <h1 id="viewpoint-title">Preparation</h1>
-            </div>
-            
-            <!-- Controls -->
-            <div class="controls">
-                <div class="viewpoint-navigation">
-                    <button id="prev-viewpoint" class="nav-button" aria-label="Previous viewpoint">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M15 18l-6-6 6-6"/>
-                        </svg>
-                    </button>
-                    
-                    <div class="viewpoint-indicators">
-                        <span class="viewpoint-dot active" data-index="0"></span>
-                        <span class="viewpoint-dot" data-index="1"></span>
-                        <span class="viewpoint-dot" data-index="2"></span>
-                        <span class="viewpoint-dot" data-index="3"></span>
-                        <span class="viewpoint-dot" data-index="4"></span>
-                        <span class="viewpoint-dot" data-index="5"></span>
-                    </div>
-                    
-                    <button id="next-viewpoint" class="nav-button" aria-label="Next viewpoint">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 18l6-6-6-6"/>
-                        </svg>
-                    </button>
+            <!-- Centered Content Container -->
+            <div class="centered-content">
+                <!-- Logo -->
+                <div class="logo-container">
+                    <a href="https://vanthoffoodgroup.com" target="_blank">
+                        <img src="https://assets.360.petsq.works/vanthof/Van-t-Hof_logo-1024x1024.png" alt="Van 't Hof Logo" class="logo">
+                    </a>
                 </div>
                 
-                <div class="action-buttons">
-                    <button id="btn-auto-rotate" class="action-button" aria-label="Auto-rotate">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-                        </svg>
-                    </button>
-                    <button id="btn-hide-ui" class="action-button" aria-label="Hide UI">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
+                <!-- Title Bar -->
+                <div class="title-bar">
+                    <h1 id="viewpoint-title">Production Journey</h1>
+                </div>
+                
+                <!-- Extended Description -->
+                <div class="extended-description">
+                    <p id="description-text">Experience the intricate process of Van 't Hof's precision food production. From raw ingredient preparation to final packaging, our 360° tour reveals the meticulous craftsmanship behind every product.</p>
+                </div>
+                
+                <!-- Controls -->
+                <div class="controls">
+                    <div class="viewpoint-navigation">
+                        <button id="prev-viewpoint" class="nav-button" aria-label="Previous viewpoint">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 18l-6-6 6-6"/>
+                            </svg>
+                        </button>
+                        
+                        <div class="viewpoint-indicators">
+                            <span class="viewpoint-dot active" data-index="0"></span>
+                            <span class="viewpoint-dot" data-index="1"></span>
+                            <span class="viewpoint-dot" data-index="2"></span>
+                            <span class="viewpoint-dot" data-index="3"></span>
+                            <span class="viewpoint-dot" data-index="4"></span>
+                            <span class="viewpoint-dot" data-index="5"></span>
+                        </div>
+                        
+                        <button id="next-viewpoint" class="nav-button" aria-label="Next viewpoint">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="btn-auto-rotate" class="action-button" aria-label="Auto-rotate">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                            </svg>
+                        </button>
+                        <button id="btn-hide-ui" class="action-button" aria-label="Hide UI">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
