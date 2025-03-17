@@ -1,0 +1,374 @@
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #000;
+    color: #fff;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Main Container */
+.main-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* Video Container - will hold the Panolens viewer */
+#video-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Logo */
+.logo-container {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    z-index: 100;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.logo {
+    height: 60px;
+    width: auto;
+    opacity: 0.85;
+    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.5));
+    transition: opacity 0.3s ease;
+}
+
+.logo:hover {
+    opacity: 1;
+}
+
+/* UI Overlay */
+.ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none; /* Let clicks pass through to the video */
+    transition: opacity 0.5s ease;
+    opacity: 0; /* Start hidden and fade in */
+}
+
+/* Title Bar */
+.title-bar {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    pointer-events: auto;
+}
+
+.title-bar h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    margin: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Controls */
+.controls {
+    position: absolute;
+    bottom: 30px;
+    left: 0;
+    width: 100%;
+    padding: 0 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    pointer-events: auto;
+}
+
+/* Viewpoint Navigation */
+.viewpoint-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.nav-button {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-button svg {
+    width: 24px;
+    height: 24px;
+    color: #fff;
+}
+
+.nav-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+}
+
+.viewpoint-indicators {
+    display: flex;
+    gap: 12px;
+}
+
+.viewpoint-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.viewpoint-dot:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.viewpoint-dot.active {
+    background: #fff;
+    transform: scale(1.2);
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.action-button {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-button svg {
+    width: 24px;
+    height: 24px;
+    color: #fff;
+}
+
+.action-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+}
+
+.action-button.active {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Hidden UI Notification */
+#ui-hidden-notification {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 15px 25px;
+    border-radius: 30px;
+    font-size: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+/* UI Hidden State */
+.ui-hidden .ui-overlay,
+.ui-hidden .logo-container {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Loader */
+#custom-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.8s ease;
+}
+
+.loader-logo {
+    height: 80px;
+    margin-bottom: 30px;
+    animation: pulse 2s infinite;
+}
+
+.loader-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top: 4px solid #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.6;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Fade overlay */
+#fade-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    z-index: 9998;
+    opacity: 1;
+    transition: opacity 1.5s ease;
+}
+
+/* Play/Pause specific styles */
+#btn-play-pause.paused svg {
+    transform: rotate(0deg);
+}
+
+#btn-play-pause.playing svg {
+    /* Replace with pause icon */
+    transform: rotate(90deg);
+}
+
+/* SVG icons for play/pause states */
+.play-icon {
+    display: block;
+}
+
+.pause-icon {
+    display: none;
+}
+
+#btn-play-pause.playing .play-icon {
+    display: none;
+}
+
+#btn-play-pause.playing .pause-icon {
+    display: block;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .title-bar h1 {
+        font-size: 1.8rem;
+    }
+    
+    .logo-container {
+        top: 20px;
+        right: 20px;
+    }
+    
+    .logo {
+        height: 40px;
+    }
+    
+    .controls {
+        bottom: 20px;
+        padding: 0 20px;
+    }
+    
+    .nav-button,
+    .action-button {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .nav-button svg,
+    .action-button svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .viewpoint-dot {
+        width: 10px;
+        height: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .title-bar {
+        top: 20px;
+        left: 20px;
+    }
+    
+    .title-bar h1 {
+        font-size: 1.4rem;
+    }
+    
+    .logo {
+        height: 30px;
+    }
+    
+    .viewpoint-navigation {
+        gap: 10px;
+    }
+    
+    .nav-button,
+    .action-button {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .viewpoint-dot {
+        width: 8px;
+        height: 8px;
+    }
+    
+    .action-buttons {
+        gap: 10px;
+    }
+}
