@@ -8,37 +8,37 @@ const viewpoints = [
     {
         id: 0,
         title: "Preparation",
-        videoUrl: "https://assets.360.petsq.works/vanthof/vth1.mp4",
+        videoUrl: "https://assets.360.petsq.works/vanthof/vth1_edit.mp4",
         description: "The journey begins in our meticulously organized preparation area. Here, raw ingredients are carefully selected, inspected, and prepared for processing. Our team ensures only the highest quality materials make it to the next stage."
     },
     {
         id: 1,
         title: "Processing",
-        videoUrl: "https://assets.360.petsq.works/vanthof/vth2.mp4",
+        videoUrl: "https://assets.360.petsq.works/vanthof/vth2_edit.mp4",
         description: "Advanced processing transforms raw ingredients into premium food products. Our state-of-the-art machinery precisely cuts, mixes, and transforms ingredients while maintaining optimal temperature and quality standards."
     },
     {
         id: 2,
         title: "Quality Control",
-        videoUrl: "https://assets.360.petsq.works/vanthof/vth3.mp4",
+        videoUrl: "https://assets.360.petsq.works/vanthof/vth3_edit.mp4",
         description: "Rigorous quality control is the heart of our production. Each batch undergoes comprehensive testing, from visual inspections to advanced chemical and microbiological analyses, ensuring every product meets our exceptional standards."
     },
     {
         id: 3,
         title: "Packaging",
-        videoUrl: "https://assets.360.petsq.works/vanthof/vth4.mp4",
+        videoUrl: "https://assets.360.petsq.works/vanthof/vth4_edit.mp4",
         description: "Precision packaging preserves the integrity of our products. Automated systems carefully seal and package each item, protecting freshness and quality while minimizing environmental impact through sustainable packaging solutions."
     },
     {
         id: 4,
         title: "Storage",
-        videoUrl: "https://assets.360.petsq.works/vanthof/vth5.mp4",
+        videoUrl: "https://assets.360.petsq.works/vanthof/vth5_edit.mp4",
         description: "Our advanced storage facilities maintain optimal conditions for product preservation. Carefully controlled temperature, humidity, and lighting ensure that every product remains in perfect condition from production to delivery."
     },
     {
         id: 5,
         title: "Shipping",
-        videoUrl: "https://assets.360.petsq.works/vanthof/vth6.mp4",
+        videoUrl: "https://assets.360.petsq.works/vanthof/vth6_edit.mp4",
         description: "The final stage of our production journey. Products are carefully loaded and dispatched using our sophisticated logistics network, ensuring timely and precise delivery to customers while maintaining the highest standards of food safety."
     }
 ];
