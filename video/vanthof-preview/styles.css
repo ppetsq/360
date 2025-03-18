@@ -30,7 +30,7 @@ body {
     height: 100%;
     z-index: 1;
     pointer-events: auto;
-    background: black; /* Optional: to ensure visibility */
+    background: black;
 }
 
 canvas {
@@ -38,6 +38,7 @@ canvas {
     height: 100% !important;
 }
 
+/* UI Overlay and Centered Content */
 .ui-overlay {
     position: absolute;
     top: 0;
@@ -49,11 +50,9 @@ canvas {
     transition: opacity 0.5s ease;
     opacity: 0;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    padding: 20px;
+    padding: 0;
 }
 
 .centered-content {
@@ -62,22 +61,26 @@ canvas {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    gap: 20px; /* KEY PARAMETER: Controls spacing between main UI sections */
+    padding: 20px;
 }
 
 /* Logo Styles */
 .logo-container {
-    position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    z-index: 5;
     transition: opacity 0.5s ease;
     opacity: 0;
     pointer-events: auto;
+    margin-bottom: -10px; /* KEY PARAMETER: Adjust to pull content closer to logo */
 }
 
 .logo {
-    height: 150px;
+    height: 150px; /* KEY PARAMETER: Size of logo */
     width: auto;
     opacity: 0.85;
     filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.5));
@@ -90,15 +93,26 @@ canvas {
     transform: scale(1.05);
 }
 
-/* Title and Description Styles */
+/* Content Section (Title and Description) */
+.content-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    gap: 35px; /* KEY PARAMETER: Space between title and description */
+    text-align: center;
+}
+
+/* Title Styles */
 .title-bar {
-    margin-bottom: 20px;
+    margin-bottom: 0;
     pointer-events: none;
 }
 
 .title-bar h1 {
     font-family: 'Oswald', sans-serif;
-    font-size: 4rem;
+    font-size: 4rem; /* KEY PARAMETER: Title text size */
     font-weight: 700;
     color: #fff;
     text-transform: uppercase;
@@ -108,9 +122,11 @@ canvas {
     user-select: none;
 }
 
+/* Description Styles */
 .description-container {
     position: relative;
-    margin-bottom: 30px;
+    margin-bottom: 0;
+    width: 100%;
     max-width: 600px;
 }
 
@@ -150,19 +166,21 @@ canvas {
     opacity: 1;
 }
 
-/* Controls and Navigation Styles */
+/* Controls Styles */
 .controls {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 25px; /* KEY PARAMETER: Space between navigation and action buttons */
+    margin-top: 5px;
 }
 
+/* Viewpoint Navigation */
 .viewpoint-navigation {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 20px;
+    gap: 20px; /* KEY PARAMETER: Space between nav buttons and indicators */
     width: 100%;
 }
 
@@ -170,7 +188,7 @@ canvas {
     background: rgba(255, 255, 255, 0.15);
     border: none;
     border-radius: 50%;
-    width: 48px;
+    width: 48px; /* KEY PARAMETER: Size of navigation buttons */
     height: 48px;
     display: flex;
     align-items: center;
@@ -191,14 +209,15 @@ canvas {
     transform: scale(1.05);
 }
 
+/* Viewpoint Indicators */
 .viewpoint-indicators {
     display: flex;
-    gap: 12px;
+    gap: 12px; /* KEY PARAMETER: Space between indicator dots */
     user-select: none;
 }
 
 .viewpoint-dot {
-    width: 12px;
+    width: 12px; /* KEY PARAMETER: Size of indicator dots */
     height: 12px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.3);
@@ -219,14 +238,14 @@ canvas {
 /* Action Buttons */
 .action-buttons {
     display: flex;
-    gap: 15px;
+    gap: 15px; /* KEY PARAMETER: Space between action buttons */
 }
 
 .action-button {
     background: rgba(255, 255, 255, 0.15);
     border: none;
     border-radius: 50%;
-    width: 48px;
+    width: 48px; /* KEY PARAMETER: Size of action buttons */
     height: 48px;
     display: flex;
     align-items: center;
@@ -258,6 +277,12 @@ canvas {
 
 #btn-auto-rotate.active svg {
     animation: gentle-rotate 10s linear infinite;
+}
+
+#btn-auto-rotate.pressed,
+#btn-hide-ui.pressed {
+    transform: scale(1.2);
+    transition: transform 0.2s ease;
 }
 
 /* Loader and Overlay Styles */
@@ -311,6 +336,13 @@ canvas {
     pointer-events: none !important;
 }
 
+.ui-hidden .nav-button,
+.ui-hidden .action-button,
+.ui-hidden .viewpoint-dot,
+.ui-hidden .logo {
+    pointer-events: none !important;
+}
+
 /* Notification Styles */
 #ui-hidden-notification {
     position: absolute;
@@ -326,6 +358,27 @@ canvas {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s ease;
+}
+
+/* Focus Styles - For Accessibility */
+button:focus {
+    outline: none;
+}
+
+button:focus-visible {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+    outline: none;
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.nav-button:focus-visible,
+.action-button:focus-visible,
+.viewpoint-dot:focus-visible {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+    transform: scale(1.05);
 }
 
 /* Animations */
@@ -347,6 +400,19 @@ canvas {
 
 /* Responsive Styles */
 @media (max-width: 768px) {
+    .centered-content {
+        gap: 15px; /* Adjust spacing for medium screens */
+        padding: 15px;
+    }
+    
+    .content-section {
+        gap: 35px;
+    }
+    
+    .controls {
+        gap: 20px;
+    }
+    
     .title-bar h1 {
         font-size: 2.5rem;
     }
@@ -374,6 +440,19 @@ canvas {
 }
 
 @media (max-width: 480px) {
+    .centered-content {
+        gap: 10px; /* Adjust spacing for small screens */
+        padding: 10px;
+    }
+    
+    .content-section {
+        gap: 25px;
+    }
+    
+    .controls {
+        gap: 15px;
+    }
+    
     .title-bar h1 {
         font-size: 2rem;
     }
@@ -405,30 +484,4 @@ canvas {
     .action-buttons {
         gap: 10px;
     }
-}
-
-/* Add these to your styles.css file */
-
-/* Remove default focus outlines but maintain accessibility */
-button:focus {
-    outline: none;
-}
-
-/* Custom focus styles for better accessibility */
-button:focus-visible {
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
-    outline: none;
-}
-
-/* Hide focus rings on mouse clicks but show them for keyboard navigation */
-:focus:not(:focus-visible) {
-    outline: none;
-}
-
-/* Ensure buttons still have a visible state when focused via keyboard */
-.nav-button:focus-visible,
-.action-button:focus-visible,
-.viewpoint-dot:focus-visible {
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
-    transform: scale(1.05);
 }

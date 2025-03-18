@@ -85,7 +85,7 @@ function setupThreeJS() {
     
     // Create camera
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.set(0, 0, 150);
+    camera.position.set(100, 20, 0);
     
     // Create renderer
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -101,9 +101,9 @@ function setupThreeJS() {
     controls.enableZoom = true;
     controls.enablePan = false;
     controls.rotateSpeed = 0.5;
-    controls.zoomSpeed = 0.7;
+    controls.zoomSpeed = 1;
     controls.minDistance = 5;
-    controls.maxDistance = 180;
+    controls.maxDistance = 300;
     controls.autoRotate = false;
     controls.autoRotateSpeed = 0.5;
     
