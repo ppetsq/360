@@ -248,6 +248,9 @@ function setupEventListeners() {
     
     document.addEventListener('touchstart', initialInteractionHandler);
     document.addEventListener('click', initialInteractionHandler);
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', handleKeyPress);
 }
 
 // Handle window resize
@@ -307,7 +310,23 @@ function changeViewpoint(index) {
     const fadeOverlay = document.getElementById('fade-overlay');
     fadeOverlay.style.opacity = '1';
     
+    // Preload the next video
+    const preloadVideo = document.createElement('video');
+    preloadVideo.crossOrigin = 'anonymous';
+    preloadVideo.loop = true;
+    preloadVideo.muted = true;
+    preloadVideo.playsInline = true;
+    preloadVideo.style.display = 'none';
+    preloadVideo.src = viewpoints[currentViewpointIndex].videoUrl;
+    preloadVideo.preload = 'auto';
+    document.body.appendChild(preloadVideo);
+    
+    // Give Safari more time to fade to black
     setTimeout(() => {
+        // Safari-specific fix: longer fade duration
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        const transitionTime = isSafari ? 800 : 500;
+        
         // Don't show the loader for viewpoint changes
         const videoUrl = viewpoints[currentViewpointIndex].videoUrl;
         
@@ -319,45 +338,57 @@ function changeViewpoint(index) {
             document.body.removeChild(videoElement);
         }
         
-        // Create video element
-        videoElement = document.createElement('video');
-        videoElement.crossOrigin = 'anonymous';
-        videoElement.loop = true;
-        videoElement.muted = true;
-        videoElement.playsInline = true;
-        videoElement.style.display = 'none'; // Hide the video element
-        document.body.appendChild(videoElement);
+        // Use the preloaded video
+        videoElement = preloadVideo;
         
-        videoElement.src = videoUrl;
-        
-        // Handle video loaded
-        videoElement.addEventListener('loadeddata', () => {
-            createVideoSphere();
-            
-            videoElement.play().then(() => {
-                // Fade out the overlay
-                fadeOverlay.style.opacity = '0';
+        // Wait for enough data before showing
+        const prepareVideo = () => {
+            if (videoElement.readyState >= 3) {
+                // We have enough data to start playing
+                createVideoSphere();
                 
-                // Ensure description is visible
-                document.body.classList.add('ui-visible');
-                document.querySelector('.description-content').style.opacity = '1';
-            }).catch(error => {
-                console.error('Error playing video:', error);
-                // Try one more time after user interaction
-                document.addEventListener('click', () => {
-                    videoElement.play().catch(console.error);
-                    fadeOverlay.style.opacity = '0';
-                }, { once: true });
-            });
-        });
+                videoElement.play().then(() => {
+                    // Give a small delay before fading in (especially for Safari)
+                    setTimeout(() => {
+                        // Fade out the overlay
+                        fadeOverlay.style.opacity = '0';
+                        fadeOverlay.style.transition = `opacity ${transitionTime}ms ease`;
+                        
+                        // Ensure description is visible
+                        document.body.classList.add('ui-visible');
+                        document.querySelector('.description-content').style.opacity = '1';
+                        
+                        // Reset transition after fade completes
+                        setTimeout(() => {
+                            fadeOverlay.style.transition = 'opacity 0.5s ease';
+                        }, transitionTime);
+                    }, isSafari ? 100 : 0);
+                }).catch(error => {
+                    console.error('Error playing video:', error);
+                    // Try one more time after user interaction
+                    document.addEventListener('click', () => {
+                        videoElement.play().catch(console.error);
+                        fadeOverlay.style.opacity = '0';
+                    }, { once: true });
+                });
+                
+                videoElement.removeEventListener('canplaythrough', prepareVideo);
+            }
+        };
+        
+        if (videoElement.readyState >= 3) {
+            // Video is already loaded enough
+            prepareVideo();
+        } else {
+            // Wait for the video to load
+            videoElement.addEventListener('canplaythrough', prepareVideo);
+        }
         
         // Handle errors
         videoElement.addEventListener('error', () => {
             console.error('Video load error');
             fadeOverlay.style.opacity = '0';
         });
-        
-        videoElement.load();
     }, 500);
 }
 
@@ -417,6 +448,53 @@ function handleDoubleClick(event) {
     }
     
     lastTapTime = currentTime;
+}
+
+// Handle keyboard navigation
+function handleKeyPress(event) {
+    // Prevent scrolling with arrow keys and space
+    if ([27, 32, 37, 38, 39, 40].includes(event.keyCode)) {
+        event.preventDefault();
+    }
+    
+    // Remove focus from any button that might be focused
+    if (document.activeElement && document.activeElement.tagName === 'BUTTON') {
+        document.activeElement.blur();
+    }
+    
+    switch (event.keyCode) {
+        // Left arrow key
+        case 37:
+            goToPreviousViewpoint();
+            break;
+            
+        // Right arrow key
+        case 39:
+            goToNextViewpoint();
+            break;
+            
+        // Space bar
+        case 32:
+            toggleAutoRotate();
+            // Visual feedback for space bar press
+            const rotateButton = document.getElementById('btn-auto-rotate');
+            rotateButton.classList.add('pressed');
+            setTimeout(() => {
+                rotateButton.classList.remove('pressed');
+            }, 200);
+            break;
+            
+        // Escape key
+        case 27:
+            toggleUI();
+            // Visual feedback for escape key press
+            const hideButton = document.getElementById('btn-hide-ui');
+            hideButton.classList.add('pressed');
+            setTimeout(() => {
+                hideButton.classList.remove('pressed');
+            }, 200);
+            break;
+    }
 }
 
 // Show loader

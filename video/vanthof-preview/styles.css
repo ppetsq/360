@@ -406,3 +406,29 @@ canvas {
         gap: 10px;
     }
 }
+
+/* Add these to your styles.css file */
+
+/* Remove default focus outlines but maintain accessibility */
+button:focus {
+    outline: none;
+}
+
+/* Custom focus styles for better accessibility */
+button:focus-visible {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+    outline: none;
+}
+
+/* Hide focus rings on mouse clicks but show them for keyboard navigation */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Ensure buttons still have a visible state when focused via keyboard */
+.nav-button:focus-visible,
+.action-button:focus-visible,
+.viewpoint-dot:focus-visible {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+    transform: scale(1.05);
+}
