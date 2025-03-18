@@ -49,6 +49,7 @@ let isAutoRotating = false;
 let isUIHidden = false;
 let lastTapTime = 0;
 let hasShownUIHiddenNotice = false;
+let isTransitioning = false;
 
 // Three.js variables
 let scene, camera, renderer;
@@ -479,15 +480,55 @@ function goToNextViewpoint() {
 }
 
 /**
- * Change to a specific viewpoint
+ * Change to a specific viewpoint with smooth transition
  */
 function changeViewpoint(index) {
-    if (index === currentViewpointIndex) return;
+    // Prevent changing to current viewpoint or during transition
+    if (index === currentViewpointIndex || isTransitioning) return;
     
+    // Set transitioning state
+    isTransitioning = true;
+    
+    // Fade to black
+    const fadeOverlay = document.getElementById('fade-overlay');
+    if (fadeOverlay) {
+        fadeOverlay.style.opacity = '1';
+    }
+    
+    // Update UI immediately for better UX
     currentViewpointIndex = index;
     updateViewpointInfo();
-    loadVideoSphere(viewpoints[currentViewpointIndex].videoUrl);
-    preloadNextVideo();
+    
+    // Wait for fade out to complete
+    setTimeout(() => {
+        // Load the new video
+        loadVideoSphere(viewpoints[currentViewpointIndex].videoUrl);
+        
+        // Preload next video for smoother experience
+        preloadNextVideo();
+        
+        // Wait for video to start playing
+        const checkVideoPlaying = () => {
+            if (videoElement && !videoElement.paused) {
+                // Fade in from black once video is playing
+                setTimeout(() => {
+                    if (fadeOverlay) {
+                        fadeOverlay.style.opacity = '0';
+                    }
+                    
+                    // Reset transition state
+                    setTimeout(() => {
+                        isTransitioning = false;
+                    }, 1000);
+                }, 300);
+            } else {
+                // Check again in 100ms
+                setTimeout(checkVideoPlaying, 100);
+            }
+        };
+        
+        checkVideoPlaying();
+    }, 1000); // Wait for fade out to complete
 }
 
 /**
@@ -560,24 +601,29 @@ function hideLoader() {
     const fadeOverlay = document.getElementById('fade-overlay');
     
     if (loader) loader.style.opacity = '0';
-    if (fadeOverlay) fadeOverlay.style.opacity = '0';
     
-    // Show UI
-    setTimeout(function() {
-        const uiOverlay = document.querySelector('.ui-overlay');
-        const logoContainer = document.querySelector('.logo-container');
+    // Allow time for the first video to start playing well
+    setTimeout(() => {
+        if (fadeOverlay) {
+            fadeOverlay.style.opacity = '0';
+        }
         
-        if (uiOverlay) uiOverlay.style.opacity = '1';
-        if (logoContainer) logoContainer.style.opacity = '1';
-        
-        // Add class for animation
-        document.body.classList.add('ui-visible');
-        
-        // Remove loader from DOM after fade out
+        // Show UI
         setTimeout(function() {
-            if (loader) loader.style.display = 'none';
-            if (fadeOverlay) fadeOverlay.style.display = 'none';
-        }, 1000);
+            const uiOverlay = document.querySelector('.ui-overlay');
+            const logoContainer = document.querySelector('.logo-container');
+            
+            if (uiOverlay) uiOverlay.style.opacity = '1';
+            if (logoContainer) logoContainer.style.opacity = '1';
+            
+            // Add class for animation
+            document.body.classList.add('ui-visible');
+            
+            // Remove loader from DOM after fade out
+            setTimeout(function() {
+                if (loader) loader.style.display = 'none';
+            }, 1000);
+        }, 500);
     }, 500);
 }
 

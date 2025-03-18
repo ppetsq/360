@@ -110,10 +110,7 @@ body {
     user-select: none;
 }
 
-/* Description With Fixed Blur */
-/* Add this to your CSS file (don't replace everything) */
-
-/* Description container with blur solution */
+/* Description with blur solution */
 .description-container {
     position: relative;
     margin-bottom: 30px;
@@ -348,9 +345,10 @@ body {
     width: 100%;
     height: 100%;
     background-color: #000;
-    z-index: 9998;
+    z-index: 5; /* Above video container, below UI */
     opacity: 1;
     transition: opacity 1.5s ease;
+    pointer-events: none;
 }
 
 /* ==============================
@@ -443,4 +441,3 @@ html, body, #video-container, canvas {
         gap: 10px;
     }
 }
-
