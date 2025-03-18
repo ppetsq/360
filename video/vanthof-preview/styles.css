@@ -358,6 +358,9 @@ canvas {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s ease;
+    text-align: center; /* Add this line to ensure center alignment */
+    width: auto;
+    max-width: 80%; /* Ensure it doesn't get too wide on larger screens */
 }
 
 /* Focus Styles - For Accessibility */
@@ -485,3 +488,31 @@ button:focus-visible {
         gap: 10px;
     }
 }
+
+/* Mobile viewport height fix */
+:root {
+    --vh: 1vh;
+  }
+  
+  @media (max-width: 768px) {
+    /* Adjust main container height for mobile */
+    .main-container {
+      height: calc(var(--vh, 1vh) * 100);
+    }
+    
+    /* Center the UI overlay better for mobile */
+    .ui-overlay {
+      height: calc(var(--vh, 1vh) * 100);
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Adjust centered content position for mobile */
+    .centered-content {
+      position: relative;
+      top: -10%; /* Move content up slightly to counteract Chrome's behavior */
+      transform: translateY(0);
+    }
+  }
+
+  

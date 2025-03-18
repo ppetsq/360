@@ -9,7 +9,7 @@ const viewpoints = [
         id: 0,
         title: "Preparation",
         videoUrl: "https://assets.360.petsq.works/vanthof/vth1_edit.mp4",
-        description: "The journey begins in our meticulously organized preparation area. Here, raw ingredients are carefully selected, inspected, and prepared for processing."
+        description: "Fresh and locally produced ingredients form the base of our spring rolls. We select quality components that create our signature rich flavor."
     },
     {
         id: 1,
@@ -21,27 +21,32 @@ const viewpoints = [
         id: 2,
         title: "Quality Control",
         videoUrl: "https://assets.360.petsq.works/vanthof/vth3_edit.mp4",
-        description: "Rigorous quality control ensures each batch meets our exceptional standards through comprehensive testing."
+        description: "We check every batch carefully to make sure it meets our standards. Testing process guarantees quality in every spring roll we deliver."
     },
     {
         id: 3,
-        title: "Packaging",
+        title: "Pre-baking",
         videoUrl: "https://assets.360.petsq.works/vanthof/vth4_edit.mp4",
-        description: "Precision packaging preserves product integrity with automated systems and sustainable solutions."
+        description: "Our pre-baking and flash-freezing process ensures reliable quality for retailers and consistent taste for consumers."
     },
     {
         id: 4,
-        title: "Storage",
+        title: "Packaging",
         videoUrl: "https://assets.360.petsq.works/vanthof/vth5_edit.mp4",
-        description: "Advanced storage facilities maintain optimal conditions for product preservation."
+        description: "Our spring rolls are packaged with 2 rolls per 400g retail unit. These are then organized into carton delivery boxes, each containing 8 units."
     },
     {
         id: 5,
-        title: "Shipping",
+        title: "Labeling",
         videoUrl: "https://assets.360.petsq.works/vanthof/vth6_edit.mp4",
-        description: "Our sophisticated logistics network ensures timely and precise delivery while maintaining the highest food safety standards."
+        description: "We provide white-label solutions, delivering products that are retail-ready while maintaining food safety standards throughout the entire process."
     }
 ];
+
+const isIOSDevice = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+const isIOSChrome = isIOSDevice && /CriOS/i.test(navigator.userAgent);
+const isIOSSafari = isIOSDevice && /Version\//.test(navigator.userAgent) && !isIOSChrome;
+const isAnyiOS = isIOSDevice;
 
 // Global state variables
 let currentViewpointIndex = 0;
@@ -51,6 +56,7 @@ let lastTapTime = 0;
 let scene, camera, renderer, controls;
 let videoElement, videoTexture, videoMaterial, videoMesh;
 let initialLoadComplete = false;
+let hasHiddenUIBefore = false;
 
 // Initialize the experience
 function init() {
@@ -76,6 +82,33 @@ function init() {
     setTimeout(() => {
         document.getElementById('fade-overlay').style.opacity = '0';
     }, 1000);
+}
+
+function modifyInitForIOS() {
+    if (isIOSChrome && videoElement) {
+        prepareVideoForIOS(videoElement);
+        // For iOS Chrome, add extra event listeners for initial playback
+        document.addEventListener('touchstart', () => {
+            if (videoElement) videoElement.play().catch(e => console.log('Initial play error:', e));
+        }, { once: true });
+    }
+}
+
+function enhanceInitForMobile() {
+    if (isAnyiOS && videoElement) {
+        // Add extra iOS attributes to initial video
+        videoElement.setAttribute('playsinline', '');
+        videoElement.setAttribute('webkit-playsinline', '');
+        
+        // For iOS, ensure we have user interaction to start videos
+        const initialPlayHandler = () => {
+            if (videoElement) {
+                videoElement.play().catch(e => console.log('Initial play error:', e));
+            }
+        };
+        
+        document.addEventListener('touchstart', initialPlayHandler, { once: true });
+    }
 }
 
 // Set up Three.js scene
@@ -274,12 +307,34 @@ function toggleUI() {
     if (isUIHidden) {
         document.body.classList.remove('ui-visible');
         document.body.classList.add('ui-hidden');
+        
+        // Show notification only if this is the first time hiding the UI
+        if (!hasHiddenUIBefore) {
+            const notification = document.getElementById('ui-hidden-notification');
+            if (notification) {
+                notification.style.opacity = '1';
+                
+                // Hide the notification after 3 seconds
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                }, 3000);
+                
+                // Update the flag so we don't show it again
+                hasHiddenUIBefore = true;
+            }
+        }
     } else {
         document.body.classList.remove('ui-hidden');
         document.body.classList.add('ui-visible');
         
         // Ensure description is visible when UI is shown
         document.querySelector('.description-content').style.opacity = '1';
+        
+        // Immediately hide the notification when controls are shown
+        const notification = document.getElementById('ui-hidden-notification');
+        if (notification) {
+            notification.style.opacity = '0';
+        }
     }
 }
 
@@ -310,86 +365,168 @@ function changeViewpoint(index) {
     const fadeOverlay = document.getElementById('fade-overlay');
     fadeOverlay.style.opacity = '1';
     
-    // Preload the next video
-    const preloadVideo = document.createElement('video');
-    preloadVideo.crossOrigin = 'anonymous';
-    preloadVideo.loop = true;
-    preloadVideo.muted = true;
-    preloadVideo.playsInline = true;
-    preloadVideo.style.display = 'none';
-    preloadVideo.src = viewpoints[currentViewpointIndex].videoUrl;
-    preloadVideo.preload = 'auto';
-    document.body.appendChild(preloadVideo);
-    
-    // Give Safari more time to fade to black
-    setTimeout(() => {
-        // Safari-specific fix: longer fade duration
-        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-        const transitionTime = isSafari ? 800 : 500;
-        
-        // Don't show the loader for viewpoint changes
-        const videoUrl = viewpoints[currentViewpointIndex].videoUrl;
-        
-        // Clean up previous video if it exists
-        if (videoElement) {
-            videoElement.pause();
-            videoElement.removeAttribute('src');
-            videoElement.load();
-            document.body.removeChild(videoElement);
-        }
-        
-        // Use the preloaded video
-        videoElement = preloadVideo;
-        
-        // Wait for enough data before showing
-        const prepareVideo = () => {
-            if (videoElement.readyState >= 3) {
-                // We have enough data to start playing
+    // Universal approach for all iOS devices
+    if (isAnyiOS) {
+        setTimeout(() => {
+            // Clean up previous video if it exists
+            if (videoElement) {
+                videoElement.pause();
+                videoElement.removeAttribute('src');
+                videoElement.load();
+                if (videoElement.parentNode) {
+                    videoElement.parentNode.removeChild(videoElement);
+                }
+            }
+            
+            // Create a fresh video element for iOS
+            videoElement = document.createElement('video');
+            videoElement.crossOrigin = 'anonymous';
+            videoElement.loop = true;
+            videoElement.muted = true;
+            videoElement.playsInline = true;
+            videoElement.setAttribute('playsinline', '');
+            videoElement.setAttribute('webkit-playsinline', '');
+            videoElement.style.display = 'none';
+            
+            document.body.appendChild(videoElement);
+            
+            // Set the video source
+            videoElement.src = viewpoints[currentViewpointIndex].videoUrl;
+            
+            // Standard loadedmetadata handler
+            videoElement.addEventListener('loadeddata', function onLoadedData() {
+                // Create the video sphere once we have metadata
                 createVideoSphere();
                 
-                videoElement.play().then(() => {
-                    // Give a small delay before fading in (especially for Safari)
-                    setTimeout(() => {
-                        // Fade out the overlay
-                        fadeOverlay.style.opacity = '0';
-                        fadeOverlay.style.transition = `opacity ${transitionTime}ms ease`;
-                        
-                        // Ensure description is visible
-                        document.body.classList.add('ui-visible');
-                        document.querySelector('.description-content').style.opacity = '1';
-                        
-                        // Reset transition after fade completes
-                        setTimeout(() => {
-                            fadeOverlay.style.transition = 'opacity 0.5s ease';
-                        }, transitionTime);
-                    }, isSafari ? 100 : 0);
-                }).catch(error => {
-                    console.error('Error playing video:', error);
-                    // Try one more time after user interaction
-                    document.addEventListener('click', () => {
-                        videoElement.play().catch(console.error);
-                        fadeOverlay.style.opacity = '0';
-                    }, { once: true });
-                });
+                // Try to play the video
+                const playPromise = videoElement.play();
                 
-                videoElement.removeEventListener('canplaythrough', prepareVideo);
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        // Transition timing
+                        const transitionDelay = isIOSSafari ? 100 : 50;
+                        
+                        // Success - fade in the content
+                        setTimeout(() => {
+                            fadeOverlay.style.opacity = '0';
+                            document.body.classList.add('ui-visible');
+                            document.querySelector('.description-content').style.opacity = '1';
+                        }, transitionDelay);
+                    }).catch(error => {
+                        console.error('Video play error:', error);
+                        
+                        // Even if play fails, still fade in
+                        fadeOverlay.style.opacity = '0';
+                        
+                        // Set up a user interaction handler to try again
+                        const resumePlayback = () => {
+                            videoElement.play().catch(e => console.log('Play error after interaction:', e));
+                        };
+                        
+                        document.addEventListener('touchstart', resumePlayback, { once: true });
+                        document.addEventListener('click', resumePlayback, { once: true });
+                    });
+                } else {
+                    // Older browsers might not return a promise
+                    fadeOverlay.style.opacity = '0';
+                }
+                
+                // Remove this listener to avoid memory leaks
+                videoElement.removeEventListener('loadeddata', onLoadedData);
+            });
+            
+            // Error handling
+            videoElement.addEventListener('error', (e) => {
+                console.error('Video load error:', e);
+                fadeOverlay.style.opacity = '0';
+            });
+            
+            // Start loading the video
+            videoElement.load();
+            
+        }, 500); // Keep the standard fade duration
+    } else {
+        // Original code for non-iOS browsers
+        setTimeout(() => {
+            // Safari-specific fix: longer fade duration
+            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+            const transitionTime = isSafari ? 800 : 500;
+            
+            // Don't show the loader for viewpoint changes
+            const videoUrl = viewpoints[currentViewpointIndex].videoUrl;
+            
+            // Preload the next video
+            const preloadVideo = document.createElement('video');
+            preloadVideo.crossOrigin = 'anonymous';
+            preloadVideo.loop = true;
+            preloadVideo.muted = true;
+            preloadVideo.playsInline = true;
+            preloadVideo.style.display = 'none';
+            preloadVideo.src = videoUrl;
+            preloadVideo.preload = 'auto';
+            document.body.appendChild(preloadVideo);
+            
+            // Clean up previous video if it exists
+            if (videoElement) {
+                videoElement.pause();
+                videoElement.removeAttribute('src');
+                videoElement.load();
+                document.body.removeChild(videoElement);
             }
-        };
-        
-        if (videoElement.readyState >= 3) {
-            // Video is already loaded enough
-            prepareVideo();
-        } else {
-            // Wait for the video to load
-            videoElement.addEventListener('canplaythrough', prepareVideo);
-        }
-        
-        // Handle errors
-        videoElement.addEventListener('error', () => {
-            console.error('Video load error');
-            fadeOverlay.style.opacity = '0';
-        });
-    }, 500);
+            
+            // Use the preloaded video
+            videoElement = preloadVideo;
+            
+            // Wait for enough data before showing
+            const prepareVideo = () => {
+                if (videoElement.readyState >= 3) {
+                    // We have enough data to start playing
+                    createVideoSphere();
+                    
+                    videoElement.play().then(() => {
+                        // Give a small delay before fading in (especially for Safari)
+                        setTimeout(() => {
+                            // Fade out the overlay
+                            fadeOverlay.style.opacity = '0';
+                            fadeOverlay.style.transition = `opacity ${transitionTime}ms ease`;
+                            
+                            // Ensure description is visible
+                            document.body.classList.add('ui-visible');
+                            document.querySelector('.description-content').style.opacity = '1';
+                            
+                            // Reset transition after fade completes
+                            setTimeout(() => {
+                                fadeOverlay.style.transition = 'opacity 0.5s ease';
+                            }, transitionTime);
+                        }, isSafari ? 100 : 0);
+                    }).catch(error => {
+                        console.error('Error playing video:', error);
+                        // Try one more time after user interaction
+                        document.addEventListener('click', () => {
+                            videoElement.play().catch(console.error);
+                            fadeOverlay.style.opacity = '0';
+                        }, { once: true });
+                    });
+                    
+                    videoElement.removeEventListener('canplaythrough', prepareVideo);
+                }
+            };
+            
+            if (videoElement.readyState >= 3) {
+                // Video is already loaded enough
+                prepareVideo();
+            } else {
+                // Wait for the video to load
+                videoElement.addEventListener('canplaythrough', prepareVideo);
+            }
+            
+            // Handle errors
+            videoElement.addEventListener('error', () => {
+                console.error('Video load error');
+                fadeOverlay.style.opacity = '0';
+            });
+        }, 500);
+    }
 }
 
 // Update viewpoint information
@@ -556,3 +693,40 @@ function showErrorMessage(message) {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', init);
+
+// Helper function to safely play videos with iOS compatibility
+function safePlayVideo(videoElem) {
+    // For iOS browsers, especially Chrome
+    if (videoElem) {
+        const playPromise = videoElem.play();
+        if (playPromise !== undefined) {
+            return playPromise.catch(error => {
+                console.warn('Auto-play prevented, waiting for user interaction.', error);
+                // Set an event handler for user interaction
+                const userInteractionHandler = () => {
+                    videoElem.play().catch(e => console.error('Play error even after interaction:', e));
+                    document.removeEventListener('touchstart', userInteractionHandler);
+                    document.removeEventListener('click', userInteractionHandler);
+                };
+                document.addEventListener('touchstart', userInteractionHandler, { once: true });
+                document.addEventListener('click', userInteractionHandler, { once: true });
+                throw error; // Re-throw to maintain promise rejection
+            });
+        }
+        return Promise.resolve(); // For browsers where play() doesn't return a promise
+    }
+    return Promise.reject('No video element provided');
+}
+
+// Helper to prepare video elements for iOS Chrome
+function prepareVideoForIOS(videoElem) {
+    if (!videoElem) return videoElem;
+    
+    // Apply iOS-specific attributes
+    videoElem.setAttribute('playsinline', '');
+    videoElem.setAttribute('webkit-playsinline', '');
+    videoElem.setAttribute('muted', '');
+    videoElem.muted = true;
+    
+    return videoElem;
+}
