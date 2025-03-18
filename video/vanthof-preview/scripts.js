@@ -159,48 +159,64 @@ function animate() {
  * Load and display a video sphere
  * @param {string} videoUrl - URL of the 360° video
  */
+// MODIFY: loadVideoSphere function - critical for mobile
 function loadVideoSphere(videoUrl) {
+    // Show loading indicator
+    showLoader();
+    
     // Use cached video if available
     if (videoCache[videoUrl]) {
+        console.log("Using cached video");
         videoElement = videoCache[videoUrl];
         createVideoSphere();
         playVideo();
-    } else {
-        videoElement = document.createElement('video');
-        videoElement.crossOrigin = 'anonymous';
-        videoElement.loop = true;
-        videoElement.muted = true;
-        videoElement.playsInline = true;
-        videoElement.src = videoUrl;
-        
-        // Set up video when loaded
-        videoElement.addEventListener('loadeddata', () => {
-            videoCache[videoUrl] = videoElement;
-            createVideoSphere();
-            playVideo();
-            hideLoader();
-        });
-        
-        // Handle errors
-        videoElement.addEventListener('error', (e) => {
-            console.error('Video error:', e);
-            showErrorMessage(`Error loading video: ${videoUrl}`);
-        });
-        
-        // Start loading
-        videoElement.load();
+        return;
     }
+    
+    // Create new video element with mobile-friendly attributes
+    videoElement = document.createElement('video');
+    videoElement.crossOrigin = 'anonymous';
+    videoElement.loop = true;
+    videoElement.muted = true;
+    videoElement.setAttribute('playsinline', ''); // Critical for iOS
+    videoElement.setAttribute('webkit-playsinline', ''); // For older iOS
+    videoElement.playsInline = true;
+    videoElement.src = videoUrl;
+    
+    // Handle loaded data event
+    videoElement.addEventListener('loadeddata', function onLoaded() {
+        console.log("Video loaded");
+        videoCache[videoUrl] = videoElement;
+        createVideoSphere();
+        playVideo();
+        hideLoader();
+        
+        // Remove the event listener to prevent memory leaks
+        videoElement.removeEventListener('loadeddata', onLoaded);
+    });
+    
+    // Handle errors
+    videoElement.addEventListener('error', function(e) {
+        console.error('Video error:', e);
+        hideLoader();
+        showErrorMessage(`Error loading video: ${videoUrl}`);
+    });
+    
+    // Start loading
+    videoElement.load();
 }
 
-/**
- * Create the sphere with video texture
- */
+// MODIFY: createVideoSphere function to handle mobile better
 function createVideoSphere() {
-    // Clean up existing sphere if any
+    // Clean up previous mesh if exists
     if (videoMesh) {
         scene.remove(videoMesh);
-        videoMaterial.dispose();
-        videoTexture.dispose();
+        if (videoMaterial) {
+            if (videoMaterial.map) {
+                videoMaterial.map.dispose();
+            }
+            videoMaterial.dispose();
+        }
     }
     
     // Create video texture
@@ -214,26 +230,76 @@ function createVideoSphere() {
     geometry.scale(-1, 1, 1); // Invert sphere for interior view
     
     // Create material with video texture
-    videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
+    videoMaterial = new THREE.MeshBasicMaterial({ 
+        map: videoTexture
+    });
     
     // Create mesh and add to scene
     videoMesh = new THREE.Mesh(geometry, videoMaterial);
     scene.add(videoMesh);
 }
 
-/**
- * Play the video with error handling
- */
+// MODIFY: playVideo function with better mobile handling
 function playVideo() {
-    videoElement.play().catch(e => {
-        console.warn('Autoplay prevented:', e);
+    // Add debug
+    console.log("Attempting to play video");
+    
+    // Force a user interaction on mobile if first time playing a video
+    if (!window.hasPlayedFirstVideo) {
+        const playPromise = videoElement.play();
         
-        // Add one-time click handler to start video
-        document.body.addEventListener('click', function bodyClick() {
-            videoElement.play();
-            document.body.removeEventListener('click', bodyClick);
-        }, { once: true });
-    });
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log("Video playback started successfully");
+                window.hasPlayedFirstVideo = true;
+                hideLoader();
+            }).catch(e => {
+                console.warn('Autoplay prevented. Waiting for user interaction:', e);
+                
+                // Show a message telling the user to tap
+                const message = document.createElement('div');
+                message.style.position = 'fixed';
+                message.style.top = '50%';
+                message.style.left = '50%';
+                message.style.transform = 'translate(-50%, -50%)';
+                message.style.background = 'rgba(0,0,0,0.7)';
+                message.style.color = 'white';
+                message.style.padding = '20px';
+                message.style.borderRadius = '10px';
+                message.style.zIndex = '10000';
+                message.innerHTML = 'Tap anywhere to start the experience';
+                document.body.appendChild(message);
+                
+                // Add one-time tap handler to start video
+                const startPlayback = function() {
+                    videoElement.play().then(() => {
+                        console.log("Video started after user interaction");
+                        window.hasPlayedFirstVideo = true;
+                        document.body.removeChild(message);
+                        hideLoader();
+                    }).catch(err => {
+                        console.error("Still can't play video after interaction:", err);
+                    });
+                    
+                    // Remove all listeners
+                    document.removeEventListener('click', startPlayback);
+                    document.removeEventListener('touchstart', startPlayback);
+                };
+                
+                document.addEventListener('click', startPlayback, { once: true });
+                document.addEventListener('touchstart', startPlayback, { once: true });
+            });
+        } else {
+            // Older browsers that don't return a promise
+            hideLoader();
+        }
+    } else {
+        // Not the first video, just play normally
+        videoElement.play().catch(err => {
+            console.warn("Playback issue:", err);
+        });
+        hideLoader();
+    }
 }
 
 /**
@@ -479,56 +545,45 @@ function goToNextViewpoint() {
     changeViewpoint(newIndex);
 }
 
-/**
- * Change to a specific viewpoint with smooth transition
- */
+// MODIFY: changeViewpoint function to improve transitions
 function changeViewpoint(index) {
     // Prevent changing to current viewpoint or during transition
     if (index === currentViewpointIndex || isTransitioning) return;
     
-    // Set transitioning state
+    // Store transition state
     isTransitioning = true;
+    showLoader();
     
-    // Fade to black
+    // Immediately update UI for better perceived responsiveness
+    currentViewpointIndex = index;
+    updateViewpointInfo();
+    
+    // Fade to black (using shorter duration for better UX)
     const fadeOverlay = document.getElementById('fade-overlay');
     if (fadeOverlay) {
         fadeOverlay.style.opacity = '1';
     }
     
-    // Update UI immediately for better UX
-    currentViewpointIndex = index;
-    updateViewpointInfo();
-    
-    // Wait for fade out to complete
+    // Wait for fade to complete
     setTimeout(() => {
-        // Load the new video
+        // Now load the new video sphere
         loadVideoSphere(viewpoints[currentViewpointIndex].videoUrl);
         
-        // Preload next video for smoother experience
-        preloadNextVideo();
-        
-        // Wait for video to start playing
-        const checkVideoPlaying = () => {
-            if (videoElement && !videoElement.paused) {
-                // Fade in from black once video is playing
-                setTimeout(() => {
-                    if (fadeOverlay) {
-                        fadeOverlay.style.opacity = '0';
-                    }
-                    
-                    // Reset transition state
-                    setTimeout(() => {
-                        isTransitioning = false;
-                    }, 1000);
-                }, 300);
-            } else {
-                // Check again in 100ms
-                setTimeout(checkVideoPlaying, 100);
+        // Schedule the fade back in
+        setTimeout(() => {
+            if (fadeOverlay) {
+                fadeOverlay.style.opacity = '0';
             }
-        };
-        
-        checkVideoPlaying();
-    }, 1000); // Wait for fade out to complete
+            
+            // End transition state after fade completes
+            setTimeout(() => {
+                isTransitioning = false;
+                
+                // Preload next video
+                preloadNextVideo();
+            }, 500);
+        }, 500);
+    }, 500);
 }
 
 /**
@@ -585,12 +640,26 @@ function preloadNextVideo() {
     video.load();
 }
 
-/**
- * Show loader
- */
+// MODIFY: showLoader and hideLoader with debugging
 function showLoader() {
+    console.log("Showing loader");
     const loader = document.getElementById('custom-loader');
     if (loader) loader.style.opacity = '1';
+}
+
+function hideLoader() {
+    console.log("Hiding loader");
+    const loader = document.getElementById('custom-loader');
+    if (loader) loader.style.opacity = '0';
+    
+    // Make extra sure UI appears
+    setTimeout(() => {
+        const uiOverlay = document.querySelector('.ui-overlay');
+        const logoContainer = document.querySelector('.logo-container');
+        
+        if (uiOverlay) uiOverlay.style.opacity = '1';
+        if (logoContainer) logoContainer.style.opacity = '1';
+    }, 1000);
 }
 
 /**
@@ -650,3 +719,42 @@ function showErrorMessage(message) {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', init);
+
+/**
+ * Reset scene and properly clean up resources
+ */
+function resetScene() {
+    // Remove existing mesh if present
+    if (videoMesh) {
+        scene.remove(videoMesh);
+        
+        // Properly dispose of materials and textures to prevent memory leaks
+        if (videoMaterial) {
+            if (videoMaterial.map) {
+                videoMaterial.map.dispose();
+            }
+            videoMaterial.dispose();
+        }
+    }
+    
+    // Clear references
+    videoMesh = null;
+    videoMaterial = null;
+    videoTexture = null;
+}
+
+// ADD: Fast-click fix for mobile devices
+document.addEventListener('DOMContentLoaded', function() {
+    // Prevent 300ms tap delay on mobile devices
+    document.addEventListener('touchstart', function() {}, { passive: true });
+    
+    // Ensure video element touch events don't trigger native players
+    const videoContainer = document.getElementById('video-container');
+    if (videoContainer) {
+        videoContainer.addEventListener('touchstart', function(e) {
+            if (e.target.tagName === 'CANVAS') {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    }
+});
