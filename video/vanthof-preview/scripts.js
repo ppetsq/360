@@ -1,45 +1,45 @@
 /**
  * Van 't Hof Production Line 360° Experience
- * Clean implementation using Three.js for 360° video
+ * Optimized and simplified Three.js implementation
  */
 
-// Define viewpoints with metadata
+// Viewpoint configuration
 const viewpoints = [
     {
         id: 0,
         title: "Preparation",
         videoUrl: "https://assets.360.petsq.works/vanthof/vth1_edit.mp4",
-        description: "The journey begins in our meticulously organized preparation area. Here, raw ingredients are carefully selected, inspected, and prepared for processing. Our team ensures only the highest quality materials make it to the next stage."
+        description: "The journey begins in our meticulously organized preparation area. Here, raw ingredients are carefully selected, inspected, and prepared for processing."
     },
     {
         id: 1,
         title: "Processing",
         videoUrl: "https://assets.360.petsq.works/vanthof/vth2_edit.mp4",
-        description: "Advanced processing transforms raw ingredients into premium food products. Our state-of-the-art machinery precisely cuts, mixes, and transforms ingredients while maintaining optimal temperature and quality standards."
+        description: "Advanced processing transforms raw ingredients into premium food products using state-of-the-art machinery."
     },
     {
         id: 2,
         title: "Quality Control",
         videoUrl: "https://assets.360.petsq.works/vanthof/vth3_edit.mp4",
-        description: "Rigorous quality control is the heart of our production. Each batch undergoes comprehensive testing, from visual inspections to advanced chemical and microbiological analyses, ensuring every product meets our exceptional standards."
+        description: "Rigorous quality control ensures each batch meets our exceptional standards through comprehensive testing."
     },
     {
         id: 3,
         title: "Packaging",
         videoUrl: "https://assets.360.petsq.works/vanthof/vth4_edit.mp4",
-        description: "Precision packaging preserves the integrity of our products. Automated systems carefully seal and package each item, protecting freshness and quality while minimizing environmental impact through sustainable packaging solutions."
+        description: "Precision packaging preserves product integrity with automated systems and sustainable solutions."
     },
     {
         id: 4,
         title: "Storage",
         videoUrl: "https://assets.360.petsq.works/vanthof/vth5_edit.mp4",
-        description: "Our advanced storage facilities maintain optimal conditions for product preservation. Carefully controlled temperature, humidity, and lighting ensure that every product remains in perfect condition from production to delivery."
+        description: "Advanced storage facilities maintain optimal conditions for product preservation."
     },
     {
         id: 5,
         title: "Shipping",
         videoUrl: "https://assets.360.petsq.works/vanthof/vth6_edit.mp4",
-        description: "The final stage of our production journey. Products are carefully loaded and dispatched using our sophisticated logistics network, ensuring timely and precise delivery to customers while maintaining the highest standards of food safety."
+        description: "Our sophisticated logistics network ensures timely and precise delivery while maintaining the highest food safety standards."
     }
 ];
 
@@ -48,22 +48,18 @@ let currentViewpointIndex = 0;
 let isAutoRotating = false;
 let isUIHidden = false;
 let lastTapTime = 0;
-let hasShownUIHiddenNotice = false;
-let isTransitioning = false;
-
-// Three.js variables
-let scene, camera, renderer;
+let scene, camera, renderer, controls;
 let videoElement, videoTexture, videoMaterial, videoMesh;
-let controls;
-let animationId = null;
+let initialLoadComplete = false;
 
-// Cache for preloaded videos
-const videoCache = {};
-
-/**
- * Initialize the experience
- */
+// Initialize the experience
 function init() {
+    // Ensure UI is visible on initial load
+    document.body.classList.add('ui-visible');
+    
+    // Show initial description and title
+    updateViewpointInfo();
+    
     // Show loader
     showLoader();
     
@@ -75,50 +71,39 @@ function init() {
     
     // Set up event listeners
     setupEventListeners();
-    
-    // Update viewpoint info in UI
-    updateViewpointInfo();
-    
-    // Preload next video
-    preloadNextVideo();
-    
-    // Add zoom functionality for mobile
-    setupZoomControls();
-    
-    // Initialize blur overlay
-    document.body.classList.add('ui-visible');
+
+    // Make sure fade overlay is transparent after initial load
+    setTimeout(() => {
+        document.getElementById('fade-overlay').style.opacity = '0';
+    }, 1000);
 }
 
-/**
- * Set up the Three.js environment
- */
+// Set up Three.js scene
 function setupThreeJS() {
     // Create scene
     scene = new THREE.Scene();
     
-    // Create camera with default settings
+    // Create camera
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.set(0, 0, 150); // Default zoom level
+    camera.position.set(0, 0, 150);
     
-    // Create renderer with anti-aliasing
+    // Create renderer
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     
     // Add renderer to DOM
     const container = document.getElementById('video-container');
-    if (container) {
-        container.appendChild(renderer.domElement);
-    }
+    container.appendChild(renderer.domElement);
     
     // Set up OrbitControls
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableZoom = true;
-    controls.enablePan = false; // Disable panning
+    controls.enablePan = false;
     controls.rotateSpeed = 0.5;
-    controls.zoomSpeed = 0.7; // Smoother zoom
-    controls.minDistance = 5; // Keep camera from center
-    controls.maxDistance = 180; // Limit zoom out to prevent seeing outside sphere
+    controls.zoomSpeed = 0.7;
+    controls.minDistance = 5;
+    controls.maxDistance = 180;
     controls.autoRotate = false;
     controls.autoRotateSpeed = 0.5;
     
@@ -129,83 +114,84 @@ function setupThreeJS() {
     animate();
 }
 
-/**
- * Handle window resize
- */
-function onWindowResize() {
-    if (camera && renderer) {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-}
-
-/**
- * Animation loop
- */
+// Animation loop
 function animate() {
-    animationId = requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
+    controls.update();
     
-    if (controls) {
-        controls.update();
+    // Update video texture if available
+    if (videoTexture && videoElement && videoElement.readyState >= 2) {
+        videoTexture.needsUpdate = true;
     }
     
-    if (renderer && scene && camera) {
-        renderer.render(scene, camera);
-    }
+    renderer.render(scene, camera);
 }
 
-/**
- * Load and display a video sphere
- * @param {string} videoUrl - URL of the 360° video
- */
+// Load video sphere - only used for initial loading
 function loadVideoSphere(videoUrl) {
-    // Show loading indicator
     showLoader();
     
-    // Create new video element with mobile-friendly attributes
+    // Clean up previous video if it exists
+    if (videoElement) {
+        videoElement.pause();
+        videoElement.removeAttribute('src');
+        videoElement.load();
+        document.body.removeChild(videoElement);
+    }
+    
+    // Create video element
     videoElement = document.createElement('video');
     videoElement.crossOrigin = 'anonymous';
     videoElement.loop = true;
     videoElement.muted = true;
-    videoElement.playsInline = true; // Add this
-    videoElement.setAttribute('playsinline', ''); // Critical for iOS
-    videoElement.setAttribute('webkit-playsinline', ''); // For older iOS
-    videoElement.style.width = '1px'; // Make tiny and invisible
-    videoElement.style.height = '1px';
-    videoElement.style.position = 'absolute';
-    videoElement.style.opacity = '0.01';
-    videoElement.style.pointerEvents = 'none';
+    videoElement.playsInline = true;
+    videoElement.style.display = 'none'; // Hide the video element
+    document.body.appendChild(videoElement);
+    
     videoElement.src = videoUrl;
     
-    // Handle loaded data
+    // Handle video loaded
     videoElement.addEventListener('loadeddata', () => {
-        videoCache[videoUrl] = videoElement;
         createVideoSphere();
-        playVideo();
-        hideLoader();
+        
+        // Play video and fade in UI
+        videoElement.play().then(() => {
+            document.body.classList.add('ui-visible');
+            document.querySelector('.description-content').style.opacity = '1';
+            
+            // Only hide loader after video has started playing
+            hideLoader();
+            
+            // Ensure fade overlay is gone after initial load
+            if (!initialLoadComplete) {
+                initialLoadComplete = true;
+                document.getElementById('fade-overlay').style.opacity = '0';
+            }
+        }).catch(error => {
+            console.error('Error playing video:', error);
+            // Try one more time after user interaction
+            document.addEventListener('click', () => {
+                videoElement.play().catch(console.error);
+            }, { once: true });
+        });
     });
     
     // Handle errors
-    videoElement.addEventListener('error', (e) => {
-        console.error('Video error:', e);
-        hideLoader();
-        showErrorMessage(`Error loading video: ${videoUrl}`);
+    videoElement.addEventListener('error', () => {
+        console.error('Video load error');
+        showErrorMessage('Error loading video');
     });
     
-    // Start loading
     videoElement.load();
 }
 
-// MODIFY: createVideoSphere function to handle mobile better
+// Create video sphere
 function createVideoSphere() {
-    // Clean up previous mesh if exists
+    // Clean up previous mesh
     if (videoMesh) {
         scene.remove(videoMesh);
         if (videoMaterial) {
-            if (videoMaterial.map) {
-                videoMaterial.map.dispose();
-            }
+            videoMaterial.map?.dispose();
             videoMaterial.dispose();
         }
     }
@@ -214,496 +200,264 @@ function createVideoSphere() {
     videoTexture = new THREE.VideoTexture(videoElement);
     videoTexture.minFilter = THREE.LinearFilter;
     videoTexture.magFilter = THREE.LinearFilter;
-    videoTexture.format = THREE.RGBFormat;
     
     // Create sphere geometry
     const geometry = new THREE.SphereGeometry(500, 60, 40);
-    geometry.scale(-1, 1, 1); // Invert sphere for interior view
+    geometry.scale(-1, 1, 1);
     
     // Create material with video texture
-    videoMaterial = new THREE.MeshBasicMaterial({ 
-        map: videoTexture
-    });
+    videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
     
     // Create mesh and add to scene
     videoMesh = new THREE.Mesh(geometry, videoMaterial);
     scene.add(videoMesh);
 }
 
-// MODIFY: playVideo function with better mobile handling
-function playVideo() {
-    // Add debug
-    console.log("Attempting to play video");
-    
-    // Force a user interaction on mobile if first time playing a video
-    if (!window.hasPlayedFirstVideo) {
-        const playPromise = videoElement.play();
-        
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                console.log("Video playback started successfully");
-                window.hasPlayedFirstVideo = true;
-                hideLoader();
-            }).catch(e => {
-                console.warn('Autoplay prevented. Waiting for user interaction:', e);
-                
-                // Show a message telling the user to tap
-                const message = document.createElement('div');
-                message.style.position = 'fixed';
-                message.style.top = '50%';
-                message.style.left = '50%';
-                message.style.transform = 'translate(-50%, -50%)';
-                message.style.background = 'rgba(0,0,0,0.7)';
-                message.style.color = 'white';
-                message.style.padding = '20px';
-                message.style.borderRadius = '10px';
-                message.style.zIndex = '10000';
-                message.innerHTML = 'Tap anywhere to start the experience';
-                document.body.appendChild(message);
-                
-                // Add one-time tap handler to start video
-                const startPlayback = function() {
-                    videoElement.play().then(() => {
-                        console.log("Video started after user interaction");
-                        window.hasPlayedFirstVideo = true;
-                        document.body.removeChild(message);
-                        hideLoader();
-                    }).catch(err => {
-                        console.error("Still can't play video after interaction:", err);
-                    });
-                    
-                    // Remove all listeners
-                    document.removeEventListener('click', startPlayback);
-                    document.removeEventListener('touchstart', startPlayback);
-                };
-                
-                document.addEventListener('click', startPlayback, { once: true });
-                document.addEventListener('touchstart', startPlayback, { once: true });
-            });
-        } else {
-            // Older browsers that don't return a promise
-            hideLoader();
-        }
-    } else {
-        // Not the first video, just play normally
-        videoElement.play().catch(err => {
-            console.warn("Playback issue:", err);
-        });
-        hideLoader();
-    }
-}
-
-/**
- * Set up event listeners for user interaction
- */
+// Set up event listeners
 function setupEventListeners() {
     // Navigation buttons
-    const prevButton = document.getElementById('prev-viewpoint');
-    if (prevButton) {
-        prevButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            goToPreviousViewpoint();
-        });
-    }
-    
-    const nextButton = document.getElementById('next-viewpoint');
-    if (nextButton) {
-        nextButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            goToNextViewpoint();
-        });
-    }
+    document.getElementById('prev-viewpoint').addEventListener('click', goToPreviousViewpoint);
+    document.getElementById('next-viewpoint').addEventListener('click', goToNextViewpoint);
     
     // Viewpoint indicator dots
-    const dots = document.querySelectorAll('.viewpoint-dot');
-    for (let i = 0; i < dots.length; i++) {
-        dots[i].addEventListener('click', function(e) {
-            e.stopPropagation();
-            changeViewpoint(parseInt(this.dataset.index));
-        });
-    }
-    
-    // Auto rotate button
-    const autoRotateButton = document.getElementById('btn-auto-rotate');
-    if (autoRotateButton) {
-        autoRotateButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleAutoRotate();
-        });
-    }
-    
-    // Hide UI button
-    const hideUIButton = document.getElementById('btn-hide-ui');
-    if (hideUIButton) {
-        hideUIButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleUI();
-        });
-    }
-    
-    // Double tap for mobile
-    document.addEventListener('touchstart', handleDoubleTap);
-    
-    // Double click for desktop
-    let lastClickTime = 0;
-    document.addEventListener('click', function(event) {
-        const currentTime = new Date().getTime();
-        const clickLength = currentTime - lastClickTime;
-        
-        // Detect double click (within 300ms)
-        if (clickLength < 300 && clickLength > 0) {
-            // Only toggle UI for clicks on the canvas, not UI elements
-            const isOnUIElement = !!event.target.closest('button, .viewpoint-dot, .logo');
-            
-            if (!isOnUIElement) {
-                toggleUI();
-                event.preventDefault();
-            }
-        }
-        
-        lastClickTime = currentTime;
+    document.querySelectorAll('.viewpoint-dot').forEach(dot => {
+        dot.addEventListener('click', () => changeViewpoint(parseInt(dot.dataset.index)));
     });
     
-    // Keyboard shortcuts
-    document.addEventListener('keydown', handleKeyboardShortcuts);
-
-    // Prevent default mobile touch behaviors on canvas
-renderer.domElement.addEventListener('touchstart', e => {
-    e.preventDefault();
-}, { passive: false });
-
-renderer.domElement.addEventListener('touchmove', e => {
-    e.preventDefault();
-}, { passive: false });
-
-// Prevent mobile context menu on long press
-renderer.domElement.addEventListener('contextmenu', e => {
-    e.preventDefault();
-});
+    // Auto-rotate button
+    document.getElementById('btn-auto-rotate').addEventListener('click', toggleAutoRotate);
+    
+    // Hide UI button
+    document.getElementById('btn-hide-ui').addEventListener('click', toggleUI);
+    
+    // Double tap/click to toggle UI
+    document.addEventListener('touchstart', handleDoubleTap);
+    document.addEventListener('click', handleDoubleClick);
+    
+    // Window resize
+    window.addEventListener('resize', onWindowResize);
+    
+    // Add an initial interaction handler to ensure video playback on iOS devices
+    const initialInteractionHandler = () => {
+        if (videoElement) {
+            videoElement.play().catch(console.error);
+        }
+        document.removeEventListener('touchstart', initialInteractionHandler);
+        document.removeEventListener('click', initialInteractionHandler);
+    };
+    
+    document.addEventListener('touchstart', initialInteractionHandler);
+    document.addEventListener('click', initialInteractionHandler);
 }
 
-/**
- * Handle keyboard shortcuts
- */
-function handleKeyboardShortcuts(event) {
-    switch(event.key) {
-        case 'ArrowLeft':
-            goToPreviousViewpoint();
-            break;
-        case 'ArrowRight':
-            goToNextViewpoint();
-            break;
-        case 'r':
-        case 'R':
-            toggleAutoRotate();
-            break;
-        case 'h':
-        case 'H':
-        case 'Escape':
-            if (isUIHidden) {
-                toggleUI();
-            }
-            break;
+// Handle window resize
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+// Toggle auto-rotation
+function toggleAutoRotate() {
+    isAutoRotating = !isAutoRotating;
+    controls.autoRotate = isAutoRotating;
+    document.getElementById('btn-auto-rotate').classList.toggle('active', isAutoRotating);
+}
+
+// Toggle UI visibility
+function toggleUI() {
+    isUIHidden = !isUIHidden;
+    
+    if (isUIHidden) {
+        document.body.classList.remove('ui-visible');
+        document.body.classList.add('ui-hidden');
+    } else {
+        document.body.classList.remove('ui-hidden');
+        document.body.classList.add('ui-visible');
+        
+        // Ensure description is visible when UI is shown
+        document.querySelector('.description-content').style.opacity = '1';
     }
 }
 
-/**
- * Handle double tap events on mobile
- */
+// Navigate to previous viewpoint
+function goToPreviousViewpoint() {
+    const newIndex = currentViewpointIndex > 0 
+        ? currentViewpointIndex - 1 
+        : viewpoints.length - 1;
+    changeViewpoint(newIndex);
+}
+
+// Navigate to next viewpoint
+function goToNextViewpoint() {
+    const newIndex = currentViewpointIndex < viewpoints.length - 1 
+        ? currentViewpointIndex + 1 
+        : 0;
+    changeViewpoint(newIndex);
+}
+
+// Change viewpoint
+function changeViewpoint(index) {
+    if (index === currentViewpointIndex) return;
+    
+    currentViewpointIndex = index;
+    updateViewpointInfo();
+    
+    // Fade effect
+    const fadeOverlay = document.getElementById('fade-overlay');
+    fadeOverlay.style.opacity = '1';
+    
+    setTimeout(() => {
+        // Don't show the loader for viewpoint changes
+        const videoUrl = viewpoints[currentViewpointIndex].videoUrl;
+        
+        // Clean up previous video if it exists
+        if (videoElement) {
+            videoElement.pause();
+            videoElement.removeAttribute('src');
+            videoElement.load();
+            document.body.removeChild(videoElement);
+        }
+        
+        // Create video element
+        videoElement = document.createElement('video');
+        videoElement.crossOrigin = 'anonymous';
+        videoElement.loop = true;
+        videoElement.muted = true;
+        videoElement.playsInline = true;
+        videoElement.style.display = 'none'; // Hide the video element
+        document.body.appendChild(videoElement);
+        
+        videoElement.src = videoUrl;
+        
+        // Handle video loaded
+        videoElement.addEventListener('loadeddata', () => {
+            createVideoSphere();
+            
+            videoElement.play().then(() => {
+                // Fade out the overlay
+                fadeOverlay.style.opacity = '0';
+                
+                // Ensure description is visible
+                document.body.classList.add('ui-visible');
+                document.querySelector('.description-content').style.opacity = '1';
+            }).catch(error => {
+                console.error('Error playing video:', error);
+                // Try one more time after user interaction
+                document.addEventListener('click', () => {
+                    videoElement.play().catch(console.error);
+                    fadeOverlay.style.opacity = '0';
+                }, { once: true });
+            });
+        });
+        
+        // Handle errors
+        videoElement.addEventListener('error', () => {
+            console.error('Video load error');
+            fadeOverlay.style.opacity = '0';
+        });
+        
+        videoElement.load();
+    }, 500);
+}
+
+// Update viewpoint information
+function updateViewpointInfo() {
+    const currentViewpoint = viewpoints[currentViewpointIndex];
+    
+    // Update title and description
+    document.getElementById('viewpoint-title').textContent = currentViewpoint.title;
+    document.getElementById('description-text').textContent = currentViewpoint.description;
+    
+    // Ensure description is visible
+    const descriptionContent = document.querySelector('.description-content');
+    if (descriptionContent) {
+        descriptionContent.style.opacity = '1';
+    }
+    
+    // Update indicator dots
+    document.querySelectorAll('.viewpoint-dot').forEach(dot => {
+        dot.classList.toggle('active', parseInt(dot.dataset.index) === currentViewpointIndex);
+    });
+}
+
+// Handle double tap for mobile
 function handleDoubleTap(event) {
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTapTime;
     
     // Detect double tap (within 300ms)
     if (tapLength < 300 && tapLength > 0) {
-        // Only toggle UI for taps on the canvas, not UI elements
+        // Prevent toggling UI if tapping on UI elements
         const isOnUIElement = !!event.target.closest('button, .viewpoint-dot, .logo');
         
         if (!isOnUIElement) {
             toggleUI();
             event.preventDefault();
-            event.stopPropagation();
         }
     }
     
     lastTapTime = currentTime;
 }
 
-/**
- * Setup pinch-to-zoom functionality for mobile
- */
-function setupZoomControls() {
-    const container = document.getElementById('video-container');
-    if (!container) return;
+// Handle double click for desktop
+function handleDoubleClick(event) {
+    const currentTime = new Date().getTime();
+    const clickLength = currentTime - lastTapTime;
     
-    // Track touch events
-    let initialPinchDistance = 0;
-    let isPinching = false;
-    
-    // Detect pinch start
-    container.addEventListener('touchstart', function(e) {
-        if (e.touches.length === 2) {
-            initialPinchDistance = Math.hypot(
-                e.touches[0].clientX - e.touches[1].clientX,
-                e.touches[0].clientY - e.touches[1].clientY
-            );
-            isPinching = true;
+    // Detect double click (within 300ms)
+    if (clickLength < 300 && clickLength > 0) {
+        // Prevent toggling UI if clicking on UI elements
+        const isOnUIElement = !!event.target.closest('button, .viewpoint-dot, .logo');
+        
+        if (!isOnUIElement) {
+            toggleUI();
+            event.preventDefault();
         }
-    });
+    }
     
-    // Handle pinch zoom
-    container.addEventListener('touchmove', function(e) {
-        if (isPinching && e.touches.length === 2) {
-            // Calculate current distance
-            const currentDistance = Math.hypot(
-                e.touches[0].clientX - e.touches[1].clientX,
-                e.touches[0].clientY - e.touches[1].clientY
-            );
+    lastTapTime = currentTime;
+}
+
+// Show loader
+function showLoader() {
+    const loader = document.getElementById('custom-loader');
+    if (loader) {
+        loader.style.display = 'flex';
+        loader.style.opacity = '1';
+    }
+}
+
+// Hide loader
+function hideLoader() {
+    const loader = document.getElementById('custom-loader');
+    
+    if (loader) {
+        setTimeout(() => {
+            loader.style.opacity = '0';
             
-            // Calculate zoom factor
-            const pinchRatio = currentDistance / initialPinchDistance;
-            
-            // Apply zoom
-            if (controls) {
-                if (pinchRatio > 1) {
-                    controls.dollyOut(pinchRatio * 0.5);
-                } else if (pinchRatio < 1) {
-                    controls.dollyIn((1/pinchRatio) * 0.5);
+            // Show UI elements
+            setTimeout(() => {
+                const uiOverlay = document.querySelector('.ui-overlay');
+                const logoContainer = document.querySelector('.logo-container');
+                
+                if (uiOverlay) uiOverlay.style.opacity = '1';
+                if (logoContainer) logoContainer.style.opacity = '1';
+                
+                // Ensure description is visible
+                const descriptionContent = document.querySelector('.description-content');
+                if (descriptionContent) {
+                    descriptionContent.style.opacity = '1';
                 }
                 
-                controls.update();
-                initialPinchDistance = currentDistance;
-            }
-            
-            e.preventDefault();
-        }
-    });
-    
-    // Reset pinch state
-    container.addEventListener('touchend', () => { isPinching = false; });
-    container.addEventListener('touchcancel', () => { isPinching = false; });
-}
-
-/**
- * Toggle UI visibility
- */
-function toggleUI() {
-    // Toggle UI visibility state
-    isUIHidden = !isUIHidden;
-    
-    if (isUIHidden) {
-        // Hide UI
-        document.body.classList.remove('ui-visible');
-        document.body.classList.add('ui-hidden');
-        
-        // Show notification if we haven't before
-        if (!hasShownUIHiddenNotice) {
-            const notification = document.getElementById('ui-hidden-notification');
-            if (notification) {
-                notification.style.opacity = '1';
-                setTimeout(() => { notification.style.opacity = '0'; }, 3000);
-                hasShownUIHiddenNotice = true;
-            }
-        }
-    } else {
-        // Show UI
-        document.body.classList.remove('ui-hidden');
-        document.body.classList.add('ui-visible');
-    }
-}
-
-/**
- * Toggle auto-rotation
- */
-function toggleAutoRotate() {
-    isAutoRotating = !isAutoRotating;
-    
-    if (controls) {
-        controls.autoRotate = isAutoRotating;
-    }
-    
-    const autoRotateButton = document.getElementById('btn-auto-rotate');
-    if (autoRotateButton) {
-        autoRotateButton.classList.toggle('active', isAutoRotating);
-    }
-}
-
-/**
- * Navigate to previous viewpoint
- */
-function goToPreviousViewpoint() {
-    let newIndex = currentViewpointIndex - 1;
-    if (newIndex < 0) {
-        newIndex = viewpoints.length - 1;
-    }
-    changeViewpoint(newIndex);
-}
-
-/**
- * Navigate to next viewpoint
- */
-function goToNextViewpoint() {
-    let newIndex = currentViewpointIndex + 1;
-    if (newIndex >= viewpoints.length) {
-        newIndex = 0;
-    }
-    changeViewpoint(newIndex);
-}
-
-// MODIFY: changeViewpoint function to improve transitions
-function changeViewpoint(index) {
-    // Prevent changing to current viewpoint or during transition
-    if (index === currentViewpointIndex || isTransitioning) return;
-    
-    // Store transition state
-    isTransitioning = true;
-    showLoader();
-    
-    // Immediately update UI for better perceived responsiveness
-    currentViewpointIndex = index;
-    updateViewpointInfo();
-    
-    // Fade to black (using shorter duration for better UX)
-    const fadeOverlay = document.getElementById('fade-overlay');
-    if (fadeOverlay) {
-        fadeOverlay.style.opacity = '1';
-    }
-    
-    // Wait for fade to complete
-    setTimeout(() => {
-        // Now load the new video sphere
-        loadVideoSphere(viewpoints[currentViewpointIndex].videoUrl);
-        
-        // Schedule the fade back in
-        setTimeout(() => {
-            if (fadeOverlay) {
-                fadeOverlay.style.opacity = '0';
-            }
-            
-            // End transition state after fade completes
-            setTimeout(() => {
-                isTransitioning = false;
-                
-                // Preload next video
-                preloadNextVideo();
+                // Remove loader from DOM
+                loader.style.display = 'none';
             }, 500);
         }, 500);
-    }, 500);
-}
-
-/**
- * Update UI elements with current viewpoint info
- */
-function updateViewpointInfo() {
-    // Update title and description
-    const titleElement = document.getElementById('viewpoint-title');
-    const descriptionElement = document.getElementById('description-text');
-    
-    if (titleElement) {
-        titleElement.textContent = viewpoints[currentViewpointIndex].title;
-    }
-    
-    if (descriptionElement) {
-        descriptionElement.textContent = viewpoints[currentViewpointIndex].description;
-    }
-    
-    // Update indicator dots
-    const dots = document.querySelectorAll('.viewpoint-dot');
-    for (let i = 0; i < dots.length; i++) {
-        const dotIndex = parseInt(dots[i].dataset.index);
-        dots[i].classList.toggle('active', dotIndex === currentViewpointIndex);
     }
 }
 
-/**
- * Preload next video for smoother transitions
- */
-function preloadNextVideo() {
-    const nextIndex = (currentViewpointIndex + 1) % viewpoints.length;
-    const nextUrl = viewpoints[nextIndex].videoUrl;
-    
-    // Skip if already preloaded
-    if (videoCache[nextUrl]) return;
-    
-    console.log('Preloading next video:', nextUrl);
-    
-    // Create and configure video element
-    const video = document.createElement('video');
-    video.crossOrigin = 'anonymous';
-    video.preload = 'auto';
-    video.src = nextUrl;
-    video.muted = true;
-    video.loop = true;
-    
-    // Store in cache when loaded
-    video.addEventListener('loadeddata', () => {
-        videoCache[nextUrl] = video;
-        console.log('Preloaded video:', nextUrl);
-    });
-    
-    // Start loading
-    video.load();
-}
-
-// MODIFY: showLoader and hideLoader with debugging
-function showLoader() {
-    console.log("Showing loader");
-    const loader = document.getElementById('custom-loader');
-    if (loader) loader.style.opacity = '1';
-}
-
-function hideLoader() {
-    console.log("Hiding loader");
-    const loader = document.getElementById('custom-loader');
-    if (loader) loader.style.opacity = '0';
-    
-    // Make extra sure UI appears
-    setTimeout(() => {
-        const uiOverlay = document.querySelector('.ui-overlay');
-        const logoContainer = document.querySelector('.logo-container');
-        
-        if (uiOverlay) uiOverlay.style.opacity = '1';
-        if (logoContainer) logoContainer.style.opacity = '1';
-    }, 1000);
-}
-
-/**
- * Hide loader and show UI
- */
-function hideLoader() {
-    const loader = document.getElementById('custom-loader');
-    const fadeOverlay = document.getElementById('fade-overlay');
-    
-    if (loader) loader.style.opacity = '0';
-    
-    // Allow time for the first video to start playing well
-    setTimeout(() => {
-        if (fadeOverlay) {
-            fadeOverlay.style.opacity = '0';
-        }
-        
-        // Show UI
-        setTimeout(function() {
-            const uiOverlay = document.querySelector('.ui-overlay');
-            const logoContainer = document.querySelector('.logo-container');
-            
-            if (uiOverlay) uiOverlay.style.opacity = '1';
-            if (logoContainer) logoContainer.style.opacity = '1';
-            
-            // Add class for animation
-            document.body.classList.add('ui-visible');
-            
-            // Remove loader from DOM after fade out
-            setTimeout(function() {
-                if (loader) loader.style.display = 'none';
-            }, 1000);
-        }, 500);
-    }, 500);
-}
-
-/**
- * Show error message
- */
+// Show error message
 function showErrorMessage(message) {
     const loader = document.getElementById('custom-loader');
     if (loader) {
@@ -724,42 +478,3 @@ function showErrorMessage(message) {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', init);
-
-/**
- * Reset scene and properly clean up resources
- */
-function resetScene() {
-    // Remove existing mesh if present
-    if (videoMesh) {
-        scene.remove(videoMesh);
-        
-        // Properly dispose of materials and textures to prevent memory leaks
-        if (videoMaterial) {
-            if (videoMaterial.map) {
-                videoMaterial.map.dispose();
-            }
-            videoMaterial.dispose();
-        }
-    }
-    
-    // Clear references
-    videoMesh = null;
-    videoMaterial = null;
-    videoTexture = null;
-}
-
-// ADD: Fast-click fix for mobile devices
-document.addEventListener('DOMContentLoaded', function() {
-    // Prevent 300ms tap delay on mobile devices
-    document.addEventListener('touchstart', function() {}, { passive: true });
-    
-    // Ensure video element touch events don't trigger native players
-    const videoContainer = document.getElementById('video-container');
-    if (videoContainer) {
-        videoContainer.addEventListener('touchstart', function(e) {
-            if (e.target.tagName === 'CANVAS') {
-                e.preventDefault();
-            }
-        }, { passive: false });
-    }
-});

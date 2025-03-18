@@ -1,7 +1,5 @@
-/* ==============================
-   Base Styles 
-   ============================== */
-   * {
+/* Base Reset and Global Styles */
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -17,9 +15,7 @@ body {
     cursor: default;
 }
 
-/* ==============================
-   Layout & Containers 
-   ============================== */
+/* Layout and Container Styles */
 .main-container {
     position: relative;
     width: 100%;
@@ -34,6 +30,12 @@ body {
     height: 100%;
     z-index: 1;
     pointer-events: auto;
+    background: black; /* Optional: to ensure visibility */
+}
+
+canvas {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .ui-overlay {
@@ -62,9 +64,7 @@ body {
     align-items: center;
 }
 
-/* ==============================
-   Logo Styles 
-   ============================== */
+/* Logo Styles */
 .logo-container {
     position: absolute;
     top: 50px;
@@ -82,7 +82,7 @@ body {
     opacity: 0.85;
     filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.5));
     transition: opacity 0.3s ease, transform 0.3s ease;
-    cursor: pointer !important;
+    cursor: pointer;
 }
 
 .logo:hover {
@@ -90,9 +90,7 @@ body {
     transform: scale(1.05);
 }
 
-/* ==============================
-   Title & Description 
-   ============================== */
+/* Title and Description Styles */
 .title-bar {
     margin-bottom: 20px;
     pointer-events: none;
@@ -110,7 +108,6 @@ body {
     user-select: none;
 }
 
-/* Description with blur solution */
 .description-container {
     position: relative;
     margin-bottom: 30px;
@@ -125,7 +122,6 @@ body {
     height: 100%;
     border-radius: 8px;
     backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
     background-color: rgba(0, 0, 0, 0);
     transition: background-color 0.5s ease;
     z-index: 1;
@@ -133,10 +129,6 @@ body {
 
 .ui-visible .description-blur {
     background-color: rgba(0, 0, 0, 0.3);
-}
-
-.ui-hidden .description-blur {
-    background-color: rgba(0, 0, 0, 0);
 }
 
 .description-content {
@@ -148,7 +140,6 @@ body {
     line-height: 1.6;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     padding: 15px;
-    margin: 0;
     opacity: 0;
     transition: opacity 0.5s ease;
     pointer-events: none;
@@ -159,13 +150,7 @@ body {
     opacity: 1;
 }
 
-.ui-hidden .description-content {
-    opacity: 0;
-}
-
-/* ==============================
-   Controls & Navigation 
-   ============================== */
+/* Controls and Navigation Styles */
 .controls {
     display: flex;
     flex-direction: column;
@@ -190,7 +175,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer !important;
+    cursor: pointer;
     transition: all 0.3s ease;
     pointer-events: auto;
 }
@@ -217,7 +202,7 @@ body {
     height: 12px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.3);
-    cursor: pointer !important;
+    cursor: pointer;
     transition: all 0.3s ease;
     pointer-events: auto;
 }
@@ -246,7 +231,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer !important;
+    cursor: pointer;
     transition: all 0.3s ease;
     pointer-events: auto;
 }
@@ -275,39 +260,7 @@ body {
     animation: gentle-rotate 10s linear infinite;
 }
 
-/* ==============================
-   Notifications & UI States
-   ============================== */
-#ui-hidden-notification {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 20;
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 4px;
-    font-size: 0.95rem;
-    font-weight: 400;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s ease;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    letter-spacing: 0.02em;
-}
-
-/* UI Hidden State */
-.ui-hidden .ui-overlay,
-.ui-hidden .logo-container {
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-
-/* ==============================
-   Loading & Fade Elements
-   ============================== */
+/* Loader and Overlay Styles */
 #custom-loader {
     position: fixed;
     top: 0;
@@ -345,15 +298,37 @@ body {
     width: 100%;
     height: 100%;
     background-color: #000;
-    z-index: 5; /* Above video container, below UI */
+    z-index: 5;
     opacity: 1;
     transition: opacity 1.5s ease;
     pointer-events: none;
 }
 
-/* ==============================
-   Animations 
-   ============================== */
+/* UI Hidden State */
+.ui-hidden .ui-overlay,
+.ui-hidden .logo-container {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Notification Styles */
+#ui-hidden-notification {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+/* Animations */
 @keyframes pulse {
     0% { opacity: 0.6; }
     50% { opacity: 1; }
@@ -370,17 +345,7 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* ==============================
-   Cursor Control
-   ============================== */
-/* Default cursor for everything */
-html, body, #video-container, canvas {
-    cursor: default !important;
-}
-
-/* ==============================
-   Responsive Styles
-   ============================== */
+/* Responsive Styles */
 @media (max-width: 768px) {
     .title-bar h1 {
         font-size: 2.5rem;
@@ -417,7 +382,7 @@ html, body, #video-container, canvas {
         height: 90px;
     }
     
-    .extended-description p {
+    .description-content {
         font-size: 0.9rem;
         padding: 10px;
     }
