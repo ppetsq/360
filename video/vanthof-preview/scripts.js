@@ -1,9 +1,9 @@
 /**
  * Van 't Hof Production Line 360° Experience
- * Alternative implementation using Three.js directly for 360° video
+ * Clean implementation using Three.js for 360° video
  */
 
-// Define the viewpoints with their metadata
+// Define viewpoints with metadata
 const viewpoints = [
     {
         id: 0,
@@ -43,12 +43,12 @@ const viewpoints = [
     }
 ];
 
-// Global variables
+// Global state variables
 let currentViewpointIndex = 0;
 let isAutoRotating = false;
 let isUIHidden = false;
 let lastTapTime = 0;
-let hasShownUIHiddenNotice = false; // Track if we've shown the notification before
+let hasShownUIHiddenNotice = false;
 
 // Three.js variables
 let scene, camera, renderer;
@@ -57,49 +57,49 @@ let controls;
 let animationId = null;
 
 // Cache for preloaded videos
-const preloadedVideos = {};
+const videoCache = {};
 
-// Initialize the viewer
-document.addEventListener('DOMContentLoaded', init);
-
+/**
+ * Initialize the experience
+ */
 function init() {
     // Show loader
-    const loader = document.getElementById('custom-loader');
-    if (loader) loader.style.opacity = '1';
+    showLoader();
     
-    // Initialize Three.js scene
-    initThreeJS();
+    // Set up Three.js scene
+    setupThreeJS();
     
     // Create first video sphere
-    createVideoSphere(viewpoints[currentViewpointIndex].videoUrl);
+    loadVideoSphere(viewpoints[currentViewpointIndex].videoUrl);
     
     // Set up event listeners
     setupEventListeners();
     
-    // Update UI
+    // Update viewpoint info in UI
     updateViewpointInfo();
     
     // Preload next video
     preloadNextVideo();
     
-    // Add event listeners for touch events to support pinch zooming
-    setupZoomListeners();
+    // Add zoom functionality for mobile
+    setupZoomControls();
+    
+    // Initialize blur overlay
+    document.body.classList.add('ui-visible');
 }
 
-function initThreeJS() {
+/**
+ * Set up the Three.js environment
+ */
+function setupThreeJS() {
     // Create scene
     scene = new THREE.Scene();
     
-    // Create camera
+    // Create camera with default settings
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.set(0, 0, 0.1); // Slight offset to avoid rendering issues
-
-        // Set the default zoom level by adjusting the camera position
-    // Lower number = more zoomed in, Higher number = more zoomed out
-    const defaultZoomDistance = 150; // Adjust this value to change default zoom
-    camera.position.set(0, 0, defaultZoomDistance);
+    camera.position.set(0, 0, 150); // Default zoom level
     
-    // Create renderer
+    // Create renderer with anti-aliasing
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -110,16 +110,16 @@ function initThreeJS() {
         container.appendChild(renderer.domElement);
     }
     
-    // Add OrbitControls with zoom enabled
+    // Set up OrbitControls
     controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableZoom = true;        // Enable zoom
-    controls.enablePan = true;        // Disable panning
-    controls.rotateSpeed = 0.5;        // Rotation speed
-    controls.zoomSpeed = 5;          // Zoom speed - slightly increased for better UX
-    controls.minDistance = 5;          // Minimum zoom distance (zoomed in)
-    controls.maxDistance = 500;        // Maximum zoom distance (zoomed out)
-    controls.autoRotate = false;       // Auto-rotate off by default
-    controls.autoRotateSpeed = 0.5;    // Auto-rotate speed
+    controls.enableZoom = true;
+    controls.enablePan = true;
+    controls.rotateSpeed = 0.5;
+    controls.zoomSpeed = 5;
+    controls.minDistance = 5;
+    controls.maxDistance = 500;
+    controls.autoRotate = false;
+    controls.autoRotateSpeed = 0.5;
     
     // Handle window resize
     window.addEventListener('resize', onWindowResize);
@@ -128,182 +128,20 @@ function initThreeJS() {
     animate();
 }
 
-function setupZoomListeners() {
-    // Add handlers for touch events to better support pinch zooming
-    const container = document.getElementById('video-container');
-    if (!container) return;
-    
-    // Track touch events
-    let initialPinchDistance = 0;
-    let isPinching = false;
-    
-    // Touch start event - detect pinch start
-    container.addEventListener('touchstart', function(e) {
-        if (e.touches.length === 2) {
-            // Calculate initial distance between two fingers
-            initialPinchDistance = Math.hypot(
-                e.touches[0].clientX - e.touches[1].clientX,
-                e.touches[0].clientY - e.touches[1].clientY
-            );
-            isPinching = true;
-        }
-    });
-    
-    // Touch move event - handle pinch zoom
-    container.addEventListener('touchmove', function(e) {
-        if (isPinching && e.touches.length === 2) {
-            // Calculate current distance
-            const currentDistance = Math.hypot(
-                e.touches[0].clientX - e.touches[1].clientX,
-                e.touches[0].clientY - e.touches[1].clientY
-            );
-            
-            // Calculate zoom factor
-            const pinchRatio = currentDistance / initialPinchDistance;
-            
-            // Apply zoom by updating camera position
-            if (controls) {
-                // Apply zoom based on pinch ratio
-                if (pinchRatio > 1) {
-                    controls.dollyOut(pinchRatio * 0.5);
-                } else if (pinchRatio < 1) {
-                    controls.dollyIn((1/pinchRatio) * 0.5);
-                }
-                
-                // Update controls
-                controls.update();
-                
-                // Reset initial distance for next move
-                initialPinchDistance = currentDistance;
-            }
-            
-            // Prevent default to avoid page zooming
-            e.preventDefault();
-        }
-    });
-    
-    // Touch end event - reset pinch state
-    container.addEventListener('touchend', function() {
-        isPinching = false;
-    });
-    
-    // Touch cancel event - reset pinch state
-    container.addEventListener('touchcancel', function() {
-        isPinching = false;
-    });
-    
-    // Add zoom instructions for first-time users
-    const notification = document.getElementById('ui-hidden-notification');
-    if (notification) {
-        // Create a new notification for zoom
-        const zoomNotification = document.createElement('div');
-        zoomNotification.id = 'zoom-notification';
-        zoomNotification.textContent = 'Scroll or pinch to zoom';
-        
-        // Copy styles from the other notification
-        zoomNotification.className = 'notification';
-        document.body.appendChild(zoomNotification);
-        
-        // Show zoom notification briefly after load
-        setTimeout(function() {
-            zoomNotification.style.opacity = '1';
-            
-            // Hide after 3 seconds
-            setTimeout(function() {
-                zoomNotification.style.opacity = '0';
-            }, 3000);
-        }, 2000); // Delay showing until after initial load
+/**
+ * Handle window resize
+ */
+function onWindowResize() {
+    if (camera && renderer) {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
     }
 }
 
-function createVideoSphere(videoUrl) {
-    // Create video element if not preloaded
-    if (preloadedVideos[videoUrl]) {
-        videoElement = preloadedVideos[videoUrl];
-        setupVideoSphere();
-        // Ensure video is playing
-        videoElement.play().catch(e => {
-            console.warn('Autoplay prevented:', e);
-            // Add manual play handler on user interaction
-            document.body.addEventListener('click', function bodyClick() {
-                videoElement.play();
-                document.body.removeEventListener('click', bodyClick);
-            }, { once: true });
-        });
-    } else {
-        videoElement = document.createElement('video');
-        videoElement.crossOrigin = 'anonymous';
-        videoElement.loop = true;
-        videoElement.muted = true; // Always muted since there's no audio
-        videoElement.playsInline = true;
-        videoElement.src = videoUrl;
-        
-        // Wait for video to be loaded
-        videoElement.addEventListener('loadeddata', function() {
-            // Cache the video
-            preloadedVideos[videoUrl] = videoElement;
-            
-            // Set up video sphere
-            setupVideoSphere();
-            
-            // Ensure video is playing
-            videoElement.play().catch(e => {
-                console.warn('Autoplay prevented:', e);
-                // Add manual play handler on user interaction
-                document.body.addEventListener('click', function bodyClick() {
-                    videoElement.play();
-                    document.body.removeEventListener('click', bodyClick);
-                }, { once: true });
-            });
-            
-            // Hide loader
-            hideLoader();
-        });
-        
-        // Handle video error
-        videoElement.addEventListener('error', function(e) {
-            console.error('Video error:', e);
-            showErrorMessage('Error loading video: ' + videoUrl);
-        });
-        
-        // Start loading
-        videoElement.load();
-    }
-}
-
-function setupVideoSphere() {
-    // Remove existing video mesh if any
-    if (videoMesh) {
-        scene.remove(videoMesh);
-        videoMaterial.dispose();
-        videoTexture.dispose();
-    }
-    
-    // Create video texture
-    videoTexture = new THREE.VideoTexture(videoElement);
-    videoTexture.minFilter = THREE.LinearFilter;
-    videoTexture.magFilter = THREE.LinearFilter;
-    videoTexture.format = THREE.RGBFormat;
-    
-    // Create spherical geometry
-    const geometry = new THREE.SphereGeometry(500, 60, 40);
-    geometry.scale(-1, 1, 1); // Invert the sphere to show video on the inside
-    
-    // Create material with video texture
-    videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
-    
-    // Create mesh
-    videoMesh = new THREE.Mesh(geometry, videoMaterial);
-    
-    // Add to scene
-    scene.add(videoMesh);
-    
-    // Play video
-    videoElement.play().catch(e => {
-        console.warn('Autoplay prevented:', e);
-    });
-}
-
+/**
+ * Animation loop
+ */
 function animate() {
     animationId = requestAnimationFrame(animate);
     
@@ -316,30 +154,113 @@ function animate() {
     }
 }
 
-function onWindowResize() {
-    if (camera && renderer) {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
+/**
+ * Load and display a video sphere
+ * @param {string} videoUrl - URL of the 360° video
+ */
+function loadVideoSphere(videoUrl) {
+    // Use cached video if available
+    if (videoCache[videoUrl]) {
+        videoElement = videoCache[videoUrl];
+        createVideoSphere();
+        playVideo();
+    } else {
+        videoElement = document.createElement('video');
+        videoElement.crossOrigin = 'anonymous';
+        videoElement.loop = true;
+        videoElement.muted = true;
+        videoElement.playsInline = true;
+        videoElement.src = videoUrl;
+        
+        // Set up video when loaded
+        videoElement.addEventListener('loadeddata', () => {
+            videoCache[videoUrl] = videoElement;
+            createVideoSphere();
+            playVideo();
+            hideLoader();
+        });
+        
+        // Handle errors
+        videoElement.addEventListener('error', (e) => {
+            console.error('Video error:', e);
+            showErrorMessage(`Error loading video: ${videoUrl}`);
+        });
+        
+        // Start loading
+        videoElement.load();
     }
 }
 
+/**
+ * Create the sphere with video texture
+ */
+function createVideoSphere() {
+    // Clean up existing sphere if any
+    if (videoMesh) {
+        scene.remove(videoMesh);
+        videoMaterial.dispose();
+        videoTexture.dispose();
+    }
+    
+    // Create video texture
+    videoTexture = new THREE.VideoTexture(videoElement);
+    videoTexture.minFilter = THREE.LinearFilter;
+    videoTexture.magFilter = THREE.LinearFilter;
+    videoTexture.format = THREE.RGBFormat;
+    
+    // Create sphere geometry
+    const geometry = new THREE.SphereGeometry(500, 60, 40);
+    geometry.scale(-1, 1, 1); // Invert sphere for interior view
+    
+    // Create material with video texture
+    videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
+    
+    // Create mesh and add to scene
+    videoMesh = new THREE.Mesh(geometry, videoMaterial);
+    scene.add(videoMesh);
+}
+
+/**
+ * Play the video with error handling
+ */
+function playVideo() {
+    videoElement.play().catch(e => {
+        console.warn('Autoplay prevented:', e);
+        
+        // Add one-time click handler to start video
+        document.body.addEventListener('click', function bodyClick() {
+            videoElement.play();
+            document.body.removeEventListener('click', bodyClick);
+        }, { once: true });
+    });
+}
+
+/**
+ * Set up event listeners for user interaction
+ */
 function setupEventListeners() {
     // Navigation buttons
     const prevButton = document.getElementById('prev-viewpoint');
     if (prevButton) {
-        prevButton.addEventListener('click', goToPreviousViewpoint);
+        prevButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            goToPreviousViewpoint();
+        });
     }
     
     const nextButton = document.getElementById('next-viewpoint');
     if (nextButton) {
-        nextButton.addEventListener('click', goToNextViewpoint);
+        nextButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            goToNextViewpoint();
+        });
     }
     
     // Viewpoint indicator dots
     const dots = document.querySelectorAll('.viewpoint-dot');
     for (let i = 0; i < dots.length; i++) {
-        dots[i].addEventListener('click', function() {
+        dots[i].addEventListener('click', function(e) {
+            e.stopPropagation();
             changeViewpoint(parseInt(this.dataset.index));
         });
     }
@@ -347,40 +268,37 @@ function setupEventListeners() {
     // Auto rotate button
     const autoRotateButton = document.getElementById('btn-auto-rotate');
     if (autoRotateButton) {
-        autoRotateButton.addEventListener('click', toggleAutoRotate);
+        autoRotateButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleAutoRotate();
+        });
     }
     
     // Hide UI button
     const hideUIButton = document.getElementById('btn-hide-ui');
     if (hideUIButton) {
-        hideUIButton.addEventListener('click', toggleUI);
+        hideUIButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleUI();
+        });
     }
     
-    // Double tap for mobile - document level event listener
+    // Double tap for mobile
     document.addEventListener('touchstart', handleDoubleTap);
     
-    // Double click for desktop users
+    // Double click for desktop
     let lastClickTime = 0;
     document.addEventListener('click', function(event) {
         const currentTime = new Date().getTime();
         const clickLength = currentTime - lastClickTime;
         
-        // Double click (within 300ms)
+        // Detect double click (within 300ms)
         if (clickLength < 300 && clickLength > 0) {
-            // Check if we clicked on interactive elements
-            let isInteractiveElement = false;
+            // Only toggle UI for clicks on the canvas, not UI elements
+            const isOnUIElement = !!event.target.closest('button, .viewpoint-dot, .logo');
             
-            if (event.target.closest) {
-                isInteractiveElement = 
-                    event.target.closest('button') || 
-                    event.target.closest('.viewpoint-dot') ||
-                    event.target.closest('.logo');
-            }
-            
-            if (!isInteractiveElement) {
-                toggleUI(); // Toggle UI on double click
-                
-                // Prevent default browser double-click behavior (text selection, etc.)
+            if (!isOnUIElement) {
+                toggleUI();
                 event.preventDefault();
             }
         }
@@ -392,21 +310,24 @@ function setupEventListeners() {
     document.addEventListener('keydown', handleKeyboardShortcuts);
 }
 
+/**
+ * Handle keyboard shortcuts
+ */
 function handleKeyboardShortcuts(event) {
     switch(event.key) {
-        case 'ArrowLeft': // Left arrow for previous viewpoint
+        case 'ArrowLeft':
             goToPreviousViewpoint();
             break;
-        case 'ArrowRight': // Right arrow for next viewpoint
+        case 'ArrowRight':
             goToNextViewpoint();
             break;
-        case 'r': // 'R' key for auto-rotate
+        case 'r':
         case 'R':
             toggleAutoRotate();
             break;
-        case 'h': // 'H' key for hide/show UI
+        case 'h':
         case 'H':
-        case 'Escape': // Escape key to show UI if hidden
+        case 'Escape':
             if (isUIHidden) {
                 toggleUI();
             }
@@ -414,26 +335,20 @@ function handleKeyboardShortcuts(event) {
     }
 }
 
+/**
+ * Handle double tap events on mobile
+ */
 function handleDoubleTap(event) {
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTapTime;
     
-    // Double tap (within 300ms)
+    // Detect double tap (within 300ms)
     if (tapLength < 300 && tapLength > 0) {
-        // Check if we tapped on interactive elements
-        let isInteractiveElement = false;
+        // Only toggle UI for taps on the canvas, not UI elements
+        const isOnUIElement = !!event.target.closest('button, .viewpoint-dot, .logo');
         
-        if (event.target.closest) {
-            isInteractiveElement = 
-                event.target.closest('button') || 
-                event.target.closest('.viewpoint-dot') ||
-                event.target.closest('.logo');
-        }
-        
-        if (!isInteractiveElement) {
-            toggleUI(); // Toggle UI on double tap (both hide and show)
-            
-            // Prevent normal click/tap events from firing
+        if (!isOnUIElement) {
+            toggleUI();
             event.preventDefault();
             event.stopPropagation();
         }
@@ -442,6 +357,108 @@ function handleDoubleTap(event) {
     lastTapTime = currentTime;
 }
 
+/**
+ * Setup pinch-to-zoom functionality for mobile
+ */
+function setupZoomControls() {
+    const container = document.getElementById('video-container');
+    if (!container) return;
+    
+    // Track touch events
+    let initialPinchDistance = 0;
+    let isPinching = false;
+    
+    // Detect pinch start
+    container.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 2) {
+            initialPinchDistance = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            isPinching = true;
+        }
+    });
+    
+    // Handle pinch zoom
+    container.addEventListener('touchmove', function(e) {
+        if (isPinching && e.touches.length === 2) {
+            // Calculate current distance
+            const currentDistance = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            
+            // Calculate zoom factor
+            const pinchRatio = currentDistance / initialPinchDistance;
+            
+            // Apply zoom
+            if (controls) {
+                if (pinchRatio > 1) {
+                    controls.dollyOut(pinchRatio * 0.5);
+                } else if (pinchRatio < 1) {
+                    controls.dollyIn((1/pinchRatio) * 0.5);
+                }
+                
+                controls.update();
+                initialPinchDistance = currentDistance;
+            }
+            
+            e.preventDefault();
+        }
+    });
+    
+    // Reset pinch state
+    container.addEventListener('touchend', () => { isPinching = false; });
+    container.addEventListener('touchcancel', () => { isPinching = false; });
+}
+
+/**
+ * Toggle UI visibility
+ */
+function toggleUI() {
+    // Toggle UI visibility state
+    isUIHidden = !isUIHidden;
+    
+    if (isUIHidden) {
+        // Hide UI
+        document.body.classList.remove('ui-visible');
+        document.body.classList.add('ui-hidden');
+        
+        // Show notification if we haven't before
+        if (!hasShownUIHiddenNotice) {
+            const notification = document.getElementById('ui-hidden-notification');
+            if (notification) {
+                notification.style.opacity = '1';
+                setTimeout(() => { notification.style.opacity = '0'; }, 3000);
+                hasShownUIHiddenNotice = true;
+            }
+        }
+    } else {
+        // Show UI
+        document.body.classList.remove('ui-hidden');
+        document.body.classList.add('ui-visible');
+    }
+}
+
+/**
+ * Toggle auto-rotation
+ */
+function toggleAutoRotate() {
+    isAutoRotating = !isAutoRotating;
+    
+    if (controls) {
+        controls.autoRotate = isAutoRotating;
+    }
+    
+    const autoRotateButton = document.getElementById('btn-auto-rotate');
+    if (autoRotateButton) {
+        autoRotateButton.classList.toggle('active', isAutoRotating);
+    }
+}
+
+/**
+ * Navigate to previous viewpoint
+ */
 function goToPreviousViewpoint() {
     let newIndex = currentViewpointIndex - 1;
     if (newIndex < 0) {
@@ -450,6 +467,9 @@ function goToPreviousViewpoint() {
     changeViewpoint(newIndex);
 }
 
+/**
+ * Navigate to next viewpoint
+ */
 function goToNextViewpoint() {
     let newIndex = currentViewpointIndex + 1;
     if (newIndex >= viewpoints.length) {
@@ -458,24 +478,23 @@ function goToNextViewpoint() {
     changeViewpoint(newIndex);
 }
 
+/**
+ * Change to a specific viewpoint
+ */
 function changeViewpoint(index) {
     if (index === currentViewpointIndex) return;
     
-    // Update index
     currentViewpointIndex = index;
-    
-    // Update UI
     updateViewpointInfo();
-    
-    // Create new video sphere
-    createVideoSphere(viewpoints[currentViewpointIndex].videoUrl);
-    
-    // Preload next video
+    loadVideoSphere(viewpoints[currentViewpointIndex].videoUrl);
     preloadNextVideo();
 }
 
+/**
+ * Update UI elements with current viewpoint info
+ */
 function updateViewpointInfo() {
-    // Update title
+    // Update title and description
     const titleElement = document.getElementById('viewpoint-title');
     const descriptionElement = document.getElementById('description-text');
     
@@ -487,90 +506,55 @@ function updateViewpointInfo() {
         descriptionElement.textContent = viewpoints[currentViewpointIndex].description;
     }
     
-    // Update dots
+    // Update indicator dots
     const dots = document.querySelectorAll('.viewpoint-dot');
     for (let i = 0; i < dots.length; i++) {
         const dotIndex = parseInt(dots[i].dataset.index);
-        if (dotIndex === currentViewpointIndex) {
-            dots[i].classList.add('active');
-        } else {
-            dots[i].classList.remove('active');
-        }
+        dots[i].classList.toggle('active', dotIndex === currentViewpointIndex);
     }
 }
 
-function toggleAutoRotate() {
-    const autoRotateButton = document.getElementById('btn-auto-rotate');
-    
-    isAutoRotating = !isAutoRotating;
-    
-    if (controls) {
-        controls.autoRotate = isAutoRotating;
-    }
-    
-    if (autoRotateButton) {
-        if (isAutoRotating) {
-            autoRotateButton.classList.add('active');
-        } else {
-            autoRotateButton.classList.remove('active');
-        }
-    }
-}
-
-function toggleUI() {
-    // Toggle UI visibility state
-    isUIHidden = !isUIHidden;
-    
-    // Apply or remove the UI hidden class to the body
-    document.body.classList.toggle('ui-hidden', isUIHidden);
-    
-    // Show the notification only if:
-    // 1. The UI is now hidden (not when showing)
-    // 2. We haven't shown the notification before
-    if (isUIHidden && !hasShownUIHiddenNotice) {
-        const notification = document.getElementById('ui-hidden-notification');
-        if (notification) {
-            // Show notification
-            notification.style.opacity = '1';
-            
-            // Hide after 3 seconds
-            setTimeout(function() {
-                notification.style.opacity = '0';
-            }, 3000);
-            
-            // Mark that we've shown the notification
-            hasShownUIHiddenNotice = true;
-        }
-    }
-}
-
+/**
+ * Preload next video for smoother transitions
+ */
 function preloadNextVideo() {
     const nextIndex = (currentViewpointIndex + 1) % viewpoints.length;
     const nextUrl = viewpoints[nextIndex].videoUrl;
     
-    // Check if already preloaded
-    if (!preloadedVideos[nextUrl]) {
-        console.log('Preloading next video:', nextUrl);
-        
-        // Create video element
-        const video = document.createElement('video');
-        video.crossOrigin = 'anonymous';
-        video.preload = 'auto';
-        video.src = nextUrl;
-        video.muted = true;
-        video.loop = true;
-        
-        // Store when loaded
-        video.addEventListener('loadeddata', function() {
-            preloadedVideos[nextUrl] = video;
-            console.log('Preloaded video:', nextUrl);
-        });
-        
-        // Start loading
-        video.load();
-    }
+    // Skip if already preloaded
+    if (videoCache[nextUrl]) return;
+    
+    console.log('Preloading next video:', nextUrl);
+    
+    // Create and configure video element
+    const video = document.createElement('video');
+    video.crossOrigin = 'anonymous';
+    video.preload = 'auto';
+    video.src = nextUrl;
+    video.muted = true;
+    video.loop = true;
+    
+    // Store in cache when loaded
+    video.addEventListener('loadeddata', () => {
+        videoCache[nextUrl] = video;
+        console.log('Preloaded video:', nextUrl);
+    });
+    
+    // Start loading
+    video.load();
 }
 
+/**
+ * Show loader
+ */
+function showLoader() {
+    const loader = document.getElementById('custom-loader');
+    if (loader) loader.style.opacity = '1';
+}
+
+/**
+ * Hide loader and show UI
+ */
 function hideLoader() {
     const loader = document.getElementById('custom-loader');
     const fadeOverlay = document.getElementById('fade-overlay');
@@ -586,6 +570,9 @@ function hideLoader() {
         if (uiOverlay) uiOverlay.style.opacity = '1';
         if (logoContainer) logoContainer.style.opacity = '1';
         
+        // Add class for animation
+        document.body.classList.add('ui-visible');
+        
         // Remove loader from DOM after fade out
         setTimeout(function() {
             if (loader) loader.style.display = 'none';
@@ -594,17 +581,26 @@ function hideLoader() {
     }, 500);
 }
 
+/**
+ * Show error message
+ */
 function showErrorMessage(message) {
     const loader = document.getElementById('custom-loader');
     if (loader) {
-        loader.innerHTML = '<div style="color: white; padding: 20px; text-align: center;">' + 
-                           '<h2>Error Loading 360° Experience</h2>' +
-                           '<p>' + message + '</p>' +
-                           '<button onclick="location.reload()" ' +
-                           'style="background: rgba(255,255,255,0.2); border: none; color: white; ' +
-                           'padding: 10px 20px; margin-top: 20px; border-radius: 4px; cursor: pointer;">' +
-                           'Refresh Page</button>' +
-                           '</div>';
+        loader.innerHTML = `
+            <div style="color: white; padding: 20px; text-align: center;">
+                <h2>Error Loading 360° Experience</h2>
+                <p>${message}</p>
+                <button onclick="location.reload()" 
+                    style="background: rgba(255,255,255,0.2); border: none; color: white; 
+                    padding: 10px 20px; margin-top: 20px; border-radius: 4px; cursor: pointer;">
+                    Refresh Page
+                </button>
+            </div>
+        `;
         loader.style.opacity = '1';
     }
 }
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', init);

@@ -1,5 +1,7 @@
-/* Base Styles */
-* {
+/* ==============================
+   Base Styles 
+   ============================== */
+   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -12,16 +14,18 @@ body {
     overflow: hidden;
     height: 100vh;
     width: 100vw;
+    cursor: default;
 }
 
-/* Main Container */
+/* ==============================
+   Layout & Containers 
+   ============================== */
 .main-container {
     position: relative;
     width: 100%;
     height: 100%;
 }
 
-/* Video Container */
 #video-container {
     position: absolute;
     top: 0;
@@ -29,34 +33,9 @@ body {
     width: 100%;
     height: 100%;
     z-index: 1;
+    pointer-events: auto;
 }
 
-/* Logo */
-.logo-container {
-    position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    opacity: 0;
-}
-
-.logo {
-    height: 150px;
-    width: auto;
-    opacity: 0.85;
-    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.5));
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    cursor: pointer;
-}
-
-.logo:hover {
-    opacity: 1;
-    transform: 1.05;
-}
-
-/* UI Overlay */
 .ui-overlay {
     position: absolute;
     top: 0;
@@ -75,19 +54,48 @@ body {
     padding: 20px;
 }
 
-/* Centered Content */
 .centered-content {
     width: 100%;
     max-width: 800px;
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+/* ==============================
+   Logo Styles 
+   ============================== */
+.logo-container {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    transition: opacity 0.5s ease;
+    opacity: 0;
     pointer-events: auto;
 }
 
-/* Title Bar */
+.logo {
+    height: 150px;
+    width: auto;
+    opacity: 0.85;
+    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.5));
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    cursor: pointer !important;
+}
+
+.logo:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* ==============================
+   Title & Description 
+   ============================== */
 .title-bar {
     margin-bottom: 20px;
+    pointer-events: none;
 }
 
 .title-bar h1 {
@@ -99,27 +107,68 @@ body {
     text-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
     line-height: 1;
     transition: opacity 0.3s ease;
+    user-select: none;
 }
 
-/* Extended Description */
-.extended-description {
+/* Description With Fixed Blur */
+/* Add this to your CSS file (don't replace everything) */
+
+/* Description container with blur solution */
+.description-container {
+    position: relative;
     margin-bottom: 30px;
     max-width: 600px;
 }
 
-.extended-description p {
+.description-blur {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    background-color: rgba(0, 0, 0, 0);
+    transition: background-color 0.5s ease;
+    z-index: 1;
+}
+
+.ui-visible .description-blur {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.ui-hidden .description-blur {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.description-content {
+    position: relative;
+    z-index: 2;
     font-family: 'Inter', sans-serif;
     font-size: 1rem;
     color: rgba(255, 255, 255, 0.8);
     line-height: 1.6;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    background: rgba(0, 0, 0, 0.3);
     padding: 15px;
-    border-radius: 8px;
-    backdrop-filter: blur(5px);
+    margin: 0;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    user-select: none;
 }
 
-/* Controls */
+.ui-visible .description-content {
+    opacity: 1;
+}
+
+.ui-hidden .description-content {
+    opacity: 0;
+}
+
+/* ==============================
+   Controls & Navigation 
+   ============================== */
 .controls {
     display: flex;
     flex-direction: column;
@@ -127,7 +176,6 @@ body {
     gap: 20px;
 }
 
-/* Viewpoint Navigation */
 .viewpoint-navigation {
     display: flex;
     align-items: center;
@@ -145,8 +193,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    cursor: pointer !important;
     transition: all 0.3s ease;
+    pointer-events: auto;
 }
 
 .nav-button svg {
@@ -163,6 +212,7 @@ body {
 .viewpoint-indicators {
     display: flex;
     gap: 12px;
+    user-select: none;
 }
 
 .viewpoint-dot {
@@ -170,8 +220,9 @@ body {
     height: 12px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.3);
-    cursor: pointer;
+    cursor: pointer !important;
     transition: all 0.3s ease;
+    pointer-events: auto;
 }
 
 .viewpoint-dot:hover {
@@ -198,8 +249,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    cursor: pointer !important;
     transition: all 0.3s ease;
+    pointer-events: auto;
 }
 
 .action-button svg {
@@ -217,7 +269,18 @@ body {
     background: rgba(255, 255, 255, 0.3);
 }
 
-/* Hidden UI Notification */
+#btn-auto-rotate.active {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+#btn-auto-rotate.active svg {
+    animation: gentle-rotate 10s linear infinite;
+}
+
+/* ==============================
+   Notifications & UI States
+   ============================== */
 #ui-hidden-notification {
     position: absolute;
     top: 50%;
@@ -245,7 +308,9 @@ body {
     pointer-events: none !important;
 }
 
-/* Loader */
+/* ==============================
+   Loading & Fade Elements
+   ============================== */
 #custom-loader {
     position: fixed;
     top: 0;
@@ -276,18 +341,6 @@ body {
     animation: spin 1s linear infinite;
 }
 
-@keyframes pulse {
-    0% { opacity: 0.6; }
-    50% { opacity: 1; }
-    100% { opacity: 0.6; }
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Fade overlay */
 #fade-overlay {
     position: fixed;
     top: 0;
@@ -300,14 +353,18 @@ body {
     transition: opacity 1.5s ease;
 }
 
-/* Auto-rotate button active state */
-#btn-auto-rotate.active {
-    background: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+/* ==============================
+   Animations 
+   ============================== */
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
 }
 
-#btn-auto-rotate.active svg {
-    animation: gentle-rotate 10s linear infinite;
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 @keyframes gentle-rotate {
@@ -315,18 +372,24 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* Responsive Styles */
+/* ==============================
+   Cursor Control
+   ============================== */
+/* Default cursor for everything */
+html, body, #video-container, canvas {
+    cursor: default !important;
+}
+
+/* ==============================
+   Responsive Styles
+   ============================== */
 @media (max-width: 768px) {
     .title-bar h1 {
         font-size: 2.5rem;
     }
     
-    .logo-container {
-        top: 50px;
-    }
-    
     .logo {
-        height: 150px;
+        height: 120px;
     }
     
     .nav-button,
@@ -353,7 +416,7 @@ body {
     }
     
     .logo {
-        height: 100px;
+        height: 90px;
     }
     
     .extended-description p {
@@ -380,3 +443,4 @@ body {
         gap: 10px;
     }
 }
+
