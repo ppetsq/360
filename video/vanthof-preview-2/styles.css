@@ -1,0 +1,518 @@
+/* Base Reset and Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #000;
+    color: #fff;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    cursor: default;
+}
+
+/* Layout and Container Styles */
+.main-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+#video-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: auto;
+    background: black;
+}
+
+canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* UI Overlay and Centered Content */
+.ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.centered-content {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px; /* KEY PARAMETER: Controls spacing between main UI sections */
+    padding: 20px;
+}
+
+/* Logo Styles */
+.logo-container {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    z-index: 5;
+    transition: opacity 0.5s ease;
+    opacity: 0;
+    pointer-events: auto;
+    margin-bottom: -10px; /* KEY PARAMETER: Adjust to pull content closer to logo */
+}
+
+.logo {
+    height: 150px; /* KEY PARAMETER: Size of logo */
+    width: auto;
+    opacity: 0.85;
+    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.5));
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+}
+
+.logo:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* Content Section (Title and Description) */
+.content-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    gap: 35px; /* KEY PARAMETER: Space between title and description */
+    text-align: center;
+}
+
+/* Title Styles */
+.title-bar {
+    margin-bottom: 0;
+    pointer-events: none;
+}
+
+.title-bar h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 4rem; /* KEY PARAMETER: Title text size */
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+    line-height: 1;
+    transition: opacity 0.3s ease;
+    user-select: none;
+}
+
+/* Description Styles */
+.description-container {
+    position: relative;
+    margin-bottom: 0;
+    width: 100%;
+    max-width: 600px;
+}
+
+.description-blur {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+    background-color: rgba(0, 0, 0, 0);
+    transition: background-color 0.5s ease;
+    z-index: 1;
+}
+
+.ui-visible .description-blur {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.description-content {
+    position: relative;
+    z-index: 2;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    padding: 15px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    user-select: none;
+}
+
+.ui-visible .description-content {
+    opacity: 1;
+}
+
+/* Controls Styles */
+.controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px; /* KEY PARAMETER: Space between navigation and action buttons */
+    margin-top: 5px;
+}
+
+/* Viewpoint Navigation */
+.viewpoint-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px; /* KEY PARAMETER: Space between nav buttons and indicators */
+    width: 100%;
+}
+
+.nav-button {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 50%;
+    width: 48px; /* KEY PARAMETER: Size of navigation buttons */
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    pointer-events: auto;
+}
+
+.nav-button svg {
+    width: 24px;
+    height: 24px;
+    color: #fff;
+}
+
+.nav-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+}
+
+/* Viewpoint Indicators */
+.viewpoint-indicators {
+    display: flex;
+    gap: 12px; /* KEY PARAMETER: Space between indicator dots */
+    user-select: none;
+}
+
+.viewpoint-dot {
+    width: 12px; /* KEY PARAMETER: Size of indicator dots */
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    pointer-events: auto;
+}
+
+.viewpoint-dot:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.viewpoint-dot.active {
+    background: #fff;
+    transform: scale(1.2);
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 15px; /* KEY PARAMETER: Space between action buttons */
+}
+
+.action-button {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 50%;
+    width: 48px; /* KEY PARAMETER: Size of action buttons */
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    pointer-events: auto;
+}
+
+.action-button svg {
+    width: 24px;
+    height: 24px;
+    color: #fff;
+}
+
+.action-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+}
+
+.action-button.active {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#btn-auto-rotate.active {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+#btn-auto-rotate.active svg {
+    animation: gentle-rotate 10s linear infinite;
+}
+
+#btn-auto-rotate.pressed,
+#btn-hide-ui.pressed {
+    transform: scale(1.2);
+    transition: transform 0.2s ease;
+}
+
+/* Loader and Overlay Styles */
+#custom-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.8s ease;
+}
+
+.loader-logo {
+    height: 80px;
+    margin-bottom: 30px;
+    animation: pulse 2s infinite;
+}
+
+.loader-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top: 4px solid #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+#fade-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    z-index: 5;
+    opacity: 1;
+    transition: opacity 1.5s ease;
+    pointer-events: none;
+}
+
+/* UI Hidden State */
+.ui-hidden .ui-overlay,
+.ui-hidden .logo-container {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.ui-hidden .nav-button,
+.ui-hidden .action-button,
+.ui-hidden .viewpoint-dot,
+.ui-hidden .logo {
+    pointer-events: none !important;
+}
+
+/* Notification Styles */
+#ui-hidden-notification {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    text-align: center; /* Add this line to ensure center alignment */
+    width: auto;
+    max-width: 80%; /* Ensure it doesn't get too wide on larger screens */
+}
+
+/* Focus Styles - For Accessibility */
+button:focus {
+    outline: none;
+}
+
+button:focus-visible {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+    outline: none;
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.nav-button:focus-visible,
+.action-button:focus-visible,
+.viewpoint-dot:focus-visible {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+    transform: scale(1.05);
+}
+
+/* Animations */
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes gentle-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .centered-content {
+        gap: 15px; /* Adjust spacing for medium screens */
+        padding: 15px;
+    }
+    
+    .content-section {
+        gap: 35px;
+    }
+    
+    .controls {
+        gap: 20px;
+    }
+    
+    .title-bar h1 {
+        font-size: 2.5rem;
+    }
+    
+    .logo {
+        height: 120px;
+    }
+    
+    .nav-button,
+    .action-button {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .nav-button svg,
+    .action-button svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .viewpoint-dot {
+        width: 10px;
+        height: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .centered-content {
+        gap: 10px; /* Adjust spacing for small screens */
+        padding: 10px;
+    }
+    
+    .content-section {
+        gap: 25px;
+    }
+    
+    .controls {
+        gap: 15px;
+    }
+    
+    .title-bar h1 {
+        font-size: 2rem;
+    }
+    
+    .logo {
+        height: 90px;
+    }
+    
+    .description-content {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+    
+    .viewpoint-navigation {
+        gap: 10px;
+    }
+    
+    .nav-button,
+    .action-button {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .viewpoint-dot {
+        width: 8px;
+        height: 8px;
+    }
+    
+    .action-buttons {
+        gap: 10px;
+    }
+}
+
+/* Mobile viewport height fix */
+:root {
+    --vh: 1vh;
+  }
+  
+  @media (max-width: 768px) {
+    /* Adjust main container height for mobile */
+    .main-container {
+      height: calc(var(--vh, 1vh) * 100);
+    }
+    
+    /* Center the UI overlay better for mobile */
+    .ui-overlay {
+      height: calc(var(--vh, 1vh) * 100);
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Adjust centered content position for mobile */
+    .centered-content {
+      position: relative;
+      top: -10%; /* Move content up slightly to counteract Chrome's behavior */
+      transform: translateY(0);
+    }
+  }
+
+  
