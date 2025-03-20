@@ -13,15 +13,15 @@ const viewpoints = [
     },
     {
         id: 1,
-        title: "Quality Control",
+        title: "Frying",
         videoUrl: "https://assets.360.petsq.works/vanthof/vth3_edit.mp4",
-        description: "We check every batch carefully to make sure it meets our standards. Testing process guarantees quality in every spring roll we deliver."
+        description: "Through the frying process with our frying line, we ensure that any bacteria present are killed."
     },
     {
         id: 2,
-        title: "Frying & freezing",
+        title: "Freezing",
         videoUrl: "https://assets.360.petsq.works/vanthof/vth4_edit.mp4",
-        description: "We ensure that any bacteria present are killed through the frying process. Immediately afterwards, the spring rolls are cooled down in a spiral freezer."
+        description: "Immediately after frying, the spring rolls are cooled down in a spiral freezer. Unfortunately, it is too cold to make a video in the freezer."
     },
     {
         id: 3,
