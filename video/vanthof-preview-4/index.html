@@ -527,6 +527,46 @@ button:focus-visible {
     }
   }
 
+/* Back button styles */
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;  /* Changed from 'right' to 'left' */
+    z-index: 15;
+    transition: opacity 0.5s ease;
+    pointer-events: auto;
+}
+
+#btn-back {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 50%;
+    width: 40px;  /* Reduced from 48px */
+    height: 40px;  /* Reduced from 48px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#btn-back svg {
+    width: 20px;  /* Reduced from 24px */
+    height: 20px;  /* Reduced from 24px */
+    color: #fff;
+}
+
+#btn-back:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+}
+
+/* Include back button in UI visibility control */
+.ui-hidden .back-button {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
 </style>
 
 </head>
@@ -542,6 +582,16 @@ button:focus-visible {
     
     <!-- Main container -->
     <div class="main-container">
+
+        <!-- Back button -->
+<div class="back-button">
+    <button id="btn-back" aria-label="Go back">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+    </button>
+</div>
+
         <!-- Video container - will be replaced by Three.js -->
         <div id="video-container"></div>
         
@@ -1256,6 +1306,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (notification) {
             notification.style.opacity = '0';
         }
+
+        // Show back button
+const backButton = document.querySelector('.back-button');
+if (backButton) {
+    backButton.style.opacity = '1';
+}
         
         this.isUIHidden = false;
     }
@@ -1281,6 +1337,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.hasHiddenUIBefore = true;
             }
         }
+
+        // Hide back button
+const backButton = document.querySelector('.back-button');
+if (backButton) {
+    backButton.style.opacity = '0';
+}
         
         this.isUIHidden = true;
     }
@@ -2131,6 +2193,14 @@ async play() {
         
         this.videoCache = {};
     }
+}
+
+// Back button
+const backButton = UTILS.dom.getElement('btn-back');
+if (backButton) {
+    backButton.addEventListener('click', () => {
+        window.history.back();
+    });
 }
 
 </script>
