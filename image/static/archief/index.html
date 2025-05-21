@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .panorama-container {
+            width: 100%;
+            height: 50vh;
+            position: relative;
+            overflow: hidden;
+            cursor: grab;
+            margin-bottom: 20px;
+        }
+        
+        .panorama-container:active {
+            cursor: grabbing;
+        }
+        
+        .panorama-container:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Mobile optimization */
+        @media (max-width: 768px) {
+            .panorama-container {
+                height: 60vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="panorama-container-1" class="panorama-container"></div>
+    <div id="panorama-container-2" class="panorama-container"></div>
+    <div id="panorama-container-3" class="panorama-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuration for the panoramas
+            const panoramaUrls = [
+                'https://assets.360.petsq.works/hetarchief/archief_1.jpg',
+                'https://assets.360.petsq.works/hetarchief/archief_2.jpg',
+                'https://assets.360.petsq.works/hetarchief/archief_3.jpg'
+            ];
+            
+            const autoRotateSpeed = 0.05; // Slow auto-rotation
+            const minFov = 50; // Limit zoom-in
+            const maxFov = 80; // Limit zoom-out
+            const initialFov = 70;
+            
+            // Create each panorama viewer
+            panoramaUrls.forEach((url, index) => {
+                createPanorama(`panorama-container-${index + 1}`, url, index);
+            });
+            
+            // Function to create a panorama viewer
+            function createPanorama(containerId, panoramaUrl, index) {
+                // Setup
+                const container = document.getElementById(containerId);
+                
+                // Variables
+                let camera, scene, renderer;
+                let isUserInteracting = false;
+                let isAutoRotating = true;
+                let onPointerDownMouseX = 0, onPointerDownMouseY = 0;
+                let lon = 0, onPointerDownLon = 0;
+                let lat = 0, onPointerDownLat = 0;
+                let phi = 0, theta = 0;
+                
+                // For touch handling
+                let lastTouchDistance = 0;
+                
+                // Initialize the viewer
+                init();
+                animate();
+                
+                function init() {
+                    // Create the scene
+                    scene = new THREE.Scene();
+                    
+                    // Create the camera
+                    camera = new THREE.PerspectiveCamera(initialFov, container.clientWidth / container.clientHeight, 1, 1000);
+                    camera.position.z = 0.01;
+                    
+                    // Create the sphere for the panorama
+                    const geometry = new THREE.SphereGeometry(500, 60, 40);
+                    geometry.scale(-1, 1, 1); // Invert the sphere so we see the inside
+                    
+                    // Create a loader for the panorama texture
+                    const loader = new THREE.TextureLoader();
+                    loader.crossOrigin = 'anonymous';
+                    
+                    // Load the panorama texture
+                    const texture = loader.load(panoramaUrl, function() {
+                        console.log(`Panorama ${containerId} loaded successfully`);
+                    }, undefined, function(err) {
+                        console.error(`Error loading panorama ${containerId}:`, err);
+                    });
+                    
+                    // Create the material with the texture
+                    const material = new THREE.MeshBasicMaterial({ map: texture });
+                    
+                    // Create and add the panorama mesh to the scene
+                    const mesh = new THREE.Mesh(geometry, material);
+                    scene.add(mesh);
+                    
+                    // Create the renderer
+                    renderer = new THREE.WebGLRenderer();
+                    renderer.setPixelRatio(window.devicePixelRatio);
+                    renderer.setSize(container.clientWidth, container.clientHeight);
+                    container.appendChild(renderer.domElement);
+                    
+                    // Add slightly different starting positions for each panorama
+                    lon = index * 30; // Different starting longitude for each panorama
+                    
+                    // Add event listeners for user interaction
+                    // Mouse events
+                    container.addEventListener('pointerdown', onPointerDown);
+                    container.addEventListener('pointermove', onPointerMove);
+                    container.addEventListener('pointerup', onPointerUp);
+                    container.addEventListener('wheel', onDocumentWheel);
+                    container.addEventListener('click', toggleAutoRotate);
+                    
+                    // Touch events
+                    container.addEventListener('touchstart', onTouchStart, { passive: false });
+                    container.addEventListener('touchmove', onTouchMove, { passive: false });
+                    container.addEventListener('touchend', onTouchEnd, { passive: true });
+                    
+                    // Window resize
+                    window.addEventListener('resize', onWindowResize);
+                }
+                
+                function onWindowResize() {
+                    camera.aspect = container.clientWidth / container.clientHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(container.clientWidth, container.clientHeight);
+                }
+                
+                // Mouse handling
+                function onPointerDown(event) {
+                    if (event.isPrimary === false) return;
+                    
+                    isUserInteracting = true;
+                    
+                    onPointerDownMouseX = event.clientX;
+                    onPointerDownMouseY = event.clientY;
+                    
+                    onPointerDownLon = lon;
+                    onPointerDownLat = lat;
+                }
+                
+                function onPointerMove(event) {
+                    if (event.isPrimary === false) return;
+                    
+                    if (isUserInteracting) {
+                        lon = (onPointerDownMouseX - event.clientX) * 0.1 + onPointerDownLon;
+                        lat = (event.clientY - onPointerDownMouseY) * 0.1 + onPointerDownLat;
+                    }
+                }
+                
+                function onPointerUp(event) {
+                    if (event.isPrimary === false) return;
+                    isUserInteracting = false;
+                }
+                
+                // Touch handling
+                function onTouchStart(event) {
+                    // Only prevent default if two fingers are used (for pinch-zoom)
+                    if (event.touches.length === 2) {
+                        event.preventDefault();
+                    }
+                    
+                    if (event.touches.length === 1) {
+                        isUserInteracting = true;
+                        
+                        onPointerDownMouseX = event.touches[0].pageX;
+                        onPointerDownMouseY = event.touches[0].pageY;
+                        
+                        onPointerDownLon = lon;
+                        onPointerDownLat = lat;
+                    } else if (event.touches.length === 2) {
+                        // Get the distance between two touches for pinch-zoom
+                        const dx = event.touches[0].pageX - event.touches[1].pageX;
+                        const dy = event.touches[0].pageY - event.touches[1].pageY;
+                        lastTouchDistance = Math.sqrt(dx * dx + dy * dy);
+                    }
+                }
+                
+                function onTouchMove(event) {
+                    // Only prevent default if actually interacting with the panorama
+                    if ((event.touches.length === 1 && isUserInteracting) || 
+                        event.touches.length === 2) {
+                        event.preventDefault();
+                    }
+                    
+                    if (event.touches.length === 1 && isUserInteracting) {
+                        lon = (onPointerDownMouseX - event.touches[0].pageX) * 0.1 + onPointerDownLon;
+                        lat = (event.touches[0].pageY - onPointerDownMouseY) * 0.1 + onPointerDownLat;
+                    } else if (event.touches.length === 2) {
+                        // Handle pinch zoom
+                        const dx = event.touches[0].pageX - event.touches[1].pageX;
+                        const dy = event.touches[0].pageY - event.touches[1].pageY;
+                        const touchDistance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        const touchDelta = touchDistance - lastTouchDistance;
+                        lastTouchDistance = touchDistance;
+                        
+                        // Adjust FOV based on pinch
+                        handleZoom(-touchDelta * 0.1);
+                    }
+                }
+                
+                function onTouchEnd(event) {
+                    isUserInteracting = false;
+                    
+                    // If there are no touches left and this was a quick tap, toggle auto-rotation
+                    if (event.touches.length === 0) {
+                        // Only toggle if it was a tap, not a drag
+                        if (!isUserInteracting) {
+                            toggleAutoRotate();
+                        }
+                    }
+                }
+                
+                function onDocumentWheel(event) {
+                    handleZoom(event.deltaY * 0.05);
+                    event.preventDefault();
+                }
+                
+                function handleZoom(delta) {
+                    const fov = camera.fov + delta;
+                    camera.fov = Math.max(minFov, Math.min(maxFov, fov));
+                    camera.updateProjectionMatrix();
+                }
+                
+                function toggleAutoRotate(event) {
+                    if (event && isUserInteracting) return;
+                    
+                    isAutoRotating = !isAutoRotating;
+                }
+                
+                function animate() {
+                    requestAnimationFrame(animate);
+                    update();
+                }
+                
+                function update() {
+                    if (!isUserInteracting && isAutoRotating) {
+                        lon += autoRotateSpeed;
+                    }
+                    
+                    lat = Math.max(-85, Math.min(85, lat));
+                    phi = THREE.MathUtils.degToRad(90 - lat);
+                    theta = THREE.MathUtils.degToRad(lon);
+                    
+                    const x = 500 * Math.sin(phi) * Math.cos(theta);
+                    const y = 500 * Math.cos(phi);
+                    const z = 500 * Math.sin(phi) * Math.sin(theta);
+                    
+                    camera.lookAt(x, y, z);
+                    renderer.render(scene, camera);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

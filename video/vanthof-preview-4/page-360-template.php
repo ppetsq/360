@@ -1,3 +1,14 @@
+<?php
+/**
+ * Template Name: 360 Experience
+ * Description: A custom template for the 360 experience with no WordPress headers/footers
+ */
+
+// Exit if accessed directly
+if (!defined('ABSPATH')) exit;
+
+// Output your HTML directly without WordPress headers/footers
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2207,3 +2218,4 @@ if (backButton) {
 
 </body>
 </html>
+<?php exit; // Stop WordPress from loading anything else ?>
