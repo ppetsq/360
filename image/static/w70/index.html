@@ -29,14 +29,45 @@
         <div class="viewer-section">
             <div class="viewer-wrapper">
                 <div class="viewer-container" id="club-viewer">
-                    </div>
+                </div>
                 <div class="viewer-label">CLUB</div>
+            </div>
+
+            <!-- NEW: Mobile/Tablet Navigation (prev/dots/next) -->
+            <div class="main-navigation">
+                <button class="control-button" onclick="prevViewpoint('club')">
+                    <i class="fas fa-arrow-left"></i> 
+                    <span class="button-text">Vorige</span>
+                </button>
+                
+                <div class="viewpoint-nav">
+                    <button class="viewpoint-button" id="club-1" onclick="switchViewpoint('club', 1)"></button>
+                    <button class="viewpoint-button" id="club-2" onclick="switchViewpoint('club', 2)"></button>
+                    <button class="viewpoint-button" id="club-3" onclick="switchViewpoint('club', 3)"></button>
+                    <button class="viewpoint-button" id="club-4" onclick="switchViewpoint('club', 4)"></button>
+                    <button class="viewpoint-button" id="club-5" onclick="switchViewpoint('club', 5)"></button>
+                </div>
+                
+                <button class="control-button" onclick="nextViewpoint('club')">
+                    <span class="button-text">Volgende</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- NEW: Mobile/Tablet Auto-rotate section -->
+            <div class="auto-rotate-section">
+                <button class="control-button" id="club-rotate-button" onclick="toggleAutoRotate('club')">
+                    <i class="fas fa-sync-alt"></i> 
+                    <span class="button-text">Auto-roteren</span>
+                </button>
             </div>
 
             <div class="viewer-footer">
                 <div class="viewer-description">
-                    <p>CLUB is een 1400m2 clubruimte met werkplekken, meeting rooms en eventspace. De 1e etage van W70 is het sociale hart. Hier staat ontmoeten, informeel werken, eten en drinken centraal. In CLUB is niets te gek. Van borrels tot inspirational talks. Van feestjes tot fine dining. CLUB is het kloppende hart waar 24/7, 365 dagen per jaar iets te beleven valt.</p>
+                    <p><span class="description-highlight club-highlight">CLUB</span> is een 1400m2 clubruimte met werkplekken, meeting rooms en eventspace. De 1e etage van W70 is het sociale hart. Hier staat ontmoeten, informeel werken, eten en drinken centraal. In CLUB is niets te gek. Van borrels tot inspirational talks. Van feestjes tot fine dining. CLUB is het kloppende hart waar 24/7, 365 dagen per jaar iets te beleven valt.</p>
                 </div>
+
+                <!-- ORIGINAL: Desktop controls (hidden on mobile/tablet) -->
                 <div class="viewpoint-controls">
                     <button class="control-button" onclick="prevViewpoint('club')">
                         <i class="fas fa-arrow-left"></i> Vorige
@@ -64,14 +95,45 @@
         <div class="viewer-section">
             <div class="viewer-wrapper">
                 <div class="viewer-container" id="etage-viewer">
-                    </div>
+                </div>
                 <div class="viewer-label">ETAGE16</div>
+            </div>
+
+            <!-- NEW: Mobile/Tablet Navigation (prev/dots/next) -->
+            <div class="main-navigation">
+                <button class="control-button" onclick="prevViewpoint('etage')">
+                    <i class="fas fa-arrow-left"></i> 
+                    <span class="button-text">Vorige</span>
+                </button>
+                
+                <div class="viewpoint-nav">
+                    <button class="viewpoint-button" id="etage-1" onclick="switchViewpoint('etage', 1)"></button>
+                    <button class="viewpoint-button" id="etage-2" onclick="switchViewpoint('etage', 2)"></button>
+                    <button class="viewpoint-button" id="etage-3" onclick="switchViewpoint('etage', 3)"></button>
+                    <button class="viewpoint-button" id="etage-4" onclick="switchViewpoint('etage', 4)"></button>
+                    <button class="viewpoint-button" id="etage-5" onclick="switchViewpoint('etage', 5)"></button>
+                </div>
+                
+                <button class="control-button" onclick="nextViewpoint('etage')">
+                    <span class="button-text">Volgende</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- NEW: Mobile/Tablet Auto-rotate section -->
+            <div class="auto-rotate-section">
+                <button class="control-button" id="etage-rotate-button" onclick="toggleAutoRotate('etage')">
+                    <i class="fas fa-sync-alt"></i> 
+                    <span class="button-text">Auto-roteren</span>
+                </button>
             </div>
 
             <div class="viewer-footer">
                 <div class="viewer-description">
-                    <p>ETAGE16 is een unieke locatie waar je, met een panoramisch uitzicht over de skyline van Rotterdam, de binnenstad en de haven en Rotterdam airport kan vergaderen, yoga lessen kan volgen, events kan organiseren, en relaties kan uitnodigen. De bijzondere skybar op de 16e etage is de Gers op de taart. Zien is geloven.</p>
+                    <p><span class="description-highlight etage-highlight">ETAGE16</span> is een unieke locatie waar je, met een panoramisch uitzicht over de skyline van Rotterdam, de binnenstad en de haven en Rotterdam airport kan vergaderen, yoga lessen kan volgen, events kan organiseren, en relaties kan uitnodigen. De bijzondere skybar op de 16e etage is de Gers op de taart. Zien is geloven.</p>
                 </div>
+
+                <!-- ORIGINAL: Desktop controls (hidden on mobile/tablet) -->
                 <div class="viewpoint-controls">
                     <button class="control-button" onclick="prevViewpoint('etage')">
                         <i class="fas fa-arrow-left"></i> Vorige

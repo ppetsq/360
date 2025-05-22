@@ -248,31 +248,22 @@ function animate() {
 function updateNavigation(location) {
     const viewer = viewers[location];
     
-    // Find the specific viewer-section for this location's viewer
-    const viewerContainer = document.getElementById(`${location}-viewer`);
-    if (!viewerContainer) return;
-
-    const viewerSection = viewerContainer.closest('.viewer-section'); 
-    if (!viewerSection) return;
-
-    // Now, find the viewpoint navigation container within this specific viewer-section's footer
-    const viewpointNavContainer = viewerSection.querySelector(`.viewer-footer .viewpoint-nav`);
+    // Update viewpoint dots in both desktop and mobile/tablet navigation
+    const allViewpointButtons = document.querySelectorAll(`[id^="${location}-"]:not([id$="rotate-button"])`);
+    allViewpointButtons.forEach(btn => {
+        btn.classList.remove('active');
+    });
     
-    if (viewpointNavContainer) {
-        viewpointNavContainer.querySelectorAll('.viewpoint-button').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        const activeViewpointButton = document.getElementById(`${location}-${viewer.currentViewpoint}`);
-        if (activeViewpointButton) {
-            activeViewpointButton.classList.add('active');
-        }
-    }
+    const activeButtons = document.querySelectorAll(`#${location}-${viewer.currentViewpoint}`);
+    activeButtons.forEach(btn => {
+        btn.classList.add('active');
+    });
     
-    // Update rotate button
-    const rotateButton = document.getElementById(`${location}-rotate-button`);
-    if (rotateButton) { 
-        rotateButton.classList.toggle('active', viewer.isAutoRotating);
-    }
+    // Update rotate buttons (both desktop and mobile/tablet)
+    const rotateButtons = document.querySelectorAll(`#${location}-rotate-button`);
+    rotateButtons.forEach(btn => {
+        btn.classList.toggle('active', viewer.isAutoRotating);
+    });
 }
 
 // Navigation handlers
