@@ -66,8 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
     animate();
     
     // Load initial viewpoints
-    loadViewpoint('club', 1, true);
+    loadViewpoint('club', 1, true); 
+    updateNavigation('club'); // <--- CRITICAL: Set initial active state for Club
+
     loadViewpoint('etage', 1, true);
+    updateNavigation('etage'); // <--- CRITICAL: Set initial active state for Etage
     
     // Hide loading overlay after both are ready
     setTimeout(() => {
@@ -249,7 +252,7 @@ function animate() {
     });
 }
 
-// Update UI
+// Update UI (viewpoint dots and auto-rotate button)
 function updateNavigation(location) {
     const viewer = viewers[location];
     
@@ -278,7 +281,7 @@ function switchViewpoint(location, id) {
     if (viewer.isTransitioning || viewer.currentViewpoint === id) return;
     
     viewer.currentViewpoint = id;
-    updateNavigation(location);
+    updateNavigation(location); // Update dots immediately to show the new active dot
     loadViewpoint(location, id);
 }
 
@@ -371,6 +374,8 @@ function loadViewpoint(location, id, isInitial = false) {
                     if (wasAutoRotating || isInitial) {
                         startAutoRotate(location);
                     }
+                    // CRITICAL: Update navigation AFTER the panorama is fully loaded and transitioned.
+                    updateNavigation(location); // <--- THIS LINE IS THE KEY MISSING PIECE!
                 }, 800);
             }, isInitial ? 0 : 800);
         },
@@ -389,6 +394,8 @@ function loadViewpoint(location, id, isInitial = false) {
                 color: 0x333333
             });
             container.style.opacity = '1';
+
+            updateNavigation(location); // Update navigation even on error to reflect current state
         }
     );
 }
