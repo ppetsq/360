@@ -104,13 +104,37 @@ body {
     pointer-events: none;
 }
 
+/* Viewer Footer (Description and Controls) */
+.viewer-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Align items to the top */
+    margin-top: 2.4rem;
+    padding-left: 2px; /* To align with viewer border */
+    padding-right: 2px; /* To align with viewer border */
+}
+
+.viewer-description {
+    width: 50%; /* Half the horizontal size of the viewer */
+    text-align: left;
+    font-family: 'Inter Tight', sans-serif; /* Specified font */
+    font-size: 1.6rem;
+    line-height: 1.5;
+    color: #372D73;
+    padding-right: 2rem; /* Add some space between text and controls */
+}
+
+.viewer-description p {
+    margin: 0;
+}
+
 /* Viewpoint Navigation */
 .viewpoint-controls {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end; /* Align to the right */
     align-items: center;
     gap: 2.4rem;
-    margin-top: 2.4rem;
+    /* Removed margin-top as it's now handled by .viewer-footer */
 }
 
 .viewpoint-nav {
@@ -221,6 +245,24 @@ body {
 }
 
 /* Responsive design */
+@media (max-width: 1023px) { /* Adjust breakpoint for viewer-footer to stack earlier if needed */
+    .viewer-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2rem; /* Space between description and controls when stacked */
+    }
+
+    .viewer-description {
+        width: 100%; /* Full width when stacked */
+        padding-right: 0;
+    }
+
+    .viewpoint-controls {
+        justify-content: flex-start; /* Align controls to left when stacked */
+        width: 100%;
+    }
+}
+
 @media (max-width: 768px) {
     body {
         padding: 2.4rem;
@@ -245,9 +287,10 @@ body {
         right: 1.5rem;
     }
     
-    .viewpoint-controls {
-        gap: 1.6rem;
-        margin-top: 1.6rem;
+    .control-button {
+        font-size: 1.4rem;
+        padding: 1.2rem 2.4rem;
+        height: 4.4rem;
     }
 }
 
@@ -273,5 +316,17 @@ body {
     .control-button {
         font-size: 1.2rem;
         padding: 1rem 2rem;
+        height: auto; /* Adjust height for smaller screens */
+    }
+
+    .viewpoint-controls {
+        flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+        justify-content: center; /* Center controls when wrapped */
+        gap: 1rem;
+    }
+
+    .viewpoint-nav {
+        flex-basis: 100%; /* Ensure viewpoint dots take full width when wrapped */
+        justify-content: center;
     }
 }

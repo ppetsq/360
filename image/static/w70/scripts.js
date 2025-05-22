@@ -254,7 +254,7 @@ function updateNavigation(location) {
     const viewer = viewers[location];
     
     // Update active viewpoint
-    document.querySelectorAll(`#${location}-viewer ~ .viewpoint-controls .viewpoint-button`).forEach(btn => {
+    document.querySelectorAll(`#${location}-viewer ~ .viewer-footer .viewpoint-controls .viewpoint-button`).forEach(btn => {
         btn.classList.remove('active');
     });
     const activeViewpoint = document.getElementById(`${location}-${viewer.currentViewpoint}`);
