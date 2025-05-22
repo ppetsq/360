@@ -56,6 +56,10 @@ const viewers = {
 const autoRotateSpeed = 0.0005;
 const dragSensitivity = 0.002;
 
+// Keep track of how many viewers have finished initial loading
+let viewersLoadedCount = 0;
+const totalViewers = Object.keys(viewers).length;
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize both viewers
@@ -66,20 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
     animate();
     
     // Load initial viewpoints
+    // updateNavigation will be called inside loadViewpoint after each panorama loads and fades in.
     loadViewpoint('club', 1, true); 
-    updateNavigation('club'); // <--- CRITICAL: Set initial active state for Club
-
     loadViewpoint('etage', 1, true);
-    updateNavigation('etage'); // <--- CRITICAL: Set initial active state for Etage
-    
-    // Hide loading overlay after both are ready
-    setTimeout(() => {
-        const loadingOverlay = document.getElementById('loading-overlay');
-        loadingOverlay.style.opacity = '0';
-        setTimeout(() => {
-            loadingOverlay.style.display = 'none';
-        }, 800);
-    }, 2000);
 });
 
 // Initialize a viewer
@@ -256,32 +249,41 @@ function animate() {
 function updateNavigation(location) {
     const viewer = viewers[location];
     
-    // Update active viewpoint
-    // Select the specific viewpoint navigation container for the current location
-    const viewpointNavContainer = document.querySelector(`#${location}-viewer + .viewer-footer .viewpoint-nav`);
+    // Find the specific viewer-section for this location's viewer
+    const viewerContainer = document.getElementById(`${location}-viewer`);
+    if (!viewerContainer) return; // Exit if viewer container not found
+
+    const viewerSection = viewerContainer.closest('.viewer-section'); 
+    if (!viewerSection) return; // Exit if viewer section not found
+
+    // Now, find the viewpoint navigation container within this specific viewer-section's footer
+    const viewpointNavContainer = viewerSection.querySelector(`.viewer-footer .viewpoint-nav`);
+    
     if (viewpointNavContainer) {
-        // Remove 'active' class from all viewpoint buttons within THAT container
         viewpointNavContainer.querySelectorAll('.viewpoint-button').forEach(btn => {
             btn.classList.remove('active');
         });
-        // Add 'active' class to the currently selected viewpoint button
-        const activeViewpoint = document.getElementById(`${location}-${viewer.currentViewpoint}`);
-        if (activeViewpoint) {
-            activeViewpoint.classList.add('active');
+        const activeViewpointButton = document.getElementById(`${location}-${viewer.currentViewpoint}`);
+        if (activeViewpointButton) {
+            activeViewpointButton.classList.add('active');
         }
     }
     
     // Update rotate button
-    document.getElementById(`${location}-rotate-button`).classList.toggle('active', viewer.isAutoRotating);
+    const rotateButton = document.getElementById(`${location}-rotate-button`);
+    if (rotateButton) { 
+        rotateButton.classList.toggle('active', viewer.isAutoRotating);
+    }
 }
 
 // Navigation handlers
 function switchViewpoint(location, id) {
     const viewer = viewers[location];
-    if (viewer.isTransitioning || viewer.currentViewpoint === id) return;
+    // Prevent switching to the same viewpoint if it's currently transitioning
+    if (viewer.isTransitioning && viewer.currentViewpoint === id) return;
     
     viewer.currentViewpoint = id;
-    updateNavigation(location); // Update dots immediately to show the new active dot
+    // The updateNavigation will be called inside loadViewpoint after the panorama loads and fades in.
     loadViewpoint(location, id);
 }
 
@@ -303,13 +305,13 @@ function prevViewpoint(location) {
 function startAutoRotate(location) {
     const viewer = viewers[location];
     viewer.isAutoRotating = true;
-    updateNavigation(location);
+    updateNavigation(location); // Update button state
 }
 
 function stopAutoRotate(location) {
     const viewer = viewers[location];
     viewer.isAutoRotating = false;
-    updateNavigation(location);
+    updateNavigation(location); // Update button state
 }
 
 function toggleAutoRotate(location) {
@@ -327,14 +329,14 @@ function loadViewpoint(location, id, isInitial = false) {
     const wasAutoRotating = viewer.isAutoRotating;
     
     viewer.isTransitioning = true;
-    stopAutoRotate(location);
+    stopAutoRotate(location); // Stop rotation during transition
     
-    const viewpoint = viewpoints[location][id - 1];
+    const viewpoint = viewpoints[location][id - 1]; // Get viewpoint data by id (1-based)
     const container = document.getElementById(`${location}-viewer`);
     
     console.log(`Loading ${location} panorama:`, viewpoint.panorama);
     
-    // Fade out current view
+    // Fade out current view (only if not initial load)
     if (!isInitial) {
         container.style.opacity = '0';
     }
@@ -348,7 +350,7 @@ function loadViewpoint(location, id, isInitial = false) {
         (texture) => {
             console.log('Texture loaded successfully');
             
-            // Wait for fade out to complete
+            // Wait for fade out to complete (or immediately if initial load)
             setTimeout(() => {
                 // Configure texture
                 texture.minFilter = THREE.LinearFilter;
@@ -368,18 +370,34 @@ function loadViewpoint(location, id, isInitial = false) {
                 // Show viewer with fade in
                 container.style.opacity = '1';
                 
-                // Re-enable auto-rotation after transition
+                // Re-enable auto-rotation and update navigation after transition
                 setTimeout(() => {
                     viewer.isTransitioning = false;
                     if (wasAutoRotating || isInitial) {
                         startAutoRotate(location);
                     }
-                    // CRITICAL: Update navigation AFTER the panorama is fully loaded and transitioned.
-                    updateNavigation(location); // <--- THIS LINE IS THE KEY MISSING PIECE!
-                }, 800);
-            }, isInitial ? 0 : 800);
+                    // Crucial: Update navigation *after* the fade-in animation completes
+                    // to correctly set the active state on the dot when the panorama is visible.
+                    updateNavigation(location); 
+
+                    // Check if all initial viewers are loaded to hide the global loading overlay
+                    if (isInitial) {
+                        viewersLoadedCount++;
+                        if (viewersLoadedCount === totalViewers) {
+                            const loadingOverlay = document.getElementById('loading-overlay');
+                            if (loadingOverlay) { 
+                                loadingOverlay.style.opacity = '0';
+                                setTimeout(() => {
+                                    loadingOverlay.style.display = 'none';
+                                }, 800); // Match this with CSS transition for opacity
+                            }
+                        }
+                    }
+
+                }, 800); // This delay should match your CSS transition duration for opacity
+            }, isInitial ? 0 : 800); // This delay should match your CSS transition duration for opacity
         },
-        // Progress callback
+        // Progress callback (optional, for loading indicators)
         (xhr) => {
             console.log((xhr.loaded / xhr.total * 100) + '% loaded');
         },
@@ -389,13 +407,34 @@ function loadViewpoint(location, id, isInitial = false) {
             console.error('Failed URL:', viewpoint.panorama);
             viewer.isTransitioning = false;
             
-            // Show error state
-            viewer.sphere.material = new THREE.MeshBasicMaterial({ 
-                color: 0x333333
-            });
-            container.style.opacity = '1';
+            // Show error state (e.g., black background)
+            if (viewer.sphere && viewer.sphere.material) {
+                viewer.sphere.material.dispose();
+                viewer.sphere.material = new THREE.MeshBasicMaterial({ 
+                    color: 0x333333 // Set to a dark color on error
+                });
+            }
+            container.style.opacity = '1'; // Ensure container is visible
+            
+            // Update navigation even on error to reflect the intended current state.
+            updateNavigation(location); 
+            if (wasAutoRotating) { // If auto-rotating was on, try to re-enable it (might not work well with solid color)
+                startAutoRotate(location);
+            }
 
-            updateNavigation(location); // Update navigation even on error to reflect current state
+            // Also handle loading overlay if initial load fails for a viewer
+            if (isInitial) {
+                viewersLoadedCount++;
+                if (viewersLoadedCount === totalViewers) {
+                    const loadingOverlay = document.getElementById('loading-overlay');
+                    if (loadingOverlay) { 
+                        loadingOverlay.style.opacity = '0';
+                        setTimeout(() => {
+                            loadingOverlay.style.display = 'none';
+                        }, 800);
+                    }
+                }
+            }
         }
     );
 }
