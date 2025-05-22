@@ -54,7 +54,7 @@ const viewers = {
 
 // Settings
 const autoRotateSpeed = 0.0005;
-const dragSensitivity = 0.002; // Reduced from 0.005 for stiffer control
+const dragSensitivity = 0.002;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -254,11 +254,19 @@ function updateNavigation(location) {
     const viewer = viewers[location];
     
     // Update active viewpoint
-    document.querySelectorAll(`#${location}-viewer ~ .viewer-footer .viewpoint-controls .viewpoint-button`).forEach(btn => {
-        btn.classList.remove('active');
-    });
-    const activeViewpoint = document.getElementById(`${location}-${viewer.currentViewpoint}`);
-    if (activeViewpoint) activeViewpoint.classList.add('active');
+    // Select the specific viewpoint navigation container for the current location
+    const viewpointNavContainer = document.querySelector(`#${location}-viewer + .viewer-footer .viewpoint-nav`);
+    if (viewpointNavContainer) {
+        // Remove 'active' class from all viewpoint buttons within THAT container
+        viewpointNavContainer.querySelectorAll('.viewpoint-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        // Add 'active' class to the currently selected viewpoint button
+        const activeViewpoint = document.getElementById(`${location}-${viewer.currentViewpoint}`);
+        if (activeViewpoint) {
+            activeViewpoint.classList.add('active');
+        }
+    }
     
     // Update rotate button
     document.getElementById(`${location}-rotate-button`).classList.toggle('active', viewer.isAutoRotating);

@@ -192,6 +192,25 @@ body {
     color: #FFFFFF;
 }
 
+/* Auto-rotate icon animation */
+.control-button .fa-sync-alt {
+    transition: transform 0.3s ease-out;
+}
+
+.control-button.active .fa-sync-alt {
+    animation: rotate 6s linear infinite; /* Changed from 4s to 6s for even slower rotation */
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
 /* Loading overlay */
 .loading-overlay {
     position: fixed;
