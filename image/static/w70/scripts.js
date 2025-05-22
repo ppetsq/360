@@ -71,7 +71,6 @@ let currentLocation = "club";
 let currentViewpoint = 1;
 let isPanning = false;
 let isTransitioning = false;
-let keyboardInfoTimeout = null;
 
 // Update navigation UI
 function updateNavigation() {
@@ -159,54 +158,6 @@ function toggleAutoRotate() {
     updateNavigation();
 }
 
-// Show keyboard info popup
-function showKeyboardInfo() {
-    const keyboardInfo = document.getElementById('keyboard-info');
-    keyboardInfo.classList.add('visible');
-    
-    if (keyboardInfoTimeout) {
-        clearTimeout(keyboardInfoTimeout);
-    }
-    
-    keyboardInfoTimeout = setTimeout(() => {
-        keyboardInfo.classList.remove('visible');
-    }, 4000);
-}
-
-// Handle keyboard controls
-function handleKeydown(e) {
-    if (!viewer || isTransitioning) return;
-    
-    showKeyboardInfo();
-    
-    switch (e.key) {
-        case ' ':
-            e.preventDefault();
-            toggleAutoRotate();
-            break;
-        case 'ArrowLeft':
-            e.preventDefault();
-            prevViewpoint();
-            break;
-        case 'ArrowRight':
-            e.preventDefault();
-            nextViewpoint();
-            break;
-        case 'ArrowUp':
-            e.preventDefault();
-            if (currentLocation !== 'club') {
-                handleNavigationClick('club');
-            }
-            break;
-        case 'ArrowDown':
-            e.preventDefault();
-            if (currentLocation !== 'etage') {
-                handleNavigationClick('etage');
-            }
-            break;
-    }
-}
-
 // Load a specific viewpoint
 function loadViewpoint(location, viewpointId) {
     if (isTransitioning) return;
@@ -258,7 +209,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
     document.addEventListener('keydown', handleKeydown);
     
-    setTimeout(showKeyboardInfo, 2000);
 });
 
 // Initialize PhotoSphereViewer
