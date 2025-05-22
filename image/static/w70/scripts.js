@@ -1,259 +1,386 @@
 // Configuration for viewpoints
 const viewpoints = {
     club: [
-        {
-            id: 1,
-            panorama: "https://assets.360.petsq.works/w70/club_1.jpg",
-            name: "Club 1",
-            initialPosition: { longitude: 0, latitude: 0 }
-        },
-        {
-            id: 2,
-            panorama: "https://assets.360.petsq.works/w70/club_2.jpg",
-            name: "Club 2",
-            initialPosition: { longitude: 0, latitude: 0 }
-        },
-        {
-            id: 3,
-            panorama: "https://assets.360.petsq.works/w70/club_3.jpg",
-            name: "Club 3",
-            initialPosition: { longitude: 0, latitude: 0 }
-        },
-        {
-            id: 4,
-            panorama: "https://assets.360.petsq.works/w70/club_4.jpg",
-            name: "Club 4",
-            initialPosition: { longitude: 0, latitude: 0 }
-        },
-        {
-            id: 5,
-            panorama: "https://assets.360.petsq.works/w70/club_5.jpg",
-            name: "Club 5",
-            initialPosition: { longitude: 0, latitude: 0 }
-        }
+        { id: 1, panorama: "https://assets.360.petsq.works/w70/club_1.jpg" },
+        { id: 2, panorama: "https://assets.360.petsq.works/w70/club_2.jpg" },
+        { id: 3, panorama: "https://assets.360.petsq.works/w70/club_3.jpg" },
+        { id: 4, panorama: "https://assets.360.petsq.works/w70/club_4.jpg" },
+        { id: 5, panorama: "https://assets.360.petsq.works/w70/club_5.jpg" }
     ],
     etage: [
-        {
-            id: 1,
-            panorama: "https://assets.360.petsq.works/w70/etage_1.jpg",
-            name: "Etage 1",
-            initialPosition: { longitude: 0, latitude: 0 }
-        },
-        {
-            id: 2,
-            panorama: "https://assets.360.petsq.works/w70/etage_2.jpg",
-            name: "Etage 2",
-            initialPosition: { longitude: 0, latitude: 0 }
-        },
-        {
-            id: 3,
-            panorama: "https://assets.360.petsq.works/w70/etage_3.jpg",
-            name: "Etage 3",
-            initialPosition: { longitude: 0, latitude: 0 }
-        },
-        {
-            id: 4,
-            panorama: "https://assets.360.petsq.works/w70/etage_4.jpg",
-            name: "Etage 4",
-            initialPosition: { longitude: 0, latitude: 0 }
-        },
-        {
-            id: 5,
-            panorama: "https://assets.360.petsq.works/w70/etage_5.jpg",
-            name: "Etage 5",
-            initialPosition: { longitude: 0, latitude: 0 }
-        }
+        { id: 1, panorama: "https://assets.360.petsq.works/w70/etage_1.jpg" },
+        { id: 2, panorama: "https://assets.360.petsq.works/w70/etage_2.jpg" },
+        { id: 3, panorama: "https://assets.360.petsq.works/w70/etage_3.jpg" },
+        { id: 4, panorama: "https://assets.360.petsq.works/w70/etage_4.jpg" },
+        { id: 5, panorama: "https://assets.360.petsq.works/w70/etage_5.jpg" }
     ]
 };
 
-let viewer;
-let currentLocation = "club";
-let currentViewpoint = 1;
-let isPanning = false;
-let isTransitioning = false;
-
-// Update navigation UI
-function updateNavigation() {
-    // Update tab buttons and indicator
-    const clubButton = document.getElementById('club-button');
-    const etageButton = document.getElementById('etage16-button');
-    
-    clubButton.classList.toggle('active', currentLocation === 'club');
-    etageButton.classList.toggle('active', currentLocation === 'etage');
-    
-    // Move the tab indicator
-    const indicator = document.querySelector('.tab-indicator');
-    const activeTab = currentLocation === 'club' ? clubButton : etageButton;
-    
-    indicator.style.width = activeTab.offsetWidth + 'px';
-    indicator.style.transform = `translateX(${activeTab.offsetLeft - 6}px)`;
-    
-    // Show/hide viewpoint navigation
-    document.getElementById('club-viewpoints').style.display = currentLocation === 'club' ? 'flex' : 'none';
-    document.getElementById('etage-viewpoints').style.display = currentLocation === 'etage' ? 'flex' : 'none';
-    
-    // Update viewpoint buttons
-    document.querySelectorAll('.viewpoint-button').forEach(button => {
-        button.classList.remove('active');
-    });
-    
-    // Set active viewpoint button
-    document.getElementById(`${currentLocation}-${currentViewpoint}`).classList.add('active');
-    
-    // Update rotate button state
-    const rotateButton = document.getElementById('rotate-button');
-    rotateButton.classList.toggle('active', isPanning);
-}
-
-// Handle main navigation button clicks
-function handleNavigationClick(location) {
-    if (currentLocation === location) return;
-    
-    currentLocation = location;
-    currentViewpoint = 1;
-    updateNavigation();
-    loadViewpoint(currentLocation, currentViewpoint);
-}
-
-// Switch between viewpoints
-function switchViewpoint(location, viewpointId) {
-    if (isTransitioning || (currentLocation === location && currentViewpoint === viewpointId)) return;
-    
-    currentViewpoint = viewpointId;
-    updateNavigation();
-    loadViewpoint(currentLocation, currentViewpoint);
-}
-
-// Navigate to the next viewpoint
-function nextViewpoint() {
-    if (isTransitioning) return;
-    
-    const maxViewpoints = viewpoints[currentLocation].length;
-    const nextId = currentViewpoint >= maxViewpoints ? 1 : currentViewpoint + 1;
-    
-    switchViewpoint(currentLocation, nextId);
-}
-
-// Navigate to the previous viewpoint
-function prevViewpoint() {
-    if (isTransitioning) return;
-    
-    const maxViewpoints = viewpoints[currentLocation].length;
-    const prevId = currentViewpoint <= 1 ? maxViewpoints : currentViewpoint - 1;
-    
-    switchViewpoint(currentLocation, prevId);
-}
-
-// Toggle auto-rotation
-function toggleAutoRotate() {
-    if (isTransitioning) return;
-    
-    if (isPanning) {
-        viewer.stopAutorotate();
-        isPanning = false;
-    } else {
-        viewer.startAutorotate();
-        isPanning = true;
+// Viewer states
+const viewers = {
+    club: {
+        currentViewpoint: 1,
+        isAutoRotating: false,
+        isTransitioning: false,
+        scene: null,
+        camera: null,
+        renderer: null,
+        sphere: null,
+        targetRotationX: 0,
+        targetRotationY: 0,
+        mouseXOnMouseDown: 0,
+        targetRotationOnMouseDownX: 0,
+        mouseYOnMouseDown: 0,
+        targetRotationOnMouseDownY: 0,
+        isUserInteracting: false
+    },
+    etage: {
+        currentViewpoint: 1,
+        isAutoRotating: false,
+        isTransitioning: false,
+        scene: null,
+        camera: null,
+        renderer: null,
+        sphere: null,
+        targetRotationX: 0,
+        targetRotationY: 0,
+        mouseXOnMouseDown: 0,
+        targetRotationOnMouseDownX: 0,
+        mouseYOnMouseDown: 0,
+        targetRotationOnMouseDownY: 0,
+        isUserInteracting: false
     }
-    updateNavigation();
-}
+};
 
-// Load a specific viewpoint
-function loadViewpoint(location, viewpointId) {
-    if (isTransitioning) return;
-    isTransitioning = true;
+// Settings
+const autoRotateSpeed = 0.0005;
+const dragSensitivity = 0.002; // Reduced from 0.005 for stiffer control
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize both viewers
+    initViewer('club');
+    initViewer('etage');
     
-    viewer.stopAutorotate();
-    isPanning = false;
-    updateNavigation();
+    // Start animation loops
+    animate();
     
-    document.querySelector(".viewer-container").style.opacity = "0";
+    // Load initial viewpoints
+    loadViewpoint('club', 1, true);
+    loadViewpoint('etage', 1, true);
     
+    // Hide loading overlay after both are ready
     setTimeout(() => {
-        const viewpointData = viewpoints[location][viewpointId - 1];
-        
-        viewer.setPanorama(viewpointData.panorama, {
-            showLoader: false,
-            transition: false
-        }).then(() => {
-            viewer.zoom(50);
-            viewer.rotate(viewpointData.initialPosition);
-            
-            document.querySelector(".viewer-container").style.opacity = "1";
-            
-            setTimeout(() => {
-                viewer.startAutorotate();
-                isPanning = true;
-                updateNavigation();
-                isTransitioning = false;
-            }, 1000);
-        });
-    }, 800);
-}
-
-// Handle click events on the viewer
-function togglePanning(e) {
-    if (isTransitioning) return;
-    
-    if (e && e.target.closest('.main-container')) {
-        return;
-    }
-    
-    toggleAutoRotate();
-}
-
-// Initialize the viewer
-document.addEventListener("DOMContentLoaded", () => {
-    initializeViewer();
-    updateNavigation();
-    
-    document.addEventListener('keydown', handleKeydown);
-    
+        const loadingOverlay = document.getElementById('loading-overlay');
+        loadingOverlay.style.opacity = '0';
+        setTimeout(() => {
+            loadingOverlay.style.display = 'none';
+        }, 800);
+    }, 2000);
 });
 
-// Initialize PhotoSphereViewer
-function initializeViewer() {
-    const viewerContainer = document.querySelector('#viewer');
-    if (!viewerContainer) {
-        console.error("Viewer container not found!");
-        return;
+// Initialize a viewer
+function initViewer(location) {
+    const container = document.getElementById(`${location}-viewer`);
+    const viewer = viewers[location];
+
+    // Scene
+    viewer.scene = new THREE.Scene();
+
+    // Camera
+    viewer.camera = new THREE.PerspectiveCamera(
+        70, 
+        container.clientWidth / container.clientHeight, 
+        0.1, 
+        1000
+    );
+    viewer.camera.position.set(0, 0, 0.1);
+
+    // Renderer
+    viewer.renderer = new THREE.WebGLRenderer({ 
+        antialias: true,
+        alpha: true 
+    });
+    viewer.renderer.setPixelRatio(window.devicePixelRatio);
+    viewer.renderer.setSize(container.clientWidth, container.clientHeight);
+    container.appendChild(viewer.renderer.domElement);
+
+    // Sphere geometry for panorama
+    const geometry = new THREE.SphereGeometry(500, 60, 40);
+    geometry.scale(-1, 1, 1); // Invert the sphere
+
+    // Create sphere
+    const material = new THREE.MeshBasicMaterial({
+        map: null
+    });
+    
+    viewer.sphere = new THREE.Mesh(geometry, material);
+    viewer.scene.add(viewer.sphere);
+
+    // Event listeners
+    container.addEventListener('mousedown', (e) => onMouseDown(e, location), false);
+    container.addEventListener('mousemove', (e) => onMouseMove(e, location), false);
+    container.addEventListener('mouseup', () => onMouseUp(location), false);
+    container.addEventListener('mouseout', () => onMouseUp(location), false);
+    
+    container.addEventListener('touchstart', (e) => onTouchStart(e, location), { passive: false });
+    container.addEventListener('touchmove', (e) => onTouchMove(e, location), { passive: false });
+    container.addEventListener('touchend', () => onTouchEnd(location), false);
+
+    window.addEventListener('resize', onWindowResize, false);
+}
+
+// Mouse controls
+function onMouseDown(event, location) {
+    event.preventDefault();
+    const viewer = viewers[location];
+    viewer.isUserInteracting = true;
+    
+    viewer.mouseXOnMouseDown = event.clientX;
+    viewer.mouseYOnMouseDown = event.clientY;
+    viewer.targetRotationOnMouseDownX = viewer.targetRotationX;
+    viewer.targetRotationOnMouseDownY = viewer.targetRotationY;
+}
+
+function onMouseMove(event, location) {
+    const viewer = viewers[location];
+    if (viewer.isUserInteracting) {
+        const mouseX = event.clientX;
+        const mouseY = event.clientY;
+        
+        viewer.targetRotationX = viewer.targetRotationOnMouseDownX + (mouseX - viewer.mouseXOnMouseDown) * dragSensitivity;
+        viewer.targetRotationY = Math.max(
+            -Math.PI / 3,
+            Math.min(
+                Math.PI / 3,
+                viewer.targetRotationOnMouseDownY + (mouseY - viewer.mouseYOnMouseDown) * dragSensitivity
+            )
+        );
+    }
+}
+
+function onMouseUp(location) {
+    viewers[location].isUserInteracting = false;
+}
+
+// Touch controls
+function onTouchStart(event, location) {
+    if (event.touches.length === 1) {
+        event.preventDefault();
+        const viewer = viewers[location];
+        viewer.isUserInteracting = true;
+        
+        viewer.mouseXOnMouseDown = event.touches[0].pageX;
+        viewer.mouseYOnMouseDown = event.touches[0].pageY;
+        viewer.targetRotationOnMouseDownX = viewer.targetRotationX;
+        viewer.targetRotationOnMouseDownY = viewer.targetRotationY;
+    }
+}
+
+function onTouchMove(event, location) {
+    const viewer = viewers[location];
+    if (event.touches.length === 1 && viewer.isUserInteracting) {
+        event.preventDefault();
+        
+        const mouseX = event.touches[0].pageX;
+        const mouseY = event.touches[0].pageY;
+        
+        viewer.targetRotationX = viewer.targetRotationOnMouseDownX + (mouseX - viewer.mouseXOnMouseDown) * dragSensitivity;
+        viewer.targetRotationY = Math.max(
+            -Math.PI / 3,
+            Math.min(
+                Math.PI / 3,
+                viewer.targetRotationOnMouseDownY + (mouseY - viewer.mouseYOnMouseDown) * dragSensitivity
+            )
+        );
+    }
+}
+
+function onTouchEnd(location) {
+    viewers[location].isUserInteracting = false;
+}
+
+// Window resize
+function onWindowResize() {
+    ['club', 'etage'].forEach(location => {
+        const container = document.getElementById(`${location}-viewer`);
+        const viewer = viewers[location];
+        
+        if (viewer.camera && viewer.renderer) {
+            viewer.camera.aspect = container.clientWidth / container.clientHeight;
+            viewer.camera.updateProjectionMatrix();
+            viewer.renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+    });
+}
+
+// Animation loop
+function animate() {
+    requestAnimationFrame(animate);
+    
+    ['club', 'etage'].forEach(location => {
+        const viewer = viewers[location];
+        
+        if (!viewer.sphere || !viewer.camera || !viewer.renderer) return;
+        
+        // Auto-rotation
+        if (viewer.isAutoRotating && !viewer.isUserInteracting && !viewer.isTransitioning) {
+            viewer.targetRotationX += autoRotateSpeed;
+        }
+        
+        // Update rotation
+        const rotationSpeed = 0.05;
+        viewer.sphere.rotation.y += (viewer.targetRotationX - viewer.sphere.rotation.y) * rotationSpeed;
+        
+        // Vertical rotation with limits
+        const verticalRotation = Math.max(-Math.PI/3, Math.min(Math.PI/3, viewer.targetRotationY));
+        
+        // Position camera based on rotation
+        const phi = Math.PI/2 - verticalRotation;
+        const theta = viewer.sphere.rotation.y;
+        
+        viewer.camera.position.x = 100 * Math.sin(phi) * Math.cos(theta);
+        viewer.camera.position.y = 100 * Math.cos(phi);
+        viewer.camera.position.z = 100 * Math.sin(phi) * Math.sin(theta);
+        
+        viewer.camera.lookAt(0, 0, 0);
+        
+        viewer.renderer.render(viewer.scene, viewer.camera);
+    });
+}
+
+// Update UI
+function updateNavigation(location) {
+    const viewer = viewers[location];
+    
+    // Update active viewpoint
+    document.querySelectorAll(`#${location}-viewer ~ .viewpoint-controls .viewpoint-button`).forEach(btn => {
+        btn.classList.remove('active');
+    });
+    const activeViewpoint = document.getElementById(`${location}-${viewer.currentViewpoint}`);
+    if (activeViewpoint) activeViewpoint.classList.add('active');
+    
+    // Update rotate button
+    document.getElementById(`${location}-rotate-button`).classList.toggle('active', viewer.isAutoRotating);
+}
+
+// Navigation handlers
+function switchViewpoint(location, id) {
+    const viewer = viewers[location];
+    if (viewer.isTransitioning || viewer.currentViewpoint === id) return;
+    
+    viewer.currentViewpoint = id;
+    updateNavigation(location);
+    loadViewpoint(location, id);
+}
+
+function nextViewpoint(location) {
+    const viewer = viewers[location];
+    if (viewer.isTransitioning) return;
+    const max = viewpoints[location].length;
+    switchViewpoint(location, viewer.currentViewpoint >= max ? 1 : viewer.currentViewpoint + 1);
+}
+
+function prevViewpoint(location) {
+    const viewer = viewers[location];
+    if (viewer.isTransitioning) return;
+    const max = viewpoints[location].length;
+    switchViewpoint(location, viewer.currentViewpoint <= 1 ? max : viewer.currentViewpoint - 1);
+}
+
+// Auto-rotation
+function startAutoRotate(location) {
+    const viewer = viewers[location];
+    viewer.isAutoRotating = true;
+    updateNavigation(location);
+}
+
+function stopAutoRotate(location) {
+    const viewer = viewers[location];
+    viewer.isAutoRotating = false;
+    updateNavigation(location);
+}
+
+function toggleAutoRotate(location) {
+    const viewer = viewers[location];
+    if (viewer.isAutoRotating) {
+        stopAutoRotate(location);
+    } else {
+        startAutoRotate(location);
+    }
+}
+
+// Load viewpoint with fade transition
+function loadViewpoint(location, id, isInitial = false) {
+    const viewer = viewers[location];
+    const wasAutoRotating = viewer.isAutoRotating;
+    
+    viewer.isTransitioning = true;
+    stopAutoRotate(location);
+    
+    const viewpoint = viewpoints[location][id - 1];
+    const container = document.getElementById(`${location}-viewer`);
+    
+    console.log(`Loading ${location} panorama:`, viewpoint.panorama);
+    
+    // Fade out current view
+    if (!isInitial) {
+        container.style.opacity = '0';
     }
     
-    const initialViewpoint = viewpoints[currentLocation][currentViewpoint - 1];
+    // Load texture with cross-origin support
+    const loader = new THREE.TextureLoader();
+    loader.crossOrigin = 'anonymous';
     
-    viewer = new PhotoSphereViewer.Viewer({
-        container: viewerContainer,
-        panorama: initialViewpoint.panorama,
-        navbar: false,
-        touchmoveTwoFingers: false,
-        loadingTxt: '',
-        loadingImg: null,
-        defaultZoomLvl: 50,
-        minFov: 50,
-        maxFov: 100,
-        autorotateSpeed: "0.5rpm",
-        autorotateDelay: 1000
-    });
-
-    viewer.once('ready', () => {
-        viewer.zoom(50);
-        viewer.rotate(initialViewpoint.initialPosition);
-        
-        setTimeout(() => {
-            viewer.startAutorotate();
-            isPanning = true;
-            updateNavigation();
+    loader.load(
+        viewpoint.panorama,
+        (texture) => {
+            console.log('Texture loaded successfully');
             
-            viewerContainer.style.opacity = "1";
+            // Wait for fade out to complete
             setTimeout(() => {
-                document.getElementById('loading-overlay').style.opacity = '0';
+                // Configure texture
+                texture.minFilter = THREE.LinearFilter;
+                texture.magFilter = THREE.LinearFilter;
+                
+                // Create new material with texture
+                const newMaterial = new THREE.MeshBasicMaterial({ 
+                    map: texture
+                });
+                
+                // Replace sphere material
+                if (viewer.sphere.material) {
+                    viewer.sphere.material.dispose();
+                }
+                viewer.sphere.material = newMaterial;
+                
+                // Show viewer with fade in
+                container.style.opacity = '1';
+                
+                // Re-enable auto-rotation after transition
                 setTimeout(() => {
-                    document.getElementById('loading-overlay').style.display = 'none';
+                    viewer.isTransitioning = false;
+                    if (wasAutoRotating || isInitial) {
+                        startAutoRotate(location);
+                    }
                 }, 800);
-            }, 500);
-        }, 300);
-    });
-    
-    viewerContainer.addEventListener("click", togglePanning);
-    viewerContainer.addEventListener("touchend", togglePanning);
+            }, isInitial ? 0 : 800);
+        },
+        // Progress callback
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+        },
+        // Error callback
+        (error) => {
+            console.error('Error loading panorama:', error);
+            console.error('Failed URL:', viewpoint.panorama);
+            viewer.isTransitioning = false;
+            
+            // Show error state
+            viewer.sphere.material = new THREE.MeshBasicMaterial({ 
+                color: 0x333333
+            });
+            container.style.opacity = '1';
+        }
+    );
 }

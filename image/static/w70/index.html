@@ -5,17 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>W70.club 360°</title>
     
-    <!-- Load dependencies locally -->
-    <script src="libs/three.min.js"></script>
-    <script src="libs/uevent.min.js"></script>
-    
-    <!-- Load PhotoSphereViewer locally -->
-    <link rel="stylesheet" href="libs/photo-sphere-viewer.min.css">
-    <script src="libs/photo-sphere-viewer.min.js"></script>
-    
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -29,58 +22,83 @@
         <!-- Header -->
         <div class="header">
             <h1 class="title">
-                <a href="https://www.w70.club/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
+                <a href="https://www.w70.club/" target="_blank" rel="noopener noreferrer">
                     Virtual Tour
                 </a>
             </h1>
         </div>
 
-        <!-- 360 Viewer -->
-        <div class="viewer-wrapper">
-            <div class="viewer-container" id="viewer"></div>
+        <!-- Club 360 Viewer -->
+        <div class="viewer-section">
+            <div class="viewer-wrapper">
+                <div class="viewer-container" id="club-viewer">
+                    <!-- Three.js canvas will be injected here -->
+                </div>
+                <div class="viewer-label">CLUB</div>
+            </div>
+
+            <!-- Club Viewpoint Controls -->
+            <div class="viewpoint-controls">
+                <button class="control-button" onclick="prevViewpoint('club')">
+                    ← Previous
+                </button>
+                
+                <div class="viewpoint-nav">
+                    <button class="viewpoint-button active" id="club-1" onclick="switchViewpoint('club', 1)"></button>
+                    <button class="viewpoint-button" id="club-2" onclick="switchViewpoint('club', 2)"></button>
+                    <button class="viewpoint-button" id="club-3" onclick="switchViewpoint('club', 3)"></button>
+                    <button class="viewpoint-button" id="club-4" onclick="switchViewpoint('club', 4)"></button>
+                    <button class="viewpoint-button" id="club-5" onclick="switchViewpoint('club', 5)"></button>
+                </div>
+                
+                <button class="control-button" onclick="nextViewpoint('club')">
+                    Next →
+                </button>
+                
+                <button class="control-button" id="club-rotate-button" onclick="toggleAutoRotate('club')">
+                    🔄 Auto-rotate
+                </button>
+            </div>
         </div>
 
-        <!-- Viewpoint Controls -->
-        <div class="viewpoint-controls">
-            <button class="control-button" onclick="prevViewpoint()" title="Previous viewpoint">
-                ← Previous
-            </button>
-            
-            <div id="club-viewpoints" class="viewpoint-nav">
-                <button class="viewpoint-button active" id="club-1" onclick="switchViewpoint('club', 1)" data-number="1"></button>
-                <button class="viewpoint-button" id="club-2" onclick="switchViewpoint('club', 2)" data-number="2"></button>
-                <button class="viewpoint-button" id="club-3" onclick="switchViewpoint('club', 3)" data-number="3"></button>
-                <button class="viewpoint-button" id="club-4" onclick="switchViewpoint('club', 4)" data-number="4"></button>
-                <button class="viewpoint-button" id="club-5" onclick="switchViewpoint('club', 5)" data-number="5"></button>
+        <!-- Etage16 360 Viewer -->
+        <div class="viewer-section">
+            <div class="viewer-wrapper">
+                <div class="viewer-container" id="etage-viewer">
+                    <!-- Three.js canvas will be injected here -->
+                </div>
+                <div class="viewer-label">ETAGE16</div>
             </div>
-            
-            <div id="etage-viewpoints" class="viewpoint-nav" style="display: none;">
-                <button class="viewpoint-button active" id="etage-1" onclick="switchViewpoint('etage', 1)" data-number="1"></button>
-                <button class="viewpoint-button" id="etage-2" onclick="switchViewpoint('etage', 2)" data-number="2"></button>
-                <button class="viewpoint-button" id="etage-3" onclick="switchViewpoint('etage', 3)" data-number="3"></button>
-                <button class="viewpoint-button" id="etage-4" onclick="switchViewpoint('etage', 4)" data-number="4"></button>
-                <button class="viewpoint-button" id="etage-5" onclick="switchViewpoint('etage', 5)" data-number="5"></button>
+
+            <!-- Etage16 Viewpoint Controls -->
+            <div class="viewpoint-controls">
+                <button class="control-button" onclick="prevViewpoint('etage')">
+                    ← Previous
+                </button>
+                
+                <div class="viewpoint-nav">
+                    <button class="viewpoint-button active" id="etage-1" onclick="switchViewpoint('etage', 1)"></button>
+                    <button class="viewpoint-button" id="etage-2" onclick="switchViewpoint('etage', 2)"></button>
+                    <button class="viewpoint-button" id="etage-3" onclick="switchViewpoint('etage', 3)"></button>
+                    <button class="viewpoint-button" id="etage-4" onclick="switchViewpoint('etage', 4)"></button>
+                    <button class="viewpoint-button" id="etage-5" onclick="switchViewpoint('etage', 5)"></button>
+                </div>
+                
+                <button class="control-button" onclick="nextViewpoint('etage')">
+                    Next →
+                </button>
+                
+                <button class="control-button" id="etage-rotate-button" onclick="toggleAutoRotate('etage')">
+                    🔄 Auto-rotate
+                </button>
             </div>
-            
-            <button class="control-button" onclick="nextViewpoint()" title="Next viewpoint">
-                Next →
-            </button>
-            
-            <button class="control-button" id="rotate-button" onclick="toggleAutoRotate()" title="Toggle auto-rotation">
-                🔄 Auto-rotate
-            </button>
         </div>
     </div>
 
-            <!-- Navigation -->
-            <div class="navigation">
-                <div class="location-tabs">
-                    <button class="tab-button active" id="club-button" onclick="handleNavigationClick('club')">CLUB</button>
-                    <button class="tab-button" id="etage16-button" onclick="handleNavigationClick('etage')">ETAGE 16</button>
-                    <div class="tab-indicator"></div>
-                </div>
-            </div>
-
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Scripts -->
     <script src="scripts.js"></script>
 </body>
 </html>
