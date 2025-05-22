@@ -14,60 +14,81 @@
     <script src="libs/photo-sphere-viewer.min.js"></script>
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="styles.css">
-
 </head>
 
 <body>
     <div class="loading-overlay" id="loading-overlay">
         <div class="loading-spinner"></div>
+        <div class="loading-text">Loading virtual tour...</div>
     </div>
 
-    <div class="ui-header">
-        <div class="brand">
-            <a href="https://www.w70.club/" target="_blank" rel="noopener noreferrer" class="title">W70</a>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">
+                <a href="https://www.w70.club/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
+                    Etage16
+                </a>
+            </h1>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <div class="location-tabs">
+                <button class="tab-button active" id="club-button" onclick="handleNavigationClick('club')">CLUB</button>
+                <button class="tab-button" id="etage16-button" onclick="handleNavigationClick('etage')">ETAGE 16</button>
+                <div class="tab-indicator"></div>
+            </div>
+        </div>
+
+        <!-- 360 Viewer -->
+        <div class="viewer-wrapper">
+            <div class="viewer-container" id="viewer"></div>
+        </div>
+
+        <!-- Viewpoint Controls -->
+        <div class="viewpoint-controls">
+            <button class="control-button" onclick="prevViewpoint()" title="Previous viewpoint">
+                ← Previous
+            </button>
+            
+            <div id="club-viewpoints" class="viewpoint-nav">
+                <button class="viewpoint-button active" id="club-1" onclick="switchViewpoint('club', 1)" data-number="1"></button>
+                <button class="viewpoint-button" id="club-2" onclick="switchViewpoint('club', 2)" data-number="2"></button>
+                <button class="viewpoint-button" id="club-3" onclick="switchViewpoint('club', 3)" data-number="3"></button>
+                <button class="viewpoint-button" id="club-4" onclick="switchViewpoint('club', 4)" data-number="4"></button>
+                <button class="viewpoint-button" id="club-5" onclick="switchViewpoint('club', 5)" data-number="5"></button>
+            </div>
+            
+            <div id="etage-viewpoints" class="viewpoint-nav" style="display: none;">
+                <button class="viewpoint-button active" id="etage-1" onclick="switchViewpoint('etage', 1)" data-number="1"></button>
+                <button class="viewpoint-button" id="etage-2" onclick="switchViewpoint('etage', 2)" data-number="2"></button>
+                <button class="viewpoint-button" id="etage-3" onclick="switchViewpoint('etage', 3)" data-number="3"></button>
+                <button class="viewpoint-button" id="etage-4" onclick="switchViewpoint('etage', 4)" data-number="4"></button>
+                <button class="viewpoint-button" id="etage-5" onclick="switchViewpoint('etage', 5)" data-number="5"></button>
+            </div>
+            
+            <button class="control-button" onclick="nextViewpoint()" title="Next viewpoint">
+                Next →
+            </button>
+            
+            <button class="control-button" id="rotate-button" onclick="toggleAutoRotate()" title="Toggle auto-rotation">
+                🔄 Auto-rotate
+            </button>
         </div>
     </div>
     
     <div class="keyboard-info" id="keyboard-info">
         <ul>
-            <li><span class="key">←</span> Previous viewpoint</li>
-            <li><span class="key">→</span> Next viewpoint</li>
-            <li><span class="key">↑</span> Switch to Club</li>
-            <li><span class="key">↓</span> Switch to Etage 16</li>
-            <li><span class="key">Space</span> Play/Pause rotation</li>
+            <li><span class="key">←→</span> Previous/Next viewpoint</li>
+            <li><span class="key">↑↓</span> Switch location</li>
+            <li><span class="key">Space</span> Toggle rotation</li>
         </ul>
     </div>
-    
-    <div class="ui-footer">
-        <div class="location-tabs">
-            <button class="tab-button active" id="club-button" onclick="handleNavigationClick('club')">CLUB</button>
-            <button class="tab-button" id="etage16-button" onclick="handleNavigationClick('etage')">ETAGE 16</button>
-            <div class="tab-indicator"></div>
-        </div>
-        
-        <div id="club-viewpoints" class="viewpoint-nav">
-            <button class="viewpoint-button active" id="club-1" onclick="switchViewpoint('club', 1)" data-number="1"></button>
-            <button class="viewpoint-button" id="club-2" onclick="switchViewpoint('club', 2)" data-number="2"></button>
-            <button class="viewpoint-button" id="club-3" onclick="switchViewpoint('club', 3)" data-number="3"></button>
-            <button class="viewpoint-button" id="club-4" onclick="switchViewpoint('club', 4)" data-number="4"></button>
-            <button class="viewpoint-button" id="club-5" onclick="switchViewpoint('club', 5)" data-number="5"></button>
-        </div>
-        
-        <div id="etage-viewpoints" class="viewpoint-nav" style="display: none;">
-            <button class="viewpoint-button active" id="etage-1" onclick="switchViewpoint('etage', 1)" data-number="1"></button>
-            <button class="viewpoint-button" id="etage-2" onclick="switchViewpoint('etage', 2)" data-number="2"></button>
-            <button class="viewpoint-button" id="etage-3" onclick="switchViewpoint('etage', 3)" data-number="3"></button>
-            <button class="viewpoint-button" id="etage-4" onclick="switchViewpoint('etage', 4)" data-number="4"></button>
-            <button class="viewpoint-button" id="etage-5" onclick="switchViewpoint('etage', 5)" data-number="5"></button>
-        </div>
-    </div>
-    
-    <div class="viewer-container" id="viewer"></div>
 
     <script src="scripts.js"></script>
-
 </body>
 </html>
