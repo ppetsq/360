@@ -31,7 +31,7 @@ body {
 
 .title {
     font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 5.6rem;
+    font-size: 8.6rem;
     font-weight: 900;
     font-stretch: condensed;
     color: #914C95;
@@ -42,6 +42,7 @@ body {
     -webkit-font-smoothing: antialiased;
     text-align: left;
     margin-left: 10rem;
+    margin-top: 4rem;
 }
 
 .title a {
@@ -292,7 +293,7 @@ body {
     }
     
     .title {
-        font-size: 3.6rem;
+        font-size: 5.6rem;
         margin-left: 0;
     }
     
@@ -319,11 +320,11 @@ body {
     }
     
     .title {
-        font-size: 2.8rem;
+        font-size: 5.6rem;
     }
     
     .viewer-wrapper {
-        height: 25rem;
+        height: 40rem;
     }
     
     .viewer-label {
