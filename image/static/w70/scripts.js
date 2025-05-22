@@ -70,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
     animate();
     
     // Load initial viewpoints
-    // updateNavigation will be called inside loadViewpoint after each panorama loads and fades in.
     loadViewpoint('club', 1, true); 
     loadViewpoint('etage', 1, true);
 });
@@ -251,10 +250,10 @@ function updateNavigation(location) {
     
     // Find the specific viewer-section for this location's viewer
     const viewerContainer = document.getElementById(`${location}-viewer`);
-    if (!viewerContainer) return; // Exit if viewer container not found
+    if (!viewerContainer) return;
 
     const viewerSection = viewerContainer.closest('.viewer-section'); 
-    if (!viewerSection) return; // Exit if viewer section not found
+    if (!viewerSection) return;
 
     // Now, find the viewpoint navigation container within this specific viewer-section's footer
     const viewpointNavContainer = viewerSection.querySelector(`.viewer-footer .viewpoint-nav`);
@@ -334,8 +333,6 @@ function loadViewpoint(location, id, isInitial = false) {
     const viewpoint = viewpoints[location][id - 1]; // Get viewpoint data by id (1-based)
     const container = document.getElementById(`${location}-viewer`);
     
-    console.log(`Loading ${location} panorama:`, viewpoint.panorama);
-    
     // Fade out current view (only if not initial load)
     if (!isInitial) {
         container.style.opacity = '0';
@@ -348,8 +345,6 @@ function loadViewpoint(location, id, isInitial = false) {
     loader.load(
         viewpoint.panorama,
         (texture) => {
-            console.log('Texture loaded successfully');
-            
             // Wait for fade out to complete (or immediately if initial load)
             setTimeout(() => {
                 // Configure texture
@@ -399,7 +394,7 @@ function loadViewpoint(location, id, isInitial = false) {
         },
         // Progress callback (optional, for loading indicators)
         (xhr) => {
-            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+            // console.log((xhr.loaded / xhr.total * 100) + '% loaded'); // Removed for production
         },
         // Error callback
         (error) => {
