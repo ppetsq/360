@@ -8,7 +8,7 @@ const viewpoints = {
         { id: 5, panorama: "https://assets.360.petsq.works/w70/club_5.jpg" }
     ],
     etage: [
-        { id: 1, panorama: "https://assets.360.petsq.works/w70/etage_1.jpg" },
+        { id: 1, panorama: "https://assets.360.petsq.works/w70/etage_1_fix.jpg" },
         { id: 2, panorama: "https://assets.360.petsq.works/w70/etage_2.jpg" },
         { id: 3, panorama: "https://assets.360.petsq.works/w70/etage_3.jpg" },
         { id: 4, panorama: "https://assets.360.petsq.works/w70/etage_4.jpg" },
