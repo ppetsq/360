@@ -140,8 +140,9 @@ body {
     right: 4rem;
 }
 
-.viewer-wrapper.fullscreen .fullscreen-button {
-    display: none; /* Hide in fullscreen since it's in the nav container */
+/* This rule hides the standalone fullscreen button when the viewer is in fullscreen mode. */
+.viewer-wrapper.fullscreen > .fullscreen-button {
+    display: none;
 }
 
 /* Fullscreen navigation container - same for all devices */
@@ -175,7 +176,7 @@ body {
     color: #372D73;
     font-size: 1.4rem;
     display: flex;
-    margin-left: 0.8rem;
+    /* Removed margin-left to ensure consistent spacing */
 }
 
 .fullscreen-nav-container .fullscreen-button:hover {
