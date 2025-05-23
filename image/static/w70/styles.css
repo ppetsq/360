@@ -106,6 +106,57 @@ body {
     pointer-events: none;
 }
 
+/* Fullscreen Button */
+.fullscreen-button {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    width: 4.4rem;
+    height: 4.4rem;
+    background: #372D73;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    z-index: 20;
+}
+
+.fullscreen-button:hover {
+    opacity: 0.8;
+    transform: scale(1.1);
+}
+
+/* Fullscreen styles */
+.viewer-wrapper.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    border-radius: 0;
+    border: none;
+}
+
+.viewer-wrapper.fullscreen .viewer-label {
+    font-size: 5rem;
+    top: 3rem;
+    right: 4rem;
+}
+
+.viewer-wrapper.fullscreen .fullscreen-button {
+    bottom: 3rem;
+    right: 3rem;
+    width: 5rem;
+    height: 5rem;
+    font-size: 2rem;
+}
+
 /* NEW: Main navigation controls (prev/dots/next) */
 .main-navigation {
     display: flex;
@@ -367,7 +418,7 @@ body {
 
 @media (max-width: 768px) {
     body {
-        padding: 2.4rem;
+        padding: 1.6rem; /* Reduced from 2.4rem */
     }
     
     .main-container {
@@ -397,7 +448,7 @@ body {
 
 @media (max-width: 480px) {
     body {
-        padding: 0.6rem;
+        padding: 1rem; /* Reduced from 1.6rem */
     }
     
     .title {
@@ -421,5 +472,13 @@ body {
     
     .main-navigation {
         gap: 1.6rem;
+    }
+
+    .fullscreen-button {
+        width: 4rem;
+        height: 4rem;
+        font-size: 1.4rem;
+        bottom: 1.5rem;
+        right: 1.5rem;
     }
 }

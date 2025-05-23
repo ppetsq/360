@@ -22,6 +22,7 @@ const viewers = {
         currentViewpoint: 1,
         isAutoRotating: false,
         isTransitioning: false,
+        isFullscreen: false,
         scene: null,
         camera: null,
         renderer: null,
@@ -38,6 +39,7 @@ const viewers = {
         currentViewpoint: 1,
         isAutoRotating: false,
         isTransitioning: false,
+        isFullscreen: false,
         scene: null,
         camera: null,
         renderer: null,
@@ -72,7 +74,72 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load initial viewpoints
     loadViewpoint('club', 1, true); 
     loadViewpoint('etage', 1, true);
+
+    // Add escape key listener for fullscreen
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            exitFullscreen();
+        }
+    });
 });
+
+// Fullscreen functionality
+function toggleFullscreen(location) {
+    const viewer = viewers[location];
+    const wrapper = document.querySelector(`#${location}-viewer`).parentElement;
+    
+    if (viewer.isFullscreen) {
+        exitFullscreen();
+    } else {
+        enterFullscreen(location, wrapper);
+    }
+}
+
+function enterFullscreen(location, wrapper) {
+    const viewer = viewers[location];
+    
+    // Exit any other fullscreen viewers first
+    Object.keys(viewers).forEach(loc => {
+        if (loc !== location && viewers[loc].isFullscreen) {
+            exitFullscreen();
+        }
+    });
+    
+    viewer.isFullscreen = true;
+    wrapper.classList.add('fullscreen');
+    
+    // Update icon
+    const icon = document.getElementById(`${location}-fullscreen-icon`);
+    icon.classList.remove('fa-expand');
+    icon.classList.add('fa-compress');
+    
+    // Resize renderer after transition
+    setTimeout(() => {
+        onWindowResize();
+    }, 100);
+}
+
+function exitFullscreen() {
+    Object.keys(viewers).forEach(location => {
+        const viewer = viewers[location];
+        if (viewer.isFullscreen) {
+            const wrapper = document.querySelector(`#${location}-viewer`).parentElement;
+            
+            viewer.isFullscreen = false;
+            wrapper.classList.remove('fullscreen');
+            
+            // Update icon
+            const icon = document.getElementById(`${location}-fullscreen-icon`);
+            icon.classList.remove('fa-compress');
+            icon.classList.add('fa-expand');
+            
+            // Resize renderer after transition
+            setTimeout(() => {
+                onWindowResize();
+            }, 100);
+        }
+    });
+}
 
 // Initialize a viewer
 function initViewer(location) {
@@ -249,7 +316,7 @@ function updateNavigation(location) {
     const viewer = viewers[location];
     
     // Update viewpoint dots in both desktop and mobile/tablet navigation
-    const allViewpointButtons = document.querySelectorAll(`[id^="${location}-"]:not([id$="rotate-button"])`);
+    const allViewpointButtons = document.querySelectorAll(`[id^="${location}-"]:not([id$="rotate-button"]):not([id$="fullscreen-icon"])`);
     allViewpointButtons.forEach(btn => {
         btn.classList.remove('active');
     });
