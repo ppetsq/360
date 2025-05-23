@@ -5,7 +5,7 @@
 }
 
 html {
-    font-size: 62.5%; /* This makes 1rem = 10px */
+    font-size: 62.5%; /* 1rem = 10px */
 }
 
 body {
@@ -23,7 +23,9 @@ body {
     padding-right: 2.4rem;
 }
 
-/* Header */
+/* ========================================
+   HEADER
+   ======================================== */
 .header {
     text-align: left;
     margin-bottom: 5rem;
@@ -50,18 +52,13 @@ body {
     color: inherit;
 }
 
-@media screen and (min-width: 1280px) {
-    .title {
-        font-size: 13.6rem;
-    }
-}
-
-/* Viewer Section */
+/* ========================================
+   VIEWER SECTION
+   ======================================== */
 .viewer-section {
     margin-bottom: 6rem;
 }
 
-/* Viewer Container */
 .viewer-wrapper {
     position: relative;
     width: 100%;
@@ -73,22 +70,15 @@ body {
     border: 2px solid #372D73;
 }
 
-@media screen and (min-width: 1024px) {
-    .viewer-wrapper {
-        height: 61.9rem;
-    }
-}
-
 .viewer-container {
     width: 100%;
     height: 100%;
     opacity: 0;
     transition: opacity 1.5s ease-in-out;
     position: relative;
-    cursor: move; /* Four-headed arrow cursor for dragging */
+    cursor: move;
 }
 
-/* Viewer Label */
 .viewer-label {
     position: absolute;
     top: 2.5rem;
@@ -106,15 +96,17 @@ body {
     pointer-events: none;
 }
 
-/* Fullscreen Button */
+/* ========================================
+   FULLSCREEN FUNCTIONALITY
+   ======================================== */
 .fullscreen-button {
     position: absolute;
     bottom: 2rem;
     right: 2rem;
     width: 4.4rem;
     height: 4.4rem;
-    background: #372D73;
-    color: #FFFFFF;
+    background: #EBD45A;
+    color: #372D73;
     border: none;
     border-radius: 50%;
     cursor: pointer;
@@ -128,10 +120,9 @@ body {
 
 .fullscreen-button:hover {
     opacity: 0.8;
-    transform: scale(1.1);
 }
 
-/* Fullscreen styles */
+/* Fullscreen mode styles */
 .viewer-wrapper.fullscreen {
     position: fixed;
     top: 0;
@@ -150,14 +141,57 @@ body {
 }
 
 .viewer-wrapper.fullscreen .fullscreen-button {
-    bottom: 3rem;
-    right: 3rem;
-    width: 5rem;
-    height: 5rem;
-    font-size: 2rem;
+    display: none; /* Hide in fullscreen since it's in the nav container */
 }
 
-/* NEW: Main navigation controls (prev/dots/next) */
+/* Fullscreen navigation container - same for all devices */
+.fullscreen-nav-container {
+    position: absolute;
+    bottom: 2rem;
+    right: 3rem;
+    left: auto;
+    transform: none;
+    display: none;
+    align-items: center;
+    gap: 1.6rem;
+    z-index: 30;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 1.2rem 2rem;
+    border-radius: 4rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.viewer-wrapper.fullscreen .fullscreen-nav-container {
+    display: flex;
+}
+
+/* Fullscreen button inside nav container */
+.fullscreen-nav-container .fullscreen-button {
+    position: static;
+    width: 3.6rem;
+    height: 3.6rem;
+    background: #EBD45A;
+    color: #372D73;
+    font-size: 1.4rem;
+    display: flex;
+    margin-left: 0.8rem;
+}
+
+.fullscreen-nav-container .fullscreen-button:hover {
+    opacity: 0.8;
+}
+
+/* Hide regular navigation in fullscreen */
+.viewer-wrapper.fullscreen ~ .main-navigation,
+.viewer-wrapper.fullscreen ~ .auto-rotate-section,
+.viewer-wrapper.fullscreen ~ .viewer-footer {
+    display: none;
+}
+
+/* ========================================
+   NAVIGATION CONTROLS
+   ======================================== */
 .main-navigation {
     display: flex;
     justify-content: center;
@@ -167,7 +201,6 @@ body {
     padding: 0 2px;
 }
 
-/* NEW: Auto-rotate section */
 .auto-rotate-section {
     display: flex;
     justify-content: center;
@@ -175,44 +208,11 @@ body {
     padding: 0 2px;
 }
 
-/* Viewer Footer (Description only now) */
-.viewer-footer {
-    margin-top: 2.4rem;
-    padding-left: 2px;
-    padding-right: 2px;
-}
-
-.viewer-description {
-    text-align: left;
-    font-family: 'Inter Tight', sans-serif;
-    font-size: 1.6rem;
-    line-height: 1.5;
-    color: #372D73;
-}
-
-.viewer-description p {
-    margin: 0;
-}
-
-/* Description highlight styles */
-.description-highlight {
-    font-weight: 700;
-}
-
-.club-highlight {
-    color: #CF3D78;
-}
-
-.etage-highlight {
-    color: #EBD45A;
-}
-
-/* Original viewpoint controls (for desktop) */
 .viewpoint-controls {
     display: none; /* Hidden by default, shown only on desktop */
 }
 
-/* Viewpoint Navigation */
+/* Viewpoint dots */
 .viewpoint-nav {
     display: flex;
     gap: 1.2rem;
@@ -238,6 +238,23 @@ body {
 .viewpoint-button.active {
     background: #372D73;
     transform: scale(1.3);
+}
+
+/* Fullscreen navigation viewpoint dots */
+.fullscreen-nav-container .viewpoint-nav {
+    gap: 1rem;
+}
+
+.fullscreen-nav-container .viewpoint-button {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.fullscreen-nav-container .viewpoint-button:hover {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.fullscreen-nav-container .viewpoint-button.active {
+    background: #FFFFFF;
 }
 
 /* Control buttons */
@@ -268,7 +285,22 @@ body {
     color: #FFFFFF;
 }
 
-/* Button text spans for hiding on mobile */
+/* Compact buttons for fullscreen */
+.control-button.compact {
+    padding: 0.8rem 1.2rem;
+    height: 3.6rem;
+    font-size: 1.2rem;
+    background: rgba(55, 45, 115, 0.9);
+}
+
+.control-button.compact:hover {
+    background: rgba(55, 45, 115, 1);
+}
+
+.control-button.compact.active {
+    background: rgba(31, 136, 47, 0.9);
+}
+
 .control-button .button-text {
     display: inline;
 }
@@ -283,15 +315,46 @@ body {
 }
 
 @keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-/* Loading overlay */
+/* ========================================
+   VIEWER FOOTER
+   ======================================== */
+.viewer-footer {
+    margin-top: 2.4rem;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.viewer-description {
+    text-align: left;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 1.6rem;
+    line-height: 1.5;
+    color: #372D73;
+}
+
+.viewer-description p {
+    margin: 0;
+}
+
+.description-highlight {
+    font-weight: 700;
+}
+
+.club-highlight {
+    color: #CF3D78;
+}
+
+.etage-highlight {
+    color: #EBD45A;
+}
+
+/* ========================================
+   LOADING OVERLAY
+   ======================================== */
 .loading-overlay {
     position: fixed;
     top: 0;
@@ -338,20 +401,37 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* Hide elements during transitions */
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
 .hidden {
     display: none !important;
 }
 
-/* DESKTOP: Keep original layout for desktop (1024px+) */
+/* ========================================
+   RESPONSIVE STYLES
+   ======================================== */
+
+/* Large screens (1280px+) */
+@media screen and (min-width: 1280px) {
+    .title {
+        font-size: 13.6rem;
+    }
+}
+
+/* Desktop (1024px+) */
 @media (min-width: 1024px) {
-    /* Hide the new mobile/tablet navigation sections */
+    .viewer-wrapper {
+        height: 61.9rem;
+    }
+    
+    /* Hide mobile/tablet navigation */
     .main-navigation,
     .auto-rotate-section {
         display: none;
     }
     
-    /* Restore EXACT original desktop layout */
+    /* Desktop layout for footer */
     .viewer-footer {
         display: flex;
         justify-content: space-between;
@@ -364,14 +444,9 @@ body {
     .viewer-description {
         width: 50%;
         padding-right: 2rem;
-        text-align: left;
-        font-family: 'Inter Tight', sans-serif;
-        font-size: 1.6rem;
-        line-height: 1.5;
-        color: #372D73;
     }
     
-    /* Show original controls on desktop */
+    /* Show desktop controls */
     .viewpoint-controls {
         display: flex;
         justify-content: flex-end;
@@ -380,14 +455,12 @@ body {
     }
 }
 
-/* TABLET AND MOBILE: New layout (below 1024px) */
+/* Tablet and Mobile (below 1024px) */
 @media (max-width: 1023px) {
-    /* Hide original desktop controls */
     .viewpoint-controls {
         display: none;
     }
     
-    /* Show new mobile/tablet navigation */
     .main-navigation,
     .auto-rotate-section {
         display: flex;
@@ -398,27 +471,10 @@ body {
     }
 }
 
-/* MOBILE SPECIFIC: Hide button text (below 768px) - ONLY for prev/next buttons */
-@media (max-width: 767px) {
-    .main-navigation .control-button .button-text {
-        display: none;
-    }
-    
-    .main-navigation .control-button {
-        padding: 1.2rem;
-        min-width: 4.4rem;
-        justify-content: center;
-    }
-    
-    /* Keep auto-rotate button text visible on mobile */
-    .auto-rotate-section .control-button .button-text {
-        display: inline;
-    }
-}
-
+/* Tablet (768px and below) */
 @media (max-width: 768px) {
     body {
-        padding: 1.6rem; /* Reduced from 2.4rem */
+        padding: 1.6rem;
     }
     
     .main-container {
@@ -446,9 +502,29 @@ body {
     }
 }
 
+/* Mobile specific (767px and below) */
+@media (max-width: 767px) {
+    /* Hide button text only for prev/next buttons */
+    .main-navigation .control-button .button-text {
+        display: none;
+    }
+    
+    .main-navigation .control-button {
+        padding: 1.2rem;
+        min-width: 4.4rem;
+        justify-content: center;
+    }
+    
+    /* Keep auto-rotate button text visible */
+    .auto-rotate-section .control-button .button-text {
+        display: inline;
+    }
+}
+
+/* Small mobile (480px and below) */
 @media (max-width: 480px) {
     body {
-        padding: 1rem; /* Reduced from 1.6rem */
+        padding: 1rem;
     }
     
     .title {

@@ -315,19 +315,20 @@ function animate() {
 function updateNavigation(location) {
     const viewer = viewers[location];
     
-    // Update viewpoint dots in both desktop and mobile/tablet navigation
-    const allViewpointButtons = document.querySelectorAll(`[id^="${location}-"]:not([id$="rotate-button"]):not([id$="fullscreen-icon"])`);
+    // Update all viewpoint buttons (desktop, mobile, and fullscreen)
+    const allViewpointButtons = document.querySelectorAll(`[id^="${location}-"]:not([id$="rotate-button"]):not([id$="fullscreen-icon"]):not([id$="fullscreen-nav"])`);
     allViewpointButtons.forEach(btn => {
         btn.classList.remove('active');
     });
     
-    const activeButtons = document.querySelectorAll(`#${location}-${viewer.currentViewpoint}`);
+    // Add active class to current viewpoint buttons
+    const activeButtons = document.querySelectorAll(`#${location}-${viewer.currentViewpoint}, #${location}-fs-${viewer.currentViewpoint}`);
     activeButtons.forEach(btn => {
         btn.classList.add('active');
     });
     
-    // Update rotate buttons (both desktop and mobile/tablet)
-    const rotateButtons = document.querySelectorAll(`#${location}-rotate-button`);
+    // Update all rotate buttons (desktop, mobile, and fullscreen)
+    const rotateButtons = document.querySelectorAll(`#${location}-rotate-button, #${location}-fs-rotate-button`);
     rotateButtons.forEach(btn => {
         btn.classList.toggle('active', viewer.isAutoRotating);
     });
