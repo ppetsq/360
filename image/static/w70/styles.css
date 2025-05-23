@@ -397,7 +397,7 @@ body {
 
 @media (max-width: 480px) {
     body {
-        padding: 1.6rem;
+        padding: 0.6rem;
     }
     
     .title {
