@@ -155,7 +155,7 @@ body {
     display: none;
     align-items: center;
     gap: 1.6rem;
-    z-index: 30;
+    z-index: 99999;
     background: rgba(0, 0, 0, 0.7);
     padding: 1.2rem 2rem;
     border-radius: 4rem;
