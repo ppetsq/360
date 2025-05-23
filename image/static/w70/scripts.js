@@ -77,7 +77,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add escape key listener for fullscreen
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
+        // Find the currently active fullscreen viewer
+        let activeFullscreenViewerLocation = null;
+        for (const loc in viewers) {
+            if (viewers[loc].isFullscreen) {
+                activeFullscreenViewerLocation = loc;
+                break;
+            }
+        }
+
+        if (activeFullscreenViewerLocation) {
+            switch (e.key) {
+                case ' ': // Space bar
+                    e.preventDefault(); // Prevent scrolling
+                    toggleAutoRotate(activeFullscreenViewerLocation);
+                    break;
+                case 'ArrowLeft': // Left arrow key
+                    e.preventDefault();
+                    prevViewpoint(activeFullscreenViewerLocation);
+                    break;
+                case 'ArrowRight': // Right arrow key
+                    e.preventDefault();
+                    nextViewpoint(activeFullscreenViewerLocation);
+                    break;
+                case 'Escape': // Escape key
+                    e.preventDefault();
+                    exitFullscreen();
+                    break;
+            }
+        } else if (e.key === 'Escape') {
+            // Allow escape to exit if no specific viewer is in fullscreen (e.g., if a modal was active)
             exitFullscreen();
         }
     });
