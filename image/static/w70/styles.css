@@ -128,7 +128,7 @@ body {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100svh;
     z-index: 9999;
     border-radius: 0;
     border: none;
