@@ -166,6 +166,7 @@ function setupEventListeners() {
     const prevButton = document.getElementById('prev-button');
     const nextButton = document.getElementById('next-button');
     const uiToggleButton = document.getElementById('ui-toggle-button');
+    const btqButton = document.getElementById('btq-button');
     
     if (audioToggle) {
         audioToggle.addEventListener('click', toggleAudio);
@@ -180,6 +181,7 @@ function setupEventListeners() {
     if (prevButton) prevButton.addEventListener('click', goToPrevious);
     if (nextButton) nextButton.addEventListener('click', goToNext);
     if (uiToggleButton) uiToggleButton.addEventListener('click', toggleUIPanel);
+    if (btqButton) btqButton.addEventListener('click', openBTQ360);
 }
 
 // Mouse interaction handlers
@@ -290,7 +292,7 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-// Audio toggle with new speaker icon and mute line
+// Audio toggle with image icons
 function toggleAudio() {
     const audioIcon = document.getElementById('audio-icon');
     const isMuted = audioIcon.classList.contains('muted');
@@ -298,9 +300,11 @@ function toggleAudio() {
     if (isMuted) {
         audioIcon.classList.remove('muted');
         audioIcon.classList.add('playing');
+        audioIcon.src = 'assets/audio-on.png';
     } else {
         audioIcon.classList.remove('playing');
         audioIcon.classList.add('muted');
+        audioIcon.src = 'assets/audio-off.png';
     }
 }
 
@@ -316,20 +320,24 @@ function toggleUIPanel() {
 function showUIPanel() {
     const panel = document.getElementById('ui-panel');
     const toggleButton = document.getElementById('ui-toggle-button');
+    const btqButton = document.getElementById('btq-button');
     
     panel.classList.add('visible');
     toggleButton.classList.remove('visible');
     toggleButton.classList.add('panel-open');
+    btqButton.classList.add('hidden'); // Hide BTQ button
     uiPanelVisible = true;
 }
 
 function hideUIPanel() {
     const panel = document.getElementById('ui-panel');
     const toggleButton = document.getElementById('ui-toggle-button');
+    const btqButton = document.getElementById('btq-button');
     
     panel.classList.remove('visible');
     toggleButton.classList.remove('panel-open');
     toggleButton.classList.add('visible');
+    btqButton.classList.remove('hidden'); // Show BTQ button
     uiPanelVisible = false;
 }
 
@@ -351,7 +359,12 @@ function toggleAutoRotate() {
     }
 }
 
-// New button handlers
+// BTQ360 website opener
+function openBTQ360() {
+    window.open('https://btq360.com', '_blank');
+}
+
+// Button handlers
 function goBack() {
     console.log('Going back...');
     // Add your back navigation logic here
