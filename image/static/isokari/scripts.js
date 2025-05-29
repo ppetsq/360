@@ -18,8 +18,8 @@ let targetRotationOnMouseDownY = 0;
 
 // Zoom variables
 let currentZoom = 45; // Start more zoomed in for mirror ball
-const minZoom = 20; // Zoomed in
-const maxZoom = 60; // Limited zoom out to prevent black background
+const minZoom = 45; // Zoomed in
+const maxZoom = 120; // Limited zoom out to prevent black background
 const zoomSensitivity = 2;
 
 // Touch zoom variables
@@ -106,8 +106,8 @@ function loadEnvironmentTexture() {
 
 // Create the mirror ball mesh using environment mapping
 function createMirrorBallMesh() {
-    // Create a larger reflective sphere that fills the viewport
-    const geometry = new THREE.SphereGeometry(3, 64, 32);
+    // Create a much larger reflective sphere to eliminate black background
+    const geometry = new THREE.SphereGeometry(8, 64, 32); // Increased from 3 to 8
     // Scale to flip the reflection properly (mirror effect)
     geometry.scale(-1, -1, 1); // Flip X and Y to correct the mirror reflection
     
@@ -119,7 +119,7 @@ function createMirrorBallMesh() {
     });
     
     mirrorBallMesh = new THREE.Mesh(geometry, material);
-    mirrorBallMesh.position.set(0, 0, -1); // Closer to camera
+    mirrorBallMesh.position.set(0, 0, -2); // Moved further back to accommodate larger sphere
 }
 
 // Create normal panorama mesh (traditional 360° view)
@@ -244,8 +244,8 @@ function onMouseMove(event) {
         targetRotationX = targetRotationOnMouseDownX + (mouseX - mouseXOnMouseDown) * dragSensitivity;
         targetRotationY = targetRotationOnMouseDownY + (mouseY - mouseYOnMouseDown) * dragSensitivity;
         
-        // Clamp vertical rotation
-        targetRotationY = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, targetRotationY));
+        // Remove vertical rotation limits for full mirror ball experience
+        // targetRotationY = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, targetRotationY));
     }
 }
 
@@ -299,7 +299,8 @@ function onTouchMove(event) {
         targetRotationX = targetRotationOnMouseDownX + (mouseX - mouseXOnMouseDown) * dragSensitivity;
         targetRotationY = targetRotationOnMouseDownY + (mouseY - mouseYOnMouseDown) * dragSensitivity;
         
-        targetRotationY = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, targetRotationY));
+        // Remove vertical rotation limits for full mirror ball experience
+        // targetRotationY = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, targetRotationY));
 
     } else if (event.touches.length === 2) {
         // Pinch to zoom
@@ -361,12 +362,21 @@ function animate() {
     const rotationSpeed = 0.05;
     
     if (isMirrorBall && mirrorBallMesh) {
-        // For mirror ball, orbit camera around the sphere at a fixed distance
-        const distance = 3.5; // Fixed distance to prevent going too far
-        camera.position.x = Math.sin(targetRotationX) * distance;
-        camera.position.z = Math.cos(targetRotationX) * distance;
-        camera.position.y = Math.sin(targetRotationY) * distance;
+        // For mirror ball, use proper spherical coordinates to avoid flipping
+        const distance = 3.5;
+        
+        // Convert to spherical coordinates (phi = vertical, theta = horizontal)
+        const phi = targetRotationY; // Vertical angle (no limits)
+        const theta = targetRotationX; // Horizontal angle
+        
+        // Convert spherical to cartesian coordinates
+        camera.position.x = distance * Math.sin(phi) * Math.cos(theta);
+        camera.position.y = distance * Math.cos(phi);
+        camera.position.z = distance * Math.sin(phi) * Math.sin(theta);
+        
+        // Always look at the mirror ball center
         camera.lookAt(mirrorBallMesh.position);
+        
     } else if (!isMirrorBall && normalPanoramaMesh) {
         // For normal panorama, rotate the camera inside the sphere
         camera.position.set(0, 0, 0); // Reset camera to center
