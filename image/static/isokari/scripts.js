@@ -7,6 +7,7 @@ let mirrorBallMesh;
 let envTexture; // The 360° environment texture
 let isUserInteracting = false;
 let autoRotateEnabled = true; // Auto-rotation state
+let uiPanelVisible = true; // UI panel visibility state
 
 // Interaction variables
 let targetRotationX = 0;
@@ -87,9 +88,14 @@ function loadEnvironmentTexture() {
             // Add to scene
             scene.add(mirrorBallMesh);
             
-            // Hide loading overlay
+            // Hide loading overlay and show UI panel
             const loadingOverlay = document.getElementById('loading-overlay');
             loadingOverlay.classList.add('hidden');
+            
+            // Show UI panel by default
+            setTimeout(() => {
+                showUIPanel();
+            }, 500);
             
             // Start animation loop
             animate();
@@ -143,9 +149,11 @@ function setupEventListeners() {
     // Controls
     document.getElementById('audio-toggle').addEventListener('click', toggleAudio);
     document.getElementById('auto-rotate-toggle').addEventListener('click', toggleAutoRotate);
+    document.getElementById('simple-back-button').addEventListener('click', goBack);
     document.getElementById('back-button').addEventListener('click', goBack);
     document.getElementById('prev-button').addEventListener('click', goToPrevious);
     document.getElementById('next-button').addEventListener('click', goToNext);
+    document.getElementById('ui-toggle-button').addEventListener('click', toggleUIPanel);
 }
 
 // Mouse interaction handlers
@@ -256,7 +264,7 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-// Audio toggle with new symbols
+// Audio toggle with new speaker icon and mute line
 function toggleAudio() {
     const audioIcon = document.getElementById('audio-icon');
     const isMuted = audioIcon.classList.contains('muted');
@@ -264,12 +272,39 @@ function toggleAudio() {
     if (isMuted) {
         audioIcon.classList.remove('muted');
         audioIcon.classList.add('playing');
-        audioIcon.textContent = '♫';
     } else {
         audioIcon.classList.remove('playing');
         audioIcon.classList.add('muted');
-        audioIcon.textContent = '♪';
     }
+}
+
+// UI Panel toggle functions
+function toggleUIPanel() {
+    if (uiPanelVisible) {
+        hideUIPanel();
+    } else {
+        showUIPanel();
+    }
+}
+
+function showUIPanel() {
+    const panel = document.getElementById('ui-panel');
+    const toggleButton = document.getElementById('ui-toggle-button');
+    
+    panel.classList.add('visible');
+    toggleButton.classList.remove('visible');
+    toggleButton.classList.add('panel-open');
+    uiPanelVisible = true;
+}
+
+function hideUIPanel() {
+    const panel = document.getElementById('ui-panel');
+    const toggleButton = document.getElementById('ui-toggle-button');
+    
+    panel.classList.remove('visible');
+    toggleButton.classList.remove('panel-open');
+    toggleButton.classList.add('visible');
+    uiPanelVisible = false;
 }
 
 // Auto-rotation toggle

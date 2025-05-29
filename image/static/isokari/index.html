@@ -15,22 +15,16 @@
     </div>
 
     <div class="main-container">
-        <!-- Back Button -->
-        <button class="back-button" id="back-button" title="Back">
+        <!-- Simple Back Button (always visible) -->
+        <button class="simple-back-button" id="simple-back-button" title="Back">
             ←
         </button>
 
-        <!-- Audio Controls -->
+        <!-- Audio Controls (always visible) -->
         <div class="audio-controls" id="audio-controls">
             <button class="audio-button" id="audio-toggle" title="Toggle Audio">
-                <span class="audio-icon muted" id="audio-icon">♪</span>
-            </button>
-        </div>
-
-        <!-- Auto-Rotate Controls -->
-        <div class="auto-rotate-controls" id="auto-rotate-controls">
-            <button class="auto-rotate-button active" id="auto-rotate-toggle" title="Toggle Auto-Rotation">
-                <span id="auto-rotate-icon">⟲</span>
+                <span class="audio-icon muted" id="audio-icon">🔊</span>
+                <span class="audio-mute-line" id="audio-mute-line">|</span>
             </button>
         </div>
 
@@ -39,25 +33,21 @@
             <!-- Three.js canvas will be inserted here -->
         </div>
 
-        <!-- Info Box -->
-        <div class="info-box" id="info-box">
-            <div class="info-title">Isokari Cliffs</div>
-            <div class="info-content">
-                These dramatic limestone cliffs rise majestically from the Baltic Sea, formed over millennia by ancient coral reefs. The unique mirror ball perspective reveals the interplay of light, water, and stone.
+        <!-- UI Toggle Button -->
+        <button class="ui-toggle-button" id="ui-toggle-button" title="Toggle Menu">
+            ☰
+        </button>
+
+        <!-- Unified UI Panel -->
+        <div class="ui-panel" id="ui-panel">
+            <!-- Panel Header -->
+            <div class="panel-header">
+                <div class="panel-title">Isokari Cliffs</div>
+                <div class="panel-description">
+                    These dramatic limestone cliffs rise majestically from the Baltic Sea, formed over millennia by ancient coral reefs. The unique mirror ball perspective reveals the interplay of light, water, and stone.
+                </div>
             </div>
-            
-            <!-- Map Container -->
-            <div class="map-container">
-                <svg class="map-svg" viewBox="0 0 200 80">
-                    <!-- Simplified island shape -->
-                    <path class="island-shape" d="M20,50 C25,25 45,20 70,25 C90,15 120,18 140,25 C160,20 175,35 180,50 C175,65 160,70 140,65 C120,75 90,72 70,65 C45,70 25,65 20,50 Z"/>
-                    
-                    <!-- Location pin -->
-                    <circle class="location-pin" cx="85" cy="45" r="3"/>
-                    <circle class="location-pin" cx="85" cy="45" r="6" fill="none" stroke="#ff4444" stroke-width="1" opacity="0.5"/>
-                </svg>
-            </div>
-            
+
             <!-- Location Details -->
             <div class="location-details">
                 <div class="detail-item">
@@ -77,16 +67,30 @@
                     <span class="detail-value">22.0823°E</span>
                 </div>
             </div>
-        </div>
 
-        <!-- Navigation Controls -->
-        <div class="nav-controls">
-            <button class="nav-button" id="prev-button" title="Previous">
-                ‹
-            </button>
-            <button class="nav-button" id="next-button" title="Next">
-                ›
-            </button>
+            <!-- Controls Section -->
+            <div class="controls-section">
+                <div class="control-group">
+                    <button class="control-button active" id="auto-rotate-toggle" title="Toggle Auto-Rotation">
+                        <span id="auto-rotate-icon">⟲</span>
+                    </button>
+                    
+                    <button class="control-button" id="prev-button" title="Previous">
+                        ‹
+                    </button>
+                    
+                    <button class="control-button" id="next-button" title="Next">
+                        ›
+                    </button>
+                </div>
+            </div>
+
+            <!-- Back Button Section -->
+            <div class="back-section">
+                <button class="control-button secondary" id="back-button">
+                    <span class="button-text">Back to Menu</span>
+                </button>
+            </div>
         </div>
     </div>
 
