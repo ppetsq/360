@@ -115,7 +115,7 @@ body {
     opacity: 1;
 }
 
-/* Development Controls (temporary) */
+/* Development Controls */
 .dev-controls {
     position: fixed;
     bottom: 30px;
