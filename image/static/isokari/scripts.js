@@ -17,8 +17,8 @@ let targetRotationOnMouseDownX = 0;
 let targetRotationOnMouseDownY = 0;
 
 // Zoom variables
-let currentZoom = 45; // Start more zoomed in for mirror ball
-const minZoom = 45; // Zoomed in
+let currentZoom = 90; // Start more zoomed in for mirror ball
+const minZoom = 50; // Zoomed in
 const maxZoom = 120; // Limited zoom out to prevent black background
 const zoomSensitivity = 2;
 
