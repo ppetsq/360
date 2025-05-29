@@ -3,10 +3,10 @@
 
 // Global variables
 let scene, camera, renderer;
-let mirrorBallMesh, normalPanoramaMesh;
+let mirrorBallMesh;
 let envTexture; // The 360° environment texture
-let isMirrorBall = true;
 let isUserInteracting = false;
+let autoRotateEnabled = true; // Auto-rotation state
 
 // Interaction variables
 let targetRotationX = 0;
@@ -81,12 +81,11 @@ function loadEnvironmentTexture() {
             
             envTexture = texture;
             
-            // Create both mesh types
+            // Create mirror ball mesh
             createMirrorBallMesh();
-            createNormalPanoramaMesh();
             
-            // Start with mirror ball view
-            showMirrorBall();
+            // Add to scene
+            scene.add(mirrorBallMesh);
             
             // Hide loading overlay
             const loadingOverlay = document.getElementById('loading-overlay');
@@ -122,85 +121,6 @@ function createMirrorBallMesh() {
     mirrorBallMesh.position.set(0, 0, -2); // Moved further back to accommodate larger sphere
 }
 
-// Create normal panorama mesh (traditional 360° view)
-function createNormalPanoramaMesh() {
-    // Create inverted sphere for traditional panorama
-    const geometry = new THREE.SphereGeometry(500, 60, 40);
-    geometry.scale(-1, 1, 1); // Invert for inside view
-    
-    // Create a completely separate texture instance for normal view
-    const loader = new THREE.TextureLoader();
-    loader.crossOrigin = 'anonymous';
-    
-    loader.load(imageUrl, (normalTexture) => {
-        // Configure for standard UV mapping (NOT environment mapping)
-        normalTexture.mapping = THREE.UVMapping;
-        normalTexture.wrapS = THREE.RepeatWrapping;
-        normalTexture.wrapT = THREE.RepeatWrapping;
-        normalTexture.minFilter = THREE.LinearFilter;
-        normalTexture.magFilter = THREE.LinearFilter;
-        normalTexture.flipY = false;
-        
-        const material = new THREE.MeshBasicMaterial({
-            map: normalTexture,
-            side: THREE.BackSide
-        });
-        
-        normalPanoramaMesh = new THREE.Mesh(geometry, material);
-    });
-}
-
-// Show mirror ball view
-function showMirrorBall() {
-    // Remove all objects from scene
-    while(scene.children.length > 0){ 
-        scene.remove(scene.children[0]); 
-    }
-    scene.add(mirrorBallMesh);
-    isMirrorBall = true;
-    
-    // Reset rotations and zoom for mirror ball
-    targetRotationX = 0;
-    targetRotationY = 0;
-    currentZoom = 45; // Mirror ball optimal zoom
-    camera.fov = currentZoom;
-    camera.updateProjectionMatrix();
-    
-    // Update UI
-    document.getElementById('toggle-projection').textContent = 'Switch to Normal View';
-    document.querySelector('.dev-info span').textContent = 'Current: Mirror Ball';
-}
-
-// Show normal panorama view
-function showNormalPanorama() {
-    // Remove all objects from scene
-    while(scene.children.length > 0){ 
-        scene.remove(scene.children[0]); 
-    }
-    scene.add(normalPanoramaMesh);
-    isMirrorBall = false;
-    
-    // Reset rotations and zoom for normal view
-    targetRotationX = 0;
-    targetRotationY = 0;
-    currentZoom = 70; // Normal panorama zoom
-    camera.fov = currentZoom;
-    camera.updateProjectionMatrix();
-    
-    // Update UI
-    document.getElementById('toggle-projection').textContent = 'Switch to Mirror Ball';
-    document.querySelector('.dev-info span').textContent = 'Current: Normal View';
-}
-
-// Toggle between views
-function toggleProjection() {
-    if (isMirrorBall) {
-        showNormalPanorama();
-    } else {
-        showMirrorBall();
-    }
-}
-
 // Setup all event listeners
 function setupEventListeners() {
     const container = document.getElementById('viewer-container');
@@ -221,8 +141,11 @@ function setupEventListeners() {
     window.addEventListener('resize', onWindowResize, false);
     
     // Controls
-    document.getElementById('toggle-projection').addEventListener('click', toggleProjection);
     document.getElementById('audio-toggle').addEventListener('click', toggleAudio);
+    document.getElementById('auto-rotate-toggle').addEventListener('click', toggleAutoRotate);
+    document.getElementById('back-button').addEventListener('click', goBack);
+    document.getElementById('prev-button').addEventListener('click', goToPrevious);
+    document.getElementById('next-button').addEventListener('click', goToNext);
 }
 
 // Mouse interaction handlers
@@ -333,7 +256,7 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-// Audio toggle (placeholder)
+// Audio toggle with new symbols
 function toggleAudio() {
     const audioIcon = document.getElementById('audio-icon');
     const isMuted = audioIcon.classList.contains('muted');
@@ -341,12 +264,46 @@ function toggleAudio() {
     if (isMuted) {
         audioIcon.classList.remove('muted');
         audioIcon.classList.add('playing');
-        audioIcon.textContent = '🔊';
+        audioIcon.textContent = '♫';
     } else {
         audioIcon.classList.remove('playing');
         audioIcon.classList.add('muted');
-        audioIcon.textContent = '🔇';
+        audioIcon.textContent = '♪';
     }
+}
+
+// Auto-rotation toggle
+function toggleAutoRotate() {
+    const button = document.getElementById('auto-rotate-toggle');
+    const icon = document.getElementById('auto-rotate-icon');
+    
+    autoRotateEnabled = !autoRotateEnabled;
+    
+    if (autoRotateEnabled) {
+        button.classList.add('active');
+        icon.textContent = '⟲';
+        button.title = 'Disable Auto-Rotation';
+    } else {
+        button.classList.remove('active');
+        icon.textContent = '⏸';
+        button.title = 'Enable Auto-Rotation';
+    }
+}
+
+// New button handlers
+function goBack() {
+    console.log('Going back...');
+    // Add your back navigation logic here
+}
+
+function goToPrevious() {
+    console.log('Going to previous...');
+    // Add your previous navigation logic here
+}
+
+function goToNext() {
+    console.log('Going to next...');
+    // Add your next navigation logic here
 }
 
 // Animation loop
@@ -354,14 +311,14 @@ function animate() {
     requestAnimationFrame(animate);
     
     // Auto-rotation when not interacting
-    if (!isUserInteracting) {
+    if (!isUserInteracting && autoRotateEnabled) {
         targetRotationX += autoRotateSpeed;
     }
     
-    // Apply smooth camera rotation for both views
+    // Apply smooth camera rotation for mirror ball
     const rotationSpeed = 0.05;
     
-    if (isMirrorBall && mirrorBallMesh) {
+    if (mirrorBallMesh) {
         // For mirror ball, use proper spherical coordinates to avoid flipping
         const distance = 3.5;
         
@@ -376,12 +333,6 @@ function animate() {
         
         // Always look at the mirror ball center
         camera.lookAt(mirrorBallMesh.position);
-        
-    } else if (!isMirrorBall && normalPanoramaMesh) {
-        // For normal panorama, rotate the camera inside the sphere
-        camera.position.set(0, 0, 0); // Reset camera to center
-        camera.rotation.y += (targetRotationX - camera.rotation.y) * rotationSpeed;
-        camera.rotation.x += (targetRotationY - camera.rotation.x) * rotationSpeed;
     }
     
     renderer.render(scene, camera);

@@ -15,10 +15,22 @@
     </div>
 
     <div class="main-container">
+        <!-- Back Button -->
+        <button class="back-button" id="back-button" title="Back">
+            ←
+        </button>
+
         <!-- Audio Controls -->
         <div class="audio-controls" id="audio-controls">
             <button class="audio-button" id="audio-toggle" title="Toggle Audio">
-                <i class="audio-icon muted" id="audio-icon">🔇</i>
+                <span class="audio-icon muted" id="audio-icon">♪</span>
+            </button>
+        </div>
+
+        <!-- Auto-Rotate Controls -->
+        <div class="auto-rotate-controls" id="auto-rotate-controls">
+            <button class="auto-rotate-button active" id="auto-rotate-toggle" title="Toggle Auto-Rotation">
+                <span id="auto-rotate-icon">⟲</span>
             </button>
         </div>
 
@@ -27,12 +39,54 @@
             <!-- Three.js canvas will be inserted here -->
         </div>
 
-        <!-- View Toggle Controls -->
-        <div class="dev-controls" id="dev-controls">
-            <button class="dev-button" id="toggle-projection">Switch to Normal View</button>
-            <div class="dev-info">
-                <span>Current: Mirror Ball</span>
+        <!-- Info Box -->
+        <div class="info-box" id="info-box">
+            <div class="info-title">Isokari Cliffs</div>
+            <div class="info-content">
+                These dramatic limestone cliffs rise majestically from the Baltic Sea, formed over millennia by ancient coral reefs. The unique mirror ball perspective reveals the interplay of light, water, and stone.
             </div>
+            
+            <!-- Map Container -->
+            <div class="map-container">
+                <svg class="map-svg" viewBox="0 0 200 80">
+                    <!-- Simplified island shape -->
+                    <path class="island-shape" d="M20,50 C25,25 45,20 70,25 C90,15 120,18 140,25 C160,20 175,35 180,50 C175,65 160,70 140,65 C120,75 90,72 70,65 C45,70 25,65 20,50 Z"/>
+                    
+                    <!-- Location pin -->
+                    <circle class="location-pin" cx="85" cy="45" r="3"/>
+                    <circle class="location-pin" cx="85" cy="45" r="6" fill="none" stroke="#ff4444" stroke-width="1" opacity="0.5"/>
+                </svg>
+            </div>
+            
+            <!-- Location Details -->
+            <div class="location-details">
+                <div class="detail-item">
+                    <span class="detail-label">Date</span>
+                    <span class="detail-value">Aug 15, 2024</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Time</span>
+                    <span class="detail-value">14:32 UTC</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Latitude</span>
+                    <span class="detail-value">60.2451°N</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Longitude</span>
+                    <span class="detail-value">22.0823°E</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Controls -->
+        <div class="nav-controls">
+            <button class="nav-button" id="prev-button" title="Previous">
+                ‹
+            </button>
+            <button class="nav-button" id="next-button" title="Next">
+                ›
+            </button>
         </div>
     </div>
 
