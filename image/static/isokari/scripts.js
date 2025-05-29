@@ -95,6 +95,18 @@ function loadEnvironmentTexture() {
             // Show UI panel by default
             setTimeout(() => {
                 showUIPanel();
+                
+                // Make sure audio button is visible
+                const audioControls = document.getElementById('audio-controls');
+                const audioButton = document.getElementById('audio-toggle');
+                if (audioControls && audioButton) {
+                    console.log('Audio controls found and should be visible');
+                    audioControls.style.display = 'block';
+                    audioControls.style.opacity = '1';
+                    audioControls.style.visibility = 'visible';
+                } else {
+                    console.error('Audio controls not found!', { audioControls, audioButton });
+                }
             }, 500);
             
             // Start animation loop
@@ -146,14 +158,28 @@ function setupEventListeners() {
     // Window resize
     window.addEventListener('resize', onWindowResize, false);
     
-    // Controls
-    document.getElementById('audio-toggle').addEventListener('click', toggleAudio);
-    document.getElementById('auto-rotate-toggle').addEventListener('click', toggleAutoRotate);
-    document.getElementById('simple-back-button').addEventListener('click', goBack);
-    document.getElementById('back-button').addEventListener('click', goBack);
-    document.getElementById('prev-button').addEventListener('click', goToPrevious);
-    document.getElementById('next-button').addEventListener('click', goToNext);
-    document.getElementById('ui-toggle-button').addEventListener('click', toggleUIPanel);
+    // Controls - with error checking
+    const audioToggle = document.getElementById('audio-toggle');
+    const autoRotateToggle = document.getElementById('auto-rotate-toggle');
+    const simpleBackButton = document.getElementById('simple-back-button');
+    const backButton = document.getElementById('back-button');
+    const prevButton = document.getElementById('prev-button');
+    const nextButton = document.getElementById('next-button');
+    const uiToggleButton = document.getElementById('ui-toggle-button');
+    
+    if (audioToggle) {
+        audioToggle.addEventListener('click', toggleAudio);
+        console.log('Audio toggle listener added');
+    } else {
+        console.error('Audio toggle button not found!');
+    }
+    
+    if (autoRotateToggle) autoRotateToggle.addEventListener('click', toggleAutoRotate);
+    if (simpleBackButton) simpleBackButton.addEventListener('click', goBack);
+    if (backButton) backButton.addEventListener('click', goBack);
+    if (prevButton) prevButton.addEventListener('click', goToPrevious);
+    if (nextButton) nextButton.addEventListener('click', goToNext);
+    if (uiToggleButton) uiToggleButton.addEventListener('click', toggleUIPanel);
 }
 
 // Mouse interaction handlers

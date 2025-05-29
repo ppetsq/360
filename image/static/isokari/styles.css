@@ -11,6 +11,7 @@ body {
     overflow: hidden;
     height: 100vh;
     width: 100vw;
+    position: relative;
 }
 
 /* Loading Overlay */
@@ -62,6 +63,7 @@ body {
     position: relative;
     width: 100vw;
     height: 100vh;
+    overflow: visible;
 }
 
 /* Viewer Container */
@@ -398,15 +400,15 @@ body {
 /* Responsive Design */
 @media (max-width: 768px) {
     .ui-panel {
-        height: 200px;
+        height: 240px;
         flex-direction: column;
-        padding: 20px 18px;
+        padding: 20px 18px 30px 18px;
         gap: 16px;
         background: rgba(0, 0, 0, 0.55);
     }
 
     .ui-toggle-button.panel-open {
-        bottom: 220px;
+        bottom: 270px;
     }
 
     .simple-back-button,
@@ -454,6 +456,8 @@ body {
 
     .back-section {
         order: 3;
+        align-self: center;
+        padding-bottom: 10px;
     }
 
     .controls-section {
@@ -470,10 +474,10 @@ body {
     }
 
     .control-button.secondary {
-        min-width: 110px;
-        padding: 0 14px;
+        min-width: 120px;
+        padding: 0 16px;
         font-size: 13px;
-        height: 40px;
+        height: 42px;
     }
 
     .ui-toggle-button {
@@ -487,8 +491,8 @@ body {
 
 @media (max-width: 480px) {
     .ui-panel {
-        height: 220px;
-        padding: 18px 15px;
+        height: 260px;
+        padding: 18px 15px 25px 15px;
         gap: 14px;
     }
 
@@ -501,7 +505,7 @@ body {
     }
 
     .ui-toggle-button.panel-open {
-        bottom: 240px;
+        bottom: 285px;
     }
 
     .simple-back-button,
@@ -541,10 +545,10 @@ body {
     }
 
     .control-button.secondary {
-        min-width: 100px;
-        padding: 0 12px;
+        min-width: 110px;
+        padding: 0 14px;
         font-size: 12px;
-        height: 38px;
+        height: 40px;
     }
 
     .control-group {
@@ -560,5 +564,9 @@ body {
         flex-direction: row;
         gap: 12px;
         justify-content: center;
+    }
+
+    .back-section {
+        padding-bottom: 8px;
     }
 }
