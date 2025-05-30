@@ -29,7 +29,7 @@ let touchDistance = 0;
 let prevTouchDistance = 0;
 
 // Settings
-const autoRotateSpeed = 0.05; // degrees per frame
+const autoRotateSpeed = 0.025; // degrees per frame
 const dragSensitivity = 0.25;
 
 // Array of image URLs
