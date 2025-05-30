@@ -8,6 +8,8 @@ let currentEnvTexture; // The currently displayed 360° environment texture
 let isUserInteracting = false;
 let autoRotateEnabled = true; // Auto-rotation state
 let uiPanelVisible = true; // UI panel visibility state
+let iconRotationAngle = 0;
+let animationId = null;
 
 // Interaction variables
 let targetRotationX = 0;
@@ -75,6 +77,12 @@ function init() {
 
     // Load the initial 360° texture
     loadEnvironmentTexture(imageUrls[currentImageIndex]);
+
+    // Start icon rotation since auto-rotate is enabled by default
+    const icon = document.getElementById('auto-rotate-icon');
+    if (icon && autoRotateEnabled) {
+        startIconRotation(icon);
+    }
 
     // Setup event listeners
     setupEventListeners();
@@ -165,6 +173,9 @@ function setupEventListeners() {
 
     // Window resize
     window.addEventListener('resize', onWindowResize, false);
+
+    // Keyboard controls
+    document.addEventListener('keydown', onKeyDown, false);
 
     // Controls - with error checking
     const audioToggle = document.getElementById('audio-toggle');
@@ -350,13 +361,35 @@ function toggleAutoRotate() {
 
     if (autoRotateEnabled) {
         button.classList.add('active');
-        icon.textContent = '⟲';
+        // Start custom rotation animation
+        startIconRotation(icon);
         button.title = 'Disable Auto-Rotation';
     } else {
         button.classList.remove('active');
-        icon.textContent = '⏸';
+        // Stop rotation but keep current position
+        stopIconRotation(icon);
         button.title = 'Enable Auto-Rotation';
     }
+}
+
+function startIconRotation(icon) {
+    if (animationId) return; // Already running
+    
+    function rotateIcon() {
+        iconRotationAngle += 0.5; // Slow rotation speed
+        icon.style.transform = `rotate(${iconRotationAngle}deg)`;
+        animationId = requestAnimationFrame(rotateIcon);
+    }
+    
+    rotateIcon();
+}
+
+function stopIconRotation(icon) {
+    if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+    }
+    // Keep the current rotation angle - don't reset to 0
 }
 
 // BTQ360 website opener
@@ -428,6 +461,44 @@ function animate() {
     }
 
     renderer.render(scene, camera);
+}
+
+// Keyboard controls handler
+function onKeyDown(event) {
+    // Only prevent default if no modifier keys are pressed
+    const hasModifiers = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
+    
+    if (!hasModifiers) {
+        switch(event.code) {
+            case 'ArrowLeft':
+            case 'ArrowRight':
+            case 'Space':
+            case 'KeyR':
+                event.preventDefault();
+                break;
+        }
+    }
+    
+    // Handle the key actions (only if no modifiers)
+    if (!hasModifiers) {
+        switch(event.code) {
+            case 'ArrowRight':
+                goToNext();
+                break;
+                
+            case 'ArrowLeft':
+                goToPrevious();
+                break;
+                
+            case 'Space':
+                toggleUIPanel();
+                break;
+                
+            case 'KeyR':
+                toggleAutoRotate();
+                break;
+        }
+    }
 }
 
 // Start everything when DOM is loaded

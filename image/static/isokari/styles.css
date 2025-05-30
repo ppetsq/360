@@ -604,3 +604,95 @@ body {
         padding-bottom: 8px;
     }
 }
+
+/* Back Icon Styling */
+.back-icon {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1); /* Makes it white */
+    opacity: 0.9;
+    transition: all 0.3s ease;
+}
+
+.simple-back-button:hover .back-icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Auto-Rotate Icon Styling */
+.auto-rotate-icon {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1); /* Makes it white */
+    opacity: 0.9;
+    transition: opacity 0.3s ease; /* Only animate opacity, not transform */
+}
+
+/* Rotation animation for active state - much slower */
+.auto-rotate-icon.rotating {
+    animation: rotate 8s linear infinite;
+}
+
+/* Rotation keyframes */
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Navigation Icons Styling */
+.nav-icon {
+    width: 16px;
+    height: 16px;
+    filter: brightness(0) invert(1); /* Makes it white */
+    opacity: 0.9;
+    transition: all 0.3s ease;
+}
+
+/* Hover effects */
+.control-button:hover .auto-rotate-icon {
+    opacity: 1;
+}
+
+.control-button:hover .nav-icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Mobile responsive sizing */
+@media (max-width: 768px) {
+    .back-icon {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .auto-rotate-icon {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .nav-icon {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .back-icon {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .auto-rotate-icon {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .nav-icon {
+        width: 12px;
+        height: 12px;
+    }
+}
