@@ -12,12 +12,11 @@ let iconRotationAngle = 0;
 let animationId = null;
 
 // Interaction variables
-let targetRotationX = 0;
-let targetRotationY = 0;
-let mouseXOnMouseDown = 0;
-let mouseYOnMouseDown = 0;
-let targetRotationOnMouseDownX = 0;
-let targetRotationOnMouseDownY = 0;
+let lon = 0, lat = 0;
+let onPointerDownLon = 0;
+let onPointerDownLat = 0;
+let onPointerDownMouseX = 0;
+let onPointerDownMouseY = 0;
 
 // Zoom variables
 let currentZoom = 90; // Start more zoomed in for mirror ball
@@ -30,8 +29,8 @@ let touchDistance = 0;
 let prevTouchDistance = 0;
 
 // Settings
-const autoRotateSpeed = 0.0005;
-const dragSensitivity = 0.003;
+const autoRotateSpeed = 0.05; // degrees per frame
+const dragSensitivity = 0.25;
 
 // Array of image URLs
 const imageUrls = [
@@ -208,19 +207,32 @@ function onMouseDown(event) {
     event.preventDefault();
     isUserInteracting = true;
 
-    mouseXOnMouseDown = event.clientX;
-    mouseYOnMouseDown = event.clientY;
-    targetRotationOnMouseDownX = targetRotationX;
-    targetRotationOnMouseDownY = targetRotationY;
+    onPointerDownMouseX = event.clientX;
+    onPointerDownMouseY = event.clientY;
+    onPointerDownLon = lon;
+    onPointerDownLat = lat;
 }
 
 function onMouseMove(event) {
     if (isUserInteracting) {
-        const mouseX = event.clientX;
-        const mouseY = event.clientY;
-
-        targetRotationX = targetRotationOnMouseDownX + (mouseX - mouseXOnMouseDown) * dragSensitivity;
-        targetRotationY = targetRotationOnMouseDownY + (mouseY - mouseYOnMouseDown) * dragSensitivity;
+        const deltaX = (onPointerDownMouseX - event.clientX) * dragSensitivity;
+        const deltaY = (event.clientY - onPointerDownMouseY) * dragSensitivity;
+        
+        // Always update longitude (horizontal rotation)
+        lon = deltaX + onPointerDownLon;
+        
+        // Update latitude with clamping
+        const newLat = deltaY + onPointerDownLat;
+        lat = Math.max(-85, Math.min(85, newLat));
+        
+        // If we're at the pole limit and trying to go further, 
+        // convert vertical drag to additional horizontal rotation
+        if ((newLat > 85 && deltaY > 0) || (newLat < -85 && deltaY < 0)) {
+            // Add the excess vertical movement to horizontal rotation
+            // This creates the "spinning around vertical axis" effect at poles
+            const excess = Math.abs(newLat) - 85;
+            lon += excess * Math.sign(deltaX || 1); // Use sign of horizontal movement, or default to positive
+        }
     }
 }
 
@@ -251,10 +263,10 @@ function onTouchStart(event) {
     if (event.touches.length === 1) {
         isUserInteracting = true;
 
-        mouseXOnMouseDown = event.touches[0].pageX;
-        mouseYOnMouseDown = event.touches[0].pageY;
-        targetRotationOnMouseDownX = targetRotationX;
-        targetRotationOnMouseDownY = targetRotationY;
+        onPointerDownMouseX = event.touches[0].pageX;
+        onPointerDownMouseY = event.touches[0].pageY;
+        onPointerDownLon = lon;
+        onPointerDownLat = lat;
 
     } else if (event.touches.length === 2) {
         const dx = event.touches[0].pageX - event.touches[1].pageX;
@@ -267,13 +279,26 @@ function onTouchMove(event) {
     if (event.touches.length === 1 && isUserInteracting) {
         event.preventDefault();
 
-        const mouseX = event.touches[0].pageX;
-        const mouseY = event.touches[0].pageY;
-
-        targetRotationX = targetRotationOnMouseDownX + (mouseX - mouseXOnMouseDown) * dragSensitivity;
-        targetRotationY = targetRotationOnMouseDownY + (mouseY - mouseYOnMouseDown) * dragSensitivity;
+        const deltaX = (onPointerDownMouseX - event.touches[0].pageX) * dragSensitivity;
+        const deltaY = (event.touches[0].pageY - onPointerDownMouseY) * dragSensitivity;
+        
+        // Always update longitude (horizontal rotation)
+        lon = deltaX + onPointerDownLon;
+        
+        // Update latitude with clamping
+        const newLat = deltaY + onPointerDownLat;
+        lat = Math.max(-85, Math.min(85, newLat));
+        
+        // If we're at the pole limit and trying to go further, 
+        // convert vertical drag to additional horizontal rotation
+        if ((newLat > 85 && deltaY > 0) || (newLat < -85 && deltaY < 0)) {
+            // Add the excess vertical movement to horizontal rotation
+            const excess = Math.abs(newLat) - 85;
+            lon += excess * Math.sign(deltaX || 1);
+        }
 
     } else if (event.touches.length === 2) {
+        // ... rest of pinch zoom code stays the same
         const dx = event.touches[0].pageX - event.touches[1].pageX;
         const dy = event.touches[0].pageY - event.touches[1].pageY;
         touchDistance = Math.sqrt(dx * dx + dy * dy);
@@ -440,23 +465,20 @@ function animate() {
 
     // Auto-rotation when not interacting
     if (!isUserInteracting && autoRotateEnabled) {
-        targetRotationX += autoRotateSpeed;
+        lon += autoRotateSpeed;
     }
 
-    // Apply smooth camera rotation for mirror ball
+    // Update camera position based on lat/lon
     if (mirrorBallMesh) {
+        const phi = THREE.MathUtils.degToRad(90 - lat);
+        const theta = THREE.MathUtils.degToRad(lon);
+        
         const distance = 3.5;
-
-        // Convert to spherical coordinates (phi = vertical, theta = horizontal)
-        const phi = targetRotationY; // Vertical angle
-        const theta = targetRotationX; // Horizontal angle
-
-        // Convert spherical to cartesian coordinates
+        
         camera.position.x = distance * Math.sin(phi) * Math.cos(theta);
         camera.position.y = distance * Math.cos(phi);
         camera.position.z = distance * Math.sin(phi) * Math.sin(theta);
-
-        // Always look at the mirror ball center
+        
         camera.lookAt(mirrorBallMesh.position);
     }
 
