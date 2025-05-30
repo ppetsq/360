@@ -32,6 +32,10 @@ let prevTouchDistance = 0;
 const autoRotateSpeed = 0.025; // degrees per frame
 const dragSensitivity = 0.25;
 
+// Constant for stable latitude clamping (slightly adjusted for this precise fix)
+const MAX_LAT_DEG = 84.5; // Clamping latitude slightly less than 90 degrees for stability with up vector manipulation
+const UP_VECTOR_SMOOTHING_THRESHOLD = 75; // Start smoothing camera.up when within this many degrees of poles
+
 // Array of image URLs
 const imageUrls = [
     'https://assets.360.petsq.works/isokari/4960/01_4960.jpg',
@@ -139,7 +143,7 @@ function loadEnvironmentTexture(url) {
     );
 }
 
-// Create the mirror ball mesh using environment mapping
+// Create the mirror ball mesh using environment mapping (UNCHANGED from your provided script)
 function createMirrorBallMesh() {
     const geometry = new THREE.SphereGeometry(8, 64, 32);
     geometry.scale(-1, -1, 1);
@@ -154,7 +158,7 @@ function createMirrorBallMesh() {
     mirrorBallMesh.position.set(0, 0, -2);
 }
 
-// Setup all event listeners
+// Setup all event listeners (UNCHANGED from your provided script)
 function setupEventListeners() {
     const container = document.getElementById('viewer-container');
 
@@ -202,7 +206,7 @@ function setupEventListeners() {
     if (btqButton) btqButton.addEventListener('click', openBTQ360);
 }
 
-// Mouse interaction handlers
+// Mouse interaction handlers (MODIFIED: Simplified lat clamping to avoid explicit flip logic)
 function onMouseDown(event) {
     event.preventDefault();
     isUserInteracting = true;
@@ -221,18 +225,11 @@ function onMouseMove(event) {
         // Always update longitude (horizontal rotation)
         lon = deltaX + onPointerDownLon;
         
-        // Update latitude with clamping
+        // Update latitude with clamping (prevents trying to go past the poles naturally)
         const newLat = deltaY + onPointerDownLat;
-        lat = Math.max(-85, Math.min(85, newLat));
+        lat = Math.max(-MAX_LAT_DEG, Math.min(MAX_LAT_DEG, newLat));
         
-        // If we're at the pole limit and trying to go further, 
-        // convert vertical drag to additional horizontal rotation
-        if ((newLat > 85 && deltaY > 0) || (newLat < -85 && deltaY < 0)) {
-            // Add the excess vertical movement to horizontal rotation
-            // This creates the "spinning around vertical axis" effect at poles
-            const excess = Math.abs(newLat) - 85;
-            lon += excess * Math.sign(deltaX || 1); // Use sign of horizontal movement, or default to positive
-        }
+        // REMOVED: The problematic pole conversion logic that caused 180-degree flips/blocking
     }
 }
 
@@ -240,7 +237,7 @@ function onMouseUp() {
     isUserInteracting = false;
 }
 
-// Mouse wheel zoom
+// Mouse wheel zoom (UNCHANGED)
 function onMouseWheel(event) {
     event.preventDefault();
 
@@ -256,7 +253,7 @@ function onMouseWheel(event) {
     camera.updateProjectionMatrix();
 }
 
-// Touch interaction handlers
+// Touch interaction handlers (MODIFIED: Simplified lat clamping to avoid explicit flip logic)
 function onTouchStart(event) {
     event.preventDefault();
 
@@ -285,17 +282,11 @@ function onTouchMove(event) {
         // Always update longitude (horizontal rotation)
         lon = deltaX + onPointerDownLon;
         
-        // Update latitude with clamping
+        // Update latitude with clamping (prevents trying to go past the poles naturally)
         const newLat = deltaY + onPointerDownLat;
-        lat = Math.max(-85, Math.min(85, newLat));
+        lat = Math.max(-MAX_LAT_DEG, Math.min(MAX_LAT_DEG, newLat));
         
-        // If we're at the pole limit and trying to go further, 
-        // convert vertical drag to additional horizontal rotation
-        if ((newLat > 85 && deltaY > 0) || (newLat < -85 && deltaY < 0)) {
-            // Add the excess vertical movement to horizontal rotation
-            const excess = Math.abs(newLat) - 85;
-            lon += excess * Math.sign(deltaX || 1);
-        }
+        // REMOVED: The problematic pole conversion logic that caused 180-degree flips/blocking
 
     } else if (event.touches.length === 2) {
         // ... rest of pinch zoom code stays the same
@@ -321,14 +312,14 @@ function onTouchEnd(event) {
     prevTouchDistance = 0;
 }
 
-// Window resize handler
+// Window resize handler (UNCHANGED)
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-// Audio toggle with image icons
+// Audio toggle with image icons (UNCHANGED)
 function toggleAudio() {
     const audioIcon = document.getElementById('audio-icon');
     const isMuted = audioIcon.classList.contains('muted');
@@ -344,7 +335,7 @@ function toggleAudio() {
     }
 }
 
-// UI Panel toggle functions
+// UI Panel toggle functions (UNCHANGED)
 function toggleUIPanel() {
     if (uiPanelVisible) {
         hideUIPanel();
@@ -377,7 +368,7 @@ function hideUIPanel() {
     uiPanelVisible = false;
 }
 
-// Auto-rotation toggle
+// Auto-rotation toggle (UNCHANGED)
 function toggleAutoRotate() {
     const button = document.getElementById('auto-rotate-toggle');
     const icon = document.getElementById('auto-rotate-icon');
@@ -417,12 +408,12 @@ function stopIconRotation(icon) {
     // Keep the current rotation angle - don't reset to 0
 }
 
-// BTQ360 website opener
+// BTQ360 website opener (UNCHANGED)
 function openBTQ360() {
     window.open('https://btq360.com', '_blank');
 }
 
-// Generic function to hide loading overlay and show UI
+// Generic function to hide loading overlay and show UI (UNCHANGED)
 function hideLoadingOverlayAndShowUI() {
     const loadingOverlay = document.getElementById('loading-overlay');
     loadingOverlay.classList.add('hidden');
@@ -443,7 +434,7 @@ function hideLoadingOverlayAndShowUI() {
     }, 500);
 }
 
-// Button handlers for navigation
+// Button handlers for navigation (UNCHANGED)
 function goBack() {
     console.log('Going back...');
     // Add your back navigation logic here, e.g., window.history.back();
@@ -459,7 +450,7 @@ function goToNext() {
     loadEnvironmentTexture(imageUrls[currentImageIndex]);
 }
 
-// Animation loop
+// Animation loop (MODIFIED: Add camera.up stabilization for lookAt)
 function animate() {
     requestAnimationFrame(animate);
 
@@ -479,13 +470,32 @@ function animate() {
         camera.position.y = distance * Math.cos(phi);
         camera.position.z = distance * Math.sin(phi) * Math.sin(theta);
         
+        // CRITICAL FIX: Manually stabilize camera.up vector near poles
+        // This prevents the 180-degree flip caused by lookAt's ambiguity
+        const upBias = Math.abs(lat) / MAX_LAT_DEG; // 0 at equator, 1 at clamp limit
+        
+        if (upBias > UP_VECTOR_SMOOTHING_THRESHOLD / MAX_LAT_DEG) { // If close to poles
+            const smoothFactor = (upBias - UP_VECTOR_SMOOTHING_THRESHOLD / MAX_LAT_DEG) / (1 - UP_VECTOR_SMOOTHING_THRESHOLD / MAX_LAT_DEG);
+            
+            // Adjust camera.up towards (0,0,-1) or (0,0,1) depending on which pole
+            // This slightly tilts the 'up' vector to avoid perfect alignment with camera's forward.
+            // Using a small amount of X or Z helps. Let's try X for horizontal stability.
+            const upX = Math.sin(THREE.MathUtils.degToRad(lon)) * smoothFactor * 0.1; // Small horizontal bias
+            const upZ = -Math.cos(THREE.MathUtils.degToRad(lon)) * smoothFactor * 0.1; // Small horizontal bias
+            
+            // Interpolate between (0,1,0) and a slightly biased vector
+            camera.up.set(upX, 1 - smoothFactor * 0.1, upZ).normalize(); // Keep Y dominant, add slight X/Z bias
+        } else {
+            camera.up.set(0, 1, 0); // Default world up
+        }
+
         camera.lookAt(mirrorBallMesh.position);
     }
 
     renderer.render(scene, camera);
 }
 
-// Keyboard controls handler
+// Keyboard controls handler (UNCHANGED)
 function onKeyDown(event) {
     // Only prevent default if no modifier keys are pressed
     const hasModifiers = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
