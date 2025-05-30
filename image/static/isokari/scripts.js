@@ -4,7 +4,7 @@
 // Global variables
 let scene, camera, renderer;
 let mirrorBallMesh;
-let envTexture; // The 360° environment texture
+let currentEnvTexture; // The currently displayed 360° environment texture
 let isUserInteracting = false;
 let autoRotateEnabled = true; // Auto-rotation state
 let uiPanelVisible = true; // UI panel visibility state
@@ -30,15 +30,29 @@ let prevTouchDistance = 0;
 // Settings
 const autoRotateSpeed = 0.0005;
 const dragSensitivity = 0.003;
-const imageUrl = 'https://assets.360.petsq.works/isokari/kalliot-test.jpg';
+
+// Array of image URLs
+const imageUrls = [
+    'https://assets.360.petsq.works/isokari/4960/01_4960.jpg',
+    'https://assets.360.petsq.works/isokari/4960/02_4960.jpg',
+    'https://assets.360.petsq.works/isokari/4960/03_4960.jpg',
+    'https://assets.360.petsq.works/isokari/4960/04_4960.jpg',
+    'https://assets.360.petsq.works/isokari/4960/05_4960.jpg',
+    'https://assets.360.petsq.works/isokari/4960/06_4960.jpg',
+    'https://assets.360.petsq.works/isokari/4960/07_4960.jpg',
+    'https://assets.360.petsq.works/isokari/4960/08_4960.jpg',
+    'https://assets.360.petsq.works/isokari/4960/09_4960.jpg',
+    'https://assets.360.petsq.works/isokari/4960/10_4960.jpg'
+];
+let currentImageIndex = 0; // To keep track of the currently displayed image
 
 // Initialize the experience
 function init() {
     const container = document.getElementById('viewer-container');
-    
+
     // Create scene
     scene = new THREE.Scene();
-    
+
     // Create camera
     camera = new THREE.PerspectiveCamera(
         currentZoom,
@@ -47,102 +61,96 @@ function init() {
         1000
     );
     camera.position.set(0, 0, 0);
-    
+
     // Create renderer
-    renderer = new THREE.WebGLRenderer({ 
+    renderer = new THREE.WebGLRenderer({
         antialias: true,
-        alpha: false 
+        alpha: false
     });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.0;
     container.appendChild(renderer.domElement);
-    
-    // Load the 360° texture
-    loadEnvironmentTexture();
-    
+
+    // Load the initial 360° texture
+    loadEnvironmentTexture(imageUrls[currentImageIndex]);
+
     // Setup event listeners
     setupEventListeners();
 }
 
 // Load and setup the 360° environment texture
-function loadEnvironmentTexture() {
+function loadEnvironmentTexture(url) {
     const loader = new THREE.TextureLoader();
     loader.crossOrigin = 'anonymous';
-    
+
+    // Show loading overlay when a new texture starts loading
+    const loadingOverlay = document.getElementById('loading-overlay');
+    loadingOverlay.classList.remove('hidden');
+
     loader.load(
-        imageUrl,
+        url,
         (texture) => {
-            // Configure texture for environment mapping (mirror ball)
             texture.mapping = THREE.EquirectangularReflectionMapping;
             texture.minFilter = THREE.LinearFilter;
             texture.magFilter = THREE.LinearFilter;
             texture.flipY = false;
-            
-            envTexture = texture;
-            
-            // Create mirror ball mesh
-            createMirrorBallMesh();
-            
-            // Add to scene
-            scene.add(mirrorBallMesh);
-            
+
+            // Dispose of the old texture if it exists
+            if (currentEnvTexture) {
+                currentEnvTexture.dispose();
+            }
+            currentEnvTexture = texture;
+
+            // Create or update mirror ball mesh with the new texture
+            if (!mirrorBallMesh) {
+                createMirrorBallMesh();
+                scene.add(mirrorBallMesh);
+            } else {
+                mirrorBallMesh.material.envMap = currentEnvTexture;
+                mirrorBallMesh.material.needsUpdate = true; // Important to update the material
+            }
+
             // Hide loading overlay and show UI panel
-            const loadingOverlay = document.getElementById('loading-overlay');
-            loadingOverlay.classList.add('hidden');
-            
-            // Show UI panel by default
-            setTimeout(() => {
-                showUIPanel();
-                
-                // Make sure audio button is visible
-                const audioControls = document.getElementById('audio-controls');
-                const audioButton = document.getElementById('audio-toggle');
-                if (audioControls && audioButton) {
-                    console.log('Audio controls found and should be visible');
-                    audioControls.style.display = 'block';
-                    audioControls.style.opacity = '1';
-                    audioControls.style.visibility = 'visible';
-                } else {
-                    console.error('Audio controls not found!', { audioControls, audioButton });
-                }
-            }, 500);
-            
-            // Start animation loop
-            animate();
+            hideLoadingOverlayAndShowUI();
+
+            // Only start animation loop once
+            if (!renderer.isAnimating) { // A simple flag to prevent multiple animation loops
+                animate();
+                renderer.isAnimating = true;
+            }
         },
         (progress) => {
-            console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
+            console.log('Loading progress:', (progress.loaded / progress.total * 100).toFixed(2) + '%');
         },
         (error) => {
             console.error('Error loading texture:', error);
+            // Even on error, attempt to hide loading overlay
+            hideLoadingOverlayAndShowUI();
         }
     );
 }
 
 // Create the mirror ball mesh using environment mapping
 function createMirrorBallMesh() {
-    // Create a much larger reflective sphere to eliminate black background
-    const geometry = new THREE.SphereGeometry(8, 64, 32); // Increased from 3 to 8
-    // Scale to flip the reflection properly (mirror effect)
-    geometry.scale(-1, -1, 1); // Flip X and Y to correct the mirror reflection
-    
-    // Create material with environment mapping
+    const geometry = new THREE.SphereGeometry(8, 64, 32);
+    geometry.scale(-1, -1, 1);
+
     const material = new THREE.MeshBasicMaterial({
-        envMap: envTexture,
+        envMap: currentEnvTexture,
         reflectivity: 1.0,
-        side: THREE.BackSide // Changed to BackSide because we flipped the geometry
+        side: THREE.BackSide
     });
-    
+
     mirrorBallMesh = new THREE.Mesh(geometry, material);
-    mirrorBallMesh.position.set(0, 0, -2); // Moved further back to accommodate larger sphere
+    mirrorBallMesh.position.set(0, 0, -2);
 }
 
 // Setup all event listeners
 function setupEventListeners() {
     const container = document.getElementById('viewer-container');
-    
+
     // Mouse events
     container.addEventListener('mousedown', onMouseDown, false);
     container.addEventListener('mousemove', onMouseMove, false);
@@ -154,10 +162,10 @@ function setupEventListeners() {
     container.addEventListener('touchstart', onTouchStart, { passive: false });
     container.addEventListener('touchmove', onTouchMove, { passive: false });
     container.addEventListener('touchend', onTouchEnd, false);
-    
+
     // Window resize
     window.addEventListener('resize', onWindowResize, false);
-    
+
     // Controls - with error checking
     const audioToggle = document.getElementById('audio-toggle');
     const autoRotateToggle = document.getElementById('auto-rotate-toggle');
@@ -167,14 +175,14 @@ function setupEventListeners() {
     const nextButton = document.getElementById('next-button');
     const uiToggleButton = document.getElementById('ui-toggle-button');
     const btqButton = document.getElementById('btq-button');
-    
+
     if (audioToggle) {
         audioToggle.addEventListener('click', toggleAudio);
         console.log('Audio toggle listener added');
     } else {
         console.error('Audio toggle button not found!');
     }
-    
+
     if (autoRotateToggle) autoRotateToggle.addEventListener('click', toggleAutoRotate);
     if (simpleBackButton) simpleBackButton.addEventListener('click', goBack);
     if (backButton) backButton.addEventListener('click', goBack);
@@ -188,7 +196,7 @@ function setupEventListeners() {
 function onMouseDown(event) {
     event.preventDefault();
     isUserInteracting = true;
-    
+
     mouseXOnMouseDown = event.clientX;
     mouseYOnMouseDown = event.clientY;
     targetRotationOnMouseDownX = targetRotationX;
@@ -199,12 +207,9 @@ function onMouseMove(event) {
     if (isUserInteracting) {
         const mouseX = event.clientX;
         const mouseY = event.clientY;
-        
+
         targetRotationX = targetRotationOnMouseDownX + (mouseX - mouseXOnMouseDown) * dragSensitivity;
         targetRotationY = targetRotationOnMouseDownY + (mouseY - mouseYOnMouseDown) * dragSensitivity;
-        
-        // Remove vertical rotation limits for full mirror ball experience
-        // targetRotationY = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, targetRotationY));
     }
 }
 
@@ -217,13 +222,13 @@ function onMouseWheel(event) {
     event.preventDefault();
 
     const delta = event.deltaY || event.detail || event.wheelDelta;
-    
+
     if (delta > 0) {
         currentZoom = Math.min(maxZoom, currentZoom + zoomSensitivity);
     } else {
         currentZoom = Math.max(minZoom, currentZoom - zoomSensitivity);
     }
-    
+
     camera.fov = currentZoom;
     camera.updateProjectionMatrix();
 }
@@ -231,17 +236,16 @@ function onMouseWheel(event) {
 // Touch interaction handlers
 function onTouchStart(event) {
     event.preventDefault();
-    
+
     if (event.touches.length === 1) {
         isUserInteracting = true;
-        
+
         mouseXOnMouseDown = event.touches[0].pageX;
         mouseYOnMouseDown = event.touches[0].pageY;
         targetRotationOnMouseDownX = targetRotationX;
         targetRotationOnMouseDownY = targetRotationY;
-        
+
     } else if (event.touches.length === 2) {
-        // Pinch to zoom
         const dx = event.touches[0].pageX - event.touches[1].pageX;
         const dy = event.touches[0].pageY - event.touches[1].pageY;
         prevTouchDistance = Math.sqrt(dx * dx + dy * dy);
@@ -251,25 +255,21 @@ function onTouchStart(event) {
 function onTouchMove(event) {
     if (event.touches.length === 1 && isUserInteracting) {
         event.preventDefault();
-        
+
         const mouseX = event.touches[0].pageX;
         const mouseY = event.touches[0].pageY;
-        
+
         targetRotationX = targetRotationOnMouseDownX + (mouseX - mouseXOnMouseDown) * dragSensitivity;
         targetRotationY = targetRotationOnMouseDownY + (mouseY - mouseYOnMouseDown) * dragSensitivity;
-        
-        // Remove vertical rotation limits for full mirror ball experience
-        // targetRotationY = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, targetRotationY));
 
     } else if (event.touches.length === 2) {
-        // Pinch to zoom
         const dx = event.touches[0].pageX - event.touches[1].pageX;
         const dy = event.touches[0].pageY - event.touches[1].pageY;
         touchDistance = Math.sqrt(dx * dx + dy * dy);
 
         if (prevTouchDistance > 0) {
             const zoomFactor = touchDistance / prevTouchDistance;
-            currentZoom = currentZoom / zoomFactor; 
+            currentZoom = currentZoom / zoomFactor;
             currentZoom = Math.max(minZoom, Math.min(maxZoom, currentZoom));
 
             camera.fov = currentZoom;
@@ -296,7 +296,7 @@ function onWindowResize() {
 function toggleAudio() {
     const audioIcon = document.getElementById('audio-icon');
     const isMuted = audioIcon.classList.contains('muted');
-    
+
     if (isMuted) {
         audioIcon.classList.remove('muted');
         audioIcon.classList.add('playing');
@@ -321,7 +321,7 @@ function showUIPanel() {
     const panel = document.getElementById('ui-panel');
     const toggleButton = document.getElementById('ui-toggle-button');
     const btqButton = document.getElementById('btq-button');
-    
+
     panel.classList.add('visible');
     toggleButton.classList.remove('visible');
     toggleButton.classList.add('panel-open');
@@ -333,7 +333,7 @@ function hideUIPanel() {
     const panel = document.getElementById('ui-panel');
     const toggleButton = document.getElementById('ui-toggle-button');
     const btqButton = document.getElementById('btq-button');
-    
+
     panel.classList.remove('visible');
     toggleButton.classList.remove('panel-open');
     toggleButton.classList.add('visible');
@@ -345,9 +345,9 @@ function hideUIPanel() {
 function toggleAutoRotate() {
     const button = document.getElementById('auto-rotate-toggle');
     const icon = document.getElementById('auto-rotate-icon');
-    
+
     autoRotateEnabled = !autoRotateEnabled;
-    
+
     if (autoRotateEnabled) {
         button.classList.add('active');
         icon.textContent = '⟲';
@@ -364,51 +364,69 @@ function openBTQ360() {
     window.open('https://btq360.com', '_blank');
 }
 
-// Button handlers
+// Generic function to hide loading overlay and show UI
+function hideLoadingOverlayAndShowUI() {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    loadingOverlay.classList.add('hidden');
+
+    setTimeout(() => {
+        showUIPanel();
+
+        const audioControls = document.getElementById('audio-controls');
+        const audioButton = document.getElementById('audio-toggle');
+        if (audioControls && audioButton) {
+            console.log('Audio controls found and should be visible');
+            audioControls.style.display = 'block';
+            audioControls.style.opacity = '1';
+            audioControls.style.visibility = 'visible';
+        } else {
+            console.error('Audio controls not found!', { audioControls, audioButton });
+        }
+    }, 500);
+}
+
+// Button handlers for navigation
 function goBack() {
     console.log('Going back...');
-    // Add your back navigation logic here
+    // Add your back navigation logic here, e.g., window.history.back();
 }
 
 function goToPrevious() {
-    console.log('Going to previous...');
-    // Add your previous navigation logic here
+    currentImageIndex = (currentImageIndex - 1 + imageUrls.length) % imageUrls.length;
+    loadEnvironmentTexture(imageUrls[currentImageIndex]);
 }
 
 function goToNext() {
-    console.log('Going to next...');
-    // Add your next navigation logic here
+    currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
+    loadEnvironmentTexture(imageUrls[currentImageIndex]);
 }
 
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
-    
+
     // Auto-rotation when not interacting
     if (!isUserInteracting && autoRotateEnabled) {
         targetRotationX += autoRotateSpeed;
     }
-    
+
     // Apply smooth camera rotation for mirror ball
-    const rotationSpeed = 0.05;
-    
     if (mirrorBallMesh) {
-        // For mirror ball, use proper spherical coordinates to avoid flipping
         const distance = 3.5;
-        
+
         // Convert to spherical coordinates (phi = vertical, theta = horizontal)
-        const phi = targetRotationY; // Vertical angle (no limits)
+        const phi = targetRotationY; // Vertical angle
         const theta = targetRotationX; // Horizontal angle
-        
+
         // Convert spherical to cartesian coordinates
         camera.position.x = distance * Math.sin(phi) * Math.cos(theta);
         camera.position.y = distance * Math.cos(phi);
         camera.position.z = distance * Math.sin(phi) * Math.sin(theta);
-        
+
         // Always look at the mirror ball center
         camera.lookAt(mirrorBallMesh.position);
     }
-    
+
     renderer.render(scene, camera);
 }
 
