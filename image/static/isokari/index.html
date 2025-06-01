@@ -7,20 +7,17 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Global styles -->
     <link rel="stylesheet" href="styles/styles.css">
     <link rel="stylesheet" href="styles/styles_menu.css">
     <link rel="stylesheet" href="styles/styles_island.css">
     <link rel="stylesheet" href="styles/styles_ph.css">
 </head>
 <body>
-    <!-- Global Loading Overlay -->
     <div class="loading-overlay" id="loading-overlay">
         <div class="loading-spinner"></div>
         <div class="loading-text" id="loading-text">Loading Isokari experience...</div>
     </div>
 
-    <!-- Persistent Audio Controls -->
     <div class="audio-controls" id="audio-controls">
         <button class="audio-button muted" id="audio-toggle" title="Toggle Audio">
             <img class="audio-icon muted" id="audio-icon" src="assets/audio-off.png" alt="Audio">
@@ -28,16 +25,13 @@
     </div>
 
     <div class="main-container">
-        <!-- INTRO/MENU SECTION -->
         <div class="section-container active" id="intro-section">
-            <!-- BTQ360 Link Button (bottom-left) for menu -->
             <button class="btq-button" id="menu-btq-button" title="Visit BTQ360.com">
                 <img src="assets/btq.png" alt="BTQ360" class="btq-icon">
             </button>
 
             <div class="intro-viewer" id="intro-viewer">
-                <!-- 360° video background -->
-            </div>
+                </div>
             
             <div class="menu-overlay">
                 <div class="menu-title">ISOKARI 360°</div>
@@ -63,29 +57,22 @@
             </div>
         </div>
 
-       <!-- ISLAND SECTION -->
-<div class="section-container" id="island-section">
-    <!-- Simple Back Button (always visible) -->
+       <div class="section-container" id="island-section">
     <button class="simple-back-button" id="island-back-button" title="Back to Menu">
         <img src="assets/back.png" alt="Back" class="back-icon">
     </button>
 
-    <!-- BTQ360 Link Button (bottom-left) -->
     <button class="btq-button" id="btq-button" title="Visit BTQ360.com">
         <img src="assets/btq.png" alt="BTQ360" class="btq-icon">
     </button>
 
-    <!-- Mirror Ball Viewer -->
     <div class="viewer-container" id="island-viewer">
-        <!-- Three.js canvas will be inserted here -->
-    </div>
+        </div>
 
-    <!-- UI Toggle Button -->
     <button class="ui-toggle-button" id="ui-toggle-button" title="Toggle Menu">
         ☰
     </button>
 
-    <!-- Interactive Map Container (Positioned separately for 50/50 overlap) -->
     <div class="map-container" id="island-map-container">
         <img src="assets/island-map.svg" class="map-background" alt="Island Map" />
         <div class="dot" data-index="0" style="left: 54%; top: 84%;"></div>
@@ -102,9 +89,7 @@
         <div class="dot" data-index="11" style="left: 4%; top: 65%;"></div>
     </div>
 
-    <!-- Island UI Panel -->
     <div class="ui-panel" id="island-ui-panel">
-        <!-- Panel Header -->
         <div class="panel-header">
             <div class="panel-title">Isokari Cliffs</div>
             <div class="panel-description">
@@ -112,7 +97,6 @@
             </div>
         </div>
 
-        <!-- Location Details -->
         <div class="location-details">
             <div class="detail-item">
                 <span class="detail-label">Date</span>
@@ -132,7 +116,6 @@
             </div>
         </div>
 
-        <!-- Controls Section -->
         <div class="controls-section">
             <div class="control-group">
                 <button class="control-button active" id="auto-rotate-toggle" title="Toggle Auto-Rotation">
@@ -149,34 +132,26 @@
             </div>
         </div>
 
-        <!-- Cross Navigation Section REMOVED -->
-        <!-- No more pilots house button -->
-    </div>
+        </div>
 </div>
 
-        <!-- PILOTS HOUSE SECTION -->
         <div class="section-container" id="pilots-section">
             <button class="simple-back-button" id="pilots-back-button" title="Back to Menu">
                 <img src="assets/back.png" alt="Back" class="back-icon">
             </button>
 
-            <!-- BTQ360 Link Button (bottom-left) -->
             <button class="btq-button" id="pilots-btq-button" title="Visit BTQ360.com">
                 <img src="assets/btq.png" alt="BTQ360" class="pilots-btq-icon">
             </button>
             
             <div class="viewer-container" id="pilots-viewer">
-                <!-- Mirror ball 360° images will be rendered here -->
-            </div>
+                </div>
 
-            <!-- UI Toggle Button -->
             <button class="ui-toggle-button" id="pilots-ui-toggle-button" title="Toggle Menu">
                 ☰
             </button>
 
-            <!-- Pilots House UI Panel -->
             <div class="ui-panel" id="pilots-ui-panel">
-                <!-- Panel Header -->
                 <div class="pilots-panel-header">
                     <div class="panel-title pilots-panel-title">Pilots House</div>
                     <div class="panel-description pilots-panel-description">
@@ -184,13 +159,11 @@
                     </div>
                 </div>
 
-                <!-- Room Details -->
                 <div class="room-details-section">
                     <div class="room-details">Navigation Room • Maritime Heritage • 19th Century</div>
                     <div class="room-progress">1 / 5</div>
                 </div>
 
-                <!-- Controls Section -->
                 <div class="pilots-controls-section">
                     <div class="pilots-control-group">
                         <button class="pilots-control-button active" id="pilots-auto-rotate-toggle" title="Toggle Auto-Rotation">
@@ -207,7 +180,6 @@
                     </div>
                 </div>
 
-                <!-- Cross Navigation Section (Inside Panel) -->
                 <div class="pilots-cross-nav-section">
                     <button class="cross-nav-button" id="pilots-to-island">
                         → Island Experience
@@ -217,7 +189,6 @@
         </div>
     </div>
 
-    <!-- Core JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="scripts/scripts_core.js"></script>
     <script src="scripts/scripts_menu.js"></script>

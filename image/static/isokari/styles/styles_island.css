@@ -54,7 +54,7 @@
 .ui-toggle-button {
     position: fixed;
     bottom: 30px;
-    right: 30px;
+    right: 30px; /* Stays on the right side of the screen */
     z-index: 2000;
     width: 50px;
     height: 50px;
@@ -97,11 +97,13 @@
     background: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(25px);
     border-top: 1px solid rgba(255, 255, 255, 0.2);
-    z-index: 1500;
+    z-index: 1500; /* UI is still below map */
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 20px 30px;
+    padding: 20px 30px; /* Base padding top/bottom and right */
+    /* This padding-left always reserves space for the map, preventing horizontal shift */
+    padding-left: calc(30px + 180px + 30px); /* map's left margin + map-width (180px) + desired-gap (30px) */
     gap: 30px;
     transform: translateY(100%);
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -111,24 +113,37 @@
     transform: translateY(0);
 }
 
-/* ===== PROPERLY POSITIONED MAP - NO OVERLAP, FULLY VISIBLE ===== */
+
+/* ===== Map Container for proportional size and overlapping UI ===== */
 .map-container {
     position: fixed;
-    bottom: 150px; /* ABOVE the UI panel completely */
-    left: 30px; /* Align with BTQ button */
-    z-index: 1800; /* Above UI panel, below buttons */
-    width: 140px; /* Good size */
-    height: 90px; /* Good size */
-    border-radius: 12px;
-    padding: 0;
+    bottom: 20px; /* Position map 20px from viewport bottom */
+    left: 30px; /* Left margin of 30px */
+    
+    /* Adjusted width and height for better dot alignment and overall size */
+    width: 180px; 
+    height: 280px; 
+    
+    transform: none; /* No vertical centering needed as it's positioned from bottom */
+    
+    z-index: 1600; /* Higher than UI panel (1500), lower than controls (2000) */
+    
+    display: flex; /* Ensure the image is centered within this new container */
+    justify-content: center;
+    align-items: center;
+    
+    padding: 0; /* Remove padding from the container itself */
+    box-sizing: border-box; 
+    
     opacity: 0; /* Hidden by default */
     visibility: hidden;
-    transition: all 0.4s ease;
-    pointer-events: none;
-    overflow: hidden;
-    /* Enhanced shadow for floating effect */
-    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.5));
-    background: rgba(0, 0, 0, 0.1); /* Subtle background to ensure visibility */
+    transition: opacity 0.4s ease, visibility 0.4s ease, transform 0.3s ease;
+    pointer-events: none; /* Map container itself won't trigger hover */
+    overflow: hidden; /* Ensures map and dots stay within their bounds */
+    
+    background: transparent; /* No background for the container */
+    border: none;
+    box-shadow: none;
 }
 
 /* Show map when it has the 'visible' class */
@@ -138,58 +153,66 @@
     pointer-events: all;
 }
 
+/* Remove hover style for the map container itself */
 .map-container:hover {
-    transform: translateY(-3px);
-    filter: drop-shadow(0 12px 25px rgba(0, 0, 0, 0.6));
+    transform: none; 
 }
 
+
 .map-background {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    /* This targets the actual SVG image within the map-container */
+    width: 100%; /* Make image fill the container's width */
+    height: 100%; /* Make image fill the container's height */
+    
+    object-fit: contain; /* CRITICAL: Maintain aspect ratio and prevent distortion */
     display: block;
-    border-radius: 12px;
-    position: relative;
-    /* Enhanced visibility */
-    filter: brightness(1.2) contrast(1.2) saturate(1.1);
+    border-radius: 12px; /* Keep rounded corners if desired */
+    
+    position: relative; /* Make it the positioning context for dots */
+    
+    filter: none;
+    background: transparent;
+    border: none; /* No border for the image itself */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Subtle shadow for the map image itself */
 }
+
 
 /* ===== REFINED DOT STYLING ===== */
 .dot {
-    position: absolute;
-    width: 9px;
-    height: 9px;
-    background: rgba(255, 255, 255, 0.95);
+    position: absolute; /* Position relative to the .map-background */
+    width: 7px; /* Dot size */
+    height: 7px; /* Dot size */
+    background: rgba(255, 255, 255, 0.2); /* NEW: Very subtle white/grey for inactive dots */
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+    transform: translate(-50%, -50%); /* Centering dots exactly on their percentage point */
+    z-index: 10; /* Make sure dots are on top of the map image */
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.6); /* Subtle shadow for inactive dots */
 }
 
 .dot:hover {
-    background: rgba(100, 150, 255, 1);
-    transform: translate(-50%, -50%) scale(1.4);
-    box-shadow: 0 4px 12px rgba(100, 150, 255, 0.8);
+    background: #FFD700; /* NEW: Lighter orange (Gold) for hover state */
+    transform: translate(-50%, -50%) scale(1.6); /* Slightly larger on hover */
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 5px rgba(0, 0, 0, 0.8); /* Stronger glow/shadow for hover */
 }
 
 .dot.active {
-    background: #00ff88;
-    box-shadow: 0 0 15px rgba(0, 255, 136, 0.9), 0 4px 10px rgba(0, 0, 0, 0.7);
+    background: #FF8C00; /* NEW: "Some orange" (Dark Orange) for active state */
+    box-shadow: 0 0 15px rgba(255, 140, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.9); /* Strong glow/shadow for active state */
     animation: pulse-integrated 2s infinite;
-    transform: translate(-50%, -50%) scale(1.3);
+    transform: translate(-50%, -50%) scale(2.0); /* NEW: Active dot becomes noticeably bigger (scale 2.0) */
 }
 
 @keyframes pulse-integrated {
-    0%, 100% { 
-        opacity: 1; 
-        box-shadow: 0 0 15px rgba(0, 255, 136, 0.9), 0 4px 10px rgba(0, 0, 0, 0.7);
+    0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 15px rgba(255, 140, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.9);
     }
-    50% { 
-        opacity: 0.8; 
-        box-shadow: 0 0 25px rgba(0, 255, 136, 1), 0 6px 14px rgba(0, 0, 0, 0.8);
+    50% {
+        opacity: 0.8;
+        box-shadow: 0 0 22px rgba(255, 140, 0, 1), 0 0 12px rgba(0, 0, 0, 1);
     }
 }
 
@@ -198,7 +221,7 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    flex: 0.8;
+    flex: 1; /* Allow header to grow and take available space */
     min-width: 250px;
 }
 
@@ -226,7 +249,7 @@
     border-radius: 12px;
     padding: 16px;
     min-width: 280px;
-    flex: 1;
+    flex: 1; /* Allow details to grow */
     flex-shrink: 0;
 }
 
@@ -336,6 +359,9 @@
         padding: 16px 15px 20px 15px;
         gap: 12px;
         background: rgba(0, 0, 0, 0.55);
+        left: 0; /* Reset left for mobile */
+        width: 100%; /* Full width on mobile */
+        padding-left: 15px; /* Reset padding for mobile */
     }
 
     /* MOBILE: Hide map completely on mobile */
@@ -427,6 +453,7 @@
         height: 280px;
         padding: 14px 12px 18px 12px;
         gap: 10px;
+        padding-left: 12px; /* Reset padding for mobile */
     }
 
     .ui-toggle-button {
@@ -502,7 +529,7 @@
         width: 18px;
         height: 18px;
     }
-    
+
     .nav-icon {
         width: 14px;
         height: 14px;
@@ -514,7 +541,7 @@
         width: 16px;
         height: 16px;
     }
-    
+
     .nav-icon {
         width: 12px;
         height: 12px;
