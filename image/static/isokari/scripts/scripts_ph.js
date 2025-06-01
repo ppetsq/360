@@ -1,18 +1,21 @@
 // ===== PILOTS HOUSE CONTROLLER =====
-// Handles indoor 360° experience with room navigation
+// Handles indoor 360° mirror ball experience with room information
 
 ISOKARI.PilotsController = class {
     constructor() {
         this.scene = null;
         this.camera = null;
         this.renderer = null;
-        this.currentMesh = null;
-        this.currentTexture = null;
+        this.mirrorBallMesh = null;
+        this.currentEnvTexture = null;
         this.isUserInteracting = false;
         this.autoRotateEnabled = true;
+        this.uiPanelVisible = true;
+        this.iconRotationAngle = 0;
         this.animationId = null;
+        this.iconAnimationId = null;
 
-        // Interaction variables
+        // Interaction variables (same as island)
         this.lon = 0;
         this.lat = 0;
         this.onPointerDownLon = 0;
@@ -20,58 +23,68 @@ ISOKARI.PilotsController = class {
         this.onPointerDownMouseX = 0;
         this.onPointerDownMouseY = 0;
 
-        // Zoom variables
-        this.currentZoom = 75;
+        // Zoom variables (same as island)
+        this.currentZoom = 90;
         this.minZoom = 50;
-        this.maxZoom = 100;
+        this.maxZoom = 120;
         this.zoomSensitivity = 2;
 
-        // Touch variables
+        // Touch zoom variables
         this.touchDistance = 0;
         this.prevTouchDistance = 0;
 
-        // Settings
-        this.autoRotateSpeed = 0.015; // Slower for indoor spaces
-        this.dragSensitivity = 0.2;
+        // Settings (same as island)
+        this.autoRotateSpeed = 0.025;
+        this.dragSensitivity = 0.25;
 
-        // Room system
-        this.currentRoomIndex = 0;
-        this.rooms = [
+        // Constants for latitude clamping (same as island)
+        this.MAX_LAT_DEG = 84.5;
+        this.UP_VECTOR_SMOOTHING_THRESHOLD = 75;
+
+        // Pilots house images and room information
+        this.imageUrls = [
+            'https://assets.360.petsq.works/isokari/4960/0001_4960.jpg', // Exterior
+            'https://assets.360.petsq.works/isokari/4960/0002_4960.jpg', // Interior 1
+            'https://assets.360.petsq.works/isokari/4960/0003_4960.jpg', // Interior 2
+            'https://assets.360.petsq.works/isokari/4960/0004_4960.jpg', // Interior 3
+            'https://assets.360.petsq.works/isokari/4960/0005_4960.jpg'  // Interior 4
+        ];
+
+        // Room information for each image
+        this.roomInfo = [
             {
-                name: 'Main Living Area',
-                image: 'assets/pilots-house/living-room.jpg',
-                hotspots: [
-                    { x: 0.3, y: 0.5, target: 1, label: 'Kitchen' },
-                    { x: -0.3, y: 0.4, target: 2, label: 'Bedroom' }
-                ]
+                name: "Pilots House Exterior",
+                description: "The weathered stone facade of the pilots house stands resilient against Baltic storms. Built in the 1800s, this structure served as both home and watchtower for the maritime pilots who guided ships safely through Isokari's treacherous waters.",
+                type: "exterior",
+                details: "Stone Construction • 19th Century • Maritime Heritage"
             },
             {
-                name: 'Kitchen',
-                image: 'assets/pilots-house/kitchen.jpg',
-                hotspots: [
-                    { x: 0, y: 0.6, target: 0, label: 'Living Room' },
-                    { x: 0.4, y: 0.3, target: 2, label: 'Bedroom' }
-                ]
+                name: "Main Living Room",
+                description: "The heart of the pilots house, where families gathered during long winter months. The sturdy wooden beams and simple furnishings reflect the practical lifestyle of those who made their living from the sea.",
+                type: "interior",
+                details: "Central Hearth • Family Gathering Space • Maritime Artifacts"
             },
             {
-                name: 'Bedroom',
-                image: 'assets/pilots-house/bedroom.jpg',
-                hotspots: [
-                    { x: -0.2, y: 0.5, target: 0, label: 'Living Room' },
-                    { x: 0.2, y: 0.4, target: 1, label: 'Kitchen' }
-                ]
+                name: "Pilots Navigation Room",
+                description: "This intimate space served as the nerve center for maritime operations. Charts, compass equipment, and weather instruments lined these walls as pilots planned safe passages for merchant vessels.",
+                type: "interior",
+                details: "Navigation Equipment • Maritime Charts • Weather Station"
+            },
+            {
+                name: "Pilots Bedroom",
+                description: "The modest sleeping quarters of the pilot family. Simple wooden furniture and practical storage solutions maximized the limited space while providing comfort during harsh island winters.",
+                type: "interior",
+                details: "Family Quarters • Simple Furnishings • Practical Design"
+            },
+            {
+                name: "Kitchen & Workspace",
+                description: "The functional kitchen where meals were prepared from preserved foods and occasional fresh fish. This space also served as a workshop for maintaining maritime equipment and household repairs.",
+                type: "interior",
+                details: "Food Preparation • Maritime Tools • Multi-purpose Space"
             }
         ];
 
-        // Fallback images if room images aren't available
-        this.fallbackImages = [
-            'https://via.placeholder.com/2048x1024/8B4513/FFFFFF?text=Living+Room+360',
-            'https://via.placeholder.com/2048x1024/A0522D/FFFFFF?text=Kitchen+360',
-            'https://via.placeholder.com/2048x1024/CD853F/FFFFFF?text=Bedroom+360'
-        ];
-
-        this.hotspots = [];
-        this.isTransitioning = false;
+        this.currentImageIndex = 0;
     }
 
     async initialize() {
@@ -82,9 +95,9 @@ ISOKARI.PilotsController = class {
             }
 
             this.createScene(container);
-            await this.loadRoom(this.currentRoomIndex);
+            await this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
             this.setupEventListeners();
-            this.createHotspots();
+            this.updateRoomInfo();
             this.startAnimation();
 
             // Store in global state
@@ -99,10 +112,10 @@ ISOKARI.PilotsController = class {
     }
 
     createScene(container) {
-        // Create scene
+        // Create scene (same as island)
         this.scene = new THREE.Scene();
 
-        // Create camera
+        // Create camera (same as island)
         this.camera = new THREE.PerspectiveCamera(
             this.currentZoom,
             window.innerWidth / window.innerHeight,
@@ -111,7 +124,7 @@ ISOKARI.PilotsController = class {
         );
         this.camera.position.set(0, 0, 0);
 
-        // Create renderer
+        // Create renderer (same as island)
         this.renderer = new THREE.WebGLRenderer({
             antialias: true,
             alpha: false
@@ -119,220 +132,104 @@ ISOKARI.PilotsController = class {
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.2; // Slightly brighter for indoor spaces
+        this.renderer.toneMappingExposure = 1.0;
         container.appendChild(this.renderer.domElement);
     }
 
-    async loadRoom(roomIndex) {
-        if (roomIndex < 0 || roomIndex >= this.rooms.length) {
-            console.error('Invalid room index:', roomIndex);
-            return;
-        }
-
+    async loadEnvironmentTexture(url) {
         return new Promise((resolve, reject) => {
-            const room = this.rooms[roomIndex];
             const loader = new THREE.TextureLoader();
             loader.crossOrigin = 'anonymous';
 
-            // Try to load the actual room image, fallback to placeholder
-            const imageUrl = room.image;
-            const fallbackUrl = this.fallbackImages[roomIndex];
-
             loader.load(
-                imageUrl,
+                url,
                 (texture) => {
-                    this.createRoomMesh(texture);
-                    this.updateRoomInfo(room.name);
-                    this.createRoomHotspots(room.hotspots);
+                    texture.mapping = THREE.EquirectangularReflectionMapping;
+                    texture.minFilter = THREE.LinearFilter;
+                    texture.magFilter = THREE.LinearFilter;
+                    texture.flipY = false;
+
+                    // Dispose of the old texture if it exists
+                    if (this.currentEnvTexture) {
+                        this.currentEnvTexture.dispose();
+                    }
+                    this.currentEnvTexture = texture;
+
+                    // Create or update mirror ball mesh
+                    if (!this.mirrorBallMesh) {
+                        this.createMirrorBallMesh();
+                        this.scene.add(this.mirrorBallMesh);
+                    } else {
+                        this.mirrorBallMesh.material.envMap = this.currentEnvTexture;
+                        this.mirrorBallMesh.material.needsUpdate = true;
+                    }
+
+                    // Update room information
+                    this.updateRoomInfo();
+
                     resolve();
                 },
                 (progress) => {
-                    console.log('Loading room progress:', (progress.loaded / progress.total * 100).toFixed(2) + '%');
+                    console.log('Loading progress:', (progress.loaded / progress.total * 100).toFixed(2) + '%');
                 },
                 (error) => {
-                    console.warn('Failed to load room image, using fallback:', error);
-                    // Load fallback image
-                    loader.load(
-                        fallbackUrl,
-                        (texture) => {
-                            this.createRoomMesh(texture);
-                            this.updateRoomInfo(`${room.name} (Preview)`);
-                            this.createRoomHotspots(room.hotspots);
-                            resolve();
-                        },
-                        undefined,
-                        (fallbackError) => {
-                            console.error('Failed to load fallback image:', fallbackError);
-                            reject(fallbackError);
-                        }
-                    );
+                    console.error('Error loading texture:', error);
+                    reject(error);
                 }
             );
         });
     }
 
-    createRoomMesh(texture) {
-        // Dispose of previous resources
-        if (this.currentTexture) {
-            this.currentTexture.dispose();
-        }
-        if (this.currentMesh) {
-            this.scene.remove(this.currentMesh);
-            ISOKARI.Utils.disposeThreeObject(this.currentMesh);
-        }
+    createMirrorBallMesh() {
+        // Same mirror ball setup as island
+        const geometry = new THREE.SphereGeometry(8, 64, 32);
+        geometry.scale(-1, -1, 1);
 
-        // Configure texture
-        texture.minFilter = THREE.LinearFilter;
-        texture.magFilter = THREE.LinearFilter;
-        texture.flipY = false;
-
-        // Create sphere geometry for 360° room
-        const geometry = new THREE.SphereGeometry(500, 60, 40);
-        geometry.scale(-1, 1, 1); // Invert for interior view
-
-        // Create material
-        const material = new THREE.MeshBasicMaterial({ 
-            map: texture,
-            side: THREE.FrontSide
+        const material = new THREE.MeshBasicMaterial({
+            envMap: this.currentEnvTexture,
+            reflectivity: 1.0,
+            side: THREE.BackSide
         });
 
-        // Create mesh
-        this.currentMesh = new THREE.Mesh(geometry, material);
-        this.scene.add(this.currentMesh);
+        this.mirrorBallMesh = new THREE.Mesh(geometry, material);
+        this.mirrorBallMesh.position.set(0, 0, -2);
+    }
+
+    updateRoomInfo() {
+        const currentRoom = this.roomInfo[this.currentImageIndex];
         
-        this.currentTexture = texture;
-    }
-
-    createRoomHotspots(hotspotData) {
-        // Clear existing hotspots
-        this.clearHotspots();
-
-        hotspotData.forEach((hotspot, index) => {
-            this.createHotspot(hotspot, index);
-        });
-    }
-
-    createHotspot(hotspotData, index) {
-        // Create hotspot element
-        const hotspot = document.createElement('div');
-        hotspot.className = 'pilots-hotspot';
-        hotspot.dataset.target = hotspotData.target;
-        hotspot.dataset.index = index;
-
-        // Create tooltip
-        const tooltip = document.createElement('div');
-        tooltip.className = 'pilots-tooltip';
-        tooltip.textContent = hotspotData.label;
-        hotspot.appendChild(tooltip);
-
-        // Position hotspot (simplified positioning)
-        const x = (hotspotData.x * 50) + 50; // Convert to percentage
-        const y = (hotspotData.y * 50) + 50;
-        
-        hotspot.style.left = `${x}%`;
-        hotspot.style.top = `${y}%`;
-
-        // Add click handler
-        hotspot.addEventListener('click', () => {
-            this.navigateToRoom(hotspotData.target);
-        });
-
-        // Add to container
-        const container = document.getElementById('pilots-viewer');
-        container.appendChild(hotspot);
-        
-        this.hotspots.push(hotspot);
-    }
-
-    clearHotspots() {
-        this.hotspots.forEach(hotspot => {
-            hotspot.remove();
-        });
-        this.hotspots = [];
-    }
-
-    async navigateToRoom(roomIndex) {
-        if (this.isTransitioning || roomIndex === this.currentRoomIndex) {
-            return;
-        }
-
-        this.isTransitioning = true;
-
-        // Create transition overlay
-        const overlay = document.createElement('div');
-        overlay.className = 'pilots-room-transition active';
-        document.getElementById('pilots-viewer').appendChild(overlay);
-
-        // Wait for transition
-        await ISOKARI.Utils.wait(250);
-
-        // Load new room
-        await this.loadRoom(roomIndex);
-        this.currentRoomIndex = roomIndex;
-
-        // Update room indicators
-        this.updateRoomIndicators();
-
-        // Remove transition overlay
-        setTimeout(() => {
-            overlay.classList.remove('active');
-            setTimeout(() => overlay.remove(), 500);
-            this.isTransitioning = false;
-        }, 250);
-    }
-
-    updateRoomInfo(roomName) {
+        // Update panel title
         const titleElement = document.querySelector('#pilots-ui-panel .panel-title');
         if (titleElement) {
-            titleElement.textContent = roomName;
+            titleElement.textContent = currentRoom.name;
         }
-    }
 
-    updateRoomIndicators() {
-        const indicators = document.querySelectorAll('.room-indicator');
-        indicators.forEach((indicator, index) => {
-            if (index === this.currentRoomIndex) {
-                indicator.classList.add('active');
-            } else {
-                indicator.classList.remove('active');
-            }
-        });
-    }
+        // Update panel description
+        const descElement = document.querySelector('#pilots-ui-panel .panel-description');
+        if (descElement) {
+            descElement.textContent = currentRoom.description;
+        }
 
-    createHotspots() {
-        // Create room navigation indicators in UI
-        const navControls = document.querySelector('.pilots-nav-controls');
-        if (navControls) {
-            // Clear existing indicators
-            const existingIndicators = navControls.querySelector('.room-indicators');
-            if (existingIndicators) {
-                existingIndicators.remove();
-            }
+        // Update room details
+        const detailsElement = document.querySelector('#pilots-ui-panel .room-details');
+        if (detailsElement) {
+            detailsElement.textContent = currentRoom.details;
+        }
 
-            // Create new indicators
-            const indicatorsContainer = document.createElement('div');
-            indicatorsContainer.className = 'room-indicators';
-
-            this.rooms.forEach((room, index) => {
-                const indicator = document.createElement('div');
-                indicator.className = `room-indicator ${index === this.currentRoomIndex ? 'active' : ''}`;
-                indicator.title = room.name;
-                indicator.addEventListener('click', () => this.navigateToRoom(index));
-                indicatorsContainer.appendChild(indicator);
-            });
-
-            navControls.appendChild(indicatorsContainer);
+        // Update progress indicator
+        const progressElement = document.querySelector('#pilots-ui-panel .room-progress');
+        if (progressElement) {
+            progressElement.textContent = `${this.currentImageIndex + 1} / ${this.imageUrls.length}`;
         }
     }
 
     setupEventListeners() {
         const container = document.getElementById('pilots-viewer');
 
-        // Mouse events
-        container.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
-        container.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
-        container.addEventListener('mouseup', () => this.onMouseUp(), false);
-        container.addEventListener('mouseout', () => this.onMouseUp(), false);
+        // Mouse events (same as island, but use document for smooth dragging)
+        document.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
+        document.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
+        document.addEventListener('mouseup', () => this.onMouseUp(), false);
         container.addEventListener('wheel', (e) => this.onMouseWheel(e), { passive: false });
 
         // Touch events
@@ -340,14 +237,25 @@ ISOKARI.PilotsController = class {
         container.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
         container.addEventListener('touchend', () => this.onTouchEnd(), false);
 
+        // Control buttons
+        const autoRotateToggle = document.getElementById('pilots-auto-rotate-toggle');
+        const prevButton = document.getElementById('pilots-prev-button');
+        const nextButton = document.getElementById('pilots-next-button');
+        const uiToggleButton = document.getElementById('pilots-ui-toggle-button');
+
+        if (autoRotateToggle) autoRotateToggle.addEventListener('click', () => this.toggleAutoRotate());
+        if (prevButton) prevButton.addEventListener('click', () => this.goToPrevious());
+        if (nextButton) nextButton.addEventListener('click', () => this.goToNext());
+        if (uiToggleButton) uiToggleButton.addEventListener('click', () => this.toggleUIPanel());
+
         // Keyboard controls
         document.addEventListener('keydown', (e) => this.onKeyDown(e), false);
     }
 
-    // Mouse interaction handlers (similar to island)
+    // Mouse interaction handlers (same as island)
     onMouseDown(event) {
-        // Don't interfere with hotspot clicks
-        if (event.target.closest('.pilots-hotspot')) {
+        // Only start interaction if clicking on the viewer, not UI elements
+        if (!event.target.closest('#pilots-viewer')) {
             return;
         }
 
@@ -366,7 +274,8 @@ ISOKARI.PilotsController = class {
             const deltaY = (event.clientY - this.onPointerDownMouseY) * this.dragSensitivity;
             
             this.lon = deltaX + this.onPointerDownLon;
-            this.lat = Math.max(-85, Math.min(85, deltaY + this.onPointerDownLat));
+            const newLat = deltaY + this.onPointerDownLat;
+            this.lat = Math.max(-this.MAX_LAT_DEG, Math.min(this.MAX_LAT_DEG, newLat));
         }
     }
 
@@ -389,13 +298,8 @@ ISOKARI.PilotsController = class {
         this.camera.updateProjectionMatrix();
     }
 
-    // Touch interaction handlers
+    // Touch interaction handlers (same as island)
     onTouchStart(event) {
-        // Don't interfere with hotspot touches
-        if (event.target.closest('.pilots-hotspot')) {
-            return;
-        }
-
         event.preventDefault();
 
         if (event.touches.length === 1) {
@@ -419,7 +323,8 @@ ISOKARI.PilotsController = class {
             const deltaY = (event.touches[0].pageY - this.onPointerDownMouseY) * this.dragSensitivity;
             
             this.lon = deltaX + this.onPointerDownLon;
-            this.lat = Math.max(-85, Math.min(85, deltaY + this.onPointerDownLat));
+            const newLat = deltaY + this.onPointerDownLat;
+            this.lat = Math.max(-this.MAX_LAT_DEG, Math.min(this.MAX_LAT_DEG, newLat));
 
         } else if (event.touches.length === 2) {
             const dx = event.touches[0].pageX - event.touches[1].pageX;
@@ -444,7 +349,82 @@ ISOKARI.PilotsController = class {
         this.prevTouchDistance = 0;
     }
 
-    // Animation loop
+    // UI Controls (similar to island but adapted for pilots house)
+    toggleAutoRotate() {
+        const button = document.getElementById('pilots-auto-rotate-toggle');
+        const icon = document.getElementById('pilots-auto-rotate-icon');
+
+        this.autoRotateEnabled = !this.autoRotateEnabled;
+
+        if (this.autoRotateEnabled) {
+            button?.classList.add('active');
+            this.startIconRotation(icon);
+            if (button) button.title = 'Disable Auto-Rotation';
+        } else {
+            button?.classList.remove('active');
+            this.stopIconRotation(icon);
+            if (button) button.title = 'Enable Auto-Rotation';
+        }
+    }
+
+    startIconRotation(icon) {
+        if (!icon || this.iconAnimationId) return;
+        
+        const rotateIcon = () => {
+            this.iconRotationAngle += 0.5;
+            icon.style.transform = `rotate(${this.iconRotationAngle}deg)`;
+            this.iconAnimationId = requestAnimationFrame(rotateIcon);
+        };
+        
+        rotateIcon();
+    }
+
+    stopIconRotation(icon) {
+        if (this.iconAnimationId) {
+            cancelAnimationFrame(this.iconAnimationId);
+            this.iconAnimationId = null;
+        }
+    }
+
+    toggleUIPanel() {
+        if (this.uiPanelVisible) {
+            this.hideUIPanel();
+        } else {
+            this.showUIPanel();
+        }
+    }
+
+    showUIPanel() {
+        const panel = document.getElementById('pilots-ui-panel');
+        const toggleButton = document.getElementById('pilots-ui-toggle-button');
+
+        panel?.classList.add('visible');
+        toggleButton?.classList.remove('visible');
+        toggleButton?.classList.add('panel-open');
+        this.uiPanelVisible = true;
+    }
+
+    hideUIPanel() {
+        const panel = document.getElementById('pilots-ui-panel');
+        const toggleButton = document.getElementById('pilots-ui-toggle-button');
+
+        panel?.classList.remove('visible');
+        toggleButton?.classList.remove('panel-open');
+        toggleButton?.classList.add('visible');
+        this.uiPanelVisible = false;
+    }
+
+    goToPrevious() {
+        this.currentImageIndex = (this.currentImageIndex - 1 + this.imageUrls.length) % this.imageUrls.length;
+        this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
+    }
+
+    goToNext() {
+        this.currentImageIndex = (this.currentImageIndex + 1) % this.imageUrls.length;
+        this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
+    }
+
+    // Animation loop (same as island)
     startAnimation() {
         const animate = () => {
             this.animationId = requestAnimationFrame(animate);
@@ -459,15 +439,31 @@ ISOKARI.PilotsController = class {
                 this.lon += this.autoRotateSpeed;
             }
 
-            // Update camera position
-            const phi = THREE.MathUtils.degToRad(90 - this.lat);
-            const theta = THREE.MathUtils.degToRad(this.lon);
+            // Update camera position based on lat/lon (same as island)
+            if (this.mirrorBallMesh) {
+                const phi = THREE.MathUtils.degToRad(90 - this.lat);
+                const theta = THREE.MathUtils.degToRad(this.lon);
+                
+                const distance = 3.5;
+                
+                this.camera.position.x = distance * Math.sin(phi) * Math.cos(theta);
+                this.camera.position.y = distance * Math.cos(phi);
+                this.camera.position.z = distance * Math.sin(phi) * Math.sin(theta);
+                
+                // Camera up vector stabilization (same as island)
+                const upBias = Math.abs(this.lat) / this.MAX_LAT_DEG;
+                
+                if (upBias > this.UP_VECTOR_SMOOTHING_THRESHOLD / this.MAX_LAT_DEG) {
+                    const smoothFactor = (upBias - this.UP_VECTOR_SMOOTHING_THRESHOLD / this.MAX_LAT_DEG) / (1 - this.UP_VECTOR_SMOOTHING_THRESHOLD / this.MAX_LAT_DEG);
+                    const upX = Math.sin(THREE.MathUtils.degToRad(this.lon)) * smoothFactor * 0.1;
+                    const upZ = -Math.cos(THREE.MathUtils.degToRad(this.lon)) * smoothFactor * 0.1;
+                    this.camera.up.set(upX, 1 - smoothFactor * 0.1, upZ).normalize();
+                } else {
+                    this.camera.up.set(0, 1, 0);
+                }
 
-            this.camera.position.x = 100 * Math.sin(phi) * Math.cos(theta);
-            this.camera.position.y = 100 * Math.cos(phi);
-            this.camera.position.z = 100 * Math.sin(phi) * Math.sin(theta);
-
-            this.camera.lookAt(0, 0, 0);
+                this.camera.lookAt(this.mirrorBallMesh.position);
+            }
 
             this.renderer.render(this.scene, this.camera);
         };
@@ -484,25 +480,31 @@ ISOKARI.PilotsController = class {
         
         if (!hasModifiers) {
             switch(event.code) {
-                case 'Digit1':
-                    event.preventDefault();
-                    this.navigateToRoom(0);
-                    break;
-                case 'Digit2':
-                    event.preventDefault();
-                    this.navigateToRoom(1);
-                    break;
-                case 'Digit3':
-                    event.preventDefault();
-                    this.navigateToRoom(2);
-                    break;
                 case 'ArrowLeft':
-                    event.preventDefault();
-                    this.navigateToRoom((this.currentRoomIndex - 1 + this.rooms.length) % this.rooms.length);
-                    break;
                 case 'ArrowRight':
+                case 'Space':
+                case 'KeyR':
                     event.preventDefault();
-                    this.navigateToRoom((this.currentRoomIndex + 1) % this.rooms.length);
+                    break;
+            }
+        }
+        
+        if (!hasModifiers) {
+            switch(event.code) {
+                case 'ArrowRight':
+                    this.goToNext();
+                    break;
+                    
+                case 'ArrowLeft':
+                    this.goToPrevious();
+                    break;
+                    
+                case 'Space':
+                    this.toggleUIPanel();
+                    break;
+                    
+                case 'KeyR':
+                    this.toggleAutoRotate();
                     break;
             }
         }
@@ -513,21 +515,26 @@ ISOKARI.PilotsController = class {
             cancelAnimationFrame(this.animationId);
             this.animationId = null;
         }
+        this.stopIconRotation();
     }
 
     dispose() {
         this.stopAnimation();
-        this.clearHotspots();
         
-        if (this.currentTexture) {
-            this.currentTexture.dispose();
-            this.currentTexture = null;
+        // Clean up document event listeners
+        document.removeEventListener('mousedown', this.onMouseDown);
+        document.removeEventListener('mousemove', this.onMouseMove);
+        document.removeEventListener('mouseup', this.onMouseUp);
+        
+        if (this.currentEnvTexture) {
+            this.currentEnvTexture.dispose();
+            this.currentEnvTexture = null;
         }
 
-        if (this.currentMesh) {
-            ISOKARI.Utils.disposeThreeObject(this.currentMesh);
-            this.scene?.remove(this.currentMesh);
-            this.currentMesh = null;
+        if (this.mirrorBallMesh) {
+            ISOKARI.Utils.disposeThreeObject(this.mirrorBallMesh);
+            this.scene?.remove(this.mirrorBallMesh);
+            this.mirrorBallMesh = null;
         }
 
         if (this.renderer) {
@@ -540,32 +547,34 @@ ISOKARI.PilotsController = class {
         this.camera = null;
     }
 
-    // Public methods
-    getCurrentRoom() {
-        return this.currentRoomIndex;
-    }
-
-    getTotalRooms() {
-        return this.rooms.length;
-    }
-
+    // Public methods for external control
     setAutoRotate(enabled) {
         this.autoRotateEnabled = enabled;
+        this.toggleAutoRotate();
+    }
+
+    getCurrentImageIndex() {
+        return this.currentImageIndex;
+    }
+
+    getTotalImages() {
+        return this.imageUrls.length;
+    }
+
+    jumpToImage(index) {
+        if (index >= 0 && index < this.imageUrls.length) {
+            this.currentImageIndex = index;
+            this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
+        }
     }
 
     resetView() {
         this.lon = 0;
         this.lat = 0;
-        this.currentZoom = 75;
+        this.currentZoom = 90;
         this.camera.fov = this.currentZoom;
         this.camera.updateProjectionMatrix();
     }
-};
-
-// Utility function for promises
-ISOKARI.Utils = ISOKARI.Utils || {};
-ISOKARI.Utils.wait = function(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
 };
 
 console.log('🏠 Pilots House Controller Loaded');

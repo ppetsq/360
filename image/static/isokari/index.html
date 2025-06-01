@@ -135,8 +135,13 @@
             </button>
             
             <div class="viewer-container" id="pilots-viewer">
-                <!-- Indoor 360° images will be rendered here -->
+                <!-- Mirror ball 360° images will be rendered here -->
             </div>
+
+            <!-- UI Toggle Button -->
+            <button class="ui-toggle-button" id="pilots-ui-toggle-button" title="Toggle Menu">
+                ☰
+            </button>
 
             <!-- Cross Navigation -->
             <button class="cross-nav-button bottom-left" id="pilots-to-island">
@@ -145,10 +150,34 @@
 
             <!-- Pilots House UI Panel -->
             <div class="ui-panel" id="pilots-ui-panel">
-                <div class="panel-header">
-                    <div class="panel-title">Pilots House Interior</div>
-                    <div class="panel-description">
-                        Step inside the historic pilots house where generations of maritime guides lived and worked, watching over the treacherous waters surrounding Isokari island.
+                <!-- Panel Header -->
+                <div class="pilots-panel-header">
+                    <div class="panel-title pilots-panel-title">Pilots House</div>
+                    <div class="panel-description pilots-panel-description">
+                        Historic pilots house interior with authentic maritime artifacts and period furnishings.
+                    </div>
+                </div>
+
+                <!-- Room Details -->
+                <div class="room-details-section">
+                    <div class="room-details">Navigation Room • Maritime Heritage • 19th Century</div>
+                    <div class="room-progress">1 / 5</div>
+                </div>
+
+                <!-- Controls Section -->
+                <div class="pilots-controls-section">
+                    <div class="pilots-control-group">
+                        <button class="pilots-control-button active" id="pilots-auto-rotate-toggle" title="Toggle Auto-Rotation">
+                            <img src="assets/arrow.png" alt="Auto Rotate" class="pilots-auto-rotate-icon" id="pilots-auto-rotate-icon">
+                        </button>
+                        
+                        <button class="pilots-control-button" id="pilots-prev-button" title="Previous">
+                            <img src="assets/back.png" alt="Previous" class="pilots-nav-icon">
+                        </button>
+                        
+                        <button class="pilots-control-button" id="pilots-next-button" title="Next">
+                            <img src="assets/next.png" alt="Next" class="pilots-nav-icon">
+                        </button>
                     </div>
                 </div>
             </div>
