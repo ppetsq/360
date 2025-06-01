@@ -1,0 +1,376 @@
+// ===== ISOKARI 360° CORE SYSTEM =====
+// Global namespace and state management
+
+window.ISOKARI = window.ISOKARI || {};
+
+// ===== GLOBAL STATE =====
+ISOKARI.State = {
+    currentSection: 'intro',
+    isTransitioning: false,
+    audioEnabled: false,
+    scenes: {
+        intro: null,
+        island: null,
+        pilots: null
+    },
+    cameras: {
+        intro: null,
+        island: null,
+        pilots: null
+    },
+    renderers: {
+        intro: null,
+        island: null,
+        pilots: null
+    },
+    controllers: {
+        intro: null,
+        island: null,
+        pilots: null
+    },
+    ambientAudio: null,
+    initialized: {
+        intro: false,
+        island: false,
+        pilots: false
+    }
+};
+
+// ===== CORE APPLICATION CLASS =====
+ISOKARI.App = class {
+    constructor() {
+        this.setupEventListeners();
+        this.initializeAudio();
+        this.startApplication();
+    }
+
+    setupEventListeners() {
+        // Menu navigation buttons
+        document.getElementById('nav-to-island')?.addEventListener('click', () => {
+            this.navigateToSection('island');
+        });
+
+        document.getElementById('nav-to-pilots')?.addEventListener('click', () => {
+            this.navigateToSection('pilots');
+        });
+
+        // Back buttons
+        document.getElementById('island-back-button')?.addEventListener('click', () => {
+            this.navigateToSection('intro');
+        });
+
+        document.getElementById('pilots-back-button')?.addEventListener('click', () => {
+            this.navigateToSection('intro');
+        });
+
+        // Cross-navigation buttons
+        document.getElementById('island-to-pilots')?.addEventListener('click', () => {
+            this.navigateToSection('pilots');
+        });
+
+        document.getElementById('pilots-to-island')?.addEventListener('click', () => {
+            this.navigateToSection('island');
+        });
+
+        // Audio toggle
+        document.getElementById('audio-toggle')?.addEventListener('click', () => {
+            this.toggleAudio();
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (event) => {
+            this.handleKeydown(event);
+        });
+
+        // Window resize
+        window.addEventListener('resize', () => {
+            this.handleResize();
+        });
+
+        // Prevent context menu on right click (better UX for 360° experiences)
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.closest('.viewer-container') || e.target.closest('.intro-viewer')) {
+                e.preventDefault();
+            }
+        });
+    }
+
+    initializeAudio() {
+        // Initialize ambient audio (replace with your audio file)
+        ISOKARI.State.ambientAudio = new Audio('assets/ambient-loop.mp3');
+        ISOKARI.State.ambientAudio.loop = true;
+        ISOKARI.State.ambientAudio.volume = 0.3;
+        
+        // Handle audio load errors gracefully
+        ISOKARI.State.ambientAudio.addEventListener('error', () => {
+            console.warn('Ambient audio could not be loaded');
+        });
+    }
+
+    async startApplication() {
+        // Initialize intro section immediately
+        await this.initializeSection('intro');
+        
+        // Hide loading overlay after intro is ready
+        setTimeout(() => {
+            this.hideLoadingOverlay();
+        }, 1500);
+    }
+
+    async navigateToSection(targetSection) {
+        if (ISOKARI.State.isTransitioning || ISOKARI.State.currentSection === targetSection) {
+            return;
+        }
+
+        ISOKARI.State.isTransitioning = true;
+        
+        // Update loading text
+        this.updateLoadingText(targetSection);
+        this.showLoadingOverlay();
+
+        // Hide current section
+        const currentSectionEl = document.getElementById(`${ISOKARI.State.currentSection}-section`);
+        currentSectionEl?.classList.remove('active');
+
+        // Wait for fade out
+        await this.wait(300);
+
+        // Initialize target section if needed
+        await this.initializeSection(targetSection);
+
+        // Show target section
+        const targetSectionEl = document.getElementById(`${targetSection}-section`);
+        targetSectionEl?.classList.add('active');
+
+        // Hide loading overlay and show section-specific UI
+        setTimeout(() => {
+            this.hideLoadingOverlay();
+            this.showSectionUI(targetSection);
+            ISOKARI.State.isTransitioning = false;
+        }, 800);
+
+        ISOKARI.State.currentSection = targetSection;
+    }
+
+    async initializeSection(section) {
+        if (ISOKARI.State.initialized[section]) {
+            return;
+        }
+
+        switch(section) {
+            case 'intro':
+                if (ISOKARI.MenuController) {
+                    ISOKARI.State.controllers.intro = new ISOKARI.MenuController();
+                    await ISOKARI.State.controllers.intro.initialize();
+                }
+                break;
+            case 'island':
+                if (ISOKARI.IslandController) {
+                    ISOKARI.State.controllers.island = new ISOKARI.IslandController();
+                    await ISOKARI.State.controllers.island.initialize();
+                }
+                break;
+            case 'pilots':
+                if (ISOKARI.PilotsController) {
+                    ISOKARI.State.controllers.pilots = new ISOKARI.PilotsController();
+                    await ISOKARI.State.controllers.pilots.initialize();
+                }
+                break;
+        }
+
+        ISOKARI.State.initialized[section] = true;
+    }
+
+    showSectionUI(section) {
+        switch(section) {
+            case 'island':
+                setTimeout(() => {
+                    document.getElementById('island-ui-panel')?.classList.add('visible');
+                }, 500);
+                break;
+            case 'pilots':
+                setTimeout(() => {
+                    document.getElementById('pilots-ui-panel')?.classList.add('visible');
+                }, 500);
+                break;
+        }
+    }
+
+    updateLoadingText(targetSection) {
+        const loadingText = document.getElementById('loading-text');
+        const messages = {
+            intro: 'Loading menu experience...',
+            island: 'Loading island cliffs...',
+            pilots: 'Loading pilots house...'
+        };
+        if (loadingText) {
+            loadingText.textContent = messages[targetSection] || 'Loading...';
+        }
+    }
+
+    showLoadingOverlay() {
+        const overlay = document.getElementById('loading-overlay');
+        overlay?.classList.remove('hidden');
+    }
+
+    hideLoadingOverlay() {
+        const overlay = document.getElementById('loading-overlay');
+        overlay?.classList.add('hidden');
+    }
+
+    toggleAudio() {
+        ISOKARI.State.audioEnabled = !ISOKARI.State.audioEnabled;
+        const audioButton = document.getElementById('audio-toggle');
+        const audioIcon = document.getElementById('audio-icon');
+        
+        if (ISOKARI.State.audioEnabled) {
+            audioButton?.classList.remove('muted');
+            audioButton?.classList.add('playing');
+            if (audioIcon) {
+                audioIcon.src = 'assets/audio-on.png';
+                audioIcon.classList.remove('muted');
+                audioIcon.classList.add('playing');
+            }
+            audioButton.title = 'Mute Audio';
+            
+            // Start ambient audio
+            if (ISOKARI.State.ambientAudio) {
+                ISOKARI.State.ambientAudio.play().catch(e => {
+                    console.warn('Audio autoplay prevented:', e);
+                });
+            }
+        } else {
+            audioButton?.classList.remove('playing');
+            audioButton?.classList.add('muted');
+            if (audioIcon) {
+                audioIcon.src = 'assets/audio-off.png';
+                audioIcon.classList.remove('playing');
+                audioIcon.classList.add('muted');
+            }
+            audioButton.title = 'Unmute Audio';
+            
+            // Stop ambient audio
+            if (ISOKARI.State.ambientAudio) {
+                ISOKARI.State.ambientAudio.pause();
+            }
+        }
+    }
+
+    handleKeydown(event) {
+        // Only handle keys if no modifier keys are pressed
+        const hasModifiers = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
+        
+        if (!hasModifiers) {
+            switch(event.code) {
+                case 'Escape':
+                    event.preventDefault();
+                    this.navigateToSection('intro');
+                    break;
+                case 'Digit1':
+                    event.preventDefault();
+                    this.navigateToSection('island');
+                    break;
+                case 'Digit2':
+                    event.preventDefault();
+                    this.navigateToSection('pilots');
+                    break;
+                case 'KeyM':
+                    event.preventDefault();
+                    this.toggleAudio();
+                    break;
+            }
+        }
+    }
+
+    handleResize() {
+        // Update all active renderers
+        Object.entries(ISOKARI.State.renderers).forEach(([section, renderer]) => {
+            if (renderer && ISOKARI.State.currentSection === section) {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                
+                const camera = ISOKARI.State.cameras[section];
+                if (camera) {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                }
+            }
+        });
+    }
+
+    wait(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+};
+
+// ===== UTILITY FUNCTIONS =====
+ISOKARI.Utils = {
+    // Degrees to radians conversion
+    degToRad: (degrees) => degrees * (Math.PI / 180),
+    
+    // Radians to degrees conversion
+    radToDeg: (radians) => radians * (180 / Math.PI),
+    
+    // Clamp value between min and max
+    clamp: (value, min, max) => Math.min(Math.max(value, min), max),
+    
+    // Linear interpolation
+    lerp: (start, end, factor) => start + (end - start) * factor,
+    
+    // Create a debounced function
+    debounce: (func, wait) => {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    },
+    
+    // Check if device is mobile
+    isMobile: () => {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    },
+    
+    // Check if device supports touch
+    isTouch: () => {
+        return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    },
+    
+    // Dispose Three.js resources properly
+    disposeThreeObject: (obj) => {
+        if (obj.geometry) obj.geometry.dispose();
+        if (obj.material) {
+            if (Array.isArray(obj.material)) {
+                obj.material.forEach(material => {
+                    if (material.map) material.map.dispose();
+                    material.dispose();
+                });
+            } else {
+                if (obj.material.map) obj.material.map.dispose();
+                obj.material.dispose();
+            }
+        }
+        if (obj.texture) obj.texture.dispose();
+    }
+};
+
+// ===== ERROR HANDLING =====
+window.addEventListener('error', (event) => {
+    console.error('Global error:', event.error);
+    // Could implement error reporting here
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('Unhandled promise rejection:', event.reason);
+    // Could implement error reporting here
+});
+
+// ===== PERFORMANCE MONITORING =====
+if (typeof performance !== 'undefined' && performance.mark) {
+    performance.mark('isokari-core-loaded');
+}
+
+console.log('🏝️ ISOKARI Core System Loaded');

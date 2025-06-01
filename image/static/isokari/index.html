@@ -3,102 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Isokari 360°</title>
+    <title>Isokari 360° Experience</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Global styles -->
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/styles_menu.css">
+    <link rel="stylesheet" href="styles/styles_island.css">
+    <link rel="stylesheet" href="styles/styles_ph.css">
 </head>
 <body>
+    <!-- Global Loading Overlay -->
     <div class="loading-overlay" id="loading-overlay">
         <div class="loading-spinner"></div>
-        <div class="loading-text">Loading Isokari experience...</div>
+        <div class="loading-text" id="loading-text">Loading Isokari experience...</div>
+    </div>
+
+    <!-- Persistent Audio Controls -->
+    <div class="audio-controls" id="audio-controls">
+        <button class="audio-button muted" id="audio-toggle" title="Toggle Audio">
+            <img class="audio-icon muted" id="audio-icon" src="assets/audio-off.png" alt="Audio">
+        </button>
     </div>
 
     <div class="main-container">
-        <!-- Simple Back Button (always visible) -->
-        <button class="simple-back-button" id="simple-back-button" title="Back">
-            <img src="assets/back.png" alt="Back" class="back-icon">
-        </button>
+        <!-- INTRO/MENU SECTION -->
+        <div class="section-container active" id="intro-section">
+            <div class="intro-viewer" id="intro-viewer">
+                <!-- 360° video background -->
+            </div>
+            
+            <div class="menu-overlay">
+                <div class="menu-title">ISOKARI 360°</div>
+                <div class="menu-subtitle">
+                    Experience the dramatic limestone cliffs of Isokari island through immersive 360° perspectives. Navigate between outdoor vistas and intimate indoor spaces.
+                </div>
+                <div class="menu-buttons">
+                    <button class="menu-button" id="nav-to-island">
+                        <span class="button-number">1)</span> Island Experience
+                    </button>
+                    <button class="menu-button" id="nav-to-pilots">
+                        <span class="button-number">2)</span> Pilots House
+                    </button>
+                </div>
+            </div>
+        </div>
 
-        <!-- Audio Controls (always visible) -->
-        <div class="audio-controls" id="audio-controls">
-            <button class="audio-button" id="audio-toggle" title="Toggle Audio">
-                <img class="audio-icon muted" id="audio-icon" src="assets/audio-off.png" alt="Audio">
+        <!-- ISLAND SECTION -->
+        <div class="section-container" id="island-section">
+            <!-- Simple Back Button (always visible) -->
+            <button class="simple-back-button" id="island-back-button" title="Back to Menu">
+                <img src="assets/back.png" alt="Back" class="back-icon">
             </button>
+
+            <!-- BTQ360 Link Button (bottom-left) -->
+            <button class="btq-button" id="btq-button" title="Visit BTQ360.com">
+                <img src="assets/btq.png" alt="BTQ360" class="btq-icon">
+            </button>
+
+            <!-- Mirror Ball Viewer -->
+            <div class="viewer-container" id="island-viewer">
+                <!-- Three.js canvas will be inserted here -->
+            </div>
+
+            <!-- UI Toggle Button -->
+            <button class="ui-toggle-button" id="ui-toggle-button" title="Toggle Menu">
+                ☰
+            </button>
+
+            <!-- Island UI Panel -->
+            <div class="ui-panel" id="island-ui-panel">
+                <!-- Panel Header -->
+                <div class="panel-header">
+                    <div class="panel-title">Isokari Cliffs</div>
+                    <div class="panel-description">
+                        These dramatic limestone cliffs rise majestically from the Baltic Sea, formed over millennia by ancient coral reefs. The unique mirror ball perspective reveals the interplay of light, water, and stone.
+                    </div>
+                </div>
+
+                <!-- Location Details -->
+                <div class="location-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Date</span>
+                        <span class="detail-value">Aug 15, 2024</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Time</span>
+                        <span class="detail-value">14:32 UTC</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Latitude</span>
+                        <span class="detail-value">60.2451°N</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Longitude</span>
+                        <span class="detail-value">22.0823°E</span>
+                    </div>
+                </div>
+
+                <!-- Controls Section -->
+                <div class="controls-section">
+                    <div class="control-group">
+                        <button class="control-button active" id="auto-rotate-toggle" title="Toggle Auto-Rotation">
+                            <img src="assets/arrow.png" alt="Auto Rotate" class="auto-rotate-icon" id="auto-rotate-icon">
+                        </button>
+                        
+                        <button class="control-button" id="prev-button" title="Previous">
+                            <img src="assets/back.png" alt="Previous" class="nav-icon">
+                        </button>
+                        
+                        <button class="control-button" id="next-button" title="Next">
+                            <img src="assets/next.png" alt="Next" class="nav-icon">
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cross Navigation -->
+                <div class="cross-nav-section">
+                    <button class="cross-nav-button" id="island-to-pilots">
+                        → Pilots House
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <!-- BTQ360 Link Button (bottom-left) -->
-        <button class="btq-button" id="btq-button" title="Visit BTQ360.com">
-            <img src="assets/btq.png" alt="BTQ360" class="btq-icon">
-        </button>
-
-        <!-- Mirror Ball Viewer -->
-        <div class="viewer-container" id="viewer-container">
-            <!-- Three.js canvas will be inserted here -->
-        </div>
-
-        <!-- UI Toggle Button -->
-        <button class="ui-toggle-button" id="ui-toggle-button" title="Toggle Menu">
-            ☰
-        </button>
-
-        <!-- Unified UI Panel -->
-        <div class="ui-panel" id="ui-panel">
-            <!-- Panel Header -->
-            <div class="panel-header">
-                <div class="panel-title">Isokari Cliffs</div>
-                <div class="panel-description">
-                    These dramatic limestone cliffs rise majestically from the Baltic Sea, formed over millennia by ancient coral reefs. The unique mirror ball perspective reveals the interplay of light, water, and stone.
-                </div>
+        <!-- PILOTS HOUSE SECTION -->
+        <div class="section-container" id="pilots-section">
+            <button class="simple-back-button" id="pilots-back-button" title="Back to Menu">
+                <img src="assets/back.png" alt="Back" class="back-icon">
+            </button>
+            
+            <div class="viewer-container" id="pilots-viewer">
+                <!-- Indoor 360° images will be rendered here -->
             </div>
 
-            <!-- Location Details -->
-            <div class="location-details">
-                <div class="detail-item">
-                    <span class="detail-label">Date</span>
-                    <span class="detail-value">Aug 15, 2024</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Time</span>
-                    <span class="detail-value">14:32 UTC</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Latitude</span>
-                    <span class="detail-value">60.2451°N</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Longitude</span>
-                    <span class="detail-value">22.0823°E</span>
-                </div>
-            </div>
+            <!-- Cross Navigation -->
+            <button class="cross-nav-button bottom-left" id="pilots-to-island">
+                → Island Experience
+            </button>
 
-            <!-- Controls Section -->
-            <div class="controls-section">
-                <div class="control-group">
-                    <button class="control-button active" id="auto-rotate-toggle" title="Toggle Auto-Rotation">
-                        <img src="assets/arrow.png" alt="Auto Rotate" class="auto-rotate-icon" id="auto-rotate-icon">
-                    </button>
-                    
-                    <button class="control-button" id="prev-button" title="Previous">
-                        <img src="assets/back.png" alt="Previous" class="nav-icon">
-                    </button>
-                    
-                    <button class="control-button" id="next-button" title="Next">
-                        <img src="assets/next.png" alt="Next" class="nav-icon">
-                    </button>
+            <!-- Pilots House UI Panel -->
+            <div class="ui-panel" id="pilots-ui-panel">
+                <div class="panel-header">
+                    <div class="panel-title">Pilots House Interior</div>
+                    <div class="panel-description">
+                        Step inside the historic pilots house where generations of maritime guides lived and worked, watching over the treacherous waters surrounding Isokari island.
+                    </div>
                 </div>
-            </div>
-
-            <!-- Back Button Section -->
-            <div class="back-section">
-                <button class="control-button secondary" id="back-button">
-                    <span class="button-text">Back to Menu</span>
-                </button>
             </div>
         </div>
     </div>
 
+    <!-- Core JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="scripts.js"></script>
+    <script src="scripts/scripts_core.js"></script>
+    <script src="scripts/scripts_menu.js"></script>
+    <script src="scripts/scripts_island.js"></script>
+    <script src="scripts/scripts_ph.js"></script>
+
+    <script>
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            window.ISOKARIApp = new ISOKARI.App();
+        });
+    </script>
 </body>
 </html>

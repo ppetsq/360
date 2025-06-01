@@ -1,0 +1,347 @@
+/* ===== PILOTS HOUSE SECTION STYLES ===== */
+
+#pilots-section {
+    background: #000;
+}
+
+/* ===== PILOTS HOUSE UI PANEL ===== */
+#pilots-ui-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(25px);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 1500;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 20px 30px;
+    gap: 30px;
+    transform: translateY(100%);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#pilots-ui-panel.visible {
+    transform: translateY(0);
+}
+
+/* ===== PILOTS HOUSE SPECIFIC STYLES ===== */
+.pilots-house-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+}
+
+.pilots-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.pilots-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pilots-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.pilots-subtitle {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ===== PILOTS HOUSE NAVIGATION ===== */
+.pilots-nav-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.pilots-nav-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.pilots-nav-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.pilots-nav-button.active {
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* ===== ROOM INDICATORS ===== */
+.room-indicators {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-left: 20px;
+}
+
+.room-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.room-indicator.active {
+    background: #fff;
+    transform: scale(1.3);
+}
+
+.room-indicator:hover {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+/* ===== PILOTS HOUSE HOTSPOTS ===== */
+.pilots-hotspot {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    animation: pulse 2s infinite;
+    z-index: 100;
+}
+
+.pilots-hotspot::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: ripple 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0.8);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+/* ===== PILOTS HOUSE TOOLTIP ===== */
+.pilots-tooltip {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 101;
+}
+
+.pilots-hotspot:hover .pilots-tooltip {
+    opacity: 1;
+}
+
+/* ===== RESPONSIVE PILOTS HOUSE STYLES ===== */
+@media (max-width: 768px) {
+    #pilots-ui-panel {
+        height: 120px;
+        flex-direction: column;
+        padding: 15px 20px;
+        gap: 15px;
+    }
+
+    .pilots-house-info {
+        gap: 15px;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .pilots-nav-controls {
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .pilots-nav-button {
+        width: 38px;
+        height: 38px;
+        font-size: 14px;
+    }
+
+    .room-indicators {
+        margin-left: 0;
+        margin-top: 10px;
+        justify-content: center;
+    }
+
+    .pilots-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
+
+    .pilots-title {
+        font-size: 15px;
+    }
+
+    .pilots-subtitle {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    #pilots-ui-panel {
+        height: 100px;
+        padding: 12px 15px;
+        gap: 12px;
+    }
+
+    .pilots-house-info {
+        gap: 12px;
+    }
+
+    .pilots-nav-controls {
+        gap: 8px;
+    }
+
+    .pilots-nav-button {
+        width: 35px;
+        height: 35px;
+        font-size: 12px;
+    }
+
+    .pilots-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+    }
+
+    .pilots-title {
+        font-size: 14px;
+    }
+
+    .pilots-subtitle {
+        font-size: 10px;
+    }
+
+    .room-indicators {
+        margin-top: 8px;
+        gap: 6px;
+    }
+
+    .room-indicator {
+        width: 6px;
+        height: 6px;
+    }
+
+    .pilots-hotspot {
+        width: 16px;
+        height: 16px;
+    }
+
+    .pilots-tooltip {
+        font-size: 11px;
+        padding: 6px 10px;
+        bottom: 25px;
+    }
+}
+
+/* ===== PILOTS HOUSE TRANSITIONS ===== */
+.pilots-room-transition {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    z-index: 50;
+}
+
+.pilots-room-transition.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* ===== PILOTS HOUSE ACCESSIBILITY ===== */
+.pilots-nav-button:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+}
+
+.room-indicator:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pilots-hotspot {
+        animation: none;
+    }
+    
+    .pilots-hotspot::before {
+        animation: none;
+    }
+    
+    .pilots-room-transition {
+        transition: none;
+    }
+}

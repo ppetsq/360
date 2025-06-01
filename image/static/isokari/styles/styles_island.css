@@ -1,168 +1,10 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* ===== ISLAND SECTION STYLES ===== */
 
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+#island-section {
     background: #000;
-    color: #fff;
-    overflow: hidden;
-    height: 100vh;
-    width: 100vw;
-    position: relative;
 }
 
-/* Loading Overlay */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-    opacity: 1;
-    transition: opacity 0.8s ease-out;
-}
-
-.loading-overlay.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(255, 255, 255, 0.1);
-    border-top: 3px solid #fff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 20px;
-}
-
-.loading-text {
-    font-size: 16px;
-    font-weight: 300;
-    opacity: 0.8;
-    letter-spacing: 0.5px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Main Container */
-.main-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: visible;
-}
-
-/* Viewer Container */
-.viewer-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    cursor: grab;
-}
-
-.viewer-container:active {
-    cursor: grabbing;
-}
-
-/* Simple Back Button (always visible) */
-.simple-back-button {
-    position: fixed;
-    top: 30px;
-    left: 30px;
-    z-index: 2000;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #fff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-}
-
-.simple-back-button:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: scale(1.08);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
-}
-
-/* Audio Controls (always visible) */
-.audio-controls {
-    position: fixed;
-    top: 30px;
-    right: 30px;
-    z-index: 2000;
-    pointer-events: all;
-    display: block;
-    visibility: visible;
-    opacity: 1;
-}
-
-.audio-button {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #fff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    position: relative;
-    pointer-events: all;
-}
-
-.audio-button:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: scale(1.08);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
-}
-
-.audio-icon {
-    width: 20px;
-    height: 20px;
-    opacity: 1;
-    transition: opacity 0.3s ease;
-    filter: brightness(0) invert(1);
-}
-
-.audio-icon.muted {
-    opacity: 0.6;
-}
-
-.audio-icon.playing {
-    opacity: 1;
-}
-
-/* BTQ360 Button (bottom-left) */
-/* BTQ360 Button (bottom-left) */
+/* ===== BTQ360 BUTTON ===== */
 .btq-button {
     position: fixed;
     bottom: 30px;
@@ -200,7 +42,7 @@ body {
     width: 28px;
     height: 28px;
     filter: brightness(0) invert(1);
-    opacity: 0.6; /* Same as audio-off default */
+    opacity: 0.6;
 }
 
 .btq-icon:hover {
@@ -208,7 +50,7 @@ body {
     transition: all 0.3s ease;
 }
 
-/* UI Toggle Button */
+/* ===== UI TOGGLE BUTTON ===== */
 .ui-toggle-button {
     position: fixed;
     bottom: 30px;
@@ -250,7 +92,7 @@ body {
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
 }
 
-/* Unified UI Panel */
+/* ===== ISLAND UI PANEL ===== */
 .ui-panel {
     position: fixed;
     bottom: 0;
@@ -274,7 +116,7 @@ body {
     transform: translateY(0);
 }
 
-/* Panel Header */
+/* ===== PANEL CONTENT ===== */
 .panel-header {
     display: flex;
     flex-direction: column;
@@ -297,7 +139,7 @@ body {
     color: rgba(255, 255, 255, 0.8);
 }
 
-/* Location Details */
+/* ===== LOCATION DETAILS ===== */
 .location-details {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -336,13 +178,7 @@ body {
     white-space: nowrap;
 }
 
-/* Back Button Section */
-.back-section {
-    display: flex;
-    flex-shrink: 0;
-}
-
-/* Controls Section */
+/* ===== CONTROLS SECTION ===== */
 .controls-section {
     display: flex;
     flex-direction: column;
@@ -394,12 +230,46 @@ body {
     height: 44px;
 }
 
-.button-text {
-    font-size: 13px;
-    font-weight: 600;
+/* ===== CROSS NAVIGATION SECTION ===== */
+.cross-nav-section {
+    display: flex;
+    flex-shrink: 0;
 }
 
-/* Responsive Design */
+.cross-nav-section .cross-nav-button {
+    position: static;
+    bottom: auto;
+    right: auto;
+    left: auto;
+}
+
+/* ===== CONTROL ICONS ===== */
+.auto-rotate-icon {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
+.control-button:hover .auto-rotate-icon {
+    opacity: 1;
+}
+
+.nav-icon {
+    width: 16px;
+    height: 16px;
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+    transition: all 0.3s ease;
+}
+
+.control-button:hover .nav-icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* ===== RESPONSIVE ISLAND STYLES ===== */
 @media (max-width: 768px) {
     .ui-panel {
         height: 240px;
@@ -411,32 +281,6 @@ body {
 
     .ui-toggle-button.panel-open {
         bottom: 270px;
-    }
-
-    .simple-back-button,
-    .audio-controls {
-        top: 20px;
-    }
-
-    .simple-back-button {
-        left: 20px;
-        width: 45px;
-        height: 45px;
-        font-size: 16px;
-    }
-
-    .audio-button {
-        width: 45px;
-        height: 45px;
-    }
-
-    .audio-icon {
-        width: 18px;
-        height: 18px;
-    }
-
-    .audio-controls {
-        right: 20px;
     }
 
     .btq-button {
@@ -472,17 +316,17 @@ body {
         flex: none;
     }
 
-    .back-section {
-        order: 3;
-        align-self: center;
-        padding-bottom: 10px;
-    }
-
     .controls-section {
         flex-direction: row;
         justify-content: center;
         gap: 14px;
         order: 2;
+    }
+
+    .cross-nav-section {
+        order: 3;
+        align-self: center;
+        padding-bottom: 10px;
     }
 
     .control-button {
@@ -524,32 +368,6 @@ body {
 
     .ui-toggle-button.panel-open {
         bottom: 285px;
-    }
-
-    .simple-back-button,
-    .audio-controls {
-        top: 15px;
-    }
-
-    .simple-back-button {
-        left: 15px;
-        width: 42px;
-        height: 42px;
-        font-size: 14px;
-    }
-
-    .audio-button {
-        width: 42px;
-        height: 42px;
-    }
-
-    .audio-icon {
-        width: 16px;
-        height: 16px;
-    }
-
-    .audio-controls {
-        right: 15px;
     }
 
     .btq-button {
@@ -600,75 +418,13 @@ body {
         justify-content: center;
     }
 
-    .back-section {
+    .cross-nav-section {
         padding-bottom: 8px;
     }
 }
 
-/* Back Icon Styling */
-.back-icon {
-    width: 20px;
-    height: 20px;
-    filter: brightness(0) invert(1); /* Makes it white */
-    opacity: 0.9;
-    transition: all 0.3s ease;
-}
-
-.simple-back-button:hover .back-icon {
-    opacity: 1;
-    transform: scale(1.1);
-}
-
-/* Auto-Rotate Icon Styling */
-.auto-rotate-icon {
-    width: 20px;
-    height: 20px;
-    filter: brightness(0) invert(1); /* Makes it white */
-    opacity: 0.9;
-    transition: opacity 0.3s ease; /* Only animate opacity, not transform */
-}
-
-/* Rotation animation for active state - much slower */
-.auto-rotate-icon.rotating {
-    animation: rotate 8s linear infinite;
-}
-
-/* Rotation keyframes */
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* Navigation Icons Styling */
-.nav-icon {
-    width: 16px;
-    height: 16px;
-    filter: brightness(0) invert(1); /* Makes it white */
-    opacity: 0.9;
-    transition: all 0.3s ease;
-}
-
-/* Hover effects */
-.control-button:hover .auto-rotate-icon {
-    opacity: 1;
-}
-
-.control-button:hover .nav-icon {
-    opacity: 1;
-    transform: scale(1.1);
-}
-
-/* Mobile responsive sizing */
+/* ===== ICON RESPONSIVE SIZING ===== */
 @media (max-width: 768px) {
-    .back-icon {
-        width: 18px;
-        height: 18px;
-    }
-    
     .auto-rotate-icon {
         width: 18px;
         height: 18px;
@@ -681,11 +437,6 @@ body {
 }
 
 @media (max-width: 480px) {
-    .back-icon {
-        width: 16px;
-        height: 16px;
-    }
-    
     .auto-rotate-icon {
         width: 16px;
         height: 16px;
