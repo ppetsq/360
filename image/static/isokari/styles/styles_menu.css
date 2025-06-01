@@ -63,7 +63,7 @@
 /* ===== MENU BUTTONS ===== */
 .menu-buttons {
     display: flex;
-    flex-direction: column;
+    flex-direction: row; /* Side by side on desktop */
     gap: 16px;
 }
 
@@ -79,11 +79,58 @@
     cursor: pointer;
     transition: all 0.3s ease;
     text-decoration: none;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
     position: relative;
     overflow: hidden;
     font-family: inherit;
-    text-align: left;
+    text-align: center;
+    flex: 1; /* Equal width buttons */
+    min-height: 60px;
+}
+
+/* Menu button content wrapper */
+.menu-button-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Menu button icons */
+.menu-button-icon {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.menu-button:hover .menu-button-icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Menu button text */
+.menu-button-text {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+/* Button number styling */
+.button-number {
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 11px;
+    font-weight: 600;
+    z-index: 3;
 }
 
 /* Shimmer effect on hover */
@@ -101,6 +148,7 @@
         transparent
     );
     transition: left 0.6s ease;
+    z-index: 1;
 }
 
 .menu-button:hover::before {
@@ -121,20 +169,18 @@
     transition: transform 0.1s ease;
 }
 
-/* Button numbering */
-.button-number {
-    color: rgba(255, 255, 255, 0.6);
-    margin-right: 8px;
-    font-weight: 600;
-}
-
 /* ===== RESPONSIVE MENU DESIGN ===== */
 @media (max-width: 768px) {
     .menu-overlay {
+        position: fixed; /* Use fixed instead of absolute for better mobile centering */
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         width: 340px;
+        max-width: calc(100vw - 40px); /* Add more padding on mobile */
         padding: 32px 28px;
-        margin: 0 20px;
         border-radius: 20px;
+        margin: 0; /* Remove any margin */
     }
 
     .menu-title {
@@ -147,16 +193,39 @@
         margin-bottom: 28px;
     }
 
+    .menu-buttons {
+        flex-direction: column; /* Stack vertically on mobile */
+        gap: 14px;
+    }
+
     .menu-button {
-        padding: 14px 20px;
+        padding: 16px 20px;
         font-size: 15px;
         border-radius: 12px;
+        min-height: 70px;
+        flex: none; /* Remove flex on mobile */
+    }
+
+    .menu-button-text {
+        font-size: 15px;
+    }
+
+    .menu-button-icon {
+        width: 26px;
+        height: 26px;
+    }
+
+    .button-number {
+        font-size: 10px;
+        top: 10px;
+        left: 14px;
     }
 }
 
 @media (max-width: 480px) {
     .menu-overlay {
         width: 300px;
+        max-width: calc(100vw - 30px); /* Even more padding on small screens */
         padding: 28px 24px;
         border-radius: 18px;
     }
@@ -173,13 +242,25 @@
     }
 
     .menu-button {
-        padding: 12px 18px;
+        padding: 14px 18px;
         font-size: 14px;
         border-radius: 10px;
+        min-height: 65px;
+    }
+
+    .menu-button-text {
+        font-size: 14px;
+    }
+
+    .menu-button-icon {
+        width: 24px;
+        height: 24px;
     }
 
     .button-number {
-        margin-right: 6px;
+        font-size: 9px;
+        top: 8px;
+        left: 12px;
     }
 }
 
