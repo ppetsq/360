@@ -227,8 +227,8 @@ ISOKARI.App = class {
     updateLoadingText(targetSection) {
         const loadingText = document.getElementById('loading-text');
         const messages = {
-            intro: 'Loading menu experience...',
-            island: 'Loading island cliffs...',
+            intro: 'Loading menu...',
+            island: 'Loading island experience...',
             pilots: 'Loading pilots house...'
         };
         if (loadingText) {

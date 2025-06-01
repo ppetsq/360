@@ -176,7 +176,7 @@
     box-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Subtle shadow for the map image itself */
 
     /* --- MODIFICATION: Reduce map background opacity --- */
-    opacity: 0.85; /* Adjust this value (e.g., 0.6 for 60% opacity) */
+    opacity: 0.95; /* Adjust this value (e.g., 0.6 for 60% opacity) */
 }
 
 
@@ -214,7 +214,7 @@
         box-shadow: 0 0 15px rgba(255, 140, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.9);
     }
     50% {
-        opacity: 0.8;
+        opacity: 0.9;
         box-shadow: 0 0 22px rgba(255, 140, 0, 1), 0 0 12px rgba(0, 0, 0, 1);
     }
 }
