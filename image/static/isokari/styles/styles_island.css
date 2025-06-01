@@ -174,6 +174,9 @@
     background: transparent;
     border: none; /* No border for the image itself */
     box-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Subtle shadow for the map image itself */
+
+    /* --- MODIFICATION: Reduce map background opacity --- */
+    opacity: 0.85; /* Adjust this value (e.g., 0.6 for 60% opacity) */
 }
 
 

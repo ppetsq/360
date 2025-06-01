@@ -447,18 +447,18 @@ ISOKARI.IslandController = class {
                 this.jumpToImage(index);
             });
             
-            // Add hover effects for better UX
-            newDot.addEventListener('mouseenter', () => {
-                if (index !== this.currentImageIndex) {
-                    newDot.style.transform = 'translate(-50%, -50%) scale(1.2)';
-                }
-            });
-            
-            newDot.addEventListener('mouseleave', () => {
-                if (index !== this.currentImageIndex) {
-                    newDot.style.transform = 'translate(-50%, -50%) scale(1)';
-                }
-            });
+            // --- MODIFICATION: Removed hover effects from JS to prevent style conflicts ---
+            // newDot.addEventListener('mouseenter', () => {
+            //     if (index !== this.currentImageIndex) {
+            //         newDot.style.transform = 'translate(-50%, -50%) scale(1.2)';
+            //     }
+            // });
+            // 
+            // newDot.addEventListener('mouseleave', () => {
+            //     if (index !== this.currentImageIndex) {
+            //         newDot.style.transform = 'translate(-50%, -50%) scale(1)';
+            //     }
+            // });
         });
         
         // Initial update of active dot
