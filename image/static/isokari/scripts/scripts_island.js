@@ -336,9 +336,8 @@ ISOKARI.IslandController = class {
         const btqButton = document.getElementById('btq-button');
 
         panel?.classList.add('visible');
-        toggleButton?.classList.remove('visible');
-        toggleButton?.classList.add('panel-open');
-        btqButton?.classList.add('hidden');
+        toggleButton?.classList.add('panel-open'); // Add panel-open class for desktop repositioning
+        btqButton?.classList.add('hidden'); // Hide BTQ button when UI is shown
         this.uiPanelVisible = true;
     }
 
@@ -348,9 +347,8 @@ ISOKARI.IslandController = class {
         const btqButton = document.getElementById('btq-button');
 
         panel?.classList.remove('visible');
-        toggleButton?.classList.remove('panel-open');
-        toggleButton?.classList.add('visible');
-        btqButton?.classList.remove('hidden');
+        toggleButton?.classList.remove('panel-open'); // Remove panel-open class for desktop repositioning
+        btqButton?.classList.remove('hidden'); // Show BTQ button when UI is hidden
         this.uiPanelVisible = false;
     }
 

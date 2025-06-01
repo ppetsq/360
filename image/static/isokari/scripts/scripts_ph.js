@@ -242,11 +242,13 @@ ISOKARI.PilotsController = class {
         const prevButton = document.getElementById('pilots-prev-button');
         const nextButton = document.getElementById('pilots-next-button');
         const uiToggleButton = document.getElementById('pilots-ui-toggle-button');
+        const btqButton = document.getElementById('pilots-btq-button');
 
         if (autoRotateToggle) autoRotateToggle.addEventListener('click', () => this.toggleAutoRotate());
         if (prevButton) prevButton.addEventListener('click', () => this.goToPrevious());
         if (nextButton) nextButton.addEventListener('click', () => this.goToNext());
         if (uiToggleButton) uiToggleButton.addEventListener('click', () => this.toggleUIPanel());
+        if (btqButton) btqButton.addEventListener('click', () => this.openBTQ360());
 
         // Keyboard controls
         document.addEventListener('keydown', (e) => this.onKeyDown(e), false);
@@ -397,20 +399,22 @@ ISOKARI.PilotsController = class {
     showUIPanel() {
         const panel = document.getElementById('pilots-ui-panel');
         const toggleButton = document.getElementById('pilots-ui-toggle-button');
+        const btqButton = document.getElementById('pilots-btq-button');
 
         panel?.classList.add('visible');
-        toggleButton?.classList.remove('visible');
-        toggleButton?.classList.add('panel-open');
+        toggleButton?.classList.add('panel-open'); // Add panel-open class for desktop repositioning
+        btqButton?.classList.add('hidden'); // Hide BTQ button when UI is shown
         this.uiPanelVisible = true;
     }
 
     hideUIPanel() {
         const panel = document.getElementById('pilots-ui-panel');
         const toggleButton = document.getElementById('pilots-ui-toggle-button');
+        const btqButton = document.getElementById('pilots-btq-button');
 
         panel?.classList.remove('visible');
-        toggleButton?.classList.remove('panel-open');
-        toggleButton?.classList.add('visible');
+        toggleButton?.classList.remove('panel-open'); // Remove panel-open class for desktop repositioning
+        btqButton?.classList.remove('hidden'); // Show BTQ button when UI is hidden
         this.uiPanelVisible = false;
     }
 
@@ -422,6 +426,10 @@ ISOKARI.PilotsController = class {
     goToNext() {
         this.currentImageIndex = (this.currentImageIndex + 1) % this.imageUrls.length;
         this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
+    }
+
+    openBTQ360() {
+        window.open('https://btq360.com', '_blank');
     }
 
     // Animation loop (same as island)

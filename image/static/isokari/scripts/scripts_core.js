@@ -77,6 +77,11 @@ ISOKARI.App = class {
             this.toggleAudio();
         });
 
+        // BTQ360 buttons for all sections
+        document.getElementById('menu-btq-button')?.addEventListener('click', () => {
+            window.open('https://btq360.com', '_blank');
+        });
+
         // Keyboard navigation
         document.addEventListener('keydown', (event) => {
             this.handleKeydown(event);
@@ -186,11 +191,35 @@ ISOKARI.App = class {
             case 'island':
                 setTimeout(() => {
                     document.getElementById('island-ui-panel')?.classList.add('visible');
+                    
+                    // Properly set toggle button state for desktop (initial load fix)
+                    const islandToggle = document.getElementById('ui-toggle-button');
+                    if (islandToggle) {
+                        islandToggle.classList.add('panel-open');
+                    }
+                    
+                    // Hide BTQ button when UI is shown (desktop only)
+                    const islandBtq = document.getElementById('btq-button');
+                    if (islandBtq) {
+                        islandBtq.classList.add('hidden');
+                    }
                 }, 500);
                 break;
             case 'pilots':
                 setTimeout(() => {
                     document.getElementById('pilots-ui-panel')?.classList.add('visible');
+                    
+                    // Properly set toggle button state for desktop (initial load fix)
+                    const pilotsToggle = document.getElementById('pilots-ui-toggle-button');
+                    if (pilotsToggle) {
+                        pilotsToggle.classList.add('panel-open');
+                    }
+                    
+                    // Hide BTQ button when UI is shown (desktop only)
+                    const pilotsBtq = document.getElementById('pilots-btq-button');
+                    if (pilotsBtq) {
+                        pilotsBtq.classList.add('hidden');
+                    }
                 }, 500);
                 break;
         }
