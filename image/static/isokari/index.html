@@ -63,100 +63,96 @@
             </div>
         </div>
 
-        <!-- ISLAND SECTION -->
-        <div class="section-container" id="island-section">
-            <!-- Simple Back Button (always visible) -->
-            <button class="simple-back-button" id="island-back-button" title="Back to Menu">
-                <img src="assets/back.png" alt="Back" class="back-icon">
-            </button>
+       <!-- ISLAND SECTION -->
+<div class="section-container" id="island-section">
+    <!-- Simple Back Button (always visible) -->
+    <button class="simple-back-button" id="island-back-button" title="Back to Menu">
+        <img src="assets/back.png" alt="Back" class="back-icon">
+    </button>
 
-            <!-- BTQ360 Link Button (bottom-left) -->
-            <button class="btq-button" id="btq-button" title="Visit BTQ360.com">
-                <img src="assets/btq.png" alt="BTQ360" class="btq-icon">
-            </button>
+    <!-- BTQ360 Link Button (bottom-left) -->
+    <button class="btq-button" id="btq-button" title="Visit BTQ360.com">
+        <img src="assets/btq.png" alt="BTQ360" class="btq-icon">
+    </button>
 
-            <!-- Mirror Ball Viewer -->
-            <div class="viewer-container" id="island-viewer">
-                <!-- Three.js canvas will be inserted here -->
-            </div>
+    <!-- Mirror Ball Viewer -->
+    <div class="viewer-container" id="island-viewer">
+        <!-- Three.js canvas will be inserted here -->
+    </div>
 
-            <!-- UI Toggle Button -->
-            <button class="ui-toggle-button" id="ui-toggle-button" title="Toggle Menu">
-                ☰
-            </button>
+    <!-- UI Toggle Button -->
+    <button class="ui-toggle-button" id="ui-toggle-button" title="Toggle Menu">
+        ☰
+    </button>
 
-            <!-- Interactive Map Container -->
-            <div class="map-container" id="island-map-container">
-                <img src="assets/island-map.svg" class="map-background" alt="Island Map" />
-                <div class="dot" data-index="0" style="left: 54%; top: 84%;"></div>
-                <div class="dot" data-index="1" style="left: 72%; top: 63%;"></div>
-                <div class="dot" data-index="2" style="left: 67%; top: 73%;"></div>
-                <div class="dot" data-index="3" style="left: 84%; top: 60%;"></div>
-                <div class="dot" data-index="4" style="left: 50%; top: 73%;"></div>
-                <div class="dot" data-index="5" style="left: 37%; top: 78%;"></div>
-                <div class="dot" data-index="6" style="left: 77%; top: 69%;"></div>
-                <div class="dot" data-index="7" style="left: 57%; top: 66%;"></div>
-                <div class="dot" data-index="8" style="left: 19%; top: 80%;"></div>
-                <div class="dot" data-index="9" style="left: 7%; top: 75%;"></div>
-                <div class="dot" data-index="10" style="left: 26%; top: 72%;"></div>
-                <div class="dot" data-index="11" style="left: 4%; top: 65%;"></div>
-            </div>
+    <!-- Interactive Map Container (Positioned separately for 50/50 overlap) -->
+    <div class="map-container" id="island-map-container">
+        <img src="assets/island-map.svg" class="map-background" alt="Island Map" />
+        <div class="dot" data-index="0" style="left: 54%; top: 84%;"></div>
+        <div class="dot" data-index="1" style="left: 72%; top: 63%;"></div>
+        <div class="dot" data-index="2" style="left: 67%; top: 73%;"></div>
+        <div class="dot" data-index="3" style="left: 84%; top: 60%;"></div>
+        <div class="dot" data-index="4" style="left: 50%; top: 73%;"></div>
+        <div class="dot" data-index="5" style="left: 37%; top: 78%;"></div>
+        <div class="dot" data-index="6" style="left: 77%; top: 69%;"></div>
+        <div class="dot" data-index="7" style="left: 57%; top: 66%;"></div>
+        <div class="dot" data-index="8" style="left: 19%; top: 80%;"></div>
+        <div class="dot" data-index="9" style="left: 7%; top: 75%;"></div>
+        <div class="dot" data-index="10" style="left: 26%; top: 72%;"></div>
+        <div class="dot" data-index="11" style="left: 4%; top: 65%;"></div>
+    </div>
 
-            <!-- Island UI Panel -->
-            <div class="ui-panel" id="island-ui-panel">
-                <!-- Panel Header -->
-                <div class="panel-header">
-                    <div class="panel-title">Isokari Cliffs</div>
-                    <div class="panel-description">
-                        These dramatic limestone cliffs rise majestically from the Baltic Sea, formed over millennia by ancient coral reefs. The unique mirror ball perspective reveals the interplay of light, water, and stone.
-                    </div>
-                </div>
-
-                <!-- Location Details -->
-                <div class="location-details">
-                    <div class="detail-item">
-                        <span class="detail-label">Date</span>
-                        <span class="detail-value">Aug 15, 2024</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Time</span>
-                        <span class="detail-value">14:32 UTC</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Latitude</span>
-                        <span class="detail-value">60.2451°N</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Longitude</span>
-                        <span class="detail-value">22.0823°E</span>
-                    </div>
-                </div>
-
-                <!-- Controls Section -->
-                <div class="controls-section">
-                    <div class="control-group">
-                        <button class="control-button active" id="auto-rotate-toggle" title="Toggle Auto-Rotation">
-                            <img src="assets/arrow.png" alt="Auto Rotate" class="auto-rotate-icon" id="auto-rotate-icon">
-                        </button>
-                        
-                        <button class="control-button" id="prev-button" title="Previous">
-                            <img src="assets/back.png" alt="Previous" class="nav-icon">
-                        </button>
-                        
-                        <button class="control-button" id="next-button" title="Next">
-                            <img src="assets/next.png" alt="Next" class="nav-icon">
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Cross Navigation -->
-                <div class="cross-nav-section">
-                    <button class="cross-nav-button" id="island-to-pilots">
-                        → Pilots House
-                    </button>
-                </div>
+    <!-- Island UI Panel -->
+    <div class="ui-panel" id="island-ui-panel">
+        <!-- Panel Header -->
+        <div class="panel-header">
+            <div class="panel-title">Isokari Cliffs</div>
+            <div class="panel-description">
+                These dramatic limestone cliffs rise majestically from the Baltic Sea, formed over millennia by ancient coral reefs. The unique mirror ball perspective reveals the interplay of light, water, and stone.
             </div>
         </div>
+
+        <!-- Location Details -->
+        <div class="location-details">
+            <div class="detail-item">
+                <span class="detail-label">Date</span>
+                <span class="detail-value">Aug 15, 2024</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Time</span>
+                <span class="detail-value">14:32 UTC</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Latitude</span>
+                <span class="detail-value">60.2451°N</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Longitude</span>
+                <span class="detail-value">22.0823°E</span>
+            </div>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="control-group">
+                <button class="control-button active" id="auto-rotate-toggle" title="Toggle Auto-Rotation">
+                    <img src="assets/arrow.png" alt="Auto Rotate" class="auto-rotate-icon" id="auto-rotate-icon">
+                </button>
+                
+                <button class="control-button" id="prev-button" title="Previous">
+                    <img src="assets/back.png" alt="Previous" class="nav-icon">
+                </button>
+                
+                <button class="control-button" id="next-button" title="Next">
+                    <img src="assets/next.png" alt="Next" class="nav-icon">
+                </button>
+            </div>
+        </div>
+
+        <!-- Cross Navigation Section REMOVED -->
+        <!-- No more pilots house button -->
+    </div>
+</div>
 
         <!-- PILOTS HOUSE SECTION -->
         <div class="section-container" id="pilots-section">

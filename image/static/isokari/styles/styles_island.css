@@ -50,7 +50,7 @@
     transition: all 0.3s ease;
 }
 
-/* ===== UI TOGGLE BUTTON (DESKTOP REPOSITIONING) ===== */
+/* ===== UI TOGGLE BUTTON ===== */
 .ui-toggle-button {
     position: fixed;
     bottom: 30px;
@@ -71,13 +71,13 @@
     font-weight: 700;
     transition: all 0.4s ease;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    opacity: 1; /* Always visible */
-    pointer-events: all; /* Always interactive */
+    opacity: 1;
+    pointer-events: all;
 }
 
 /* DESKTOP: Move toggle button above UI panel when open */
 .ui-toggle-button.panel-open {
-    bottom: 170px; /* 140px panel height + 30px margin */
+    bottom: 180px; /* 140px panel height + 40px spacing */
     transition: bottom 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -109,6 +109,88 @@
 
 .ui-panel.visible {
     transform: translateY(0);
+}
+
+/* ===== PROPERLY POSITIONED MAP - NO OVERLAP, FULLY VISIBLE ===== */
+.map-container {
+    position: fixed;
+    bottom: 150px; /* ABOVE the UI panel completely */
+    left: 30px; /* Align with BTQ button */
+    z-index: 1800; /* Above UI panel, below buttons */
+    width: 140px; /* Good size */
+    height: 90px; /* Good size */
+    border-radius: 12px;
+    padding: 0;
+    opacity: 0; /* Hidden by default */
+    visibility: hidden;
+    transition: all 0.4s ease;
+    pointer-events: none;
+    overflow: hidden;
+    /* Enhanced shadow for floating effect */
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.5));
+    background: rgba(0, 0, 0, 0.1); /* Subtle background to ensure visibility */
+}
+
+/* Show map when it has the 'visible' class */
+.map-container.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+}
+
+.map-container:hover {
+    transform: translateY(-3px);
+    filter: drop-shadow(0 12px 25px rgba(0, 0, 0, 0.6));
+}
+
+.map-background {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 12px;
+    position: relative;
+    /* Enhanced visibility */
+    filter: brightness(1.2) contrast(1.2) saturate(1.1);
+}
+
+/* ===== REFINED DOT STYLING ===== */
+.dot {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+.dot:hover {
+    background: rgba(100, 150, 255, 1);
+    transform: translate(-50%, -50%) scale(1.4);
+    box-shadow: 0 4px 12px rgba(100, 150, 255, 0.8);
+}
+
+.dot.active {
+    background: #00ff88;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.9), 0 4px 10px rgba(0, 0, 0, 0.7);
+    animation: pulse-integrated 2s infinite;
+    transform: translate(-50%, -50%) scale(1.3);
+}
+
+@keyframes pulse-integrated {
+    0%, 100% { 
+        opacity: 1; 
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.9), 0 4px 10px rgba(0, 0, 0, 0.7);
+    }
+    50% { 
+        opacity: 0.8; 
+        box-shadow: 0 0 25px rgba(0, 255, 136, 1), 0 6px 14px rgba(0, 0, 0, 0.8);
+    }
 }
 
 /* ===== PANEL CONTENT ===== */
@@ -215,29 +297,6 @@
     border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-.control-button.secondary {
-    width: auto;
-    padding: 0 18px;
-    border-radius: 22px;
-    gap: 8px;
-    min-width: 120px;
-    font-size: 14px;
-    height: 44px;
-}
-
-/* ===== CROSS NAVIGATION SECTION ===== */
-.cross-nav-section {
-    display: flex;
-    flex-shrink: 0;
-}
-
-.cross-nav-section .cross-nav-button {
-    position: static;
-    bottom: auto;
-    right: auto;
-    left: auto;
-}
-
 /* ===== CONTROL ICONS ===== */
 .auto-rotate-icon {
     width: 20px;
@@ -264,103 +323,41 @@
     transform: scale(1.1);
 }
 
-/* ===== INTERACTIVE MAP ===== */
-.map-container {
-    position: fixed;
-    top: 90px;
-    right: 30px;
-    z-index: 1800;
-    width: 160px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 16px;
-    padding: 0; /* Remove padding so dots align properly */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.4s ease;
-    pointer-events: none;
-    overflow: hidden; /* Contain dots within rounded corners */
-}
-
-.map-container.visible {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: all;
-}
-
-.map-background {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 16px; /* Match container border radius */
-    position: relative;
-}
-
-.dot {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    background: rgba(100, 150, 255, 0.9);
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(100, 150, 255, 0.7);
-    transform: translate(-50%, -50%);
-    z-index: 10;
-}
-
-.dot:hover {
-    background: rgba(100, 150, 255, 1);
-    transform: translate(-50%, -50%) scale(1.4);
-    border-color: rgba(100, 150, 255, 1);
-}
-
-.dot.active {
-    background: #00ff88;
-    border-color: #00ff88;
-    box-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { 
-        opacity: 1; 
-        box-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
-    }
-    50% { 
-        opacity: 0.7; 
-        box-shadow: 0 0 25px rgba(0, 255, 136, 0.8);
-    }
+/* ===== REMOVE CROSS NAVIGATION (NO PILOTS HOUSE BUTTON) ===== */
+.cross-nav-section {
+    display: none; /* Hide the pilots house navigation */
 }
 
 /* ===== RESPONSIVE ISLAND STYLES ===== */
 @media (max-width: 768px) {
     .ui-panel {
-        height: 280px; /* Increase height for mobile to fit all content */
+        height: 260px; /* Reduced since no cross-nav */
         flex-direction: column;
         padding: 16px 15px 20px 15px;
         gap: 12px;
         background: rgba(0, 0, 0, 0.55);
     }
 
-    /* MOBILE: Toggle button stays in same position (override desktop behavior) */
+    /* MOBILE: Hide map completely on mobile */
+    .map-container {
+        display: none !important;
+    }
+
+    /* MOBILE: Toggle button stays in same position */
     .ui-toggle-button {
-        bottom: 20px !important; /* Fixed position - doesn't move on mobile */
+        bottom: 20px !important;
         right: 20px;
         width: 45px;
         height: 45px;
         font-size: 14px;
-        transition: all 0.4s ease; /* Reset transition for mobile */
+        transition: all 0.4s ease;
     }
 
-    /* MOBILE: Remove desktop panel-open positioning */
     .ui-toggle-button.panel-open {
-        bottom: 20px !important; /* Stay in same position on mobile */
+        bottom: 20px !important;
     }
 
-    /* MOBILE: BTQ360 button stays visible even when UI is open */
+    /* MOBILE: BTQ360 button stays visible */
     .btq-button {
         bottom: 20px;
         left: 20px;
@@ -368,15 +365,9 @@
         height: 45px;
     }
 
-    /* MOBILE: Override desktop hide behavior - keep BTQ visible */
     .btq-button.hidden {
         opacity: 1 !important;
         pointer-events: all !important;
-    }
-
-    /* MOBILE: Hide map completely on mobile */
-    .map-container {
-        display: none !important;
     }
 
     .btq-icon {
@@ -424,48 +415,32 @@
         order: 3;
     }
 
-    .cross-nav-section {
-        order: 4;
-        align-self: center;
-        margin-top: 8px;
-    }
-
     .control-button {
         width: 42px;
         height: 42px;
         font-size: 16px;
     }
-
-    .control-button.secondary {
-        min-width: 120px;
-        padding: 0 16px;
-        font-size: 13px;
-        height: 42px;
-    }
 }
 
 @media (max-width: 480px) {
     .ui-panel {
-        height: 300px; /* Even taller for small screens */
+        height: 280px;
         padding: 14px 12px 18px 12px;
         gap: 10px;
     }
 
-    /* MOBILE: Toggle button stays in same position (override desktop behavior) */
     .ui-toggle-button {
-        bottom: 15px !important; /* Fixed position - doesn't move on mobile */
+        bottom: 15px !important;
         right: 15px;
         width: 42px;
         height: 42px;
         font-size: 13px;
     }
 
-    /* MOBILE: Remove desktop panel-open positioning */
     .ui-toggle-button.panel-open {
-        bottom: 15px !important; /* Stay in same position on mobile */
+        bottom: 15px !important;
     }
 
-    /* MOBILE: BTQ360 button stays visible even when UI is open */
     .btq-button {
         bottom: 15px;
         left: 15px;
@@ -473,7 +448,6 @@
         height: 42px;
     }
 
-    /* MOBILE: Override desktop hide behavior - keep BTQ visible */
     .btq-button.hidden {
         opacity: 1 !important;
         pointer-events: all !important;
@@ -499,13 +473,6 @@
         font-size: 14px;
     }
 
-    .control-button.secondary {
-        min-width: 110px;
-        padding: 0 14px;
-        font-size: 12px;
-        height: 40px;
-    }
-
     .control-group {
         gap: 10px;
     }
@@ -526,15 +493,6 @@
     .controls-section {
         gap: 10px;
         justify-content: center;
-    }
-
-    .cross-nav-section {
-        margin-top: 6px;
-    }
-
-    .cross-nav-section .cross-nav-button {
-        padding: 8px 16px;
-        font-size: 12px;
     }
 }
 

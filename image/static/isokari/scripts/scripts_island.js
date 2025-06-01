@@ -1,5 +1,5 @@
 // ===== ISLAND CONTROLLER =====
-// Handles mirror ball 360° experience based on your original scripts.js
+// Handles mirror ball 360° experience with integrated map (no cross-navigation)
 
 ISOKARI.IslandController = class {
     constructor() {
@@ -40,7 +40,7 @@ ISOKARI.IslandController = class {
         this.MAX_LAT_DEG = 84.5;
         this.UP_VECTOR_SMOOTHING_THRESHOLD = 75;
 
-        // Array of image URLs (from your original code)
+        // Array of image URLs
         this.imageUrls = [
             'https://assets.360.petsq.works/isokari/4960/01_4960.jpg',
             'https://assets.360.petsq.works/isokari/4960/02_4960.jpg',
@@ -74,6 +74,7 @@ ISOKARI.IslandController = class {
                 this.startIconRotation(icon);
             }
 
+            // Setup map dots AFTER scene initialization
             this.setupMapDots();
 
             // Store in global state
@@ -81,7 +82,7 @@ ISOKARI.IslandController = class {
             ISOKARI.State.cameras.island = this.camera;
             ISOKARI.State.renderers.island = this.renderer;
 
-            console.log('🏝️ Island controller initialized');
+            console.log('🏝️ Island controller initialized with integrated map');
         } catch (error) {
             console.error('Error initializing island controller:', error);
         }
@@ -139,6 +140,9 @@ ISOKARI.IslandController = class {
                         this.mirrorBallMesh.material.envMap = this.currentEnvTexture;
                         this.mirrorBallMesh.material.needsUpdate = true;
                     }
+
+                    // Update map dots after texture load
+                    this.updateMapDots();
 
                     resolve();
                 },
@@ -340,12 +344,12 @@ ISOKARI.IslandController = class {
         const panel = document.getElementById('island-ui-panel');
         const toggleButton = document.getElementById('ui-toggle-button');
         const btqButton = document.getElementById('btq-button');
-        const mapContainer = document.getElementById('island-map-container'); // ADD THIS
+        const mapContainer = document.getElementById('island-map-container');
     
         panel?.classList.add('visible');
         toggleButton?.classList.add('panel-open');
         btqButton?.classList.add('hidden');
-        mapContainer?.classList.add('visible'); // ADD THIS
+        mapContainer?.classList.add('visible');
         this.uiPanelVisible = true;
     }
 
@@ -353,23 +357,25 @@ ISOKARI.IslandController = class {
         const panel = document.getElementById('island-ui-panel');
         const toggleButton = document.getElementById('ui-toggle-button');
         const btqButton = document.getElementById('btq-button');
-        const mapContainer = document.getElementById('island-map-container'); // ADD THIS
+        const mapContainer = document.getElementById('island-map-container');
     
         panel?.classList.remove('visible');
         toggleButton?.classList.remove('panel-open');
         btqButton?.classList.remove('hidden');
-        mapContainer?.classList.remove('visible'); // ADD THIS
+        mapContainer?.classList.remove('visible');
         this.uiPanelVisible = false;
     }
 
     goToPrevious() {
         this.currentImageIndex = (this.currentImageIndex - 1 + this.imageUrls.length) % this.imageUrls.length;
         this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
+        console.log('Previous image:', this.currentImageIndex);
     }
 
     goToNext() {
         this.currentImageIndex = (this.currentImageIndex + 1) % this.imageUrls.length;
         this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
+        console.log('Next image:', this.currentImageIndex);
     }
 
     openBTQ360() {
@@ -423,19 +429,50 @@ ISOKARI.IslandController = class {
         animate();
     }
 
+    // Map dot functionality with proper synchronization
     setupMapDots() {
-        const dots = document.querySelectorAll('.dot');
+        const dots = document.querySelectorAll('#island-map-container .dot');
+        console.log('Setting up integrated map dots:', dots.length);
+        
         dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => this.jumpToImage(index));
+            // Clear any existing event listeners by cloning the node
+            const newDot = dot.cloneNode(true);
+            dot.parentNode.replaceChild(newDot, dot);
+            
+            // Add click event listener to jump to specific image
+            newDot.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Integrated map dot clicked:', index);
+                this.jumpToImage(index);
+            });
+            
+            // Add hover effects for better UX
+            newDot.addEventListener('mouseenter', () => {
+                if (index !== this.currentImageIndex) {
+                    newDot.style.transform = 'translate(-50%, -50%) scale(1.2)';
+                }
+            });
+            
+            newDot.addEventListener('mouseleave', () => {
+                if (index !== this.currentImageIndex) {
+                    newDot.style.transform = 'translate(-50%, -50%) scale(1)';
+                }
+            });
         });
+        
+        // Initial update of active dot
         this.updateMapDots();
     }
     
     updateMapDots() {
-        const dots = document.querySelectorAll('.dot');
+        const dots = document.querySelectorAll('#island-map-container .dot');
+        console.log('Updating integrated map dots. Current index:', this.currentImageIndex, 'Total dots:', dots.length);
+        
         dots.forEach((dot, index) => {
             if (index === this.currentImageIndex) {
                 dot.classList.add('active');
+                console.log('Integrated map dot', index, 'set as active');
             } else {
                 dot.classList.remove('active');
             }
@@ -527,8 +564,10 @@ ISOKARI.IslandController = class {
         return this.imageUrls.length;
     }
 
+    // Jump to image method with proper dot update
     jumpToImage(index) {
-        if (index >= 0 && index < this.imageUrls.length) {
+        if (index >= 0 && index < this.imageUrls.length && index !== this.currentImageIndex) {
+            console.log('Jumping to image via integrated map:', index);
             this.currentImageIndex = index;
             this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
         }
@@ -543,4 +582,4 @@ ISOKARI.IslandController = class {
     }
 };
 
-console.log('🏝️ Island Controller Loaded');
+console.log('🏝️ Island Controller with Integrated Map Loaded');
