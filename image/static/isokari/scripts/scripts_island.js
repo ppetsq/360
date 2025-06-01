@@ -69,6 +69,10 @@ ISOKARI.IslandController = class {
             await this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
             this.setupEventListeners();
             this.startAnimation();
+            if (this.autoRotateEnabled) {
+                const icon = document.getElementById('auto-rotate-icon');
+                this.startIconRotation(icon);
+            }
 
             // Store in global state
             ISOKARI.State.scenes.island = this.scene;

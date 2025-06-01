@@ -99,6 +99,10 @@ ISOKARI.PilotsController = class {
             this.setupEventListeners();
             this.updateRoomInfo();
             this.startAnimation();
+            if (this.autoRotateEnabled) {
+                const icon = document.getElementById('pilots-auto-rotate-icon');
+                this.startIconRotation(icon);
+            }
 
             // Store in global state
             ISOKARI.State.scenes.pilots = this.scene;
