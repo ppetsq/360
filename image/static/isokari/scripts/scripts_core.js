@@ -102,7 +102,7 @@ ISOKARI.App = class {
 
     initializeAudio() {
         // Initialize ambient audio (replace with your audio file)
-        ISOKARI.State.ambientAudio = new Audio('assets/ambient-loop.mp3');
+        ISOKARI.State.ambientAudio = new Audio('https://assets.360.petsq.works/isokari/4960/birds.mp3');
         ISOKARI.State.ambientAudio.loop = true;
         ISOKARI.State.ambientAudio.volume = 0.3;
         
