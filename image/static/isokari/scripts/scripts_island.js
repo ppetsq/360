@@ -74,6 +74,8 @@ ISOKARI.IslandController = class {
                 this.startIconRotation(icon);
             }
 
+            this.setupMapDots();
+
             // Store in global state
             ISOKARI.State.scenes.island = this.scene;
             ISOKARI.State.cameras.island = this.camera;
@@ -338,10 +340,12 @@ ISOKARI.IslandController = class {
         const panel = document.getElementById('island-ui-panel');
         const toggleButton = document.getElementById('ui-toggle-button');
         const btqButton = document.getElementById('btq-button');
-
+        const mapContainer = document.getElementById('island-map-container'); // ADD THIS
+    
         panel?.classList.add('visible');
-        toggleButton?.classList.add('panel-open'); // Add panel-open class for desktop repositioning
-        btqButton?.classList.add('hidden'); // Hide BTQ button when UI is shown
+        toggleButton?.classList.add('panel-open');
+        btqButton?.classList.add('hidden');
+        mapContainer?.classList.add('visible'); // ADD THIS
         this.uiPanelVisible = true;
     }
 
@@ -349,10 +353,12 @@ ISOKARI.IslandController = class {
         const panel = document.getElementById('island-ui-panel');
         const toggleButton = document.getElementById('ui-toggle-button');
         const btqButton = document.getElementById('btq-button');
-
+        const mapContainer = document.getElementById('island-map-container'); // ADD THIS
+    
         panel?.classList.remove('visible');
-        toggleButton?.classList.remove('panel-open'); // Remove panel-open class for desktop repositioning
-        btqButton?.classList.remove('hidden'); // Show BTQ button when UI is hidden
+        toggleButton?.classList.remove('panel-open');
+        btqButton?.classList.remove('hidden');
+        mapContainer?.classList.remove('visible'); // ADD THIS
         this.uiPanelVisible = false;
     }
 
@@ -415,6 +421,25 @@ ISOKARI.IslandController = class {
         };
 
         animate();
+    }
+
+    setupMapDots() {
+        const dots = document.querySelectorAll('.dot');
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => this.jumpToImage(index));
+        });
+        this.updateMapDots();
+    }
+    
+    updateMapDots() {
+        const dots = document.querySelectorAll('.dot');
+        dots.forEach((dot, index) => {
+            if (index === this.currentImageIndex) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
     }
 
     // Keyboard controls

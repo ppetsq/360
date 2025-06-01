@@ -191,14 +191,13 @@ ISOKARI.App = class {
             case 'island':
                 setTimeout(() => {
                     document.getElementById('island-ui-panel')?.classList.add('visible');
+                    document.getElementById('island-map-container')?.classList.add('visible'); // ADD THIS
                     
-                    // Properly set toggle button state for desktop (initial load fix)
                     const islandToggle = document.getElementById('ui-toggle-button');
                     if (islandToggle) {
                         islandToggle.classList.add('panel-open');
                     }
                     
-                    // Hide BTQ button when UI is shown (desktop only)
                     const islandBtq = document.getElementById('btq-button');
                     if (islandBtq) {
                         islandBtq.classList.add('hidden');

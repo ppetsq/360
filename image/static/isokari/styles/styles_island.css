@@ -264,6 +264,77 @@
     transform: scale(1.1);
 }
 
+/* ===== INTERACTIVE MAP ===== */
+.map-container {
+    position: fixed;
+    top: 90px;
+    right: 30px;
+    z-index: 1800;
+    width: 160px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 0; /* Remove padding so dots align properly */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s ease;
+    pointer-events: none;
+    overflow: hidden; /* Contain dots within rounded corners */
+}
+
+.map-container.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+}
+
+.map-background {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 16px; /* Match container border radius */
+    position: relative;
+}
+
+.dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: rgba(100, 150, 255, 0.9);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(100, 150, 255, 0.7);
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.dot:hover {
+    background: rgba(100, 150, 255, 1);
+    transform: translate(-50%, -50%) scale(1.4);
+    border-color: rgba(100, 150, 255, 1);
+}
+
+.dot.active {
+    background: #00ff88;
+    border-color: #00ff88;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        opacity: 1; 
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+    }
+    50% { 
+        opacity: 0.7; 
+        box-shadow: 0 0 25px rgba(0, 255, 136, 0.8);
+    }
+}
+
 /* ===== RESPONSIVE ISLAND STYLES ===== */
 @media (max-width: 768px) {
     .ui-panel {
@@ -301,6 +372,11 @@
     .btq-button.hidden {
         opacity: 1 !important;
         pointer-events: all !important;
+    }
+
+    /* MOBILE: Hide map completely on mobile */
+    .map-container {
+        display: none !important;
     }
 
     .btq-icon {
