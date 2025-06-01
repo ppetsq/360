@@ -47,7 +47,9 @@ const imageUrls = [
     'https://assets.360.petsq.works/isokari/4960/07_4960.jpg',
     'https://assets.360.petsq.works/isokari/4960/08_4960.jpg',
     'https://assets.360.petsq.works/isokari/4960/09_4960.jpg',
-    'https://assets.360.petsq.works/isokari/4960/10_4960.jpg'
+    'https://assets.360.petsq.works/isokari/4960/10_4960.jpg',
+    'https://assets.360.petsq.works/isokari/4960/11_4960.jpg',
+    'https://assets.360.petsq.works/isokari/4960/12_4960.jpg'
 ];
 let currentImageIndex = 0; // To keep track of the currently displayed image
 
