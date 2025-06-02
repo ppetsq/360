@@ -239,6 +239,13 @@ ISOKARI.App = class {
                     if (islandBtq) {
                         islandBtq.classList.add('hidden');
                     }
+                    
+                    // CRITICAL: Call the positioning AFTER UI is shown
+                    if (ISOKARI.State.controllers.island && ISOKARI.State.controllers.island.handleInitialShow) {
+                        setTimeout(() => {
+                            ISOKARI.State.controllers.island.handleInitialShow();
+                        }, 100); // Small delay after UI is shown
+                    }
                 }, 500);
                 break;
             case 'pilots':

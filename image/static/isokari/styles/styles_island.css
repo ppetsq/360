@@ -337,15 +337,15 @@
 
 /* ===== MOBILE RESPONSIVE STYLES ===== */
 @media (max-width: 768px) {
-    /* MOBILE: UI Panel keeps same size and position, content moves down */
+    /* MOBILE: UI Panel normal positioning */
     .ui-panel {
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
-        height: 50vh !important;
-        max-height: 50vh !important;
-        min-height: 50vh !important;
+        height: auto !important;
+        max-height: 60vh !important;
+        min-height: 250px !important;
         flex-direction: column;
         padding: 0;
         gap: 0;
@@ -353,16 +353,17 @@
         padding-left: 0;
         align-items: stretch;
         justify-content: flex-start;
-        overflow: hidden;
+        overflow: visible !important;
         z-index: 1500;
+        padding-bottom: 20px;
     }
 
-    /* MOBILE: Map overlays 50/50 with smooth transitions */
+    /* MOBILE: Map positioned dynamically by JavaScript */
     .map-container {
         position: fixed !important;
-        top: 50% !important;
+        bottom: 200px !important; /* Default position, will be overridden by JS */
         left: 50% !important;
-        transform: translate(-50%, -50%) !important;
+        transform: translateX(-50%) !important;
         
         /* Same size as determined works well */
         width: 120px !important;

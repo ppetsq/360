@@ -1,4 +1,4 @@
-// ===== ISLAND CONTROLLER WITH FIXED MOBILE MAP =====
+// ===== ISLAND CONTROLLER WITH INITIAL LOAD MAP POSITIONING =====
 // Handles mirror ball 360° experience with properly positioned mobile map
 
 ISOKARI.IslandController = class {
@@ -85,7 +85,7 @@ ISOKARI.IslandController = class {
             ISOKARI.State.cameras.island = this.camera;
             ISOKARI.State.renderers.island = this.renderer;
 
-            console.log('🏝️ Island controller initialized with fixed mobile map');
+            console.log('🏝️ Island controller initialized');
         } catch (error) {
             console.error('Error initializing island controller:', error);
         }
@@ -188,6 +188,13 @@ ISOKARI.IslandController = class {
                     description.classList.add('collapsed');
                     readMoreBtn.textContent = 'Read more';
                 }
+                
+                // Reposition map after text change
+                if (this.isMobile && this.uiPanelVisible) {
+                    setTimeout(() => {
+                        this.positionMapRelativeToUI();
+                    }, 100);
+                }
             });
 
             // Initialize as collapsed on mobile
@@ -197,7 +204,7 @@ ISOKARI.IslandController = class {
             }
         }
 
-        // Handle window resize for mobile detection
+        // Handle window resize for mobile detection and repositioning
         window.addEventListener('resize', () => {
             const wasMobile = this.isMobile;
             this.isMobile = window.innerWidth <= 768;
@@ -215,6 +222,13 @@ ISOKARI.IslandController = class {
                         description.classList.remove('collapsed');
                     }
                 }
+            }
+            
+            // Reposition map on mobile when window resizes
+            if (this.isMobile && this.uiPanelVisible) {
+                setTimeout(() => {
+                    this.positionMapRelativeToUI();
+                }, 100);
             }
         });
     }
@@ -404,6 +418,14 @@ ISOKARI.IslandController = class {
         }
         
         this.uiPanelVisible = true;
+        
+        // MOBILE: Position map after UI is shown and rendered
+        if (this.isMobile) {
+            // Wait for UI to finish rendering, then position map
+            setTimeout(() => {
+                this.positionMapRelativeToUI();
+            }, 100);
+        }
     }
 
     hideUIPanel() {
@@ -416,7 +438,60 @@ ISOKARI.IslandController = class {
         toggleButton?.classList.remove('panel-open');
         mapContainer?.classList.remove('visible');
         btqButton?.classList.remove('hidden');
+        
+        // MOBILE: Ensure map is hidden when UI is hidden
+        if (this.isMobile && mapContainer) {
+            mapContainer.style.setProperty('opacity', '0', 'important');
+            mapContainer.style.setProperty('visibility', 'hidden', 'important');
+        }
+        
         this.uiPanelVisible = false;
+    }
+
+    positionMapRelativeToUI() {
+        if (!this.isMobile) return; // Only apply on mobile
+        
+        const uiPanel = document.getElementById('island-ui-panel');
+        const mapContainer = document.getElementById('island-map-container');
+        
+        if (uiPanel && mapContainer && uiPanel.classList.contains('visible')) {
+            const uiHeight = uiPanel.getBoundingClientRect().height;
+            const mapHeight = 187; // Your mobile map height
+            
+            // Position map so it's 50/50 above UI panel and overlapping, raised by 20px
+            const bottomOffset = uiHeight - (mapHeight / 2) + 20; // Back to 20px offset
+            
+            // FIRST: Position the map (while it's still hidden)
+            mapContainer.style.setProperty('bottom', `${bottomOffset}px`, 'important');
+            
+            // THEN: Show the map after a tiny delay to ensure positioning is applied
+            setTimeout(() => {
+                mapContainer.style.setProperty('opacity', '1', 'important');
+                mapContainer.style.setProperty('visibility', 'visible', 'important');
+            }, 50); // Small delay to ensure position is set first
+            
+            console.log(`🗺️ MOBILE MAP POSITIONING:`);
+            console.log(`UI Height: ${uiHeight}px`);
+            console.log(`Map positioned at bottom: ${bottomOffset}px`);
+        } else {
+            console.log(`❌ MAP POSITIONING FAILED:`);
+            console.log(`isMobile: ${this.isMobile}`);
+            console.log(`uiPanel:`, uiPanel);
+            console.log(`mapContainer:`, mapContainer);
+            console.log(`UI panel visible:`, uiPanel?.classList.contains('visible'));
+        }
+    }
+
+    // PUBLIC METHOD: Called by core app on initial section show
+    handleInitialShow() {
+        console.log('🏝️ HandleInitialShow called - mobile:', this.isMobile);
+        if (this.isMobile) {
+            // Position map on initial show with proper delay
+            setTimeout(() => {
+                console.log('🏝️ Attempting initial map positioning...');
+                this.positionMapRelativeToUI();
+            }, 600); // Longer delay to ensure UI is fully rendered
+        }
     }
 
     goToPrevious() {
@@ -622,4 +697,4 @@ ISOKARI.IslandController = class {
     }
 };
 
-console.log('🏝️ Island Controller with Fixed Mobile Map Loaded');
+console.log('🏝️ Island Controller with Initial Load Map Positioning Loaded');
