@@ -1,5 +1,5 @@
-// ===== MENU/INTRO CONTROLLER - BACK TO BASICS =====
-// Exact copy of the working version with minimal orientation fix
+// ===== MENU/INTRO CONTROLLER - WITH PARALLAX & INFO BUTTON =====
+// Enhanced version with subtle parallax effects and info panel
 
 ISOKARI.MenuController = class {
     constructor() {
@@ -19,8 +19,8 @@ ISOKARI.MenuController = class {
         this.onPointerDownMouseX = 0;
         this.onPointerDownMouseY = 0;
         
-        // Zoom variables (same as island experience)
-        this.currentZoom = 75; // Starting zoom for video
+        // Zoom variables
+        this.currentZoom = 75;
         this.minZoom = 50;
         this.maxZoom = 120;
         this.zoomSensitivity = 2;
@@ -35,6 +35,16 @@ ISOKARI.MenuController = class {
         
         // Animation frame ID
         this.animationId = null;
+        
+        // Parallax variables
+        this.mouseX = 0;
+        this.mouseY = 0;
+        this.targetX = 0;
+        this.targetY = 0;
+        this.parallaxEnabled = true;
+        
+        // Info panel state
+        this.infoPanelVisible = false;
     }
 
     async initialize() {
@@ -47,6 +57,8 @@ ISOKARI.MenuController = class {
             await this.createScene(container);
             await this.loadVideo();
             this.setupControls(container);
+            this.setupParallaxEffects();
+            this.setupInfoButton();
             this.startAnimation();
 
             // Store in global state
@@ -54,28 +66,24 @@ ISOKARI.MenuController = class {
             ISOKARI.State.cameras.intro = this.camera;
             ISOKARI.State.renderers.intro = this.renderer;
 
-            console.log('🎬 Menu controller initialized');
+            console.log('🎬 Menu controller with parallax and info button initialized');
         } catch (error) {
             console.error('Error initializing menu controller:', error);
-            // Fallback to gradient background
             this.createFallbackBackground();
         }
     }
 
     async createScene(container) {
-        // Create scene
         this.scene = new THREE.Scene();
 
-        // Create camera
         this.camera = new THREE.PerspectiveCamera(
-            this.currentZoom, // Use zoom variable instead of fixed 75
+            this.currentZoom,
             window.innerWidth / window.innerHeight,
             0.1,
             1000
         );
         this.camera.position.set(0, 0, 0);
 
-        // Create renderer
         this.renderer = new THREE.WebGLRenderer({ 
             antialias: true,
             alpha: false 
@@ -90,7 +98,6 @@ ISOKARI.MenuController = class {
 
     async loadVideo() {
         return new Promise((resolve, reject) => {
-            // Create video element
             this.video = document.createElement('video');
             this.video.src = 'https://assets.360.petsq.works/isokari/4960/menu.mp4';
             this.video.crossOrigin = 'anonymous';
@@ -99,7 +106,6 @@ ISOKARI.MenuController = class {
             this.video.playsInline = true;
             this.video.preload = 'auto';
 
-            // Video event handlers
             this.video.addEventListener('loadeddata', () => {
                 console.log('📹 Video loaded successfully');
                 this.createVideoMesh();
@@ -123,24 +129,20 @@ ISOKARI.MenuController = class {
     }
 
     createVideoMesh() {
-        // Create video texture - EXACTLY like the working version
         const videoTexture = new THREE.VideoTexture(this.video);
         videoTexture.minFilter = THREE.LinearFilter;
         videoTexture.magFilter = THREE.LinearFilter;
         videoTexture.format = THREE.RGBFormat;
-        videoTexture.flipY = true; // Keep this as it was working
+        videoTexture.flipY = true;
 
-        // Create sphere geometry
         const geometry = new THREE.SphereGeometry(500, 60, 40);
-        geometry.scale(-1, 1, 1); // Keep this as it was working
+        geometry.scale(-1, 1, 1);
 
-        // Create material
         const material = new THREE.MeshBasicMaterial({ 
             map: videoTexture,
             side: THREE.FrontSide
         });
 
-        // Create mesh
         this.videoMesh = new THREE.Mesh(geometry, material);
         this.scene.add(this.videoMesh);
     }
@@ -211,9 +213,118 @@ ISOKARI.MenuController = class {
         document.getElementById('intro-section').appendChild(playButton);
     }
 
+    // ===== INFO BUTTON SETUP =====
+    setupInfoButton() {
+        // Create info button
+        const infoButton = document.createElement('button');
+        infoButton.className = 'info-button';
+        infoButton.id = 'info-button';
+        infoButton.title = 'About Isokari 360°';
+        infoButton.innerHTML = '<img src="assets/info.png" alt="Info" class="info-icon">';
+        
+        // Create info panel that expands from button position
+        const infoPanel = document.createElement('div');
+        infoPanel.className = 'info-panel';
+        infoPanel.id = 'info-panel';
+        infoPanel.innerHTML = `
+            <div class="info-panel-title">About Isokari 360°</div>
+            <div class="info-panel-content">
+                Experience the dramatic limestone cliffs of Isokari island through immersive 360° perspectives. This interactive experience is provided by <a href="https://btq360.com" target="_blank" class="info-inline-link">boutique360</a>. Learn more about Isokari at <a href="https://www.isokari.fi/" target="_blank" class="info-inline-link">isokari.fi</a>.
+            </div>
+        `;
+        
+        // Add to DOM
+        const introSection = document.getElementById('intro-section');
+        introSection.appendChild(infoButton);
+        introSection.appendChild(infoPanel);
+        
+        // Add event listeners
+        infoButton.addEventListener('click', () => {
+            this.toggleInfoPanel();
+        });
+        
+        // Close panel when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.info-button') && !e.target.closest('.info-panel')) {
+                this.hideInfoPanel();
+            }
+        });
+        
+        console.log('ℹ️ Info button and expandable panel created');
+    }
+
+    toggleInfoPanel() {
+        if (this.infoPanelVisible) {
+            this.hideInfoPanel();
+        } else {
+            this.showInfoPanel();
+        }
+    }
+
+    showInfoPanel() {
+        const infoPanel = document.getElementById('info-panel');
+        if (infoPanel) {
+            infoPanel.classList.add('visible');
+            this.infoPanelVisible = true;
+        }
+    }
+
+    hideInfoPanel() {
+        const infoPanel = document.getElementById('info-panel');
+        if (infoPanel) {
+            infoPanel.classList.remove('visible');
+            this.infoPanelVisible = false;
+        }
+    }
+
+    // ===== PARALLAX EFFECTS SETUP =====
+    setupParallaxEffects() {
+        const menuOverlay = document.querySelector('.menu-overlay');
+        if (!menuOverlay) return;
+
+        // Only enable parallax on non-mobile devices for performance
+        if (window.innerWidth <= 768) {
+            this.parallaxEnabled = false;
+            return;
+        }
+
+        // Mouse move event for parallax
+        document.addEventListener('mousemove', (e) => {
+            if (!this.parallaxEnabled) return;
+
+            // Normalize mouse position to -1 to 1 range
+            this.mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            this.mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+        });
+
+        console.log('✨ Parallax effects initialized');
+    }
+
+    updateParallaxEffect() {
+        if (!this.parallaxEnabled) return;
+
+        const menuOverlay = document.querySelector('.menu-overlay');
+        if (!menuOverlay) return;
+
+        // Smooth interpolation for fluid movement
+        this.targetX += (this.mouseX - this.targetX) * 0.05;
+        this.targetY += (this.mouseY - this.targetY) * 0.05;
+
+        // Apply subtle parallax transform
+        const maxOffset = 8; // Maximum offset in pixels
+        const offsetX = this.targetX * maxOffset;
+        const offsetY = this.targetY * maxOffset;
+
+        // Apply transform with subtle scaling effect
+        const scale = 1 + (Math.abs(this.targetX) + Math.abs(this.targetY)) * 0.01;
+        
+        // Create the transform string - keep the original centering and add parallax
+        const transform = `translate(-50%, -50%) translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+        menuOverlay.style.transform = transform;
+    }
+
     setupControls(container) {
-        // FIX: Attach mouse events to document instead of just container
-        // This allows dragging to continue even when mouse goes over UI elements
+        // Attach mouse events to document for smooth dragging
         document.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
         document.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
         document.addEventListener('mouseup', () => this.onMouseUp(), false);
@@ -259,7 +370,6 @@ ISOKARI.MenuController = class {
     onMouseWheel(event) {
         event.preventDefault();
 
-        // Add zoom functionality like island experience
         const delta = event.deltaY || event.detail || event.wheelDelta;
 
         if (delta > 0) {
@@ -277,12 +387,10 @@ ISOKARI.MenuController = class {
 
         if (event.touches.length === 1) {
             this.isUserInteracting = true;
-            this.onPointerDownMouseX = event.touches[0].pageX;
             this.onPointerDownMouseY = event.touches[0].pageY;
             this.onPointerDownLon = this.lon;
             this.onPointerDownLat = this.lat;
         } else if (event.touches.length === 2) {
-            // Enable pinch-to-zoom on touch devices
             const dx = event.touches[0].pageX - event.touches[1].pageX;
             const dy = event.touches[0].pageY - event.touches[1].pageY;
             this.prevTouchDistance = Math.sqrt(dx * dx + dy * dy);
@@ -300,7 +408,6 @@ ISOKARI.MenuController = class {
             this.lat = Math.max(-85, Math.min(85, deltaY + this.onPointerDownLat));
 
         } else if (event.touches.length === 2) {
-            // Handle pinch-to-zoom
             const dx = event.touches[0].pageX - event.touches[1].pageX;
             const dy = event.touches[0].pageY - event.touches[1].pageY;
             this.touchDistance = Math.sqrt(dx * dx + dy * dy);
@@ -346,6 +453,9 @@ ISOKARI.MenuController = class {
                 this.lon += this.autoRotateSpeed * 60;
             }
 
+            // Update parallax effect
+            this.updateParallaxEffect();
+
             this.updateCameraPosition();
 
             if (this.renderer && this.scene && this.camera) {
@@ -366,10 +476,16 @@ ISOKARI.MenuController = class {
     dispose() {
         this.stopAnimation();
         
-        // Clean up document event listeners to prevent memory leaks
+        // Clean up document event listeners
         document.removeEventListener('mousedown', this.onMouseDown);
         document.removeEventListener('mousemove', this.onMouseMove);
         document.removeEventListener('mouseup', this.onMouseUp);
+        
+        // Clean up info button
+        const infoButton = document.getElementById('info-button');
+        const infoPanel = document.getElementById('info-panel');
+        if (infoButton) infoButton.remove();
+        if (infoPanel) infoPanel.remove();
         
         if (this.video) {
             this.video.pause();
@@ -406,4 +522,5 @@ ISOKARI.MenuController = class {
     }
 };
 
-console.log('🎬 Basic Menu Controller Loaded');
+console.log('🎬 Menu Controller with Parallax and Info Button Loaded');MouseX = event.touches[0].pageX;
+            this.onPointerDown
