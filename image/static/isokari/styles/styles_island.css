@@ -354,15 +354,15 @@
         align-items: stretch;
         justify-content: flex-start;
         overflow: hidden;
-        z-index: 1500; /* Keep below map */
+        z-index: 1500;
     }
 
-    /* MOBILE: Map overlays 50/50 on top of UI panel and viewer - EXACTLY like desktop */
+    /* MOBILE: Map overlays 50/50 with smooth transitions */
     .map-container {
         position: fixed !important;
-        top: 50% !important; /* Center vertically on screen */
+        top: 50% !important;
         left: 50% !important;
-        transform: translate(-50%, -50%) !important; /* Perfect center both horizontally and vertically */
+        transform: translate(-50%, -50%) !important;
         
         /* Same size as determined works well */
         width: 120px !important;
@@ -379,17 +379,28 @@
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
-        z-index: 1600 !important; /* Above UI panel, just like desktop */
-        opacity: 1 !important;
-        visibility: visible !important;
+        z-index: 1600 !important;
         pointer-events: none !important;
         overflow: visible !important;
+        
+        /* SMOOTH TRANSITIONS - remove !important to allow transitions */
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.4s ease, visibility 0.4s ease, transform 0.3s ease !important;
     }
 
-    /* MOBILE: Hide map when UI is hidden */
+    /* MOBILE: Show map when visible class is added */
+    .map-container.visible {
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    /* MOBILE: Hide map when UI is hidden - use opacity instead of display:none for transitions */
     .ui-panel:not(.visible) + .map-container,
     .map-container:not(.visible) {
-        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
     }
 
     /* MOBILE: Map image fills the container exactly */
@@ -406,17 +417,14 @@
         opacity: 0.9 !important;
         object-fit: contain !important;
         display: block !important;
-        position: relative !important; /* CRITICAL for dot positioning */
+        position: relative !important;
     }
 
-    /* MOBILE: Dots positioned EXACTLY like desktop - relative to map-background */
+    /* MOBILE: Dots positioned EXACTLY like desktop */
     .dot {
         position: absolute !important;
         width: 3px !important;
         height: 3px !important;
-        
-        /* EXACT same positioning percentages as desktop */
-        /* These percentages are relative to the .map-background element */
         
         pointer-events: none !important;
         cursor: default !important;
@@ -454,7 +462,7 @@
     /* MOBILE: Content moves down 100px to create space for map overlap */
     .panel-header {
         order: 1;
-        padding: 120px 20px 16px 20px !important; /* 120px top padding to create space */
+        padding: 120px 20px 16px 20px !important;
         text-align: center;
         min-width: auto;
         flex: none;
@@ -583,7 +591,7 @@
     }
 
     .panel-header {
-        padding: 100px 16px 12px 16px !important; /* Slightly less space on small screens */
+        padding: 100px 16px 12px 16px !important;
     }
 
     .panel-title {
