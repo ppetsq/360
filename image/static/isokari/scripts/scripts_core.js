@@ -244,13 +244,14 @@ ISOKARI.App = class {
                     if (ISOKARI.State.controllers.island && ISOKARI.State.controllers.island.handleInitialShow) {
                         setTimeout(() => {
                             ISOKARI.State.controllers.island.handleInitialShow();
-                        }, 100); // Small delay after UI is shown
+                        }, 100);
                     }
                 }, 500);
                 break;
             case 'pilots':
                 setTimeout(() => {
                     document.getElementById('pilots-ui-panel')?.classList.add('visible');
+                    document.getElementById('pilots-house-container')?.classList.add('visible'); // ADD THIS
                     
                     // Properly set toggle button state for desktop (initial load fix)
                     const pilotsToggle = document.getElementById('pilots-ui-toggle-button');
@@ -262,6 +263,13 @@ ISOKARI.App = class {
                     const pilotsBtq = document.getElementById('pilots-btq-button');
                     if (pilotsBtq) {
                         pilotsBtq.classList.add('hidden');
+                    }
+                    
+                    // ADD THIS: Call the positioning AFTER UI is shown
+                    if (ISOKARI.State.controllers.pilots && ISOKARI.State.controllers.pilots.handleInitialShow) {
+                        setTimeout(() => {
+                            ISOKARI.State.controllers.pilots.handleInitialShow();
+                        }, 100);
                     }
                 }, 500);
                 break;

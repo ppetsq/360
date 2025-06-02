@@ -138,59 +138,72 @@
     </div>
 </div>
 
-        <div class="section-container" id="pilots-section">
-            <button class="simple-back-button" id="pilots-back-button" title="Back to Menu">
-                <img src="assets/back.png" alt="Back" class="back-icon">
-            </button>
+<div class="section-container" id="pilots-section">
+    <button class="simple-back-button" id="pilots-back-button" title="Back to Menu">
+        <img src="assets/back.png" alt="Back" class="back-icon">
+    </button>
 
-            <button class="btq-button" id="pilots-btq-button" title="Visit BTQ360.com">
-                <img src="assets/btq.png" alt="BTQ360" class="pilots-btq-icon">
-            </button>
-            
-            <div class="viewer-container" id="pilots-viewer">
-                </div>
+    <button class="btq-button" id="pilots-btq-button" title="Visit BTQ360.com">
+        <img src="assets/btq.png" alt="BTQ360" class="btq-icon">
+    </button>
+    
+    <div class="viewer-container" id="pilots-viewer">
+    </div>
 
-            <button class="ui-toggle-button" id="pilots-ui-toggle-button" title="Toggle Menu">
-                ☰
-            </button>
+    <button class="ui-toggle-button" id="pilots-ui-toggle-button" title="Toggle Menu">
+        ☰
+    </button>
 
-            <div class="ui-panel" id="pilots-ui-panel">
-                <div class="pilots-panel-header">
-                    <div class="panel-title pilots-panel-title">Pilots House</div>
-                    <div class="panel-description pilots-panel-description">
-                        Historic pilots house interior with authentic maritime artifacts and period furnishings.
-                    </div>
-                </div>
+    <!-- House Image Container (replacing map) -->
+    <div class="house-container" id="pilots-house-container">
+        <img src="assets/house.png" class="house-image" alt="Pilots House" />
+    </div>
 
-                <div class="room-details-section">
-                    <div class="room-details">Navigation Room • Maritime Heritage • 19th Century</div>
-                    <div class="room-progress">1 / 5</div>
-                </div>
+    <div class="ui-panel" id="pilots-ui-panel">
+        <div class="panel-header">
+            <div class="panel-title">Pilots House</div>
+            <div class="panel-description">
+                Historic pilots house interior with authentic maritime artifacts and period furnishings from the 19th century Baltic Sea operations.
+            </div>
+            <button class="read-more-button" id="pilots-read-more-btn">Read more</button>
+        </div>
 
-                <div class="pilots-controls-section">
-                    <div class="pilots-control-group">
-                        <button class="pilots-control-button active" id="pilots-auto-rotate-toggle" title="Toggle Auto-Rotation">
-                            <img src="assets/arrow.png" alt="Auto Rotate" class="pilots-auto-rotate-icon" id="pilots-auto-rotate-icon">
-                        </button>
-                        
-                        <button class="pilots-control-button" id="pilots-prev-button" title="Previous">
-                            <img src="assets/back.png" alt="Previous" class="pilots-nav-icon">
-                        </button>
-                        
-                        <button class="pilots-control-button" id="pilots-next-button" title="Next">
-                            <img src="assets/next.png" alt="Next" class="pilots-nav-icon">
-                        </button>
-                    </div>
-                </div>
+        <div class="location-details">
+            <div class="detail-item">
+                <span class="detail-label">Era</span>
+                <span class="detail-value">1800s</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Type</span>
+                <span class="detail-value">Maritime</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Rooms</span>
+                <span class="detail-value">5 Spaces</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">View</span>
+                <span class="detail-value">360°</span>
+            </div>
+        </div>
 
-                <div class="pilots-cross-nav-section">
-                    <button class="cross-nav-button" id="pilots-to-island">
-                        → Island Experience
-                    </button>
-                </div>
+        <div class="controls-section">
+            <div class="control-group">
+                <button class="control-button active" id="pilots-auto-rotate-toggle" title="Toggle Auto-Rotation">
+                    <img src="assets/arrow.png" alt="Auto Rotate" class="auto-rotate-icon" id="pilots-auto-rotate-icon">
+                </button>
+                
+                <button class="control-button" id="pilots-prev-button" title="Previous">
+                    <img src="assets/back.png" alt="Previous" class="nav-icon">
+                </button>
+                
+                <button class="control-button" id="pilots-next-button" title="Next">
+                    <img src="assets/next.png" alt="Next" class="nav-icon">
+                </button>
             </div>
         </div>
     </div>
+</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="scripts/scripts_core.js"></script>

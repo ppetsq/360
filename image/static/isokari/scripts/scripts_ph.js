@@ -1,5 +1,5 @@
-// ===== PILOTS HOUSE CONTROLLER =====
-// Handles indoor 360° mirror ball experience with room information
+// ===== PILOTS HOUSE CONTROLLER WITH ISLAND-STYLE UI (FIXED) =====
+// Handles indoor 360° mirror ball experience with house image and matching UI
 
 ISOKARI.PilotsController = class {
     constructor() {
@@ -14,6 +14,7 @@ ISOKARI.PilotsController = class {
         this.iconRotationAngle = 0;
         this.animationId = null;
         this.iconAnimationId = null;
+        this.isMobile = window.innerWidth <= 768;
 
         // Interaction variables (same as island)
         this.lon = 0;
@@ -41,47 +42,13 @@ ISOKARI.PilotsController = class {
         this.MAX_LAT_DEG = 84.5;
         this.UP_VECTOR_SMOOTHING_THRESHOLD = 75;
 
-        // Pilots house images and room information
+        // Pilots house images
         this.imageUrls = [
             'https://assets.360.petsq.works/isokari/4960/0001_4960.jpg', // Exterior
             'https://assets.360.petsq.works/isokari/4960/0002_4960.jpg', // Interior 1
             'https://assets.360.petsq.works/isokari/4960/0003_4960.jpg', // Interior 2
             'https://assets.360.petsq.works/isokari/4960/0004_4960.jpg', // Interior 3
             'https://assets.360.petsq.works/isokari/4960/0005_4960.jpg'  // Interior 4
-        ];
-
-        // Room information for each image
-        this.roomInfo = [
-            {
-                name: "Pilots House Exterior",
-                description: "The weathered stone facade of the pilots house stands resilient against Baltic storms. Built in the 1800s, this structure served as both home and watchtower for the maritime pilots who guided ships safely through Isokari's treacherous waters.",
-                type: "exterior",
-                details: "Stone Construction • 19th Century • Maritime Heritage"
-            },
-            {
-                name: "Main Living Room",
-                description: "The heart of the pilots house, where families gathered during long winter months. The sturdy wooden beams and simple furnishings reflect the practical lifestyle of those who made their living from the sea.",
-                type: "interior",
-                details: "Central Hearth • Family Gathering Space • Maritime Artifacts"
-            },
-            {
-                name: "Pilots Navigation Room",
-                description: "This intimate space served as the nerve center for maritime operations. Charts, compass equipment, and weather instruments lined these walls as pilots planned safe passages for merchant vessels.",
-                type: "interior",
-                details: "Navigation Equipment • Maritime Charts • Weather Station"
-            },
-            {
-                name: "Pilots Bedroom",
-                description: "The modest sleeping quarters of the pilot family. Simple wooden furniture and practical storage solutions maximized the limited space while providing comfort during harsh island winters.",
-                type: "interior",
-                details: "Family Quarters • Simple Furnishings • Practical Design"
-            },
-            {
-                name: "Kitchen & Workspace",
-                description: "The functional kitchen where meals were prepared from preserved foods and occasional fresh fish. This space also served as a workshop for maintaining maritime equipment and household repairs.",
-                type: "interior",
-                details: "Food Preparation • Maritime Tools • Multi-purpose Space"
-            }
         ];
 
         this.currentImageIndex = 0;
@@ -97,8 +64,9 @@ ISOKARI.PilotsController = class {
             this.createScene(container);
             await this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
             this.setupEventListeners();
-            this.updateRoomInfo();
+            this.setupMobileUI();
             this.startAnimation();
+            
             if (this.autoRotateEnabled) {
                 const icon = document.getElementById('pilots-auto-rotate-icon');
                 this.startIconRotation(icon);
@@ -116,10 +84,10 @@ ISOKARI.PilotsController = class {
     }
 
     createScene(container) {
-        // Create scene (same as island)
+        // Create scene
         this.scene = new THREE.Scene();
 
-        // Create camera (same as island)
+        // Create camera
         this.camera = new THREE.PerspectiveCamera(
             this.currentZoom,
             window.innerWidth / window.innerHeight,
@@ -128,7 +96,7 @@ ISOKARI.PilotsController = class {
         );
         this.camera.position.set(0, 0, 0);
 
-        // Create renderer (same as island)
+        // Create renderer - EXACTLY like island
         this.renderer = new THREE.WebGLRenderer({
             antialias: true,
             alpha: false
@@ -136,7 +104,7 @@ ISOKARI.PilotsController = class {
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.0;
+        this.renderer.toneMappingExposure = 1.2;
         container.appendChild(this.renderer.domElement);
     }
 
@@ -168,9 +136,6 @@ ISOKARI.PilotsController = class {
                         this.mirrorBallMesh.material.needsUpdate = true;
                     }
 
-                    // Update room information
-                    this.updateRoomInfo();
-
                     resolve();
                 },
                 (progress) => {
@@ -185,45 +150,100 @@ ISOKARI.PilotsController = class {
     }
 
     createMirrorBallMesh() {
-        // Same mirror ball setup as island
+        // FIXED: Use exact same setup as working island controller
         const geometry = new THREE.SphereGeometry(8, 64, 32);
-        geometry.scale(-1, -1, 1);
+        geometry.scale(-1, -1, 1); // CHANGED: Back to island's working scaling
 
         const material = new THREE.MeshBasicMaterial({
             envMap: this.currentEnvTexture,
             reflectivity: 1.0,
-            side: THREE.BackSide
+            side: THREE.BackSide // KEEP: This is correct for mirror ball
         });
 
         this.mirrorBallMesh = new THREE.Mesh(geometry, material);
         this.mirrorBallMesh.position.set(0, 0, -2);
     }
 
-    updateRoomInfo() {
-        const currentRoom = this.roomInfo[this.currentImageIndex];
+    setupMobileUI() {
+        // Setup read more functionality for mobile
+        const readMoreBtn = document.getElementById('pilots-read-more-btn');
+        const description = document.querySelector('#pilots-ui-panel .panel-description');
         
-        // Update panel title
-        const titleElement = document.querySelector('#pilots-ui-panel .panel-title');
-        if (titleElement) {
-            titleElement.textContent = currentRoom.name;
+        if (readMoreBtn && description) {
+            readMoreBtn.addEventListener('click', () => {
+                if (description.classList.contains('collapsed')) {
+                    description.classList.remove('collapsed');
+                    readMoreBtn.textContent = 'Read less';
+                } else {
+                    description.classList.add('collapsed');
+                    readMoreBtn.textContent = 'Read more';
+                }
+                
+                // Reposition house image after text change
+                if (this.isMobile && this.uiPanelVisible) {
+                    setTimeout(() => {
+                        this.positionHouseRelativeToUI();
+                    }, 100);
+                }
+            });
+    
+            // Initialize as collapsed on mobile
+            if (this.isMobile) {
+                description.classList.add('collapsed');
+                readMoreBtn.textContent = 'Read more';
+            }
         }
+    
+        // Handle window resize for mobile detection and repositioning
+        window.addEventListener('resize', () => {
+            const wasMobile = this.isMobile;
+            this.isMobile = window.innerWidth <= 768;
+            
+            // If switching between mobile/desktop, update house positioning
+            if (wasMobile !== this.isMobile) {
+                // Reset read more state when switching
+                if (description && readMoreBtn) {
+                    if (this.isMobile) {
+                        description.classList.add('collapsed');
+                        readMoreBtn.textContent = 'Read more';
+                    } else {
+                        description.classList.remove('collapsed');
+                    }
+                }
+                
+                // Reset house positioning when switching modes
+                this.resetHousePositioning();
+            }
+            
+            // Reposition house on mobile when window resizes (but not when switching modes)
+            if (this.isMobile && this.uiPanelVisible && wasMobile === this.isMobile) {
+                setTimeout(() => {
+                    this.positionHouseRelativeToUI();
+                }, 100);
+            }
+        });
+    }
 
-        // Update panel description
-        const descElement = document.querySelector('#pilots-ui-panel .panel-description');
-        if (descElement) {
-            descElement.textContent = currentRoom.description;
-        }
-
-        // Update room details
-        const detailsElement = document.querySelector('#pilots-ui-panel .room-details');
-        if (detailsElement) {
-            detailsElement.textContent = currentRoom.details;
-        }
-
-        // Update progress indicator
-        const progressElement = document.querySelector('#pilots-ui-panel .room-progress');
-        if (progressElement) {
-            progressElement.textContent = `${this.currentImageIndex + 1} / ${this.imageUrls.length}`;
+    // Reset house positioning
+    resetHousePositioning() {
+        const houseContainer = document.getElementById('pilots-house-container');
+        if (!houseContainer) return;
+        
+        // Remove all JavaScript-applied positioning styles
+        houseContainer.style.removeProperty('bottom');
+        houseContainer.style.removeProperty('opacity');
+        houseContainer.style.removeProperty('visibility');
+        
+        // Remove positioned class
+        houseContainer.classList.remove('positioned');
+        
+        console.log(`🔄 RESET HOUSE POSITIONING - Now ${this.isMobile ? 'MOBILE' : 'DESKTOP'} mode`);
+        
+        // If switching to mobile and UI is visible, reposition after reset
+        if (this.isMobile && this.uiPanelVisible) {
+            setTimeout(() => {
+                this.positionHouseRelativeToUI();
+            }, 100);
         }
     }
 
@@ -355,7 +375,7 @@ ISOKARI.PilotsController = class {
         this.prevTouchDistance = 0;
     }
 
-    // UI Controls (similar to island but adapted for pilots house)
+    // UI Controls (adapted from island)
     toggleAutoRotate() {
         const button = document.getElementById('pilots-auto-rotate-toggle');
         const icon = document.getElementById('pilots-auto-rotate-icon');
@@ -404,32 +424,107 @@ ISOKARI.PilotsController = class {
         const panel = document.getElementById('pilots-ui-panel');
         const toggleButton = document.getElementById('pilots-ui-toggle-button');
         const btqButton = document.getElementById('pilots-btq-button');
-
+        const houseContainer = document.getElementById('pilots-house-container');
+    
         panel?.classList.add('visible');
-        toggleButton?.classList.add('panel-open'); // Add panel-open class for desktop repositioning
-        btqButton?.classList.add('hidden'); // Hide BTQ button when UI is shown
+        toggleButton?.classList.add('panel-open');
+        houseContainer?.classList.add('visible');
+        
+        // Remove positioned class when showing (reset state)
+        houseContainer?.classList.remove('positioned');
+        
+        // Only hide BTQ button on desktop
+        if (!this.isMobile) {
+            btqButton?.classList.add('hidden');
+        }
+        
         this.uiPanelVisible = true;
+        
+        // MOBILE: Position house after UI is shown and rendered
+        if (this.isMobile) {
+            // Wait for UI to finish rendering, then position house
+            setTimeout(() => {
+                this.positionHouseRelativeToUI();
+            }, 100);
+        }
     }
 
     hideUIPanel() {
         const panel = document.getElementById('pilots-ui-panel');
         const toggleButton = document.getElementById('pilots-ui-toggle-button');
         const btqButton = document.getElementById('pilots-btq-button');
-
+        const houseContainer = document.getElementById('pilots-house-container');
+    
         panel?.classList.remove('visible');
-        toggleButton?.classList.remove('panel-open'); // Remove panel-open class for desktop repositioning
-        btqButton?.classList.remove('hidden'); // Show BTQ button when UI is hidden
+        toggleButton?.classList.remove('panel-open');
+        houseContainer?.classList.remove('visible');
+        houseContainer?.classList.remove('positioned'); // Clean up positioned class
+        btqButton?.classList.remove('hidden');
+        
+        // MOBILE: Ensure house is hidden when UI is hidden
+        if (this.isMobile && houseContainer) {
+            houseContainer.style.setProperty('opacity', '0', 'important');
+            houseContainer.style.setProperty('visibility', 'hidden', 'important');
+        }
+        
         this.uiPanelVisible = false;
+    }
+
+    positionHouseRelativeToUI() {
+        if (!this.isMobile) {
+            this.resetHousePositioning();
+            return;
+        }
+        
+        const uiPanel = document.getElementById('pilots-ui-panel');
+        const houseContainer = document.getElementById('pilots-house-container');
+        
+        if (uiPanel && houseContainer && uiPanel.classList.contains('visible')) {
+            const uiHeight = uiPanel.getBoundingClientRect().height;
+            
+            // UPDATED: Use smaller house image heights for new mobile design
+            const houseHeight = window.innerWidth <= 480 ? 90 : 105; // Updated for smaller sizes
+            
+            // Position house so it's 50/50 above UI panel and overlapping, raised by 15px
+            const bottomOffset = uiHeight - (houseHeight / 2) + 15; // REDUCED offset
+            
+            houseContainer.style.setProperty('bottom', `${bottomOffset}px`, 'important');
+            
+            setTimeout(() => {
+                houseContainer.classList.add('positioned');
+                houseContainer.style.setProperty('opacity', '1', 'important');
+                houseContainer.style.setProperty('visibility', 'visible', 'important');
+            }, 50);
+            
+            console.log(`🏠 MOBILE HOUSE POSITIONING (COMPACT):`);
+            console.log(`UI Height: ${uiHeight}px`);
+            console.log(`House Height: ${houseHeight}px`);
+            console.log(`House positioned at bottom: ${bottomOffset}px`);
+        }
+    }
+
+    // PUBLIC METHOD: Called by core app on initial section show
+    handleInitialShow() {
+        console.log('🏠 HandleInitialShow called - mobile:', this.isMobile);
+        if (this.isMobile) {
+            // Position house on initial show with proper delay
+            setTimeout(() => {
+                console.log('🏠 Attempting initial house positioning...');
+                this.positionHouseRelativeToUI();
+            }, 600); // Longer delay to ensure UI is fully rendered
+        }
     }
 
     goToPrevious() {
         this.currentImageIndex = (this.currentImageIndex - 1 + this.imageUrls.length) % this.imageUrls.length;
         this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
+        console.log('Previous image:', this.currentImageIndex);
     }
 
     goToNext() {
         this.currentImageIndex = (this.currentImageIndex + 1) % this.imageUrls.length;
         this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
+        console.log('Next image:', this.currentImageIndex);
     }
 
     openBTQ360() {
@@ -589,4 +684,4 @@ ISOKARI.PilotsController = class {
     }
 };
 
-console.log('🏠 Pilots House Controller Loaded');
+console.log('🏠 Pilots House Controller with Fixed 360° Images Loaded');
