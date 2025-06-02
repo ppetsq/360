@@ -47,11 +47,11 @@ ISOKARI.PilotsController = class {
 
         // Pilots house images
         this.imageUrls = [
-            'https://assets.360.petsq.works/isokari/4960/0001_4960.jpg', // Exterior
             'https://assets.360.petsq.works/isokari/4960/0002_4960.jpg', // Interior 1
             'https://assets.360.petsq.works/isokari/4960/0003_4960.jpg', // Interior 2
             'https://assets.360.petsq.works/isokari/4960/0004_4960.jpg', // Interior 3
-            'https://assets.360.petsq.works/isokari/4960/0005_4960.jpg'  // Interior 4
+            'https://assets.360.petsq.works/isokari/4960/0005_4960.jpg',  // Interior 4
+            'https://assets.360.petsq.works/isokari/4960/0001_4960.jpg' // Exterior
         ];
 
         this.currentImageIndex = 0;
