@@ -13,7 +13,7 @@ ISOKARI.MenuController = class {
         
         // Interaction variables with initial positions
         this.lon = -80; // Start facing slightly left
-        this.lat = -22;   // Start looking slightly up
+        this.lat = 70;   // Start looking slightly up
         this.onPointerDownLon = 0;
         this.onPointerDownLat = 0;
         this.onPointerDownMouseX = 0;
