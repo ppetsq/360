@@ -13,14 +13,14 @@ ISOKARI.MenuController = class {
         
         // Interaction variables with initial positions
         this.lon = -80; // Start facing slightly left
-        this.lat = -25;   // Start looking slightly up
+        this.lat = -22;   // Start looking slightly up
         this.onPointerDownLon = 0;
         this.onPointerDownLat = 0;
         this.onPointerDownMouseX = 0;
         this.onPointerDownMouseY = 0;
         
         // Zoom variables with initial zoom
-        this.currentZoom = 100; // Slightly closer than default
+        this.currentZoom = 105; // Slightly closer than default
         this.minZoom = 50;
         this.maxZoom = 120;
         this.zoomSensitivity = 2;
@@ -99,7 +99,7 @@ ISOKARI.MenuController = class {
     async loadVideo() {
         return new Promise((resolve, reject) => {
             this.video = document.createElement('video');
-            this.video.src = 'https://assets.360.petsq.works/isokari/4960/menu.mp4';
+            this.video.src = 'https://assets.360.petsq.works/isokari/4960/menu_long.mp4';
             this.video.crossOrigin = 'anonymous';
             this.video.loop = true;
             this.video.muted = true;
