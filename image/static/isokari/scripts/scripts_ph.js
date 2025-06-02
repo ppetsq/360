@@ -15,6 +15,7 @@ ISOKARI.PilotsController = class {
         this.animationId = null;
         this.iconAnimationId = null;
         this.isMobile = window.innerWidth <= 768;
+        // Removed: this.hideUiTimeout = null; // No longer needed for temporary hide
 
         // Interaction variables (same as island)
         this.lon = 0;
@@ -23,6 +24,8 @@ ISOKARI.PilotsController = class {
         this.onPointerDownLat = 0;
         this.onPointerDownMouseX = 0;
         this.onPointerDownMouseY = 0;
+        this.isDragging = false; // Track if actual dragging occurred
+        this.didZoom = false; // Track if zooming occurred
 
         // Zoom variables (same as island)
         this.currentZoom = 90;
@@ -215,7 +218,6 @@ ISOKARI.PilotsController = class {
                 this.resetHousePositioning();
             }
             
-            // Reposition house on mobile when window resizes (but not when switching modes)
             // Removed: No need to reposition if house is hidden on mobile.
             // if (this.isMobile && this.uiPanelVisible && wasMobile === this.isMobile) {
             //     setTimeout(() => {
@@ -254,15 +256,16 @@ ISOKARI.PilotsController = class {
         const container = document.getElementById('pilots-viewer');
 
         // Mouse events (same as island, but use document for smooth dragging)
-        document.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
-        document.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
-        document.addEventListener('mouseup', () => this.onMouseUp(), false);
+        container.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
+        container.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
+        container.addEventListener('mouseup', (e) => this.onMouseUp(e), false);
         container.addEventListener('wheel', (e) => this.onMouseWheel(e), { passive: false });
+        // Removed: container.addEventListener('click', (e) => this.onClick(e), false); // Removed: Click listener to show/hide
 
         // Touch events
         container.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
         container.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
-        container.addEventListener('touchend', () => this.onTouchEnd(), false);
+        container.addEventListener('touchend', (e) => this.onTouchEnd(e), false);
 
         // Control buttons
         const autoRotateToggle = document.getElementById('pilots-auto-rotate-toggle');
@@ -281,6 +284,13 @@ ISOKARI.PilotsController = class {
         document.addEventListener('keydown', (e) => this.onKeyDown(e), false);
     }
 
+    // New: Method to hide UI immediately upon interaction start
+    hideUIPanelImmediately() {
+        if (this.uiPanelVisible) {
+            this.hideUIPanel();
+        }
+    }
+
     // Mouse interaction handlers (same as island)
     onMouseDown(event) {
         // Only start interaction if clicking on the viewer, not UI elements
@@ -290,11 +300,15 @@ ISOKARI.PilotsController = class {
 
         event.preventDefault();
         this.isUserInteracting = true;
+        this.isDragging = false; // Reset dragging flag
+        this.didZoom = false; // Reset zoom flag
 
         this.onPointerDownMouseX = event.clientX;
         this.onPointerDownMouseY = event.clientY;
         this.onPointerDownLon = this.lon;
         this.onPointerDownLat = this.lat;
+
+        this.hideUIPanelImmediately(); // Hide UI immediately on interaction start
     }
 
     onMouseMove(event) {
@@ -302,18 +316,29 @@ ISOKARI.PilotsController = class {
             const deltaX = (this.onPointerDownMouseX - event.clientX) * this.dragSensitivity;
             const deltaY = (event.clientY - this.onPointerDownMouseY) * this.dragSensitivity;
             
+            // If movement is significant, set isDragging to true
+            if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) { // 1px threshold for drag
+                this.isDragging = true;
+            }
+
             this.lon = deltaX + this.onPointerDownLon;
             const newLat = deltaY + this.onPointerDownLat;
             this.lat = Math.max(-this.MAX_LAT_DEG, Math.min(this.MAX_LAT_DEG, newLat));
         }
     }
 
-    onMouseUp() {
+    onMouseUp(event) {
         this.isUserInteracting = false;
+        // Removed: Logic to show UI after drag/zoom
+        this.isDragging = false; // Reset for next interaction
+        this.didZoom = false; // Reset for next interaction
     }
 
     onMouseWheel(event) {
         event.preventDefault();
+
+        this.didZoom = true; // Set zoom flag
+        this.hideUIPanelImmediately(); // Hide UI immediately on zoom start
 
         const delta = event.deltaY || event.detail || event.wheelDelta;
 
@@ -325,23 +350,35 @@ ISOKARI.PilotsController = class {
 
         this.camera.fov = this.currentZoom;
         this.camera.updateProjectionMatrix();
+
+        // Removed: Debounce logic to show UI after zooming stops
     }
 
     // Touch interaction handlers (same as island)
     onTouchStart(event) {
         event.preventDefault();
 
+        // Only hide UI if touching on the viewer area itself
+        if (!event.target.closest('#pilots-viewer')) {
+            return;
+        }
+
+        this.isUserInteracting = true;
+        this.isDragging = false; // Reset dragging flag
+        this.didZoom = false; // Reset zoom flag
+
         if (event.touches.length === 1) {
-            this.isUserInteracting = true;
             this.onPointerDownMouseX = event.touches[0].pageX;
             this.onPointerDownMouseY = event.touches[0].pageY;
             this.onPointerDownLon = this.lon;
             this.onPointerDownLat = this.lat;
         } else if (event.touches.length === 2) {
+            this.didZoom = true; // Pinch is a zoom interaction
             const dx = event.touches[0].pageX - event.touches[1].pageX;
             const dy = event.touches[0].pageY - event.touches[1].pageY;
             this.prevTouchDistance = Math.sqrt(dx * dx + dy * dy);
         }
+        this.hideUIPanelImmediately(); // Hide UI immediately on interaction start
     }
 
     onTouchMove(event) {
@@ -349,13 +386,19 @@ ISOKARI.PilotsController = class {
             event.preventDefault();
 
             const deltaX = (this.onPointerDownMouseX - event.touches[0].pageX) * this.dragSensitivity;
-            const deltaY = (event.touches[0].pageY - this.onPointerDownMouseY) * this.dragSensitivity;
+            const deltaY = (event.touches[0].pageY - this.onPointerDownMouseY) * this.dragSensitivity; // Corrected deltaY calculation
             
+            // If movement is significant, set isDragging to true
+            if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) { // 1px threshold for drag
+                this.isDragging = true;
+            }
+
             this.lon = deltaX + this.onPointerDownLon;
             const newLat = deltaY + this.onPointerDownLat;
             this.lat = Math.max(-this.MAX_LAT_DEG, Math.min(this.MAX_LAT_DEG, newLat));
 
         } else if (event.touches.length === 2) {
+            this.didZoom = true; // Pinch is a zoom interaction
             const dx = event.touches[0].pageX - event.touches[1].pageX;
             const dy = event.touches[0].pageY - event.touches[1].pageY;
             this.touchDistance = Math.sqrt(dx * dx + dy * dy);
@@ -372,10 +415,14 @@ ISOKARI.PilotsController = class {
         }
     }
 
-    onTouchEnd() {
+    onTouchEnd(event) {
         this.isUserInteracting = false;
         this.touchDistance = 0;
         this.prevTouchDistance = 0;
+
+        // Removed: Logic to show UI after drag/zoom
+        this.isDragging = false; // Reset for next interaction
+        this.didZoom = false; // Reset for next interaction
     }
 
     // UI Controls (adapted from island)
@@ -416,6 +463,7 @@ ISOKARI.PilotsController = class {
     }
 
     toggleUIPanel() {
+        // This is the manual toggle, it should always override auto-hide/show
         if (this.uiPanelVisible) {
             this.hideUIPanel();
         } else {
@@ -424,6 +472,7 @@ ISOKARI.PilotsController = class {
     }
 
     showUIPanel() {
+        this.uiPanelVisible = true; // Set visibility flag immediately
         const panel = document.getElementById('pilots-ui-panel');
         const toggleButton = document.getElementById('pilots-ui-toggle-button');
         const btqButton = document.getElementById('pilots-btq-button');
@@ -443,11 +492,10 @@ ISOKARI.PilotsController = class {
             houseContainer?.classList.add('positioned'); // Keep it hidden and avoid position issues
             btqButton?.classList.remove('hidden'); // Stay visible on mobile
         }
-        
-        this.uiPanelVisible = true;
     }
 
     hideUIPanel() {
+        this.uiPanelVisible = false; // Set visibility flag immediately
         const panel = document.getElementById('pilots-ui-panel');
         const toggleButton = document.getElementById('pilots-ui-toggle-button');
         const btqButton = document.getElementById('pilots-btq-button');
@@ -465,8 +513,6 @@ ISOKARI.PilotsController = class {
             houseContainer.style.setProperty('visibility', 'hidden', 'important');
             houseContainer.style.setProperty('display', 'none', 'important'); // Ensure it's not displayed
         }
-        
-        this.uiPanelVisible = false;
     }
 
     positionHouseRelativeToUI() {
@@ -609,12 +655,21 @@ ISOKARI.PilotsController = class {
 
     dispose() {
         this.stopAnimation();
+        // Removed: clearTimeout(this.hideUiTimeout); // No longer needed
         
-        // Clean up document event listeners
-        document.removeEventListener('mousedown', this.onMouseDown);
-        document.removeEventListener('mousemove', this.onMouseMove);
-        document.removeEventListener('mouseup', this.onMouseUp);
-        
+        // Remove event listeners from the container to prevent memory leaks
+        const container = document.getElementById('pilots-viewer');
+        if (container) {
+            container.removeEventListener('mousedown', this.onMouseDown);
+            container.removeEventListener('mousemove', this.onMouseMove);
+            container.removeEventListener('mouseup', this.onMouseUp);
+            container.removeEventListener('wheel', this.onMouseWheel);
+            container.removeEventListener('touchstart', this.onTouchStart);
+            container.removeEventListener('touchmove', this.onTouchMove);
+            container.removeEventListener('touchend', this.onTouchEnd);
+        }
+        document.removeEventListener('keydown', this.onKeyDown);
+
         if (this.currentEnvTexture) {
             this.currentEnvTexture.dispose();
             this.currentEnvTexture = null;

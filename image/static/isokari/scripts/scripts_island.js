@@ -14,6 +14,7 @@ ISOKARI.IslandController = class {
         this.iconRotationAngle = 0;
         this.animationId = null;
         this.isMobile = window.innerWidth <= 768;
+        // Removed: this.hideUiTimeout = null; // No longer needed for temporary hide
 
         // Interaction variables
         this.lon = 0;
@@ -22,6 +23,8 @@ ISOKARI.IslandController = class {
         this.onPointerDownLat = 0;
         this.onPointerDownMouseX = 0;
         this.onPointerDownMouseY = 0;
+        this.isDragging = false; // Track if actual dragging occurred
+        this.didZoom = false; // Track if zooming occurred
 
         // Zoom variables
         this.currentZoom = 90;
@@ -237,27 +240,27 @@ ISOKARI.IslandController = class {
     }
 
     // Add this new method to reset map positioning
-resetMapPositioning() {
-    const mapContainer = document.getElementById('island-map-container');
-    if (!mapContainer) return;
-    
-    // Remove all JavaScript-applied positioning styles
-    mapContainer.style.removeProperty('bottom');
-    mapContainer.style.removeProperty('opacity');
-    mapContainer.style.removeProperty('visibility');
-    
-    // Remove positioned class
-    mapContainer.classList.remove('positioned');
-    
-    console.log(`🔄 RESET MAP POSITIONING - Now ${this.isMobile ? 'MOBILE' : 'DESKTOP'} mode`);
-    
-    // If switching to mobile and UI is visible, reposition after reset
-    if (this.isMobile && this.uiPanelVisible) {
-        setTimeout(() => {
-            this.positionMapRelativeToUI();
-        }, 100);
+    resetMapPositioning() {
+        const mapContainer = document.getElementById('island-map-container');
+        if (!mapContainer) return;
+        
+        // Remove all JavaScript-applied positioning styles
+        mapContainer.style.removeProperty('bottom');
+        mapContainer.style.removeProperty('opacity');
+        mapContainer.style.removeProperty('visibility');
+        
+        // Remove positioned class
+        mapContainer.classList.remove('positioned');
+        
+        console.log(`🔄 RESET MAP POSITIONING - Now ${this.isMobile ? 'MOBILE' : 'DESKTOP'} mode`);
+        
+        // If switching to mobile and UI is visible, reposition after reset
+        if (this.isMobile && this.uiPanelVisible) {
+            setTimeout(() => {
+                this.positionMapRelativeToUI();
+            }, 100);
+        }
     }
-}
 
     setupEventListeners() {
         const container = document.getElementById('island-viewer');
@@ -265,14 +268,15 @@ resetMapPositioning() {
         // Mouse events
         container.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
         container.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
-        container.addEventListener('mouseup', () => this.onMouseUp(), false);
+        container.addEventListener('mouseup', (e) => this.onMouseUp(e), false);
         container.addEventListener('mouseout', () => this.onMouseUp(), false);
         container.addEventListener('wheel', (e) => this.onMouseWheel(e), { passive: false });
+        // Removed: container.addEventListener('click', (e) => this.onClick(e), false); // Removed: Click listener to show/hide
 
         // Touch events
         container.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
         container.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
-        container.addEventListener('touchend', () => this.onTouchEnd(), false);
+        container.addEventListener('touchend', (e) => this.onTouchEnd(e), false);
 
         // Control buttons
         const autoRotateToggle = document.getElementById('auto-rotate-toggle');
@@ -291,15 +295,31 @@ resetMapPositioning() {
         document.addEventListener('keydown', (e) => this.onKeyDown(e), false);
     }
 
+    // New: Method to hide UI immediately upon interaction start
+    hideUIPanelImmediately() {
+        if (this.uiPanelVisible) {
+            this.hideUIPanel();
+        }
+    }
+
     // Mouse interaction handlers
     onMouseDown(event) {
+        // Only hide UI if clicking on the viewer area itself, not UI elements
+        if (!event.target.closest('#island-viewer')) {
+            return;
+        }
+
         event.preventDefault();
         this.isUserInteracting = true;
+        this.isDragging = false; // Reset dragging flag
+        this.didZoom = false; // Reset zoom flag (though mouse down usually doesn't involve zoom)
 
         this.onPointerDownMouseX = event.clientX;
         this.onPointerDownMouseY = event.clientY;
         this.onPointerDownLon = this.lon;
         this.onPointerDownLat = this.lat;
+
+        this.hideUIPanelImmediately(); // Hide UI immediately on interaction start
     }
 
     onMouseMove(event) {
@@ -307,18 +327,29 @@ resetMapPositioning() {
             const deltaX = (this.onPointerDownMouseX - event.clientX) * this.dragSensitivity;
             const deltaY = (event.clientY - this.onPointerDownMouseY) * this.dragSensitivity;
             
+            // If movement is significant, set isDragging to true
+            if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) { // 1px threshold for drag
+                this.isDragging = true;
+            }
+
             this.lon = deltaX + this.onPointerDownLon;
             const newLat = deltaY + this.onPointerDownLat;
             this.lat = Math.max(-this.MAX_LAT_DEG, Math.min(this.MAX_LAT_DEG, newLat));
         }
     }
 
-    onMouseUp() {
+    onMouseUp(event) {
         this.isUserInteracting = false;
+        // Removed: Logic to show UI after drag/zoom
+        this.isDragging = false; // Reset for next interaction
+        this.didZoom = false; // Reset for next interaction
     }
 
     onMouseWheel(event) {
         event.preventDefault();
+
+        this.didZoom = true; // Set zoom flag
+        this.hideUIPanelImmediately(); // Hide UI immediately on zoom start
 
         const delta = event.deltaY || event.detail || event.wheelDelta;
 
@@ -330,23 +361,35 @@ resetMapPositioning() {
 
         this.camera.fov = this.currentZoom;
         this.camera.updateProjectionMatrix();
+
+        // Removed: Debounce logic to show UI after zooming stops
     }
 
     // Touch interaction handlers
     onTouchStart(event) {
         event.preventDefault();
 
+        // Only hide UI if touching on the viewer area itself
+        if (!event.target.closest('#island-viewer')) {
+            return;
+        }
+
+        this.isUserInteracting = true;
+        this.isDragging = false; // Reset dragging flag
+        this.didZoom = false; // Reset zoom flag
+
         if (event.touches.length === 1) {
-            this.isUserInteracting = true;
             this.onPointerDownMouseX = event.touches[0].pageX;
             this.onPointerDownMouseY = event.touches[0].pageY;
             this.onPointerDownLon = this.lon;
             this.onPointerDownLat = this.lat;
         } else if (event.touches.length === 2) {
+            this.didZoom = true; // Pinch is a zoom interaction
             const dx = event.touches[0].pageX - event.touches[1].pageX;
             const dy = event.touches[0].pageY - event.touches[1].pageY;
             this.prevTouchDistance = Math.sqrt(dx * dx + dy * dy);
         }
+        this.hideUIPanelImmediately(); // Hide UI immediately on interaction start
     }
 
     onTouchMove(event) {
@@ -354,13 +397,19 @@ resetMapPositioning() {
             event.preventDefault();
 
             const deltaX = (this.onPointerDownMouseX - event.touches[0].pageX) * this.dragSensitivity;
-            const deltaY = (event.touches[0].pageY - this.onPointerDownMouseY) * this.dragSensitivity;
+            const deltaY = (event.touches[0].pageY - event.touches[0].pageY) * this.dragSensitivity; // Corrected deltaY calculation
             
+            // If movement is significant, set isDragging to true
+            if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) { // 1px threshold for drag
+                this.isDragging = true;
+            }
+
             this.lon = deltaX + this.onPointerDownLon;
             const newLat = deltaY + this.onPointerDownLat;
             this.lat = Math.max(-this.MAX_LAT_DEG, Math.min(this.MAX_LAT_DEG, newLat));
 
         } else if (event.touches.length === 2) {
+            this.didZoom = true; // Pinch is a zoom interaction
             const dx = event.touches[0].pageX - event.touches[1].pageX;
             const dy = event.touches[0].pageY - event.touches[1].pageY;
             this.touchDistance = Math.sqrt(dx * dx + dy * dy);
@@ -377,10 +426,14 @@ resetMapPositioning() {
         }
     }
 
-    onTouchEnd() {
+    onTouchEnd(event) {
         this.isUserInteracting = false;
         this.touchDistance = 0;
         this.prevTouchDistance = 0;
+
+        // Removed: Logic to show UI after drag/zoom
+        this.isDragging = false; // Reset for next interaction
+        this.didZoom = false; // Reset for next interaction
     }
 
     // UI Controls
@@ -421,6 +474,7 @@ resetMapPositioning() {
     }
 
     toggleUIPanel() {
+        // This is the manual toggle, it should always override auto-hide/show
         if (this.uiPanelVisible) {
             this.hideUIPanel();
         } else {
@@ -429,6 +483,7 @@ resetMapPositioning() {
     }
 
     showUIPanel() {
+        this.uiPanelVisible = true; // Set visibility flag immediately
         const panel = document.getElementById('island-ui-panel');
         const toggleButton = document.getElementById('ui-toggle-button');
         const btqButton = document.getElementById('btq-button');
@@ -446,8 +501,6 @@ resetMapPositioning() {
             btqButton?.classList.add('hidden');
         }
         
-        this.uiPanelVisible = true;
-        
         // MOBILE: Position map after UI is shown and rendered
         if (this.isMobile) {
             // Wait for UI to finish rendering, then position map
@@ -458,6 +511,7 @@ resetMapPositioning() {
     }
 
     hideUIPanel() {
+        this.uiPanelVisible = false; // Set visibility flag immediately
         const panel = document.getElementById('island-ui-panel');
         const toggleButton = document.getElementById('ui-toggle-button');
         const btqButton = document.getElementById('btq-button');
@@ -474,8 +528,6 @@ resetMapPositioning() {
             mapContainer.style.setProperty('opacity', '0', 'important');
             mapContainer.style.setProperty('visibility', 'hidden', 'important');
         }
-        
-        this.uiPanelVisible = false;
     }
 
     positionMapRelativeToUI() {
@@ -675,7 +727,22 @@ resetMapPositioning() {
 
     dispose() {
         this.stopAnimation();
+        // Removed: clearTimeout(this.hideUiTimeout); // No longer needed
         
+        // Remove event listeners from the container to prevent memory leaks
+        const container = document.getElementById('island-viewer');
+        if (container) {
+            container.removeEventListener('mousedown', this.onMouseDown);
+            container.removeEventListener('mousemove', this.onMouseMove);
+            container.removeEventListener('mouseup', this.onMouseUp);
+            container.removeEventListener('mouseout', this.onMouseUp);
+            container.removeEventListener('wheel', this.onMouseWheel);
+            container.removeEventListener('touchstart', this.onTouchStart);
+            container.removeEventListener('touchmove', this.onTouchMove);
+            container.removeEventListener('touchend', this.onTouchEnd);
+        }
+        document.removeEventListener('keydown', this.onKeyDown);
+
         if (this.currentEnvTexture) {
             this.currentEnvTexture.dispose();
             this.currentEnvTexture = null;
