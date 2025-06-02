@@ -321,43 +321,43 @@
     }
 }
 
-/* ===== MOBILE RESPONSIVE STYLES (PROPERLY SIZED) ===== */
+/* ===== MOBILE RESPONSIVE STYLES ===== */
 
 @media (max-width: 768px) {
     
-    /* Mobile UI Panel - PROPERLY SIZED TO FIT ALL CONTENT */
-    #pilots-ui-panel {
-        height: 240px !important; /* Increased to fit all content */
-        max-height: 55vh !important;
-        min-height: 240px !important;
+    /* Mobile UI Panel */
+    .ui-panel {
+        height: auto !important;
+        max-height: 60vh !important;
+        min-height: 250px !important;
         flex-direction: column;
         padding: 0;
         gap: 0;
-        background: rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0.2); /* Same lighter opacity as desktop */
         padding-left: 0;
         align-items: stretch;
         justify-content: flex-start;
         overflow: visible !important;
-        padding-bottom: 16px;
+        padding-bottom: 20px;
     }
 
     /* Mobile Panel Content */
     .panel-header {
         order: 1;
-        padding: 90px 16px 12px 16px !important; /* Adequate top padding */
+        padding: 120px 20px 16px 20px !important;
         text-align: center;
         min-width: auto;
         flex: none;
     }
 
     .panel-title {
-        font-size: 16px;
-        margin-bottom: 6px;
+        font-size: 18px;
+        margin-bottom: 8px;
         line-height: 1.2;
     }
 
     .panel-description {
-        font-size: 10px !important;
+        font-size: 11px !important;
         line-height: 1.3;
         max-width: 100%;
         transition: all 0.3s ease;
@@ -375,12 +375,12 @@
         background: none;
         border: none;
         color: rgba(255, 255, 255, 0.6);
-        font-size: 9px;
+        font-size: 10px;
         font-weight: 500;
         cursor: pointer;
-        padding: 3px 0 0 0;
+        padding: 4px 0 0 0;
         text-decoration: underline;
-        margin-top: 3px;
+        margin-top: 4px;
         font-family: inherit;
         transition: color 0.3s ease;
     }
@@ -393,13 +393,13 @@
     .location-details {
         order: 2;
         grid-template-columns: repeat(4, 1fr);
-        gap: 6px;
-        padding: 8px 10px;
-        margin: 0 16px;
+        gap: 8px;
+        padding: 10px 12px;
+        margin: 0 20px;
         min-width: auto;
         flex: none;
         background: rgba(255, 255, 255, 0.08);
-        width: calc(100% - 32px);
+        width: calc(100% - 40px);
     }
 
     .detail-item {
@@ -407,32 +407,32 @@
     }
 
     .detail-label {
-        font-size: 6px;
-        letter-spacing: 0.3px;
+        font-size: 7px;
+        letter-spacing: 0.4px;
     }
 
     .detail-value {
-        font-size: 8px;
+        font-size: 9px;
     }
 
-    /* Mobile Controls - ENSURE THEY'RE VISIBLE */
+    /* Mobile Controls */
     .controls-section {
         order: 3;
         flex-direction: row;
         justify-content: center;
-        gap: 10px;
-        padding: 10px 16px 14px 16px; /* Adequate padding to ensure visibility */
+        gap: 12px;
+        padding: 12px 20px 16px 20px;
         flex: none;
     }
 
     .control-button {
-        width: 38px; /* Slightly larger to ensure usability */
-        height: 38px;
-        font-size: 12px;
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
     }
 
     /* Mobile Action Buttons */
-    #pilots-ui-toggle-button {
+    .ui-toggle-button {
         bottom: 20px !important;
         right: 20px;
         width: 45px;
@@ -441,11 +441,11 @@
         z-index: 2100;
     }
 
-    #pilots-ui-toggle-button.panel-open {
-        bottom: 20px !important;
+    .ui-toggle-button.panel-open {
+        bottom: 20px !important; /* Don't move on mobile */
     }
 
-    #pilots-btq-button {
+    .btq-button {
         bottom: 20px;
         left: 20px;
         width: 45px;
@@ -453,8 +453,8 @@
         z-index: 2100;
     }
 
-    #pilots-btq-button.hidden {
-        opacity: 1 !important;
+    .btq-button.hidden {
+        opacity: 1 !important; /* Stay visible on mobile */
         pointer-events: all !important;
     }
 
@@ -463,66 +463,91 @@
         height: 20px;
     }
 
-    /* Mobile House Image Container - REMOVE ALL BACKGROUNDS */
-    .house-container {
+    /* Mobile Map Container */
+    .map-container {
         position: fixed !important;
-        bottom: 200px !important; /* Adjusted for 240px UI height */
+        bottom: 200px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        width: 140px !important;
-        height: 105px !important;
-        z-index: 1600 !important;
-        pointer-events: none !important;
-        opacity: 0 !important;
-        visibility: hidden !important;
-        transition: opacity 0.4s ease, visibility 0.4s ease !important;
-        
-        /* REMOVE ALL BACKGROUNDS COMPLETELY */
+        width: 150px !important;
+        height: 234px !important;
         background: none !important;
-        background-color: transparent !important;
-        backdrop-filter: none !important;
         border: none !important;
         border-radius: 0 !important;
         box-shadow: none !important;
         padding: 0 !important;
         margin: 0 !important;
+        z-index: 1600 !important;
+        pointer-events: none !important;
         overflow: visible !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        transition: opacity 0.4s ease, visibility 0.4s ease, transform 0.3s ease !important;
     }
 
-    .house-container.visible.positioned {
+    .map-container.visible.positioned {
         opacity: 1 !important;
         visibility: visible !important;
     }
 
-    /* House Image - COMPLETELY CLEAN */
-    .house-image {
+    .map-background {
         width: 100% !important;
         height: 100% !important;
-        border-radius: 6px !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
-        object-fit: cover !important;
-        
-        /* FORCE TRANSPARENT BACKGROUND */
-        background: transparent !important;
-        background-color: transparent !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
         border: none !important;
-        outline: none !important;
-        opacity: 0.95 !important;
-        
-        /* REMOVE ANY POSSIBLE BACKGROUND EFFECTS */
-        backdrop-filter: none !important;
-        filter: none !important;
+        background: none !important;
+        opacity: 0.9 !important;
+        object-fit: contain !important;
+    }
+
+    /* Mobile Map Dots */
+    .dot {
+        position: absolute !important;
+        width: 4px !important;
+        height: 4px !important;
+        pointer-events: none !important;
+        cursor: default !important;
+        background: rgba(255, 255, 255, 0.4) !important;
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.8) !important;
+        transform: translate(-50%, -50%) !important;
+        z-index: 10 !important;
+        border-radius: 50% !important;
+    }
+
+    .dot:hover {
+        background: rgba(255, 255, 255, 0.4) !important;
+        transform: translate(-50%, -50%) scale(1) !important;
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.8) !important;
+    }
+
+    .dot.active {
+        background: #FF8C00 !important;
+        transform: translate(-50%, -50%) scale(2.2) !important;
+        animation: pulse-mobile 2s infinite !important;
+        box-shadow: 0 0 5px rgba(255, 140, 0, 0.9) !important;
+    }
+
+    @keyframes pulse-mobile {
+        0%, 100% {
+            opacity: 1;
+            box-shadow: 0 0 5px rgba(255, 140, 0, 0.9);
+        }
+        50% {
+            opacity: 0.8;
+            box-shadow: 0 0 8px rgba(255, 140, 0, 1);
+        }
     }
 
     /* Mobile Icon Sizing */
     .auto-rotate-icon {
-        width: 14px;
-        height: 14px;
+        width: 16px;
+        height: 16px;
     }
 
     .nav-icon {
-        width: 10px;
-        height: 10px;
+        width: 12px;
+        height: 12px;
     }
 }
 
@@ -530,85 +555,59 @@
 
 @media (max-width: 480px) {
     
-    /* Small Mobile UI Panel */
-    #pilots-ui-panel {
-        height: 220px !important; /* Slightly smaller but still fits content */
-        min-height: 220px !important;
-        padding-bottom: 14px;
+    /* Smaller Map */
+    .map-container {
+        width: 125px !important;
+        height: 195px !important;
     }
 
-    /* Small Mobile House Image */
-    .house-container {
-        width: 120px !important;
-        height: 90px !important;
-        bottom: 180px !important; /* Adjusted for 220px UI height */
-        
-        /* ENSURE NO BACKGROUNDS ON SMALL MOBILE TOO */
-        background: none !important;
-        background-color: transparent !important;
-        backdrop-filter: none !important;
-        box-shadow: none !important;
-    }
-
-    .house-image {
-        /* FORCE CLEAN IMAGE ON SMALL MOBILE */
-        background: transparent !important;
-        background-color: transparent !important;
-        backdrop-filter: none !important;
-        border: none !important;
-        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25) !important;
-        border-radius: 5px !important;
-    }
-
-    /* Slightly Smaller Panel Content */
+    /* Smaller Panel Content */
     .panel-header {
-        padding: 80px 14px 10px 14px !important;
+        padding: 100px 16px 12px 16px !important;
     }
 
     .panel-title {
-        font-size: 15px;
-        margin-bottom: 5px;
+        font-size: 16px;
+        margin-bottom: 6px;
     }
 
     .panel-description {
-        font-size: 9px !important;
-        line-height: 1.25;
+        font-size: 10px !important;
     }
 
     .read-more-button {
-        font-size: 8px;
-        margin-top: 2px;
+        font-size: 9px;
     }
 
     .location-details {
-        margin: 0 14px;
-        width: calc(100% - 28px);
-        gap: 5px;
-        padding: 6px 8px;
+        margin: 0 16px;
+        width: calc(100% - 32px);
+        gap: 6px;
+        padding: 8px 10px;
     }
 
     .detail-label {
-        font-size: 5px;
+        font-size: 6px;
     }
 
     .detail-value {
-        font-size: 7px;
+        font-size: 8px;
     }
 
-    /* Ensure Controls Are Visible */
+    /* Smaller Controls */
     .controls-section {
-        padding: 8px 14px 12px 14px;
-        gap: 8px;
+        padding: 10px 16px 12px 16px;
+        gap: 10px;
     }
 
     .control-button {
-        width: 34px; /* Ensure they're usable */
-        height: 34px;
-        font-size: 11px;
+        width: 36px;
+        height: 36px;
+        font-size: 12px;
     }
 
     /* Smaller Action Buttons */
-    #pilots-ui-toggle-button {
+    .ui-toggle-button {
         bottom: 15px !important;
         right: 15px;
         width: 42px;
@@ -616,7 +615,7 @@
         font-size: 13px;
     }
 
-    #pilots-btq-button {
+    .btq-button {
         bottom: 15px;
         left: 15px;
         width: 42px;
@@ -630,12 +629,12 @@
 
     /* Smaller Icons */
     .auto-rotate-icon {
-        width: 12px;
-        height: 12px;
+        width: 14px;
+        height: 14px;
     }
 
     .nav-icon {
-        width: 8px;
-        height: 8px;
+        width: 10px;
+        height: 10px;
     }
 }
