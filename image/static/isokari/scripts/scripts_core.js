@@ -186,6 +186,74 @@ ISOKARI.App = class {
         ISOKARI.State.initialized[section] = true;
     }
 
+    // Add this to your scripts_core.js file, in the App constructor after setupEventListeners()
+
+// ===== HASH NAVIGATION SUPPORT =====
+checkHashNavigation() {
+    const hash = window.location.hash;
+    
+    if (hash === '#island') {
+        // Navigate directly to island experience
+        setTimeout(() => {
+            this.navigateToSection('island');
+        }, 100);
+    } else if (hash === '#pilots') {
+        // Navigate directly to pilots experience  
+        setTimeout(() => {
+            this.navigateToSection('pilots');
+        }, 100);
+    }
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', () => {
+        const newHash = window.location.hash;
+        if (newHash === '#island') {
+            this.navigateToSection('island');
+        } else if (newHash === '#pilots') {
+            this.navigateToSection('pilots');
+        } else if (newHash === '' || newHash === '#') {
+            this.navigateToSection('intro');
+        }
+    });
+}
+
+    // Update the navigateToSection method to update URL hash
+    async navigateToSection(targetSection) {
+        if (ISOKARI.State.isTransitioning || ISOKARI.State.currentSection === targetSection) {
+            return;
+        }
+
+        // Update URL hash
+        if (targetSection === 'intro') {
+            history.pushState(null, null, window.location.pathname);
+        } else {
+            history.pushState(null, null, `#${targetSection}`);
+        }
+
+        ISOKARI.State.isTransitioning = true;
+        
+        // ... rest of the existing navigateToSection method stays the same
+        this.updateLoadingText(targetSection);
+        this.showLoadingOverlay();
+
+        const currentSectionEl = document.getElementById(`${ISOKARI.State.currentSection}-section`);
+        currentSectionEl?.classList.remove('active');
+
+        await this.wait(300);
+        await this.initializeSection(targetSection);
+
+        const targetSectionEl = document.getElementById(`${targetSection}-section`);
+        targetSectionEl?.classList.add('active');
+
+        setTimeout(() => {
+            this.hideLoadingOverlay();
+            this.showSectionUI(targetSection);
+            ISOKARI.State.isTransitioning = false;
+        }, 800);
+
+        ISOKARI.State.currentSection = targetSection;
+    }
+
     showSectionUI(section) {
         switch(section) {
             case 'island':
