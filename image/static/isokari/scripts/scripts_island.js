@@ -1,5 +1,5 @@
-// ===== ISLAND CONTROLLER WITH INITIAL LOAD MAP POSITIONING =====
-// Handles mirror ball 360° experience with properly positioned mobile map
+// ===== ISLAND CONTROLLER WITH STARTING POSITION =====
+// Handles mirror ball 360° experience with defined starting camera position
 
 ISOKARI.IslandController = class {
     constructor() {
@@ -14,20 +14,19 @@ ISOKARI.IslandController = class {
         this.iconRotationAngle = 0;
         this.animationId = null;
         this.isMobile = window.innerWidth <= 768;
-        // Removed: this.hideUiTimeout = null; // No longer needed for temporary hide
 
-        // Interaction variables
-        this.lon = 0;
-        this.lat = 0;
+        // Interaction variables with island starting position
+        this.lon = -105;   // Start facing northeast toward the dramatic cliffs
+        this.lat = 20;  // Start looking slightly down at the cliffs
         this.onPointerDownLon = 0;
         this.onPointerDownLat = 0;
         this.onPointerDownMouseX = 0;
         this.onPointerDownMouseY = 0;
-        this.isDragging = false; // Track if actual dragging occurred
-        this.didZoom = false; // Track if zooming occurred
+        this.isDragging = false;
+        this.didZoom = false;
 
-        // Zoom variables
-        this.currentZoom = 90;
+        // Zoom variables with island starting zoom
+        this.currentZoom = 110; // Medium-close view of the cliffs
         this.minZoom = 50;
         this.maxZoom = 120;
         this.zoomSensitivity = 2;
@@ -80,7 +79,6 @@ ISOKARI.IslandController = class {
                 this.startIconRotation(icon);
             }
 
-            // Setup map dots AFTER scene initialization
             this.setupMapDots();
 
             // Store in global state
@@ -88,17 +86,15 @@ ISOKARI.IslandController = class {
             ISOKARI.State.cameras.island = this.camera;
             ISOKARI.State.renderers.island = this.renderer;
 
-            console.log('🏝️ Island controller initialized');
+            console.log('🏝️ Island controller with starting position initialized');
         } catch (error) {
             console.error('Error initializing island controller:', error);
         }
     }
 
     createScene(container) {
-        // Create scene
         this.scene = new THREE.Scene();
 
-        // Create camera
         this.camera = new THREE.PerspectiveCamera(
             this.currentZoom,
             window.innerWidth / window.innerHeight,
@@ -107,7 +103,6 @@ ISOKARI.IslandController = class {
         );
         this.camera.position.set(0, 0, 0);
 
-        // Create renderer
         this.renderer = new THREE.WebGLRenderer({
             antialias: true,
             alpha: false
@@ -132,13 +127,11 @@ ISOKARI.IslandController = class {
                     texture.magFilter = THREE.LinearFilter;
                     texture.flipY = false;
 
-                    // Dispose of the old texture if it exists
                     if (this.currentEnvTexture) {
                         this.currentEnvTexture.dispose();
                     }
                     this.currentEnvTexture = texture;
 
-                    // Create or update mirror ball mesh
                     if (!this.mirrorBallMesh) {
                         this.createMirrorBallMesh();
                         this.scene.add(this.mirrorBallMesh);
@@ -147,9 +140,7 @@ ISOKARI.IslandController = class {
                         this.mirrorBallMesh.material.needsUpdate = true;
                     }
 
-                    // Update map dots after texture load
                     this.updateMapDots();
-
                     resolve();
                 },
                 (progress) => {
@@ -178,7 +169,6 @@ ISOKARI.IslandController = class {
     }
 
     setupMobileUI() {
-        // Setup read more functionality for mobile
         const readMoreBtn = document.getElementById('read-more-btn');
         const description = document.querySelector('.panel-description');
         
@@ -192,7 +182,6 @@ ISOKARI.IslandController = class {
                     readMoreBtn.textContent = 'Read more';
                 }
                 
-                // Reposition map after text change
                 if (this.isMobile && this.uiPanelVisible) {
                     setTimeout(() => {
                         this.positionMapRelativeToUI();
@@ -200,23 +189,19 @@ ISOKARI.IslandController = class {
                 }
             });
     
-            // Initialize as collapsed on mobile
             if (this.isMobile) {
                 description.classList.add('collapsed');
                 readMoreBtn.textContent = 'Read more';
             }
         }
     
-        // Handle window resize for mobile detection and repositioning
         window.addEventListener('resize', () => {
             const wasMobile = this.isMobile;
             this.isMobile = window.innerWidth <= 768;
             
-            // If switching between mobile/desktop, update map dots AND reset positioning
             if (wasMobile !== this.isMobile) {
                 this.updateMapDots();
                 
-                // Reset read more state when switching
                 if (description && readMoreBtn) {
                     if (this.isMobile) {
                         description.classList.add('collapsed');
@@ -226,11 +211,9 @@ ISOKARI.IslandController = class {
                     }
                 }
                 
-                // CRITICAL: Reset map positioning when switching modes
                 this.resetMapPositioning();
             }
             
-            // Reposition map on mobile when window resizes (but not when switching modes)
             if (this.isMobile && this.uiPanelVisible && wasMobile === this.isMobile) {
                 setTimeout(() => {
                     this.positionMapRelativeToUI();
@@ -239,22 +222,17 @@ ISOKARI.IslandController = class {
         });
     }
 
-    // Add this new method to reset map positioning
     resetMapPositioning() {
         const mapContainer = document.getElementById('island-map-container');
         if (!mapContainer) return;
         
-        // Remove all JavaScript-applied positioning styles
         mapContainer.style.removeProperty('bottom');
         mapContainer.style.removeProperty('opacity');
         mapContainer.style.removeProperty('visibility');
-        
-        // Remove positioned class
         mapContainer.classList.remove('positioned');
         
         console.log(`🔄 RESET MAP POSITIONING - Now ${this.isMobile ? 'MOBILE' : 'DESKTOP'} mode`);
         
-        // If switching to mobile and UI is visible, reposition after reset
         if (this.isMobile && this.uiPanelVisible) {
             setTimeout(() => {
                 this.positionMapRelativeToUI();
@@ -265,20 +243,16 @@ ISOKARI.IslandController = class {
     setupEventListeners() {
         const container = document.getElementById('island-viewer');
 
-        // Mouse events
         container.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
         container.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
         container.addEventListener('mouseup', (e) => this.onMouseUp(e), false);
         container.addEventListener('mouseout', () => this.onMouseUp(), false);
         container.addEventListener('wheel', (e) => this.onMouseWheel(e), { passive: false });
-        // Removed: container.addEventListener('click', (e) => this.onClick(e), false); // Removed: Click listener to show/hide
 
-        // Touch events
         container.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
         container.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
         container.addEventListener('touchend', (e) => this.onTouchEnd(e), false);
 
-        // Control buttons
         const autoRotateToggle = document.getElementById('auto-rotate-toggle');
         const prevButton = document.getElementById('prev-button');
         const nextButton = document.getElementById('next-button');
@@ -291,35 +265,31 @@ ISOKARI.IslandController = class {
         if (uiToggleButton) uiToggleButton.addEventListener('click', () => this.toggleUIPanel());
         if (btqButton) btqButton.addEventListener('click', () => this.openBTQ360());
 
-        // Keyboard controls
         document.addEventListener('keydown', (e) => this.onKeyDown(e), false);
     }
 
-    // New: Method to hide UI immediately upon interaction start
     hideUIPanelImmediately() {
         if (this.uiPanelVisible) {
             this.hideUIPanel();
         }
     }
 
-    // Mouse interaction handlers
     onMouseDown(event) {
-        // Only hide UI if clicking on the viewer area itself, not UI elements
         if (!event.target.closest('#island-viewer')) {
             return;
         }
 
         event.preventDefault();
         this.isUserInteracting = true;
-        this.isDragging = false; // Reset dragging flag
-        this.didZoom = false; // Reset zoom flag (though mouse down usually doesn't involve zoom)
+        this.isDragging = false;
+        this.didZoom = false;
 
         this.onPointerDownMouseX = event.clientX;
         this.onPointerDownMouseY = event.clientY;
         this.onPointerDownLon = this.lon;
         this.onPointerDownLat = this.lat;
 
-        this.hideUIPanelImmediately(); // Hide UI immediately on interaction start
+        this.hideUIPanelImmediately();
     }
 
     onMouseMove(event) {
@@ -327,8 +297,7 @@ ISOKARI.IslandController = class {
             const deltaX = (this.onPointerDownMouseX - event.clientX) * this.dragSensitivity;
             const deltaY = (event.clientY - this.onPointerDownMouseY) * this.dragSensitivity;
             
-            // If movement is significant, set isDragging to true
-            if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) { // 1px threshold for drag
+            if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) {
                 this.isDragging = true;
             }
 
@@ -340,16 +309,15 @@ ISOKARI.IslandController = class {
 
     onMouseUp(event) {
         this.isUserInteracting = false;
-        // Removed: Logic to show UI after drag/zoom
-        this.isDragging = false; // Reset for next interaction
-        this.didZoom = false; // Reset for next interaction
+        this.isDragging = false;
+        this.didZoom = false;
     }
 
     onMouseWheel(event) {
         event.preventDefault();
 
-        this.didZoom = true; // Set zoom flag
-        this.hideUIPanelImmediately(); // Hide UI immediately on zoom start
+        this.didZoom = true;
+        this.hideUIPanelImmediately();
 
         const delta = event.deltaY || event.detail || event.wheelDelta;
 
@@ -361,22 +329,18 @@ ISOKARI.IslandController = class {
 
         this.camera.fov = this.currentZoom;
         this.camera.updateProjectionMatrix();
-
-        // Removed: Debounce logic to show UI after zooming stops
     }
 
-    // Touch interaction handlers
     onTouchStart(event) {
         event.preventDefault();
 
-        // Only hide UI if touching on the viewer area itself
         if (!event.target.closest('#island-viewer')) {
             return;
         }
 
         this.isUserInteracting = true;
-        this.isDragging = false; // Reset dragging flag
-        this.didZoom = false; // Reset zoom flag
+        this.isDragging = false;
+        this.didZoom = false;
 
         if (event.touches.length === 1) {
             this.onPointerDownMouseX = event.touches[0].pageX;
@@ -384,12 +348,12 @@ ISOKARI.IslandController = class {
             this.onPointerDownLon = this.lon;
             this.onPointerDownLat = this.lat;
         } else if (event.touches.length === 2) {
-            this.didZoom = true; // Pinch is a zoom interaction
+            this.didZoom = true;
             const dx = event.touches[0].pageX - event.touches[1].pageX;
             const dy = event.touches[0].pageY - event.touches[1].pageY;
             this.prevTouchDistance = Math.sqrt(dx * dx + dy * dy);
         }
-        this.hideUIPanelImmediately(); // Hide UI immediately on interaction start
+        this.hideUIPanelImmediately();
     }
 
     onTouchMove(event) {
@@ -397,12 +361,9 @@ ISOKARI.IslandController = class {
             event.preventDefault();
 
             const deltaX = (this.onPointerDownMouseX - event.touches[0].pageX) * this.dragSensitivity;
-            // FIX START: Corrected deltaY calculation for touchmove
-            const deltaY = (event.touches[0].pageY - this.onPointerDownMouseY) * this.dragSensitivity; 
-            // FIX END
+            const deltaY = (event.touches[0].pageY - this.onPointerDownMouseY) * this.dragSensitivity;
             
-            // If movement is significant, set isDragging to true
-            if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) { // 1px threshold for drag
+            if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) {
                 this.isDragging = true;
             }
 
@@ -411,7 +372,7 @@ ISOKARI.IslandController = class {
             this.lat = Math.max(-this.MAX_LAT_DEG, Math.min(this.MAX_LAT_DEG, newLat));
 
         } else if (event.touches.length === 2) {
-            this.didZoom = true; // Pinch is a zoom interaction
+            this.didZoom = true;
             const dx = event.touches[0].pageX - event.touches[1].pageX;
             const dy = event.touches[0].pageY - event.touches[1].pageY;
             this.touchDistance = Math.sqrt(dx * dx + dy * dy);
@@ -432,13 +393,10 @@ ISOKARI.IslandController = class {
         this.isUserInteracting = false;
         this.touchDistance = 0;
         this.prevTouchDistance = 0;
-
-        // Removed: Logic to show UI after drag/zoom
-        this.isDragging = false; // Reset for next interaction
-        this.didZoom = false; // Reset for next interaction
+        this.isDragging = false;
+        this.didZoom = false;
     }
 
-    // UI Controls
     toggleAutoRotate() {
         const button = document.getElementById('auto-rotate-toggle');
         const icon = document.getElementById('auto-rotate-icon');
@@ -476,7 +434,6 @@ ISOKARI.IslandController = class {
     }
 
     toggleUIPanel() {
-        // This is the manual toggle, it should always override auto-hide/show
         if (this.uiPanelVisible) {
             this.hideUIPanel();
         } else {
@@ -485,7 +442,7 @@ ISOKARI.IslandController = class {
     }
 
     showUIPanel() {
-        this.uiPanelVisible = true; // Set visibility flag immediately
+        this.uiPanelVisible = true;
         const panel = document.getElementById('island-ui-panel');
         const toggleButton = document.getElementById('ui-toggle-button');
         const btqButton = document.getElementById('btq-button');
@@ -494,18 +451,13 @@ ISOKARI.IslandController = class {
         panel?.classList.add('visible');
         toggleButton?.classList.add('panel-open');
         mapContainer?.classList.add('visible');
-        
-        // Remove positioned class when showing (reset state)
         mapContainer?.classList.remove('positioned');
         
-        // Only hide BTQ button on desktop
         if (!this.isMobile) {
             btqButton?.classList.add('hidden');
         }
         
-        // MOBILE: Position map after UI is shown and rendered
         if (this.isMobile) {
-            // Wait for UI to finish rendering, then position map
             setTimeout(() => {
                 this.positionMapRelativeToUI();
             }, 100);
@@ -513,7 +465,7 @@ ISOKARI.IslandController = class {
     }
 
     hideUIPanel() {
-        this.uiPanelVisible = false; // Set visibility flag immediately
+        this.uiPanelVisible = false;
         const panel = document.getElementById('island-ui-panel');
         const toggleButton = document.getElementById('ui-toggle-button');
         const btqButton = document.getElementById('btq-button');
@@ -522,10 +474,9 @@ ISOKARI.IslandController = class {
         panel?.classList.remove('visible');
         toggleButton?.classList.remove('panel-open');
         mapContainer?.classList.remove('visible');
-        mapContainer?.classList.remove('positioned'); // Clean up positioned class
+        mapContainer?.classList.remove('positioned');
         btqButton?.classList.remove('hidden');
         
-        // MOBILE: Ensure map is hidden when UI is hidden
         if (this.isMobile && mapContainer) {
             mapContainer.style.setProperty('opacity', '0', 'important');
             mapContainer.style.setProperty('visibility', 'hidden', 'important');
@@ -534,7 +485,6 @@ ISOKARI.IslandController = class {
 
     positionMapRelativeToUI() {
         if (!this.isMobile) {
-            // If not mobile, ensure we're not applying mobile positioning
             this.resetMapPositioning();
             return;
         }
@@ -544,39 +494,27 @@ ISOKARI.IslandController = class {
         
         if (uiPanel && mapContainer && uiPanel.classList.contains('visible')) {
             const uiHeight = uiPanel.getBoundingClientRect().height;
-            
-            // UPDATED: Use bigger mobile map height
-            const mapHeight = window.innerWidth <= 480 ? 195 : 234; // 195px for small screens, 234px for regular mobile
-            
-            // Position map so it's 50/50 above UI panel and overlapping, raised by 20px
+            const mapHeight = window.innerWidth <= 480 ? 195 : 234;
             const bottomOffset = uiHeight - (mapHeight / 2) + 20;
             
-            // FIRST: Position the map (while it's still hidden)
             mapContainer.style.setProperty('bottom', `${bottomOffset}px`, 'important');
             
-            // THEN: Add positioned class and show after positioning is complete
             setTimeout(() => {
-                mapContainer.classList.add('positioned'); // Add positioned class
+                mapContainer.classList.add('positioned');
                 mapContainer.style.setProperty('opacity', '1', 'important');
                 mapContainer.style.setProperty('visibility', 'visible', 'important');
-            }, 50); // Small delay to ensure position is set first
+            }, 50);
             
-            console.log(`🗺️ MOBILE MAP POSITIONING (BIGGER):`);
-            console.log(`UI Height: ${uiHeight}px`);
-            console.log(`Map Height: ${mapHeight}px`);
-            console.log(`Map positioned at bottom: ${bottomOffset}px`);
+            console.log(`🗺️ MOBILE MAP POSITIONING: bottom ${bottomOffset}px`);
         }
     }
 
-    // PUBLIC METHOD: Called by core app on initial section show
     handleInitialShow() {
         console.log('🏝️ HandleInitialShow called - mobile:', this.isMobile);
         if (this.isMobile) {
-            // Position map on initial show with proper delay
             setTimeout(() => {
-                console.log('🏝️ Attempting initial map positioning...');
                 this.positionMapRelativeToUI();
-            }, 600); // Longer delay to ensure UI is fully rendered
+            }, 600);
         }
     }
 
@@ -596,22 +534,18 @@ ISOKARI.IslandController = class {
         window.open('https://btq360.com', '_blank');
     }
 
-    // Animation loop
     startAnimation() {
         const animate = () => {
             this.animationId = requestAnimationFrame(animate);
 
-            // Only animate if this is the current section
             if (ISOKARI.State.currentSection !== 'island') {
                 return;
             }
 
-            // Auto-rotation when not interacting
             if (!this.isUserInteracting && this.autoRotateEnabled) {
                 this.lon += this.autoRotateSpeed;
             }
 
-            // Update camera position based on lat/lon
             if (this.mirrorBallMesh) {
                 const phi = THREE.MathUtils.degToRad(90 - this.lat);
                 const theta = THREE.MathUtils.degToRad(this.lon);
@@ -622,7 +556,6 @@ ISOKARI.IslandController = class {
                 this.camera.position.y = distance * Math.cos(phi);
                 this.camera.position.z = distance * Math.sin(phi) * Math.sin(theta);
                 
-                // Camera up vector stabilization for smooth pole navigation
                 const upBias = Math.abs(this.lat) / this.MAX_LAT_DEG;
                 
                 if (upBias > this.UP_VECTOR_SMOOTHING_THRESHOLD / this.MAX_LAT_DEG) {
@@ -643,17 +576,14 @@ ISOKARI.IslandController = class {
         animate();
     }
 
-    // Map dot functionality with mobile optimizations
     setupMapDots() {
         const dots = document.querySelectorAll('#island-map-container .dot');
         console.log('Setting up map dots:', dots.length);
         
         dots.forEach((dot, index) => {
-            // Clear any existing event listeners by cloning the node
             const newDot = dot.cloneNode(true);
             dot.parentNode.replaceChild(newDot, dot);
             
-            // Only add click events on desktop
             if (!this.isMobile) {
                 newDot.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -664,7 +594,6 @@ ISOKARI.IslandController = class {
             }
         });
         
-        // Initial update of active dot
         this.updateMapDots();
     }
     
@@ -680,9 +609,7 @@ ISOKARI.IslandController = class {
         });
     }
 
-    // Keyboard controls
     onKeyDown(event) {
-        // Only handle if we're in the island section
         if (ISOKARI.State.currentSection !== 'island') return;
 
         const hasModifiers = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
@@ -729,9 +656,7 @@ ISOKARI.IslandController = class {
 
     dispose() {
         this.stopAnimation();
-        // Removed: clearTimeout(this.hideUiTimeout); // No longer needed
         
-        // Remove event listeners from the container to prevent memory leaks
         const container = document.getElementById('island-viewer');
         if (container) {
             container.removeEventListener('mousedown', this.onMouseDown);
@@ -766,7 +691,14 @@ ISOKARI.IslandController = class {
         this.camera = null;
     }
 
-    // Public methods for external control
+    jumpToImage(index) {
+        if (!this.isMobile && index >= 0 && index < this.imageUrls.length && index !== this.currentImageIndex) {
+            console.log('Jumping to image via map:', index);
+            this.currentImageIndex = index;
+            this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
+        }
+    }
+
     setAutoRotate(enabled) {
         this.autoRotateEnabled = enabled;
         this.toggleAutoRotate();
@@ -780,22 +712,13 @@ ISOKARI.IslandController = class {
         return this.imageUrls.length;
     }
 
-    // Jump to image method (desktop only)
-    jumpToImage(index) {
-        if (!this.isMobile && index >= 0 && index < this.imageUrls.length && index !== this.currentImageIndex) {
-            console.log('Jumping to image via map:', index);
-            this.currentImageIndex = index;
-            this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
-        }
-    }
-
     resetView() {
-        this.lon = 0;
-        this.lat = 0;
-        this.currentZoom = 90;
+        this.lon = 45;   // Start facing northeast toward the dramatic cliffs
+        this.lat = -10;  // Start looking slightly down at the cliffs
+        this.currentZoom = 85; // Medium-close view of the cliffs
         this.camera.fov = this.currentZoom;
         this.camera.updateProjectionMatrix();
     }
 };
 
-console.log('🏝️ Island Controller with Initial Load Map Positioning Loaded');
+console.log('🏝️ Island Controller with Starting Position Loaded');
