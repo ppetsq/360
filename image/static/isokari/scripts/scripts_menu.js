@@ -222,7 +222,7 @@ ISOKARI.MenuController = class {
         infoButton.title = 'About Isokari 360°';
         infoButton.innerHTML = '<img src="assets/info.png" alt="Info" class="info-icon">';
         
-        // Create info panel that expands from button position
+        // Create info panel that appears above button
         const infoPanel = document.createElement('div');
         infoPanel.className = 'info-panel';
         infoPanel.id = 'info-panel';
@@ -387,6 +387,7 @@ ISOKARI.MenuController = class {
 
         if (event.touches.length === 1) {
             this.isUserInteracting = true;
+            this.onPointerDownMouseX = event.touches[0].pageX;
             this.onPointerDownMouseY = event.touches[0].pageY;
             this.onPointerDownLon = this.lon;
             this.onPointerDownLat = this.lat;
@@ -522,5 +523,4 @@ ISOKARI.MenuController = class {
     }
 };
 
-console.log('🎬 Menu Controller with Parallax and Info Button Loaded');MouseX = event.touches[0].pageX;
-            this.onPointerDown
+console.log('🎬 Menu Controller with Parallax and Info Button Loaded');
