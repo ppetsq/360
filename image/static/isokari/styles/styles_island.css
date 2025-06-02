@@ -384,14 +384,14 @@
         pointer-events: none !important;
         overflow: visible !important;
         
-        /* SMOOTH TRANSITIONS - remove !important to allow transitions */
-        opacity: 0;
-        visibility: hidden;
+        /* ALWAYS START HIDDEN - even when visible class is added */
+        opacity: 0 !important;
+        visibility: hidden !important;
         transition: opacity 0.4s ease, visibility 0.4s ease, transform 0.3s ease !important;
     }
 
-    /* MOBILE: Show map when visible class is added */
-    .map-container.visible {
+    /* MOBILE: Map only shows when both visible AND positioned classes are present */
+    .map-container.visible.positioned {
         opacity: 1 !important;
         visibility: visible !important;
     }

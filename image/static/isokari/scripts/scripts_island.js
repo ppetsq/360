@@ -412,6 +412,9 @@ ISOKARI.IslandController = class {
         toggleButton?.classList.add('panel-open');
         mapContainer?.classList.add('visible');
         
+        // Remove positioned class when showing (reset state)
+        mapContainer?.classList.remove('positioned');
+        
         // Only hide BTQ button on desktop
         if (!this.isMobile) {
             btqButton?.classList.add('hidden');
@@ -437,6 +440,7 @@ ISOKARI.IslandController = class {
         panel?.classList.remove('visible');
         toggleButton?.classList.remove('panel-open');
         mapContainer?.classList.remove('visible');
+        mapContainer?.classList.remove('positioned'); // Clean up positioned class
         btqButton?.classList.remove('hidden');
         
         // MOBILE: Ensure map is hidden when UI is hidden
@@ -459,13 +463,14 @@ ISOKARI.IslandController = class {
             const mapHeight = 187; // Your mobile map height
             
             // Position map so it's 50/50 above UI panel and overlapping, raised by 20px
-            const bottomOffset = uiHeight - (mapHeight / 2) + 20; // Back to 20px offset
+            const bottomOffset = uiHeight - (mapHeight / 2) + 20;
             
             // FIRST: Position the map (while it's still hidden)
             mapContainer.style.setProperty('bottom', `${bottomOffset}px`, 'important');
             
-            // THEN: Show the map after a tiny delay to ensure positioning is applied
+            // THEN: Add positioned class and show after positioning is complete
             setTimeout(() => {
+                mapContainer.classList.add('positioned'); // Add positioned class
                 mapContainer.style.setProperty('opacity', '1', 'important');
                 mapContainer.style.setProperty('visibility', 'visible', 'important');
             }, 50); // Small delay to ensure position is set first
