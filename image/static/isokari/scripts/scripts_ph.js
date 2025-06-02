@@ -17,7 +17,7 @@ ISOKARI.PilotsController = class {
         this.isMobile = window.innerWidth <= 768;
 
         // Interaction variables with pilots house starting position
-        this.lon = 140;  // Start facing toward interior details
+        this.lon = 280;  // Start facing toward interior details
         this.lat = 40;    // Start at eye level
         this.onPointerDownLon = 0;
         this.onPointerDownLat = 0;
