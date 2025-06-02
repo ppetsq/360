@@ -490,7 +490,9 @@ resetMapPositioning() {
         
         if (uiPanel && mapContainer && uiPanel.classList.contains('visible')) {
             const uiHeight = uiPanel.getBoundingClientRect().height;
-            const mapHeight = 187; // Your mobile map height
+            
+            // UPDATED: Use bigger mobile map height
+            const mapHeight = window.innerWidth <= 480 ? 195 : 234; // 195px for small screens, 234px for regular mobile
             
             // Position map so it's 50/50 above UI panel and overlapping, raised by 20px
             const bottomOffset = uiHeight - (mapHeight / 2) + 20;
@@ -505,15 +507,10 @@ resetMapPositioning() {
                 mapContainer.style.setProperty('visibility', 'visible', 'important');
             }, 50); // Small delay to ensure position is set first
             
-            console.log(`🗺️ MOBILE MAP POSITIONING:`);
+            console.log(`🗺️ MOBILE MAP POSITIONING (BIGGER):`);
             console.log(`UI Height: ${uiHeight}px`);
+            console.log(`Map Height: ${mapHeight}px`);
             console.log(`Map positioned at bottom: ${bottomOffset}px`);
-        } else {
-            console.log(`❌ MAP POSITIONING FAILED:`);
-            console.log(`isMobile: ${this.isMobile}`);
-            console.log(`uiPanel:`, uiPanel);
-            console.log(`mapContainer:`, mapContainer);
-            console.log(`UI panel visible:`, uiPanel?.classList.contains('visible'));
         }
     }
 

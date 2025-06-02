@@ -4,7 +4,9 @@
     background: #000;
 }
 
-/* ===== BTQ360 BUTTON ===== */
+/* ===== FIXED ACTION BUTTONS ===== */
+
+/* BTQ360 Button */
 .btq-button {
     position: fixed;
     bottom: 30px;
@@ -43,14 +45,14 @@
     height: 28px;
     filter: brightness(0) invert(1);
     opacity: 0.6;
+    transition: all 0.3s ease;
 }
 
 .btq-icon:hover {
     opacity: 1;
-    transition: all 0.3s ease;
 }
 
-/* ===== UI TOGGLE BUTTON ===== */
+/* UI Toggle Button */
 .ui-toggle-button {
     position: fixed;
     bottom: 30px;
@@ -61,7 +63,7 @@
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.18);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: #fff;
     cursor: pointer;
     display: flex;
@@ -75,26 +77,27 @@
     pointer-events: all;
 }
 
-/* DESKTOP: Move toggle button above UI panel when open */
-.ui-toggle-button.panel-open {
-    bottom: 180px;
-    transition: bottom 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 .ui-toggle-button:hover {
     background: rgba(255, 255, 255, 0.28);
     transform: scale(1.1);
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
 }
 
-/* ===== DESKTOP ISLAND UI PANEL ===== */
+/* Desktop: Move toggle button above UI when panel is open */
+.ui-toggle-button.panel-open {
+    bottom: 180px;
+    transition: bottom 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== DESKTOP UI PANEL ===== */
+
 .ui-panel {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     height: 140px;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.2); /* Lighter opacity */
     backdrop-filter: blur(25px);
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     z-index: 1500;
@@ -102,7 +105,7 @@
     flex-direction: row;
     align-items: center;
     padding: 20px 30px;
-    padding-left: calc(30px + 180px + 30px);
+    padding-left: calc(30px + 180px + 30px); /* Space for map */
     gap: 30px;
     transform: translateY(100%);
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -112,90 +115,7 @@
     transform: translateY(0);
 }
 
-/* ===== DESKTOP MAP CONTAINER ===== */
-.map-container {
-    position: fixed;
-    bottom: 20px;
-    left: 30px;
-    width: 180px; 
-    height: 280px; 
-    transform: none;
-    z-index: 1600;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    box-sizing: border-box; 
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-    pointer-events: none;
-    overflow: hidden;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-}
-
-.map-container.visible {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: all;
-}
-
-.map-background {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    border-radius: 12px;
-    position: relative;
-    filter: none;
-    background: transparent;
-    border: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    opacity: 0.95;
-}
-
-/* ===== DESKTOP DOT STYLING ===== */
-.dot {
-    position: absolute;
-    width: 7px;
-    height: 7px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: none;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-    box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
-}
-
-.dot:hover {
-    background: #FFD700;
-    transform: translate(-50%, -50%) scale(1.6);
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 5px rgba(0, 0, 0, 0.8);
-}
-
-.dot.active {
-    background: #FF8C00;
-    box-shadow: 0 0 15px rgba(255, 140, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.9);
-    animation: pulse-desktop 2s infinite;
-    transform: translate(-50%, -50%) scale(2.0);
-}
-
-@keyframes pulse-desktop {
-    0%, 100% {
-        opacity: 1;
-        box-shadow: 0 0 15px rgba(255, 140, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.9);
-    }
-    50% {
-        opacity: 0.9;
-        box-shadow: 0 0 22px rgba(255, 140, 0, 1), 0 0 12px rgba(0, 0, 0, 1);
-    }
-}
-
-/* ===== PANEL CONTENT ===== */
+/* Panel Content Layout */
 .panel-header {
     display: flex;
     flex-direction: column;
@@ -218,12 +138,11 @@
     color: rgba(255, 255, 255, 0.8);
 }
 
-/* ===== EXPANDABLE TEXT (HIDDEN ON DESKTOP) ===== */
 .read-more-button {
-    display: none;
+    display: none; /* Hidden on desktop */
 }
 
-/* ===== LOCATION DETAILS ===== */
+/* Location Details Grid */
 .location-details {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -245,7 +164,7 @@
 }
 
 .detail-label {
-    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
@@ -255,14 +174,14 @@
 }
 
 .detail-value {
-    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
     font-weight: 600;
     color: #fff;
     font-size: 11px;
     white-space: nowrap;
 }
 
-/* ===== CONTROLS SECTION ===== */
+/* Control Buttons Section */
 .controls-section {
     display: flex;
     flex-direction: column;
@@ -304,7 +223,7 @@
     border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-/* ===== CONTROL ICONS ===== */
+/* Control Icons */
 .auto-rotate-icon {
     width: 20px;
     height: 20px;
@@ -330,137 +249,99 @@
     transform: scale(1.1);
 }
 
-/* ===== REMOVE CROSS NAVIGATION ===== */
-.cross-nav-section {
-    display: none;
+/* ===== DESKTOP MAP CONTAINER ===== */
+
+.map-container {
+    position: fixed;
+    bottom: 20px;
+    left: 30px;
+    width: 180px;
+    height: 280px;
+    z-index: 1600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.map-container.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+}
+
+.map-background {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    opacity: 0.95;
+}
+
+/* Desktop Map Dots */
+.dot {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+}
+
+.dot:hover {
+    background: #FFD700;
+    transform: translate(-50%, -50%) scale(1.6);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 5px rgba(0, 0, 0, 0.8);
+}
+
+.dot.active {
+    background: #FF8C00;
+    transform: translate(-50%, -50%) scale(2.0);
+    box-shadow: 0 0 15px rgba(255, 140, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.9);
+    animation: pulse-desktop 2s infinite;
+}
+
+@keyframes pulse-desktop {
+    0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 15px rgba(255, 140, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.9);
+    }
+    50% {
+        opacity: 0.9;
+        box-shadow: 0 0 22px rgba(255, 140, 0, 1), 0 0 12px rgba(0, 0, 0, 1);
+    }
 }
 
 /* ===== MOBILE RESPONSIVE STYLES ===== */
+
 @media (max-width: 768px) {
-    /* MOBILE: UI Panel normal positioning */
+    
+    /* Mobile UI Panel */
     .ui-panel {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
         height: auto !important;
         max-height: 60vh !important;
         min-height: 250px !important;
         flex-direction: column;
         padding: 0;
         gap: 0;
-        background: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.2); /* Same lighter opacity as desktop */
         padding-left: 0;
         align-items: stretch;
         justify-content: flex-start;
         overflow: visible !important;
-        z-index: 1500;
         padding-bottom: 20px;
     }
 
-    /* MOBILE: Map positioned dynamically by JavaScript */
-    .map-container {
-        position: fixed !important;
-        bottom: 200px !important; /* Default position, will be overridden by JS */
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        
-        /* Same size as determined works well */
-        width: 120px !important;
-        height: 187px !important;
-        
-        /* NO container styling - just like desktop */
-        background: none !important;
-        border: none !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        z-index: 1600 !important;
-        pointer-events: none !important;
-        overflow: visible !important;
-        
-        /* ALWAYS START HIDDEN - even when visible class is added */
-        opacity: 0 !important;
-        visibility: hidden !important;
-        transition: opacity 0.4s ease, visibility 0.4s ease, transform 0.3s ease !important;
-    }
-
-    /* MOBILE: Map only shows when both visible AND positioned classes are present */
-    .map-container.visible.positioned {
-        opacity: 1 !important;
-        visibility: visible !important;
-    }
-
-    /* MOBILE: Hide map when UI is hidden - use opacity instead of display:none for transitions */
-    .ui-panel:not(.visible) + .map-container,
-    .map-container:not(.visible) {
-        opacity: 0 !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
-    }
-
-    /* MOBILE: Map image fills the container exactly */
-    .map-background {
-        width: 100% !important;
-        height: 100% !important;
-        
-        /* Clean styling */
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        border: none !important;
-        background: none !important;
-        
-        opacity: 0.9 !important;
-        object-fit: contain !important;
-        display: block !important;
-        position: relative !important;
-    }
-
-    /* MOBILE: Dots positioned EXACTLY like desktop */
-    .dot {
-        position: absolute !important;
-        width: 3px !important;
-        height: 3px !important;
-        
-        pointer-events: none !important;
-        cursor: default !important;
-        background: rgba(255, 255, 255, 0.4) !important;
-        box-shadow: 0 0 1px rgba(0, 0, 0, 0.8) !important;
-        transform: translate(-50%, -50%) !important;
-        z-index: 10 !important;
-        border-radius: 50% !important;
-    }
-
-    .dot:hover {
-        background: rgba(255, 255, 255, 0.4) !important;
-        transform: translate(-50%, -50%) scale(1) !important;
-        box-shadow: 0 0 1px rgba(0, 0, 0, 0.8) !important;
-    }
-
-    .dot.active {
-        background: #FF8C00 !important;
-        transform: translate(-50%, -50%) scale(2) !important;
-        animation: pulse-mobile 2s infinite !important;
-        box-shadow: 0 0 4px rgba(255, 140, 0, 0.9) !important;
-    }
-
-    @keyframes pulse-mobile {
-        0%, 100% {
-            opacity: 1;
-            box-shadow: 0 0 4px rgba(255, 140, 0, 0.9);
-        }
-        50% {
-            opacity: 0.8;
-            box-shadow: 0 0 6px rgba(255, 140, 0, 1);
-        }
-    }
-
-    /* MOBILE: Content moves down 100px to create space for map overlap */
+    /* Mobile Panel Content */
     .panel-header {
         order: 1;
         padding: 120px 20px 16px 20px !important;
@@ -482,7 +363,6 @@
         transition: all 0.3s ease;
     }
 
-    /* MOBILE: Collapsible text */
     .panel-description.collapsed {
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -490,7 +370,6 @@
         overflow: hidden;
     }
 
-    /* MOBILE: Simple read more button */
     .read-more-button {
         display: block !important;
         background: none;
@@ -510,7 +389,7 @@
         color: rgba(255, 255, 255, 0.8);
     }
 
-    /* MOBILE: Location details */
+    /* Mobile Location Details */
     .location-details {
         order: 2;
         grid-template-columns: repeat(4, 1fr);
@@ -536,7 +415,7 @@
         font-size: 9px;
     }
 
-    /* MOBILE: Controls section */
+    /* Mobile Controls */
     .controls-section {
         order: 3;
         flex-direction: row;
@@ -552,7 +431,7 @@
         font-size: 14px;
     }
 
-    /* MOBILE: Button positioning */
+    /* Mobile Action Buttons */
     .ui-toggle-button {
         bottom: 20px !important;
         right: 20px;
@@ -563,7 +442,7 @@
     }
 
     .ui-toggle-button.panel-open {
-        bottom: 20px !important;
+        bottom: 20px !important; /* Don't move on mobile */
     }
 
     .btq-button {
@@ -575,7 +454,7 @@
     }
 
     .btq-button.hidden {
-        opacity: 1 !important;
+        opacity: 1 !important; /* Stay visible on mobile */
         pointer-events: all !important;
     }
 
@@ -583,14 +462,106 @@
         width: 20px;
         height: 20px;
     }
-}
 
-@media (max-width: 480px) {
+    /* Mobile Map Container */
     .map-container {
-        width: 100px !important;
-        height: 156px !important;
+        position: fixed !important;
+        bottom: 200px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 150px !important;
+        height: 234px !important;
+        background: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        z-index: 1600 !important;
+        pointer-events: none !important;
+        overflow: visible !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        transition: opacity 0.4s ease, visibility 0.4s ease, transform 0.3s ease !important;
     }
 
+    .map-container.visible.positioned {
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    .map-background {
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: none !important;
+        opacity: 0.9 !important;
+        object-fit: contain !important;
+    }
+
+    /* Mobile Map Dots */
+    .dot {
+        position: absolute !important;
+        width: 4px !important;
+        height: 4px !important;
+        pointer-events: none !important;
+        cursor: default !important;
+        background: rgba(255, 255, 255, 0.4) !important;
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.8) !important;
+        transform: translate(-50%, -50%) !important;
+        z-index: 10 !important;
+        border-radius: 50% !important;
+    }
+
+    .dot:hover {
+        background: rgba(255, 255, 255, 0.4) !important;
+        transform: translate(-50%, -50%) scale(1) !important;
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.8) !important;
+    }
+
+    .dot.active {
+        background: #FF8C00 !important;
+        transform: translate(-50%, -50%) scale(2.2) !important;
+        animation: pulse-mobile 2s infinite !important;
+        box-shadow: 0 0 5px rgba(255, 140, 0, 0.9) !important;
+    }
+
+    @keyframes pulse-mobile {
+        0%, 100% {
+            opacity: 1;
+            box-shadow: 0 0 5px rgba(255, 140, 0, 0.9);
+        }
+        50% {
+            opacity: 0.8;
+            box-shadow: 0 0 8px rgba(255, 140, 0, 1);
+        }
+    }
+
+    /* Mobile Icon Sizing */
+    .auto-rotate-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    .nav-icon {
+        width: 12px;
+        height: 12px;
+    }
+}
+
+/* ===== SMALL MOBILE (480px and below) ===== */
+
+@media (max-width: 480px) {
+    
+    /* Smaller Map */
+    .map-container {
+        width: 125px !important;
+        height: 195px !important;
+    }
+
+    /* Smaller Panel Content */
     .panel-header {
         padding: 100px 16px 12px 16px !important;
     }
@@ -623,6 +594,7 @@
         font-size: 8px;
     }
 
+    /* Smaller Controls */
     .controls-section {
         padding: 10px 16px 12px 16px;
         gap: 10px;
@@ -634,6 +606,7 @@
         font-size: 12px;
     }
 
+    /* Smaller Action Buttons */
     .ui-toggle-button {
         bottom: 15px !important;
         right: 15px;
@@ -653,22 +626,8 @@
         width: 18px;
         height: 18px;
     }
-}
 
-/* ===== ICON RESPONSIVE SIZING ===== */
-@media (max-width: 768px) {
-    .auto-rotate-icon {
-        width: 16px;
-        height: 16px;
-    }
-
-    .nav-icon {
-        width: 12px;
-        height: 12px;
-    }
-}
-
-@media (max-width: 480px) {
+    /* Smaller Icons */
     .auto-rotate-icon {
         width: 14px;
         height: 14px;
