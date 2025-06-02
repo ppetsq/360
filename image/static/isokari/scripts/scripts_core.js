@@ -43,6 +43,10 @@ ISOKARI.App = class {
         this.initializeAudio();
         this.checkHashNavigation(); // ADD THIS LINE
         this.startApplication();
+
+        // Clean up on page unload
+    window.addEventListener('beforeunload', () => this.handlePageUnload());
+    window.addEventListener('pagehide', () => this.handlePageUnload());
     }
 
     setupEventListeners() {
@@ -127,42 +131,87 @@ ISOKARI.App = class {
         if (ISOKARI.State.isTransitioning || ISOKARI.State.currentSection === targetSection) {
             return;
         }
-
+    
         // Update URL hash
         if (targetSection === 'intro') {
             history.pushState(null, null, window.location.pathname);
         } else {
             history.pushState(null, null, `#${targetSection}`);
         }
-
+    
         ISOKARI.State.isTransitioning = true;
         
         // Update loading text
         this.updateLoadingText(targetSection);
         this.showLoadingOverlay();
-
+    
         // Hide current section
         const currentSectionEl = document.getElementById(`${ISOKARI.State.currentSection}-section`);
         currentSectionEl?.classList.remove('active');
-
+    
+        // ⭐ CRITICAL: Dispose of current section to prevent memory leaks
+        await this.disposeCurrentSection();
+    
         // Wait for fade out
         await this.wait(300);
-
+    
         // Initialize target section if needed
         await this.initializeSection(targetSection);
-
+    
         // Show target section
         const targetSectionEl = document.getElementById(`${targetSection}-section`);
         targetSectionEl?.classList.add('active');
-
+    
         // Hide loading overlay and show section-specific UI
         setTimeout(() => {
             this.hideLoadingOverlay();
             this.showSectionUI(targetSection);
             ISOKARI.State.isTransitioning = false;
         }, 800);
-
+    
         ISOKARI.State.currentSection = targetSection;
+    }
+    
+    // ⭐ NEW METHOD: Dispose current section
+    async disposeCurrentSection() {
+        const currentSection = ISOKARI.State.currentSection;
+        const controller = ISOKARI.State.controllers[currentSection];
+        
+        if (controller && typeof controller.dispose === 'function') {
+            console.log(`🧹 Disposing ${currentSection} section to free memory`);
+            
+            // Stop any animations first
+            if (typeof controller.stopAnimation === 'function') {
+                controller.stopAnimation();
+            }
+            
+            // Dispose of Three.js resources
+            controller.dispose();
+            
+            // Clear references
+            ISOKARI.State.controllers[currentSection] = null;
+            ISOKARI.State.scenes[currentSection] = null;
+            ISOKARI.State.cameras[currentSection] = null;
+            ISOKARI.State.renderers[currentSection] = null;
+            ISOKARI.State.initialized[currentSection] = false;
+            
+            // Force garbage collection hint (won't always work, but helps)
+            if (window.gc) {
+                window.gc();
+            }
+            
+            console.log(`✅ ${currentSection} section disposed`);
+        }
+    }
+
+    handlePageUnload() {
+        // Dispose all sections when page unloads
+        ['intro', 'island', 'pilots'].forEach(section => {
+            const controller = ISOKARI.State.controllers[section];
+            if (controller && typeof controller.dispose === 'function') {
+                controller.dispose();
+            }
+        });
     }
 
     async initializeSection(section) {

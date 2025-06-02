@@ -48,7 +48,7 @@ ISOKARI.IslandController = class {
             'https://assets.360.petsq.works/isokari/4960/01_4960.jpg',
             'https://assets.360.petsq.works/isokari/4960/02_4960.jpg',
             'https://assets.360.petsq.works/isokari/4960/03_4960.jpg',
-            'https://assets.360.petsq.works/isokari/4960/04_4960.jpg',
+            'https://assets.360.petsq.works/isokari/4960/04_4960_7.jpg',
             'https://assets.360.petsq.works/isokari/4960/05_4960.jpg',
             'https://assets.360.petsq.works/isokari/4960/06_4960.jpg',
             'https://assets.360.petsq.works/isokari/4960/07_4960.jpg',
