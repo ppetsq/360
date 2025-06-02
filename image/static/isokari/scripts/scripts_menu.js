@@ -11,16 +11,16 @@ ISOKARI.MenuController = class {
         this.isUserInteracting = false;
         this.autoRotateEnabled = true;
         
-        // Interaction variables
-        this.lon = 0;
-        this.lat = 0;
+        // Interaction variables with initial positions
+        this.lon = -80; // Start facing slightly left
+        this.lat = -25;   // Start looking slightly up
         this.onPointerDownLon = 0;
         this.onPointerDownLat = 0;
         this.onPointerDownMouseX = 0;
         this.onPointerDownMouseY = 0;
         
-        // Zoom variables
-        this.currentZoom = 75;
+        // Zoom variables with initial zoom
+        this.currentZoom = 100; // Slightly closer than default
         this.minZoom = 50;
         this.maxZoom = 120;
         this.zoomSensitivity = 2;
@@ -336,6 +336,28 @@ ISOKARI.MenuController = class {
         container.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
         container.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
         container.addEventListener('touchend', () => this.onTouchEnd(), false);
+        
+        // Keyboard controls for spacebar pause
+        document.addEventListener('keydown', (e) => this.onKeyDown(e), false);
+    }
+
+    onKeyDown(event) {
+        // Only handle spacebar in intro section
+        if (ISOKARI.State.currentSection !== 'intro') return;
+        
+        // Only handle spacebar without modifiers
+        const hasModifiers = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
+        
+        if (!hasModifiers && event.code === 'Space') {
+            event.preventDefault();
+            this.toggleAutoRotate();
+            console.log('🎯 Menu auto-rotation toggled via spacebar');
+        }
+    }
+
+    toggleAutoRotate() {
+        this.autoRotateEnabled = !this.autoRotateEnabled;
+        console.log(`🔄 Menu auto-rotation: ${this.autoRotateEnabled ? 'enabled' : 'disabled'}`);
     }
 
     onMouseDown(event) {
@@ -481,6 +503,7 @@ ISOKARI.MenuController = class {
         document.removeEventListener('mousedown', this.onMouseDown);
         document.removeEventListener('mousemove', this.onMouseMove);
         document.removeEventListener('mouseup', this.onMouseUp);
+        document.removeEventListener('keydown', this.onKeyDown);
         
         // Clean up info button
         const infoButton = document.getElementById('info-button');
@@ -515,9 +538,9 @@ ISOKARI.MenuController = class {
     }
 
     resetView() {
-        this.lon = 0;
-        this.lat = 0;
-        this.currentZoom = 75;
+        this.lon = -30; // Start facing slightly left
+        this.lat = 5;   // Start looking slightly up
+        this.currentZoom = 80; // Slightly closer view
         this.camera.fov = this.currentZoom;
         this.camera.updateProjectionMatrix();
     }
