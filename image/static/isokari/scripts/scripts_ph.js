@@ -179,8 +179,8 @@ ISOKARI.PilotsController = class {
                     readMoreBtn.textContent = 'Read more';
                 }
                 
-                // Reposition house image after text change
-                if (this.isMobile && this.uiPanelVisible) {
+                // Reposition house image after text change (only if house is visible, which it won't be on mobile now)
+                if (this.isMobile && this.uiPanelVisible && document.getElementById('pilots-house-container')?.style.display !== 'none') {
                     setTimeout(() => {
                         this.positionHouseRelativeToUI();
                     }, 100);
@@ -216,11 +216,12 @@ ISOKARI.PilotsController = class {
             }
             
             // Reposition house on mobile when window resizes (but not when switching modes)
-            if (this.isMobile && this.uiPanelVisible && wasMobile === this.isMobile) {
-                setTimeout(() => {
-                    this.positionHouseRelativeToUI();
-                }, 100);
-            }
+            // Removed: No need to reposition if house is hidden on mobile.
+            // if (this.isMobile && this.uiPanelVisible && wasMobile === this.isMobile) {
+            //     setTimeout(() => {
+            //         this.positionHouseRelativeToUI();
+            //     }, 100);
+            // }
         });
     }
 
@@ -233,17 +234,19 @@ ISOKARI.PilotsController = class {
         houseContainer.style.removeProperty('bottom');
         houseContainer.style.removeProperty('opacity');
         houseContainer.style.removeProperty('visibility');
+        houseContainer.style.removeProperty('display'); // Ensure display is reset
         
         // Remove positioned class
         houseContainer.classList.remove('positioned');
         
         console.log(`🔄 RESET HOUSE POSITIONING - Now ${this.isMobile ? 'MOBILE' : 'DESKTOP'} mode`);
         
-        // If switching to mobile and UI is visible, reposition after reset
-        if (this.isMobile && this.uiPanelVisible) {
-            setTimeout(() => {
-                this.positionHouseRelativeToUI();
-            }, 100);
+        // If switching to mobile, ensure it's hidden. If switching to desktop, ensure it's visible if UI is open.
+        if (this.isMobile) {
+            houseContainer.style.setProperty('display', 'none', 'important');
+        } else if (this.uiPanelVisible) {
+            houseContainer.style.removeProperty('display'); // Allow CSS to control
+            // No need to call positionHouseRelativeToUI for desktop, as it's handled by CSS
         }
     }
 
@@ -428,25 +431,20 @@ ISOKARI.PilotsController = class {
     
         panel?.classList.add('visible');
         toggleButton?.classList.add('panel-open');
-        houseContainer?.classList.add('visible');
         
-        // Remove positioned class when showing (reset state)
-        houseContainer?.classList.remove('positioned');
-        
-        // Only hide BTQ button on desktop
+        // Only show house container on desktop
         if (!this.isMobile) {
+            houseContainer?.classList.add('visible');
+            houseContainer?.classList.remove('positioned'); // Remove positioned class when showing (reset state)
             btqButton?.classList.add('hidden');
+        } else {
+            // Ensure it's hidden on mobile
+            houseContainer?.classList.remove('visible');
+            houseContainer?.classList.add('positioned'); // Keep it hidden and avoid position issues
+            btqButton?.classList.remove('hidden'); // Stay visible on mobile
         }
         
         this.uiPanelVisible = true;
-        
-        // MOBILE: Position house after UI is shown and rendered
-        if (this.isMobile) {
-            // Wait for UI to finish rendering, then position house
-            setTimeout(() => {
-                this.positionHouseRelativeToUI();
-            }, 100);
-        }
     }
 
     hideUIPanel() {
@@ -465,53 +463,37 @@ ISOKARI.PilotsController = class {
         if (this.isMobile && houseContainer) {
             houseContainer.style.setProperty('opacity', '0', 'important');
             houseContainer.style.setProperty('visibility', 'hidden', 'important');
+            houseContainer.style.setProperty('display', 'none', 'important'); // Ensure it's not displayed
         }
         
         this.uiPanelVisible = false;
     }
 
     positionHouseRelativeToUI() {
+        // This function is no longer needed for mobile pilots house as it's hidden
+        // but keeping the structure for clarity if future changes require it.
         if (!this.isMobile) {
             this.resetHousePositioning();
             return;
         }
         
-        const uiPanel = document.getElementById('pilots-ui-panel');
-        const houseContainer = document.getElementById('pilots-house-container');
-        
-        if (uiPanel && houseContainer && uiPanel.classList.contains('visible')) {
-            const uiHeight = uiPanel.getBoundingClientRect().height;
-            
-            // UPDATED: Use smaller house image heights for new mobile design
-            const houseHeight = window.innerWidth <= 480 ? 90 : 105; // Updated for smaller sizes
-            
-            // Position house so it's 50/50 above UI panel and overlapping, raised by 15px
-            const bottomOffset = uiHeight - (houseHeight / 2) + 15; // REDUCED offset
-            
-            houseContainer.style.setProperty('bottom', `${bottomOffset}px`, 'important');
-            
-            setTimeout(() => {
-                houseContainer.classList.add('positioned');
-                houseContainer.style.setProperty('opacity', '1', 'important');
-                houseContainer.style.setProperty('visibility', 'visible', 'important');
-            }, 50);
-            
-            console.log(`🏠 MOBILE HOUSE POSITIONING (COMPACT):`);
-            console.log(`UI Height: ${uiHeight}px`);
-            console.log(`House Height: ${houseHeight}px`);
-            console.log(`House positioned at bottom: ${bottomOffset}px`);
-        }
+        // Log that this function is effectively skipped on mobile for Pilots House
+        console.log('🏠 Skipping positionHouseRelativeToUI on mobile for Pilots House (image is hidden).');
     }
 
     // PUBLIC METHOD: Called by core app on initial section show
     handleInitialShow() {
         console.log('🏠 HandleInitialShow called - mobile:', this.isMobile);
         if (this.isMobile) {
-            // Position house on initial show with proper delay
-            setTimeout(() => {
-                console.log('🏠 Attempting initial house positioning...');
-                this.positionHouseRelativeToUI();
-            }, 600); // Longer delay to ensure UI is fully rendered
+            // No need to position house image as it's hidden on mobile.
+            // Ensure the house container is indeed hidden on initial mobile load.
+            const houseContainer = document.getElementById('pilots-house-container');
+            if (houseContainer) {
+                houseContainer.style.setProperty('display', 'none', 'important');
+                houseContainer.style.setProperty('opacity', '0', 'important');
+                houseContainer.style.setProperty('visibility', 'hidden', 'important');
+            }
+            console.log('🏠 Pilots House image hidden on initial mobile show.');
         }
     }
 
