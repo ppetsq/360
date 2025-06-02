@@ -56,7 +56,9 @@ ISOKARI.PilotsController = class {
         this.currentImageIndex = 0;
     }
 
-    async initialize() {
+    async initialize(app = null) {
+        this.app = app; // Store reference for progress updates
+        
         try {
             const container = document.getElementById('pilots-viewer');
             if (!container) {
@@ -64,7 +66,14 @@ ISOKARI.PilotsController = class {
             }
 
             this.createScene(container);
+            
+            // Show progress while loading first image
+            if (this.app) this.app.updateLoadingProgress(25, 'pilots');
+            
             await this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
+            
+            if (this.app) this.app.updateLoadingProgress(75, 'pilots');
+            
             this.setupEventListeners();
             this.setupMobileUI();
             this.startAnimation();
@@ -74,12 +83,15 @@ ISOKARI.PilotsController = class {
                 this.startIconRotation(icon);
             }
 
+            // Complete
+            if (this.app) this.app.updateLoadingProgress(100, 'pilots');
+
             // Store in global state
             ISOKARI.State.scenes.pilots = this.scene;
             ISOKARI.State.cameras.pilots = this.camera;
             ISOKARI.State.renderers.pilots = this.renderer;
 
-            console.log('🏠 Pilots House controller with starting position initialized');
+            console.log('🏠 Pilots House controller initialized');
         } catch (error) {
             console.error('Error initializing pilots house controller:', error);
         }
@@ -107,44 +119,90 @@ ISOKARI.PilotsController = class {
         container.appendChild(this.renderer.domElement);
     }
 
-    async loadEnvironmentTexture(url) {
-        return new Promise((resolve, reject) => {
-            const loader = new THREE.TextureLoader();
-            loader.crossOrigin = 'anonymous';
+    // ===== FIXED loadEnvironmentTexture method for Pilots Controller =====
+// Replace this method in your scripts_ph.js file
 
-            loader.load(
-                url,
-                (texture) => {
-                    texture.mapping = THREE.EquirectangularReflectionMapping;
-                    texture.minFilter = THREE.LinearFilter;
-                    texture.magFilter = THREE.LinearFilter;
-                    texture.flipY = false;
+async loadEnvironmentTexture(url, showLoading = false) {
+    return new Promise((resolve, reject) => {
+        const loader = new THREE.TextureLoader();
+        loader.crossOrigin = 'anonymous';
 
-                    if (this.currentEnvTexture) {
-                        this.currentEnvTexture.dispose();
-                    }
-                    this.currentEnvTexture = texture;
+        let loadingState = null;
+        let timeoutId = null;
 
-                    if (!this.mirrorBallMesh) {
-                        this.createMirrorBallMesh();
-                        this.scene.add(this.mirrorBallMesh);
-                    } else {
-                        this.mirrorBallMesh.material.envMap = this.currentEnvTexture;
-                        this.mirrorBallMesh.material.needsUpdate = true;
-                    }
+        // ⭐ ENHANCED: Set up delayed loading for image switches
+        if (showLoading && this.app) {
+            // Start the delay timer - loading will show after 1 second if still loading
+            timeoutId = setTimeout(() => {
+                this.app.showImageLoading('Loading new room...');
+                loadingState = 'shown';
+            }, 1000); // 1 second delay
+        }
 
-                    resolve();
-                },
-                (progress) => {
-                    console.log('Loading progress:', (progress.loaded / progress.total * 100).toFixed(2) + '%');
-                },
-                (error) => {
-                    console.error('Error loading texture:', error);
-                    reject(error);
+        loader.load(
+            url,
+            (texture) => {
+                // ⭐ CRITICAL: Cancel delayed loading if image loads quickly
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
                 }
-            );
-        });
-    }
+                
+                // ⭐ CRITICAL: Hide loading if it was shown
+                if (loadingState === 'shown' && this.app) {
+                    this.app.hideImageLoading();
+                }
+
+                texture.mapping = THREE.EquirectangularReflectionMapping;
+                texture.minFilter = THREE.LinearFilter;
+                texture.magFilter = THREE.LinearFilter;
+                texture.flipY = false;
+
+                if (this.currentEnvTexture) {
+                    this.currentEnvTexture.dispose();
+                }
+                this.currentEnvTexture = texture;
+
+                if (!this.mirrorBallMesh) {
+                    this.createMirrorBallMesh();
+                    this.scene.add(this.mirrorBallMesh);
+                } else {
+                    this.mirrorBallMesh.material.envMap = this.currentEnvTexture;
+                    this.mirrorBallMesh.material.needsUpdate = true;
+                }
+
+                resolve();
+            },
+            (progress) => {
+                if (progress.total > 0) {
+                    const percent = Math.round((progress.loaded / progress.total) * 100);
+                    
+                    if (showLoading && loadingState === 'shown' && this.app) {
+                        // Only update progress if loading overlay is actually shown
+                        this.app.updateImageLoadingProgress(percent);
+                    } else if (this.app && !ISOKARI.State.initialized.pilots) {
+                        // Update progress during initialization
+                        this.app.updateLoadingProgress(25 + Math.round(percent * 0.5), 'pilots');
+                    }
+                }
+            },
+            (error) => {
+                console.error('Error loading texture:', error);
+                
+                // ⭐ CRITICAL: Clean up on error
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+                
+                if (loadingState === 'shown' && this.app) {
+                    this.app.hideImageLoading();
+                }
+                
+                reject(error);
+            }
+        );
+    });
+}
+    
 
     createMirrorBallMesh() {
         const geometry = new THREE.SphereGeometry(8, 64, 32);
@@ -473,16 +531,37 @@ ISOKARI.PilotsController = class {
         }
     }
 
-    goToPrevious() {
-        this.currentImageIndex = (this.currentImageIndex - 1 + this.imageUrls.length) % this.imageUrls.length;
-        this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
-        console.log('Previous image:', this.currentImageIndex);
+    async goToPrevious() {
+        const prevIndex = (this.currentImageIndex - 1 + this.imageUrls.length) % this.imageUrls.length;
+        await this.navigateToImage(prevIndex);
+    }
+    
+    async goToNext() {
+        const nextIndex = (this.currentImageIndex + 1) % this.imageUrls.length;
+        await this.navigateToImage(nextIndex);
     }
 
-    goToNext() {
-        this.currentImageIndex = (this.currentImageIndex + 1) % this.imageUrls.length;
-        this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
-        console.log('Next image:', this.currentImageIndex);
+    async navigateToImage(index) {
+        if (index >= 0 && index < this.imageUrls.length && index !== this.currentImageIndex) {
+            const oldIndex = this.currentImageIndex;
+            this.currentImageIndex = index;
+            
+            try {
+                console.log('Loading pilots image:', this.currentImageIndex);
+                // Show loading overlay for image switches
+                await this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex], true);
+                console.log('Successfully loaded pilots image:', this.currentImageIndex);
+            } catch (error) {
+                // If loading fails, revert to previous image
+                console.warn('Failed to load pilots image, reverting to previous');
+                this.currentImageIndex = oldIndex;
+                
+                // Hide loading overlay on error
+                if (this.app) {
+                    this.app.hideImageLoading();
+                }
+            }
+        }
     }
 
     openBTQ360() {

@@ -47,26 +47,39 @@ ISOKARI.MenuController = class {
         this.infoPanelVisible = false;
     }
 
-    async initialize() {
+    async initialize(app = null) {
+        this.app = app; // Store reference for progress updates
+        
         try {
             const container = document.getElementById('intro-viewer');
             if (!container) {
                 throw new Error('Intro viewer container not found');
             }
-
+    
+            if (this.app) this.app.updateLoadingProgress(20, 'intro');
+            
             await this.createScene(container);
+            
+            if (this.app) this.app.updateLoadingProgress(40, 'intro');
+            
             await this.loadVideo();
+            
+            if (this.app) this.app.updateLoadingProgress(80, 'intro');
+            
             this.setupControls(container);
             this.setupParallaxEffects();
             this.setupInfoButton();
             this.startAnimation();
-
+    
+            // Complete
+            if (this.app) this.app.updateLoadingProgress(100, 'intro');
+    
             // Store in global state
             ISOKARI.State.scenes.intro = this.scene;
             ISOKARI.State.cameras.intro = this.camera;
             ISOKARI.State.renderers.intro = this.renderer;
-
-            console.log('🎬 Menu controller with parallax and info button initialized');
+    
+            console.log('🎬 Menu controller initialized');
         } catch (error) {
             console.error('Error initializing menu controller:', error);
             this.createFallbackBackground();
@@ -105,25 +118,39 @@ ISOKARI.MenuController = class {
             this.video.muted = true;
             this.video.playsInline = true;
             this.video.preload = 'auto';
-
+    
+            // Simple progress simulation for video (since video progress is harder to track)
+            let progressStep = 40;
+            const progressInterval = setInterval(() => {
+                if (this.app && progressStep < 75) {
+                    this.app.updateLoadingProgress(progressStep, 'intro');
+                    progressStep += 5;
+                }
+            }, 200);
+    
             this.video.addEventListener('loadeddata', () => {
+                clearInterval(progressInterval);
+                if (this.app) this.app.updateLoadingProgress(75, 'intro');
+                
                 console.log('📹 Video loaded successfully');
                 this.createVideoMesh();
                 resolve();
             });
-
+    
             this.video.addEventListener('error', (e) => {
+                clearInterval(progressInterval);
                 console.error('Video loading error:', e);
-                reject(new Error('Failed to load video'));
+                this.createFallbackBackground();
+                resolve();
             });
-
+    
             this.video.addEventListener('canplay', () => {
                 this.video.play().catch(e => {
                     console.warn('Video autoplay prevented:', e);
                     this.createPlayButton();
                 });
             });
-
+    
             this.video.load();
         });
     }

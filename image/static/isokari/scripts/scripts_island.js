@@ -61,15 +61,24 @@ ISOKARI.IslandController = class {
         this.currentImageIndex = 0;
     }
 
-    async initialize() {
+    async initialize(app = null) {
+        this.app = app; // Store reference for progress updates
+        
         try {
             const container = document.getElementById('island-viewer');
             if (!container) {
                 throw new Error('Island viewer container not found');
             }
-
+    
             this.createScene(container);
+            
+            // Show progress while loading first image
+            if (this.app) this.app.updateLoadingProgress(25, 'island');
+            
             await this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
+            
+            if (this.app) this.app.updateLoadingProgress(75, 'island');
+            
             this.setupEventListeners();
             this.setupMobileUI();
             this.startAnimation();
@@ -78,15 +87,18 @@ ISOKARI.IslandController = class {
                 const icon = document.getElementById('auto-rotate-icon');
                 this.startIconRotation(icon);
             }
-
+    
             this.setupMapDots();
-
+    
+            // Complete
+            if (this.app) this.app.updateLoadingProgress(100, 'island');
+    
             // Store in global state
             ISOKARI.State.scenes.island = this.scene;
             ISOKARI.State.cameras.island = this.camera;
             ISOKARI.State.renderers.island = this.renderer;
-
-            console.log('🏝️ Island controller with starting position initialized');
+    
+            console.log('🏝️ Island controller initialized');
         } catch (error) {
             console.error('Error initializing island controller:', error);
         }
@@ -114,24 +126,46 @@ ISOKARI.IslandController = class {
         container.appendChild(this.renderer.domElement);
     }
 
-    async loadEnvironmentTexture(url) {
+    async loadEnvironmentTexture(url, showLoading = false) {
         return new Promise((resolve, reject) => {
             const loader = new THREE.TextureLoader();
             loader.crossOrigin = 'anonymous';
-
+    
+            let loadingState = null;
+            let timeoutId = null;
+    
+            // ⭐ ENHANCED: Set up delayed loading for image switches
+            if (showLoading && this.app) {
+                // Start the delay timer - loading will show after 1 second if still loading
+                timeoutId = setTimeout(() => {
+                    this.app.showImageLoading('Loading new view...');
+                    loadingState = 'shown';
+                }, 1000); // 1 second delay
+            }
+    
             loader.load(
                 url,
                 (texture) => {
+                    // ⭐ CRITICAL: Cancel delayed loading if image loads quickly
+                    if (timeoutId) {
+                        clearTimeout(timeoutId);
+                    }
+                    
+                    // ⭐ CRITICAL: Hide loading if it was shown
+                    if (loadingState === 'shown' && this.app) {
+                        this.app.hideImageLoading();
+                    }
+    
                     texture.mapping = THREE.EquirectangularReflectionMapping;
                     texture.minFilter = THREE.LinearFilter;
                     texture.magFilter = THREE.LinearFilter;
                     texture.flipY = false;
-
+    
                     if (this.currentEnvTexture) {
                         this.currentEnvTexture.dispose();
                     }
                     this.currentEnvTexture = texture;
-
+    
                     if (!this.mirrorBallMesh) {
                         this.createMirrorBallMesh();
                         this.scene.add(this.mirrorBallMesh);
@@ -139,15 +173,35 @@ ISOKARI.IslandController = class {
                         this.mirrorBallMesh.material.envMap = this.currentEnvTexture;
                         this.mirrorBallMesh.material.needsUpdate = true;
                     }
-
+    
                     this.updateMapDots();
                     resolve();
                 },
                 (progress) => {
-                    console.log('Loading progress:', (progress.loaded / progress.total * 100).toFixed(2) + '%');
+                    if (progress.total > 0) {
+                        const percent = Math.round((progress.loaded / progress.total) * 100);
+                        
+                        if (showLoading && loadingState === 'shown' && this.app) {
+                            // Only update progress if loading overlay is actually shown
+                            this.app.updateImageLoadingProgress(percent);
+                        } else if (this.app && !ISOKARI.State.initialized.island) {
+                            // Update progress during initialization
+                            this.app.updateLoadingProgress(25 + Math.round(percent * 0.5), 'island');
+                        }
+                    }
                 },
                 (error) => {
                     console.error('Error loading texture:', error);
+                    
+                    // ⭐ CRITICAL: Clean up on error
+                    if (timeoutId) {
+                        clearTimeout(timeoutId);
+                    }
+                    
+                    if (loadingState === 'shown' && this.app) {
+                        this.app.hideImageLoading();
+                    }
+                    
                     reject(error);
                 }
             );
@@ -518,16 +572,32 @@ ISOKARI.IslandController = class {
         }
     }
 
-    goToPrevious() {
-        this.currentImageIndex = (this.currentImageIndex - 1 + this.imageUrls.length) % this.imageUrls.length;
-        this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
-        console.log('Previous image:', this.currentImageIndex);
+    async goToPrevious() {
+        const prevIndex = (this.currentImageIndex - 1 + this.imageUrls.length) % this.imageUrls.length;
+        await this.navigateToImage(prevIndex);
+    }
+    
+    async goToNext() {
+        const nextIndex = (this.currentImageIndex + 1) % this.imageUrls.length;
+        await this.navigateToImage(nextIndex);
     }
 
-    goToNext() {
-        this.currentImageIndex = (this.currentImageIndex + 1) % this.imageUrls.length;
-        this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
-        console.log('Next image:', this.currentImageIndex);
+    async navigateToImage(index) {
+        if (index >= 0 && index < this.imageUrls.length && index !== this.currentImageIndex) {
+            const oldIndex = this.currentImageIndex;
+            this.currentImageIndex = index;
+            
+            try {
+                console.log('Loading image:', this.currentImageIndex);
+                // Show delayed loading overlay for image switches
+                await this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex], true);
+                console.log('Successfully loaded image:', this.currentImageIndex);
+            } catch (error) {
+                // If loading fails, revert to previous image
+                console.warn('Failed to load image, reverting to previous');
+                this.currentImageIndex = oldIndex;
+            }
+        }
     }
 
     openBTQ360() {
@@ -691,11 +761,10 @@ ISOKARI.IslandController = class {
         this.camera = null;
     }
 
-    jumpToImage(index) {
+    async jumpToImage(index) {
         if (!this.isMobile && index >= 0 && index < this.imageUrls.length && index !== this.currentImageIndex) {
             console.log('Jumping to image via map:', index);
-            this.currentImageIndex = index;
-            this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
+            await this.navigateToImage(index);
         }
     }
 

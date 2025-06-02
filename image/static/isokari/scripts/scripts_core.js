@@ -41,12 +41,12 @@ ISOKARI.App = class {
     constructor() {
         this.setupEventListeners();
         this.initializeAudio();
-        this.checkHashNavigation(); // ADD THIS LINE
+        this.checkHashNavigation();
         this.startApplication();
 
         // Clean up on page unload
-    window.addEventListener('beforeunload', () => this.handlePageUnload());
-    window.addEventListener('pagehide', () => this.handlePageUnload());
+        window.addEventListener('beforeunload', () => this.handlePageUnload());
+        window.addEventListener('pagehide', () => this.handlePageUnload());
     }
 
     setupEventListeners() {
@@ -118,7 +118,10 @@ ISOKARI.App = class {
     }
 
     async startApplication() {
-        // Initialize intro section immediately
+        // ⭐ CRITICAL: Set initial loading state immediately to prevent flash
+        this.updateLoadingProgress(0, 'intro');
+        
+        // Initialize intro section
         await this.initializeSection('intro');
         
         // Hide loading overlay after intro is ready
@@ -131,47 +134,47 @@ ISOKARI.App = class {
         if (ISOKARI.State.isTransitioning || ISOKARI.State.currentSection === targetSection) {
             return;
         }
-    
+
         // Update URL hash
         if (targetSection === 'intro') {
             history.pushState(null, null, window.location.pathname);
         } else {
             history.pushState(null, null, `#${targetSection}`);
         }
-    
+
         ISOKARI.State.isTransitioning = true;
         
         // Update loading text
         this.updateLoadingText(targetSection);
         this.showLoadingOverlay();
-    
+
         // Hide current section
         const currentSectionEl = document.getElementById(`${ISOKARI.State.currentSection}-section`);
         currentSectionEl?.classList.remove('active');
-    
+
         // ⭐ CRITICAL: Dispose of current section to prevent memory leaks
         await this.disposeCurrentSection();
-    
+
         // Wait for fade out
         await this.wait(300);
-    
+
         // Initialize target section if needed
         await this.initializeSection(targetSection);
-    
+
         // Show target section
         const targetSectionEl = document.getElementById(`${targetSection}-section`);
         targetSectionEl?.classList.add('active');
-    
+
         // Hide loading overlay and show section-specific UI
         setTimeout(() => {
             this.hideLoadingOverlay();
             this.showSectionUI(targetSection);
             ISOKARI.State.isTransitioning = false;
         }, 800);
-    
+
         ISOKARI.State.currentSection = targetSection;
     }
-    
+
     // ⭐ NEW METHOD: Dispose current section
     async disposeCurrentSection() {
         const currentSection = ISOKARI.State.currentSection;
@@ -214,32 +217,102 @@ ISOKARI.App = class {
         });
     }
 
+    // ⭐ ENHANCED LOADING METHODS
+    updateLoadingProgress(percent, section = null, showPercentage = true) {
+        const loadingText = document.getElementById('loading-text');
+        const loadingPercentage = document.getElementById('loading-percentage');
+        
+        if (!loadingText) return;
+        
+        const sectionName = section || ISOKARI.State.currentSection;
+        const sectionLabels = {
+            intro: 'menu',
+            island: 'island experience', 
+            pilots: 'pilots house'
+        };
+        
+        const label = sectionLabels[sectionName] || sectionName;
+        
+        // ⭐ FIX: Always show the structured format to prevent flashing
+        loadingText.textContent = `Loading ${label}...`;
+        
+        if (loadingPercentage && showPercentage && percent < 100) {
+            loadingPercentage.textContent = `${percent}%`;
+            loadingPercentage.classList.add('visible');
+        } else if (loadingPercentage) {
+            loadingPercentage.classList.remove('visible');
+        }
+    }
+
+    // ⭐ NEW: Show loading for image changes within viewers
+    showImageLoading(message = 'Loading image...') {
+        const loadingText = document.getElementById('loading-text');
+        const loadingPercentage = document.getElementById('loading-percentage');
+        
+        if (loadingText) {
+            loadingText.textContent = message;
+        }
+        if (loadingPercentage) {
+            loadingPercentage.textContent = '';
+            loadingPercentage.classList.remove('visible');
+        }
+        
+        this.showLoadingOverlay();
+    }
+
+    // ⭐ NEW: Update progress for image loading within viewers
+    updateImageLoadingProgress(percent) {
+        const loadingPercentage = document.getElementById('loading-percentage');
+        
+        if (loadingPercentage && percent < 100) {
+            loadingPercentage.textContent = `${percent}%`;
+            loadingPercentage.classList.add('visible');
+        } else if (loadingPercentage) {
+            loadingPercentage.classList.remove('visible');
+        }
+    }
+
+    // ⭐ NEW: Hide loading for image changes
+    hideImageLoading() {
+        const loadingPercentage = document.getElementById('loading-percentage');
+        if (loadingPercentage) {
+            loadingPercentage.classList.remove('visible');
+        }
+        this.hideLoadingOverlay();
+    }
+
+    // ⭐ ENHANCED: Section initialization with progress
     async initializeSection(section) {
         if (ISOKARI.State.initialized[section]) {
             return;
         }
 
+        // Show initial loading
+        this.updateLoadingProgress(0, section);
+
         switch(section) {
             case 'intro':
                 if (ISOKARI.MenuController) {
                     ISOKARI.State.controllers.intro = new ISOKARI.MenuController();
-                    await ISOKARI.State.controllers.intro.initialize();
+                    await ISOKARI.State.controllers.intro.initialize(this); // Pass app reference
                 }
                 break;
             case 'island':
                 if (ISOKARI.IslandController) {
                     ISOKARI.State.controllers.island = new ISOKARI.IslandController();
-                    await ISOKARI.State.controllers.island.initialize();
+                    await ISOKARI.State.controllers.island.initialize(this); // Pass app reference
                 }
                 break;
             case 'pilots':
                 if (ISOKARI.PilotsController) {
                     ISOKARI.State.controllers.pilots = new ISOKARI.PilotsController();
-                    await ISOKARI.State.controllers.pilots.initialize();
+                    await ISOKARI.State.controllers.pilots.initialize(this); // Pass app reference
                 }
                 break;
         }
 
+        // Complete
+        this.updateLoadingProgress(100, section);
         ISOKARI.State.initialized[section] = true;
     }
 
@@ -300,7 +373,7 @@ ISOKARI.App = class {
             case 'pilots':
                 setTimeout(() => {
                     document.getElementById('pilots-ui-panel')?.classList.add('visible');
-                    document.getElementById('pilots-house-container')?.classList.add('visible'); // ADD THIS
+                    document.getElementById('pilots-house-container')?.classList.add('visible');
                     
                     // Properly set toggle button state for desktop (initial load fix)
                     const pilotsToggle = document.getElementById('pilots-ui-toggle-button');
@@ -314,7 +387,7 @@ ISOKARI.App = class {
                         pilotsBtq.classList.add('hidden');
                     }
                     
-                    // ADD THIS: Call the positioning AFTER UI is shown
+                    // Call the positioning AFTER UI is shown
                     if (ISOKARI.State.controllers.pilots && ISOKARI.State.controllers.pilots.handleInitialShow) {
                         setTimeout(() => {
                             ISOKARI.State.controllers.pilots.handleInitialShow();

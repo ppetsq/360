@@ -16,14 +16,16 @@ body {
     position: relative;
 }
 
-/* ===== LOADING OVERLAY ===== */
+/* ===== ENHANCED LOADING OVERLAY ===== */
+/* Add this to your styles.css file */
+
 .loading-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: #000;
+    background: rgba(0, 0, 0, 0.8); /* Semi-transparent instead of solid black */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -31,6 +33,7 @@ body {
     z-index: 10000;
     opacity: 1;
     transition: opacity 0.8s ease-out;
+    backdrop-filter: blur(8px); /* Add subtle blur effect */
 }
 
 .loading-overlay.hidden {
@@ -45,15 +48,32 @@ body {
     border-top: 3px solid #fff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin-bottom: 20px;
+    margin-bottom: 24px; /* Increased spacing */
 }
 
 .loading-text {
     font-size: 16px;
     font-weight: 300;
-    opacity: 0.8;
+    opacity: 0.9;
     letter-spacing: 0.5px;
     text-align: center;
+    margin-bottom: 8px; /* Add spacing for percentage */
+}
+
+/* ⭐ NEW: Percentage text styling */
+.loading-percentage {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 1px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.loading-percentage.visible {
+    opacity: 1;
 }
 
 @keyframes spin {
