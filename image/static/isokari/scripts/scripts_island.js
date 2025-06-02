@@ -69,8 +69,7 @@ ISOKARI.IslandController = class {
                 specs: {
                     date: "Aug 15, 2024",
                     time: "14:32 UTC", 
-                    latitude: "60.2451°N",
-                    longitude: "22.0823°E"
+                    coordinates: "60.2451°N, 22.0823°E"
                 }
             },
             {
@@ -79,9 +78,8 @@ ISOKARI.IslandController = class {
                 description: "This path has been worn smooth by generations of lighthouse keepers hauling supplies from the harbor. Built on ancient granite bedrock, it's been the main road since the lighthouse was completed in 1833. Today, restaurant staff and maintenance crews still use this same route.",
                 specs: {
                     date: "Aug 15, 2024",
-                    time: "14:32 UTC",
-                    latitude: "60.2451°N", 
-                    longitude: "22.0823°E"
+                    time: "14:32 UTC", 
+                    coordinates: "60.2451°N, 22.0823°E"
                 }
             },
             {
@@ -90,9 +88,8 @@ ISOKARI.IslandController = class {
                 description: "These small lakes used to be part of the Baltic Sea, but the land here is slowly rising and has cut them off from the ocean. The water is still slightly salty, creating a unique environment where freshwater and marine life mix. Surrounding are one of the clearest water areas in the Baltic Sea.",
                 specs: {
                     date: "Aug 15, 2024",
-                    time: "14:32 UTC",
-                    latitude: "60.2451°N",
-                    longitude: "22.0823°E"
+                    time: "14:32 UTC", 
+                    coordinates: "60.2451°N, 22.0823°E"
                 }
             },
             {
@@ -101,9 +98,8 @@ ISOKARI.IslandController = class {
                 description: "At nearly 50 meters high, this is the tallest lighthouse in the Gulf of Bothnia. Built in 1833, it's been guiding ships for almost 200 years. During World War II, it was prepared for demolition but luckily survived. You can climb the 200 steps to the top for incredible views of the open sea.",
                 specs: {
                     date: "Aug 15, 2024",
-                    time: "14:32 UTC",
-                    latitude: "60.2451°N",
-                    longitude: "22.0823°E"
+                    time: "14:32 UTC", 
+                    coordinates: "60.2451°N, 22.0823°E"
                 }
             },
             {
@@ -111,10 +107,9 @@ ISOKARI.IslandController = class {
                 title: "Ancient Stone Walls",
                 description: "These cliffs are made of rock that's over a billion years old, some of the oldest you'll find anywhere. The smooth, rounded shapes were carved by massive glaciers that melted away 12,000 years ago. Despite being solid rock, this small island somehow supports over 380 different plant species in its cracks and crevices.",
                 specs: {
-                    date: "Aug 15, 2024", 
-                    time: "14:32 UTC",
-                    latitude: "60.2451°N",
-                    longitude: "22.0823°E"
+                    date: "Aug 15, 2024",
+                    time: "14:32 UTC", 
+                    coordinates: "60.2451°N, 22.0823°E"
                 }
             },
             {
@@ -123,9 +118,8 @@ ISOKARI.IslandController = class {
                 description: "This is one of the highest spots on the island, right next to the old building where maritime pilots used to live. Now it's where the volunteer sheep caretakers stay during their residencies. From here, you can see in every direction across the sea - perfect for keeping an eye on both ships and sheep.",
                 specs: {
                     date: "Aug 15, 2024",
-                    time: "14:32 UTC",
-                    latitude: "60.2451°N",
-                    longitude: "22.0823°E"
+                    time: "14:32 UTC", 
+                    coordinates: "60.2451°N, 22.0823°E"
                 }
             },
             {
@@ -135,8 +129,7 @@ ISOKARI.IslandController = class {
                 specs: {
                     date: "Aug 15, 2024",
                     time: "14:32 UTC", 
-                    latitude: "60.2451°N",
-                    longitude: "22.0823°E"
+                    coordinates: "60.2451°N, 22.0823°E"
                 }
             },
             {
@@ -145,9 +138,8 @@ ISOKARI.IslandController = class {
                 description: "This is where visitors arrive by ferry or private boats, and you can see the modern pilot station in the distance. Black guillemots love nesting on the breakwater and boats can stay overnight for just 10 euros, continuing the island's long tradition of welcoming seafarers.",
                 specs: {
                     date: "Aug 15, 2024",
-                    time: "14:32 UTC",
-                    latitude: "60.2451°N",
-                    longitude: "22.0823°E"
+                    time: "14:32 UTC", 
+                    coordinates: "60.2451°N, 22.0823°E"
                 }
             },
             {
@@ -156,9 +148,8 @@ ISOKARI.IslandController = class {
                 description: "Hidden in the middle of the island, this lake is slowly getting wilder as reeds and plants take over. It used to be much more open, but without constant management, nature is reclaiming it. This makes it a perfect resting spot for migrating birds and their spotters.",
                 specs: {
                     date: "Aug 15, 2024",
-                    time: "14:32 UTC",
-                    latitude: "60.2451°N", 
-                    longitude: "22.0823°E"
+                    time: "14:32 UTC", 
+                    coordinates: "60.2451°N, 22.0823°E"
                 }
             },
             {
@@ -167,9 +158,8 @@ ISOKARI.IslandController = class {
                 description: "These southern shores face the full power of waves rolling in across the Baltic Sea. Over thousands of years, the constant pounding has polished the ancient rocks into smooth, rounded shapes. Each storm continues this endless process of slowly reshaping the coastline.",
                 specs: {
                     date: "Aug 15, 2024",
-                    time: "14:32 UTC",
-                    latitude: "60.2451°N",
-                    longitude: "22.0823°E"
+                    time: "14:32 UTC", 
+                    coordinates: "60.2451°N, 22.0823°E"
                 }
             },
             {
@@ -178,9 +168,8 @@ ISOKARI.IslandController = class {
                 description: "This cluster of old buildings houses everything needed for island life: guest rooms, restaurant, sauna, and staff quarters. Some of these structures are centuries old, built when this was a thriving fishing and pilot community. Now they serve the nature tourists during the summer season.",
                 specs: {
                     date: "Aug 15, 2024",
-                    time: "14:32 UTC",
-                    latitude: "60.2451°N",
-                    longitude: "22.0823°E"
+                    time: "14:32 UTC", 
+                    coordinates: "60.2451°N, 22.0823°E"
                 }
             },
             {
@@ -189,9 +178,8 @@ ISOKARI.IslandController = class {
                 description: "This view captures what island life is really about - the vast solitude of being surrounded by water and sky. As the moon rises and the lighthouse begins its nightly watch, you feel the profound isolation that lighthouse keepers have experienced for nearly 200 years.",
                 specs: {
                     date: "Aug 15, 2024",
-                    time: "14:32 UTC",
-                    latitude: "60.2451°N",
-                    longitude: "22.0823°E"
+                    time: "14:32 UTC", 
+                    coordinates: "60.2451°N, 22.0823°E"
                 }
             }
         ];
@@ -230,13 +218,11 @@ ISOKARI.IslandController = class {
         // Update specs
         const dateEl = document.querySelector('#island-ui-panel .detail-item:nth-child(1) .detail-value');
         const timeEl = document.querySelector('#island-ui-panel .detail-item:nth-child(2) .detail-value');
-        const latEl = document.querySelector('#island-ui-panel .detail-item:nth-child(3) .detail-value');
-        const lonEl = document.querySelector('#island-ui-panel .detail-item:nth-child(4) .detail-value');
+        const coordEl = document.querySelector('#island-ui-panel .detail-item:nth-child(3) .detail-value');
         
         if (dateEl) dateEl.textContent = content.specs.date;
         if (timeEl) timeEl.textContent = content.specs.time;
-        if (latEl) latEl.textContent = content.specs.latitude;
-        if (lonEl) lonEl.textContent = content.specs.longitude;
+        if (coordEl) coordEl.textContent = content.specs.coordinates;
     }
 
     async initialize(app = null) {
