@@ -196,20 +196,20 @@ ISOKARI.IslandController = class {
                     }, 100);
                 }
             });
-
+    
             // Initialize as collapsed on mobile
             if (this.isMobile) {
                 description.classList.add('collapsed');
                 readMoreBtn.textContent = 'Read more';
             }
         }
-
+    
         // Handle window resize for mobile detection and repositioning
         window.addEventListener('resize', () => {
             const wasMobile = this.isMobile;
             this.isMobile = window.innerWidth <= 768;
             
-            // If switching between mobile/desktop, update map dots
+            // If switching between mobile/desktop, update map dots AND reset positioning
             if (wasMobile !== this.isMobile) {
                 this.updateMapDots();
                 
@@ -222,16 +222,42 @@ ISOKARI.IslandController = class {
                         description.classList.remove('collapsed');
                     }
                 }
+                
+                // CRITICAL: Reset map positioning when switching modes
+                this.resetMapPositioning();
             }
             
-            // Reposition map on mobile when window resizes
-            if (this.isMobile && this.uiPanelVisible) {
+            // Reposition map on mobile when window resizes (but not when switching modes)
+            if (this.isMobile && this.uiPanelVisible && wasMobile === this.isMobile) {
                 setTimeout(() => {
                     this.positionMapRelativeToUI();
                 }, 100);
             }
         });
     }
+
+    // Add this new method to reset map positioning
+resetMapPositioning() {
+    const mapContainer = document.getElementById('island-map-container');
+    if (!mapContainer) return;
+    
+    // Remove all JavaScript-applied positioning styles
+    mapContainer.style.removeProperty('bottom');
+    mapContainer.style.removeProperty('opacity');
+    mapContainer.style.removeProperty('visibility');
+    
+    // Remove positioned class
+    mapContainer.classList.remove('positioned');
+    
+    console.log(`🔄 RESET MAP POSITIONING - Now ${this.isMobile ? 'MOBILE' : 'DESKTOP'} mode`);
+    
+    // If switching to mobile and UI is visible, reposition after reset
+    if (this.isMobile && this.uiPanelVisible) {
+        setTimeout(() => {
+            this.positionMapRelativeToUI();
+        }, 100);
+    }
+}
 
     setupEventListeners() {
         const container = document.getElementById('island-viewer');
@@ -453,7 +479,11 @@ ISOKARI.IslandController = class {
     }
 
     positionMapRelativeToUI() {
-        if (!this.isMobile) return; // Only apply on mobile
+        if (!this.isMobile) {
+            // If not mobile, ensure we're not applying mobile positioning
+            this.resetMapPositioning();
+            return;
+        }
         
         const uiPanel = document.getElementById('island-ui-panel');
         const mapContainer = document.getElementById('island-map-container');
