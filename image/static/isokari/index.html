@@ -57,7 +57,8 @@
             </div>
         </div>
 
-       <div class="section-container" id="island-section">
+<!-- Simplified Island Section - Single Structure for Desktop and Mobile -->
+<div class="section-container" id="island-section">
     <button class="simple-back-button" id="island-back-button" title="Back to Menu">
         <img src="assets/back.png" alt="Back" class="back-icon">
     </button>
@@ -67,15 +68,16 @@
     </button>
 
     <div class="viewer-container" id="island-viewer">
-        </div>
+    </div>
 
     <button class="ui-toggle-button" id="ui-toggle-button" title="Toggle Menu">
         ☰
     </button>
 
+    <!-- Map Container (repositioned via CSS on mobile) -->
     <div class="map-container" id="island-map-container">
         <img src="assets/island-map-5.png" class="map-background" alt="Island Map" />
-        <!-- Adjusted dots - moved all ~4-6% left from compressed layout -->
+        <!-- Dots positioned exactly as they were working -->
         <div class="dot" data-index="0" style="left: 46%; top: 82%;"></div>
         <div class="dot" data-index="1" style="left: 60%; top: 65%;"></div>
         <div class="dot" data-index="2" style="left: 56%; top: 74%;"></div>
@@ -96,6 +98,7 @@
             <div class="panel-description">
                 These dramatic limestone cliffs rise majestically from the Baltic Sea, formed over millennia by ancient coral reefs. The unique mirror ball perspective reveals the interplay of light, water, and stone.
             </div>
+            <button class="read-more-button" id="read-more-btn">Read more</button>
         </div>
 
         <div class="location-details">
@@ -132,8 +135,7 @@
                 </button>
             </div>
         </div>
-
-        </div>
+    </div>
 </div>
 
         <div class="section-container" id="pilots-section">

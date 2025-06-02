@@ -1,5 +1,5 @@
-// ===== ISLAND CONTROLLER =====
-// Handles mirror ball 360° experience with integrated map (no cross-navigation)
+// ===== ISLAND CONTROLLER WITH FIXED MOBILE MAP =====
+// Handles mirror ball 360° experience with properly positioned mobile map
 
 ISOKARI.IslandController = class {
     constructor() {
@@ -13,6 +13,7 @@ ISOKARI.IslandController = class {
         this.uiPanelVisible = true;
         this.iconRotationAngle = 0;
         this.animationId = null;
+        this.isMobile = window.innerWidth <= 768;
 
         // Interaction variables
         this.lon = 0;
@@ -68,7 +69,9 @@ ISOKARI.IslandController = class {
             this.createScene(container);
             await this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
             this.setupEventListeners();
+            this.setupMobileUI();
             this.startAnimation();
+            
             if (this.autoRotateEnabled) {
                 const icon = document.getElementById('auto-rotate-icon');
                 this.startIconRotation(icon);
@@ -82,7 +85,7 @@ ISOKARI.IslandController = class {
             ISOKARI.State.cameras.island = this.camera;
             ISOKARI.State.renderers.island = this.renderer;
 
-            console.log('🏝️ Island controller initialized with integrated map');
+            console.log('🏝️ Island controller initialized with fixed mobile map');
         } catch (error) {
             console.error('Error initializing island controller:', error);
         }
@@ -169,6 +172,51 @@ ISOKARI.IslandController = class {
 
         this.mirrorBallMesh = new THREE.Mesh(geometry, material);
         this.mirrorBallMesh.position.set(0, 0, -2);
+    }
+
+    setupMobileUI() {
+        // Setup read more functionality for mobile
+        const readMoreBtn = document.getElementById('read-more-btn');
+        const description = document.querySelector('.panel-description');
+        
+        if (readMoreBtn && description) {
+            readMoreBtn.addEventListener('click', () => {
+                if (description.classList.contains('collapsed')) {
+                    description.classList.remove('collapsed');
+                    readMoreBtn.textContent = 'Read less';
+                } else {
+                    description.classList.add('collapsed');
+                    readMoreBtn.textContent = 'Read more';
+                }
+            });
+
+            // Initialize as collapsed on mobile
+            if (this.isMobile) {
+                description.classList.add('collapsed');
+                readMoreBtn.textContent = 'Read more';
+            }
+        }
+
+        // Handle window resize for mobile detection
+        window.addEventListener('resize', () => {
+            const wasMobile = this.isMobile;
+            this.isMobile = window.innerWidth <= 768;
+            
+            // If switching between mobile/desktop, update map dots
+            if (wasMobile !== this.isMobile) {
+                this.updateMapDots();
+                
+                // Reset read more state when switching
+                if (description && readMoreBtn) {
+                    if (this.isMobile) {
+                        description.classList.add('collapsed');
+                        readMoreBtn.textContent = 'Read more';
+                    } else {
+                        description.classList.remove('collapsed');
+                    }
+                }
+            }
+        });
     }
 
     setupEventListeners() {
@@ -348,8 +396,13 @@ ISOKARI.IslandController = class {
     
         panel?.classList.add('visible');
         toggleButton?.classList.add('panel-open');
-        btqButton?.classList.add('hidden');
         mapContainer?.classList.add('visible');
+        
+        // Only hide BTQ button on desktop
+        if (!this.isMobile) {
+            btqButton?.classList.add('hidden');
+        }
+        
         this.uiPanelVisible = true;
     }
 
@@ -361,8 +414,8 @@ ISOKARI.IslandController = class {
     
         panel?.classList.remove('visible');
         toggleButton?.classList.remove('panel-open');
-        btqButton?.classList.remove('hidden');
         mapContainer?.classList.remove('visible');
+        btqButton?.classList.remove('hidden');
         this.uiPanelVisible = false;
     }
 
@@ -429,36 +482,25 @@ ISOKARI.IslandController = class {
         animate();
     }
 
-    // Map dot functionality with proper synchronization
+    // Map dot functionality with mobile optimizations
     setupMapDots() {
         const dots = document.querySelectorAll('#island-map-container .dot');
-        console.log('Setting up integrated map dots:', dots.length);
+        console.log('Setting up map dots:', dots.length);
         
         dots.forEach((dot, index) => {
             // Clear any existing event listeners by cloning the node
             const newDot = dot.cloneNode(true);
             dot.parentNode.replaceChild(newDot, dot);
             
-            // Add click event listener to jump to specific image
-            newDot.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Integrated map dot clicked:', index);
-                this.jumpToImage(index);
-            });
-            
-            // --- MODIFICATION: Removed hover effects from JS to prevent style conflicts ---
-            // newDot.addEventListener('mouseenter', () => {
-            //     if (index !== this.currentImageIndex) {
-            //         newDot.style.transform = 'translate(-50%, -50%) scale(1.2)';
-            //     }
-            // });
-            // 
-            // newDot.addEventListener('mouseleave', () => {
-            //     if (index !== this.currentImageIndex) {
-            //         newDot.style.transform = 'translate(-50%, -50%) scale(1)';
-            //     }
-            // });
+            // Only add click events on desktop
+            if (!this.isMobile) {
+                newDot.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Map dot clicked:', index);
+                    this.jumpToImage(index);
+                });
+            }
         });
         
         // Initial update of active dot
@@ -467,12 +509,10 @@ ISOKARI.IslandController = class {
     
     updateMapDots() {
         const dots = document.querySelectorAll('#island-map-container .dot');
-        console.log('Updating integrated map dots. Current index:', this.currentImageIndex, 'Total dots:', dots.length);
         
         dots.forEach((dot, index) => {
             if (index === this.currentImageIndex) {
                 dot.classList.add('active');
-                console.log('Integrated map dot', index, 'set as active');
             } else {
                 dot.classList.remove('active');
             }
@@ -564,10 +604,10 @@ ISOKARI.IslandController = class {
         return this.imageUrls.length;
     }
 
-    // Jump to image method with proper dot update
+    // Jump to image method (desktop only)
     jumpToImage(index) {
-        if (index >= 0 && index < this.imageUrls.length && index !== this.currentImageIndex) {
-            console.log('Jumping to image via integrated map:', index);
+        if (!this.isMobile && index >= 0 && index < this.imageUrls.length && index !== this.currentImageIndex) {
+            console.log('Jumping to image via map:', index);
             this.currentImageIndex = index;
             this.loadEnvironmentTexture(this.imageUrls[this.currentImageIndex]);
         }
@@ -582,4 +622,4 @@ ISOKARI.IslandController = class {
     }
 };
 
-console.log('🏝️ Island Controller with Integrated Map Loaded');
+console.log('🏝️ Island Controller with Fixed Mobile Map Loaded');
