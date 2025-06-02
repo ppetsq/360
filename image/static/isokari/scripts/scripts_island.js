@@ -397,7 +397,9 @@ ISOKARI.IslandController = class {
             event.preventDefault();
 
             const deltaX = (this.onPointerDownMouseX - event.touches[0].pageX) * this.dragSensitivity;
-            const deltaY = (event.touches[0].pageY - event.touches[0].pageY) * this.dragSensitivity; // Corrected deltaY calculation
+            // FIX START: Corrected deltaY calculation for touchmove
+            const deltaY = (event.touches[0].pageY - this.onPointerDownMouseY) * this.dragSensitivity; 
+            // FIX END
             
             // If movement is significant, set isDragging to true
             if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) { // 1px threshold for drag
