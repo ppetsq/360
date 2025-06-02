@@ -134,7 +134,7 @@ async loadEnvironmentTexture(url, showLoading = false) {
         if (showLoading && this.app) {
             // Start the delay timer - loading will show after 1 second if still loading
             timeoutId = setTimeout(() => {
-                this.app.showImageLoading('Loading new room...');
+                this.app.showImageLoading('Loading 360° image...');
                 loadingState = 'shown';
             }, 1000); // 1 second delay
         }
