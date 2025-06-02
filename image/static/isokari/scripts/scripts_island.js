@@ -59,6 +59,184 @@ ISOKARI.IslandController = class {
             'https://assets.360.petsq.works/isokari/4960/12_4960.jpg'
         ];
         this.currentImageIndex = 0;
+
+        // Content data for each image location
+        this.imageContent = [
+            {
+                // Image 01
+                title: "Island Sheep",
+                description: "Every summer, volunteers sign up to spend a week on Isokari taking care of sheep. It's part of an old tradition where sheep keep the landscape healthy by eating grass and fertilizing the ground naturally. The volunteer shepherds stay in the historic pilots house and help maintain this centuries old way of managing island ecosystems.",
+                specs: {
+                    date: "Aug 15, 2024",
+                    time: "14:32 UTC", 
+                    latitude: "60.2451°N",
+                    longitude: "22.0823°E"
+                }
+            },
+            {
+                // Image 02
+                title: "The Supply Road",
+                description: "This path has been worn smooth by generations of lighthouse keepers hauling supplies from the harbor. Built on ancient granite bedrock, it's been the main road since the lighthouse was completed in 1833. Today, restaurant staff and maintenance crews still use this same route.",
+                specs: {
+                    date: "Aug 15, 2024",
+                    time: "14:32 UTC",
+                    latitude: "60.2451°N", 
+                    longitude: "22.0823°E"
+                }
+            },
+            {
+                // Image 03
+                title: "Between Fresh and Salt",
+                description: "These small lakes used to be part of the Baltic Sea, but the land here is slowly rising and has cut them off from the ocean. The water is still slightly salty, creating a unique environment where freshwater and marine life mix. Surrounding are one of the clearest water areas in the Baltic Sea.",
+                specs: {
+                    date: "Aug 15, 2024",
+                    time: "14:32 UTC",
+                    latitude: "60.2451°N",
+                    longitude: "22.0823°E"
+                }
+            },
+            {
+                // Image 04
+                title: "The Lighthouse",
+                description: "At nearly 50 meters high, this is the tallest lighthouse in the Gulf of Bothnia. Built in 1833, it's been guiding ships for almost 200 years. During World War II, it was prepared for demolition but luckily survived. You can climb the 200 steps to the top for incredible views of the open sea.",
+                specs: {
+                    date: "Aug 15, 2024",
+                    time: "14:32 UTC",
+                    latitude: "60.2451°N",
+                    longitude: "22.0823°E"
+                }
+            },
+            {
+                // Image 05
+                title: "Ancient Stone Walls",
+                description: "These cliffs are made of rock that's over a billion years old, some of the oldest you'll find anywhere. The smooth, rounded shapes were carved by massive glaciers that melted away 12,000 years ago. Despite being solid rock, this small island somehow supports over 380 different plant species in its cracks and crevices.",
+                specs: {
+                    date: "Aug 15, 2024", 
+                    time: "14:32 UTC",
+                    latitude: "60.2451°N",
+                    longitude: "22.0823°E"
+                }
+            },
+            {
+                // Image 06
+                title: "High Ground",
+                description: "This is one of the highest spots on the island, right next to the old building where maritime pilots used to live. Now it's where the volunteer sheep caretakers stay during their residencies. From here, you can see in every direction across the sea - perfect for keeping an eye on both ships and sheep.",
+                specs: {
+                    date: "Aug 15, 2024",
+                    time: "14:32 UTC",
+                    latitude: "60.2451°N",
+                    longitude: "22.0823°E"
+                }
+            },
+            {
+                // Image 07
+                title: "Cold War Relic",
+                description: "This old artillery cannon was brought to the island during the Cold War when tensions ran high between East and West. It's been deactivated now, but it stands as a reminder that every island in the Baltic has strategic military importance.",
+                specs: {
+                    date: "Aug 15, 2024",
+                    time: "14:32 UTC", 
+                    latitude: "60.2451°N",
+                    longitude: "22.0823°E"
+                }
+            },
+            {
+                // Image 08
+                title: "Harbour",
+                description: "This is where visitors arrive by ferry or private boats, and you can see the modern pilot station in the distance. Black guillemots love nesting on the breakwater and boats can stay overnight for just 10 euros, continuing the island's long tradition of welcoming seafarers.",
+                specs: {
+                    date: "Aug 15, 2024",
+                    time: "14:32 UTC",
+                    latitude: "60.2451°N",
+                    longitude: "22.0823°E"
+                }
+            },
+            {
+                // Image 09  
+                title: "The Secret Lake",
+                description: "Hidden in the middle of the island, this lake is slowly getting wilder as reeds and plants take over. It used to be much more open, but without constant management, nature is reclaiming it. This makes it a perfect resting spot for migrating birds and their spotters.",
+                specs: {
+                    date: "Aug 15, 2024",
+                    time: "14:32 UTC",
+                    latitude: "60.2451°N", 
+                    longitude: "22.0823°E"
+                }
+            },
+            {
+                // Image 10
+                title: "Wave-Worn Coastline", 
+                description: "These southern shores face the full power of waves rolling in across the Baltic Sea. Over thousands of years, the constant pounding has polished the ancient rocks into smooth, rounded shapes. Each storm continues this endless process of slowly reshaping the coastline.",
+                specs: {
+                    date: "Aug 15, 2024",
+                    time: "14:32 UTC",
+                    latitude: "60.2451°N",
+                    longitude: "22.0823°E"
+                }
+            },
+            {
+                // Image 11
+                title: "Island Community",
+                description: "This cluster of old buildings houses everything needed for island life: guest rooms, restaurant, sauna, and staff quarters. Some of these structures are centuries old, built when this was a thriving fishing and pilot community. Now they serve the nature tourists during the summer season.",
+                specs: {
+                    date: "Aug 15, 2024",
+                    time: "14:32 UTC",
+                    latitude: "60.2451°N",
+                    longitude: "22.0823°E"
+                }
+            },
+            {
+                // Image 12
+                title: "Remote Evening",
+                description: "This view captures what island life is really about - the vast solitude of being surrounded by water and sky. As the moon rises and the lighthouse begins its nightly watch, you feel the profound isolation that lighthouse keepers have experienced for nearly 200 years.",
+                specs: {
+                    date: "Aug 15, 2024",
+                    time: "14:32 UTC",
+                    latitude: "60.2451°N",
+                    longitude: "22.0823°E"
+                }
+            }
+        ];
+    }
+
+    // Get current content based on image index
+    getCurrentContent() {
+        return this.imageContent[this.currentImageIndex] || {
+            title: "Isokari Cliffs",
+            description: "Experience the dramatic limestone cliffs of Isokari island through immersive 360° perspectives.",
+            specs: {
+                date: "Aug 15, 2024", 
+                time: "14:32 UTC",
+                latitude: "60.2451°N",
+                longitude: "22.0823°E"
+            }
+        };
+    }
+
+    // Update UI content when image changes
+    updateUIContent() {
+        const content = this.getCurrentContent();
+        
+        // Update title
+        const titleEl = document.querySelector('#island-ui-panel .panel-title');
+        if (titleEl) {
+            titleEl.textContent = content.title;
+        }
+        
+        // Update description  
+        const descEl = document.querySelector('#island-ui-panel .panel-description');
+        if (descEl) {
+            descEl.textContent = content.description;
+        }
+        
+        // Update specs
+        const dateEl = document.querySelector('#island-ui-panel .detail-item:nth-child(1) .detail-value');
+        const timeEl = document.querySelector('#island-ui-panel .detail-item:nth-child(2) .detail-value');
+        const latEl = document.querySelector('#island-ui-panel .detail-item:nth-child(3) .detail-value');
+        const lonEl = document.querySelector('#island-ui-panel .detail-item:nth-child(4) .detail-value');
+        
+        if (dateEl) dateEl.textContent = content.specs.date;
+        if (timeEl) timeEl.textContent = content.specs.time;
+        if (latEl) latEl.textContent = content.specs.latitude;
+        if (lonEl) lonEl.textContent = content.specs.longitude;
     }
 
     async initialize(app = null) {
@@ -97,6 +275,9 @@ ISOKARI.IslandController = class {
             ISOKARI.State.scenes.island = this.scene;
             ISOKARI.State.cameras.island = this.camera;
             ISOKARI.State.renderers.island = this.renderer;
+
+            // Initialize UI content
+            this.updateUIContent();
     
             console.log('🏝️ Island controller initialized');
         } catch (error) {
@@ -677,6 +858,9 @@ ISOKARI.IslandController = class {
                 dot.classList.remove('active');
             }
         });
+
+        // Update UI content when image changes
+        this.updateUIContent();
     }
 
     onKeyDown(event) {
