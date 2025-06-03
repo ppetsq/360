@@ -559,6 +559,56 @@ ISOKARI.Utils = {
     }
 };
 
+// ===== DOUBLE-TAP DETECTION UTILITY =====
+ISOKARI.DoubleTapDetector = class {
+    constructor(callback, delay = 300) {
+        this.callback = callback;
+        this.delay = delay;
+        this.lastTap = 0;
+        this.tapCount = 0;
+        this.timeoutId = null;
+    }
+
+    handleTap() {
+        const now = Date.now();
+        this.tapCount++;
+
+        if (this.tapCount === 1) {
+            this.timeoutId = setTimeout(() => {
+                this.reset();
+            }, this.delay);
+        } else if (this.tapCount === 2) {
+            const timeDiff = now - this.lastTap;
+            if (timeDiff < this.delay) {
+                clearTimeout(this.timeoutId);
+                this.callback();
+                this.reset();
+            } else {
+                this.reset();
+                this.tapCount = 1;
+                this.timeoutId = setTimeout(() => {
+                    this.reset();
+                }, this.delay);
+            }
+        }
+
+        this.lastTap = now;
+    }
+
+    reset() {
+        this.tapCount = 0;
+        this.lastTap = 0;
+        if (this.timeoutId) {
+            clearTimeout(this.timeoutId);
+            this.timeoutId = null;
+        }
+    }
+
+    destroy() {
+        this.reset();
+    }
+};
+
 // ===== ERROR HANDLING =====
 window.addEventListener('error', (event) => {
     console.error('Global error:', event.error);

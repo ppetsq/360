@@ -60,6 +60,14 @@ ISOKARI.IslandController = class {
         ];
         this.currentImageIndex = 0;
 
+        // Double-tap detector for UI reveal
+        this.doubleTapDetector = new ISOKARI.DoubleTapDetector(() => {
+            if (!this.uiPanelVisible) {
+                console.log('🏝️ Double-tap detected - showing UI');
+                this.showUIPanel();
+            }
+        });
+
         // Content data for each image location
         this.imageContent = [
             {
@@ -440,6 +448,14 @@ ISOKARI.IslandController = class {
         container.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
         container.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
         container.addEventListener('touchend', (e) => this.onTouchEnd(e), false);
+        // Double-click support for desktop
+        container.addEventListener('dblclick', (e) => {
+            e.preventDefault();
+            if (!this.uiPanelVisible) {
+                console.log('🏝️ Double-click detected - showing UI');
+                this.showUIPanel();
+            }
+        }, false);
     
         const autoRotateToggle = document.getElementById('auto-rotate-toggle');
         const prevButton = document.getElementById('prev-button');
@@ -578,6 +594,11 @@ ISOKARI.IslandController = class {
     }
 
     onTouchEnd(event) {
+        // Detect double-tap only if UI is hidden and no interaction occurred
+        if (!this.uiPanelVisible && !this.isDragging && !this.didZoom) {
+            this.doubleTapDetector.handleTap();
+        }
+        
         this.isUserInteracting = false;
         this.touchDistance = 0;
         this.prevTouchDistance = 0;
@@ -917,6 +938,12 @@ tiltCamera(deltaLat) {
     
         this.scene = null;
         this.camera = null;
+
+        // Clean up double-tap detector
+        if (this.doubleTapDetector) {
+            this.doubleTapDetector.destroy();
+            this.doubleTapDetector = null;
+        }
     }
 
     async jumpToImage(index) {

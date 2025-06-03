@@ -53,6 +53,14 @@ ISOKARI.PilotsController = class {
             'https://assets.360.petsq.works/isokari/ph_01.jpg'
         ];
 
+        // Double-tap detector for UI reveal
+        this.doubleTapDetector = new ISOKARI.DoubleTapDetector(() => {
+            if (!this.uiPanelVisible) {
+                console.log('🏠 Double-tap detected - showing UI');
+                this.showUIPanel();
+            }
+        });
+
         this.currentImageIndex = 0;
     }
 
@@ -290,6 +298,14 @@ async loadEnvironmentTexture(url, showLoading = false) {
         container.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
         container.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
         container.addEventListener('touchend', (e) => this.onTouchEnd(e), false);
+        // Double-click support for desktop
+        container.addEventListener('dblclick', (e) => {
+            e.preventDefault();
+            if (!this.uiPanelVisible) {
+                console.log('🏠 Double-click detected - showing UI');
+                this.showUIPanel();
+            }
+        }, false);
     
         const autoRotateToggle = document.getElementById('pilots-auto-rotate-toggle');
         const prevButton = document.getElementById('pilots-prev-button');
@@ -428,6 +444,11 @@ async loadEnvironmentTexture(url, showLoading = false) {
     }
 
     onTouchEnd(event) {
+        // Detect double-tap only if UI is hidden and no interaction occurred
+        if (!this.uiPanelVisible && !this.isDragging && !this.didZoom) {
+            this.doubleTapDetector.handleTap();
+        }
+        
         this.isUserInteracting = false;
         this.touchDistance = 0;
         this.prevTouchDistance = 0;
@@ -709,6 +730,12 @@ tiltCamera(deltaLat) {
             this.renderer.dispose();
             this.renderer.domElement.remove();
             this.renderer = null;
+        }
+
+        // Clean up double-tap detector
+        if (this.doubleTapDetector) {
+            this.doubleTapDetector.destroy();
+            this.doubleTapDetector = null;
         }
     
         this.scene = null;
