@@ -487,3 +487,15 @@
         transition: background-color 0.2s ease, border-color 0.2s ease;
     }
 }
+
+/* ===== MENU CURSOR FIX ===== */
+#intro-section,
+#intro-section *,
+.intro-viewer,
+.intro-viewer * {
+    cursor: default !important;
+}
+
+.intro-viewer:active {
+    cursor: default !important;
+}

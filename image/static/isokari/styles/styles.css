@@ -320,3 +320,13 @@ body {
         height: 42px;
     }
 }
+
+/* ===== OUTFIT TITLE FONT ===== */
+.menu-title,
+.panel-title,
+#island-ui-panel .panel-title,
+#pilots-ui-panel .panel-title {
+    font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.01em !important;
+}
