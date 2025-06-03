@@ -97,7 +97,7 @@
     left: 0;
     right: 0;
     height: 180px;
-    background: rgba(0, 0, 0, 0.2); /* Lighter opacity */
+    background: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(25px);
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     z-index: 1500;
@@ -321,9 +321,9 @@
     }
 }
 
-/* ===== MOBILE RESPONSIVE STYLES ===== */
+/* ===== MOBILE RESPONSIVE STYLES (1024px and below) ===== */
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     
     /* Mobile UI Panel */
     .ui-panel {
@@ -333,7 +333,7 @@
         flex-direction: column;
         padding: 0;
         gap: 0;
-        background: rgba(0, 0, 0, 0.2); /* Same lighter opacity as desktop */
+        background: rgba(0, 0, 0, 0.2);
         padding-left: 0;
         align-items: stretch;
         justify-content: flex-start;
@@ -341,11 +341,11 @@
         padding-bottom: 20px;
     }
 
-    /* Mobile Panel Content */
+    /* Mobile Panel Content - LEFT ALIGNED */
     .panel-header {
         order: 1;
         padding: 120px 20px 16px 20px !important;
-        text-align: center;
+        text-align: left !important;
         min-width: auto;
         flex: none;
     }
@@ -361,32 +361,12 @@
         line-height: 1.3;
         max-width: 100%;
         transition: all 0.3s ease;
+        /* Always show full text on mobile - no collapsing */
     }
 
-    .panel-description.collapsed {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
+    /* Hide read-more button on mobile */
     .read-more-button {
-        display: block !important;
-        background: none;
-        border: none;
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 10px;
-        font-weight: 500;
-        cursor: pointer;
-        padding: 4px 0 0 0;
-        text-decoration: underline;
-        margin-top: 4px;
-        font-family: inherit;
-        transition: color 0.3s ease;
-    }
-
-    .read-more-button:hover {
-        color: rgba(255, 255, 255, 0.8);
+        display: none !important;
     }
 
     /* Mobile Location Details */
@@ -463,11 +443,11 @@
         height: 20px;
     }
 
-    /* Mobile Map Container */
+    /* Mobile Map Container - SHIFTED RIGHT and DOWN */
     .map-container {
         position: fixed !important;
-        bottom: 200px !important;
-        left: 50% !important;
+        bottom: 160px !important; /* Moved down */
+        left: 75% !important; /* Moved right */
         transform: translateX(-50%) !important;
         width: 150px !important;
         height: 234px !important;
@@ -548,93 +528,5 @@
     .nav-icon {
         width: 12px;
         height: 12px;
-    }
-}
-
-/* ===== SMALL MOBILE (480px and below) ===== */
-
-@media (max-width: 480px) {
-    
-    /* Smaller Map */
-    .map-container {
-        width: 125px !important;
-        height: 195px !important;
-    }
-
-    /* Smaller Panel Content */
-    .panel-header {
-        padding: 100px 16px 12px 16px !important;
-    }
-
-    .panel-title {
-        font-size: 16px;
-        margin-bottom: 6px;
-    }
-
-    .panel-description {
-        font-size: 10px !important;
-    }
-
-    .read-more-button {
-        font-size: 9px;
-    }
-
-    .location-details {
-        margin: 0 16px;
-        width: calc(100% - 32px);
-        gap: 6px;
-        padding: 8px 10px;
-    }
-
-    .detail-label {
-        font-size: 6px;
-    }
-
-    .detail-value {
-        font-size: 8px;
-    }
-
-    /* Smaller Controls */
-    .controls-section {
-        padding: 10px 16px 12px 16px;
-        gap: 10px;
-    }
-
-    .control-button {
-        width: 36px;
-        height: 36px;
-        font-size: 12px;
-    }
-
-    /* Smaller Action Buttons */
-    .ui-toggle-button {
-        bottom: 15px !important;
-        right: 15px;
-        width: 42px;
-        height: 42px;
-        font-size: 13px;
-    }
-
-    .btq-button {
-        bottom: 15px;
-        left: 15px;
-        width: 42px;
-        height: 42px;
-    }
-
-    .btq-icon {
-        width: 18px;
-        height: 18px;
-    }
-
-    /* Smaller Icons */
-    .auto-rotate-icon {
-        width: 14px;
-        height: 14px;
-    }
-
-    .nav-icon {
-        width: 10px;
-        height: 10px;
     }
 }

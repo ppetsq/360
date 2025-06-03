@@ -13,7 +13,7 @@ ISOKARI.IslandController = class {
         this.uiPanelVisible = true;
         this.iconRotationAngle = 0;
         this.animationId = null;
-        this.isMobile = window.innerWidth <= 768;
+        this.isMobile = window.innerWidth <= 1024;
 
         // Interaction variables with island starting position
         this.lon = -105;   // Start facing northeast toward the dramatic cliffs
@@ -390,48 +390,14 @@ ISOKARI.IslandController = class {
     }
 
     setupMobileUI() {
-        const readMoreBtn = document.getElementById('read-more-btn');
-        const description = document.querySelector('.panel-description');
+        // Remove all read-more functionality since we always show full text on mobile
         
-        if (readMoreBtn && description) {
-            readMoreBtn.addEventListener('click', () => {
-                if (description.classList.contains('collapsed')) {
-                    description.classList.remove('collapsed');
-                    readMoreBtn.textContent = 'Read less';
-                } else {
-                    description.classList.add('collapsed');
-                    readMoreBtn.textContent = 'Read more';
-                }
-                
-                if (this.isMobile && this.uiPanelVisible) {
-                    setTimeout(() => {
-                        this.positionMapRelativeToUI();
-                    }, 100);
-                }
-            });
-    
-            if (this.isMobile) {
-                description.classList.add('collapsed');
-                readMoreBtn.textContent = 'Read more';
-            }
-        }
-    
         window.addEventListener('resize', () => {
             const wasMobile = this.isMobile;
-            this.isMobile = window.innerWidth <= 768;
+            this.isMobile = window.innerWidth <= 1024;
             
             if (wasMobile !== this.isMobile) {
                 this.updateMapDots();
-                
-                if (description && readMoreBtn) {
-                    if (this.isMobile) {
-                        description.classList.add('collapsed');
-                        readMoreBtn.textContent = 'Read more';
-                    } else {
-                        description.classList.remove('collapsed');
-                    }
-                }
-                
                 this.resetMapPositioning();
             }
             
