@@ -256,7 +256,7 @@ ISOKARI.MenuController = class {
         infoPanel.innerHTML = `
             <div class="info-panel-title">About Isokari 360°</div>
             <div class="info-panel-content">
-                Experience the dramatic limestone cliffs of Isokari island through immersive 360° perspectives. This interactive experience is provided by <a href="https://btq360.com" target="_blank" class="info-inline-link">boutique360</a>. Learn more about Isokari at <a href="https://www.isokari.fi/" target="_blank" class="info-inline-link">isokari.fi</a>.
+                This interactive experience is provided by <a href="https://btq360.com" target="_blank" class="info-inline-link">boutique360</a>. Learn more about Isokari at <a href="https://www.isokari.fi/" target="_blank" class="info-inline-link">isokari.fi</a>.
             </div>
         `;
         
