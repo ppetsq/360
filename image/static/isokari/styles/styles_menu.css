@@ -1,8 +1,8 @@
-/* ===== INTRO/MENU SECTION STYLES - WITH PARALLAX ===== */
+/* ===== INTRO/MENU SECTION STYLES - SAFARI FIXED ===== */
 
 #intro-section {
     background: #000;
-    overflow: hidden; /* Ensure parallax effects don't cause scrollbars */
+    overflow: hidden;
 }
 
 /* ===== GLASSMORPHISM MENU OVERLAY WITH PARALLAX ===== */
@@ -15,6 +15,7 @@
     max-width: calc(100vw - 40px);
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px); /* Safari support */
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 24px;
     padding: 40px;
@@ -36,15 +37,15 @@
         opacity: 0;
         transform: translate(-50%, -50%) scale(0.9) translateY(20px);
         backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
     }
     to {
         opacity: 1;
         transform: translate(-50%, -50%) scale(1) translateY(0);
         backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
     }
 }
-
-/* REMOVED: Hover shadow effect */
 
 /* ===== MENU TYPOGRAPHY ===== */
 .menu-title {
@@ -68,18 +69,20 @@
     letter-spacing: 0.3px;
 }
 
-/* ===== MENU BUTTONS ===== */
+/* ===== MENU BUTTONS - SAFARI FIXED ===== */
 .menu-buttons {
     display: flex;
-    flex-direction: row; /* Side by side on desktop */
+    flex-direction: row;
     gap: 16px;
 }
 
 .menu-button {
     padding: 16px 24px;
-    background: rgba(255, 255, 255, 0.1);
+    /* SAFARI FIX: Use semi-transparent dark background instead of white */
+    background: rgba(0, 0, 0, 0.25);
     backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    -webkit-backdrop-filter: blur(15px); /* Safari support */
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 14px;
     color: #fff;
     font-size: 16px;
@@ -95,8 +98,21 @@
     overflow: hidden;
     font-family: inherit;
     text-align: center;
-    flex: 1; /* Equal width buttons */
+    flex: 1;
     min-height: 60px;
+    
+    /* SAFARI FALLBACK: Add a solid dark background for browsers that don't support backdrop-filter */
+    background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+}
+
+/* Safari-specific styles */
+@supports not (backdrop-filter: blur(15px)) {
+    .menu-button {
+        background: rgba(0, 0, 0, 0.4); /* Fallback for older browsers */
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
 }
 
 /* Menu button content wrapper */
@@ -114,7 +130,7 @@
     width: 24px;
     height: 24px;
     filter: brightness(0) invert(1);
-    opacity: 0.8;
+    opacity: 0.9; /* Increased opacity for better visibility */
     transition: all 0.3s ease;
 }
 
@@ -128,6 +144,7 @@
     font-size: 14px;
     font-weight: 500;
     line-height: 1.2;
+    color: rgba(255, 255, 255, 0.95); /* Slightly more opaque */
 }
 
 /* Button number styling */
@@ -135,13 +152,13 @@
     position: absolute;
     top: 8px;
     left: 12px;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.5); /* Slightly more visible */
     font-size: 11px;
     font-weight: 600;
     z-index: 3;
 }
 
-/* Shimmer effect on hover */
+/* Shimmer effect on hover - SAFARI OPTIMIZED */
 .menu-button::before {
     content: '';
     position: absolute;
@@ -152,11 +169,12 @@
     background: linear-gradient(
         90deg, 
         transparent, 
-        rgba(255, 255, 255, 0.1), 
+        rgba(255, 255, 255, 0.15), 
         transparent
     );
     transition: left 0.6s ease;
     z-index: 1;
+    pointer-events: none;
 }
 
 .menu-button:hover::before {
@@ -164,12 +182,21 @@
 }
 
 .menu-button:hover {
-    background: rgba(255, 255, 255, 0.18);
-    border-color: rgba(255, 255, 255, 0.35);
+    /* SAFARI FIX: Use darker hover state instead of white */
+    background: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
     box-shadow: 
-        0 12px 35px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        0 12px 35px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* Safari-specific hover fallback */
+@supports not (backdrop-filter: blur(15px)) {
+    .menu-button:hover {
+        background: rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.6);
+    }
 }
 
 .menu-button:active {
@@ -188,6 +215,7 @@
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px); /* Safari support */
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: #fff;
     cursor: pointer;
@@ -241,6 +269,7 @@
     max-width: calc(100vw - 60px);
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px); /* Safari support */
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 18px;
     padding: 24px;
@@ -296,15 +325,15 @@
 /* ===== RESPONSIVE MENU DESIGN ===== */
 @media (max-width: 768px) {
     .menu-overlay {
-        position: fixed; /* Use fixed instead of absolute for better mobile centering */
+        position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         width: 340px;
-        max-width: calc(100vw - 40px); /* Add more padding on mobile */
+        max-width: calc(100vw - 40px);
         padding: 32px 28px;
         border-radius: 20px;
-        margin: 0; /* Remove any margin */
+        margin: 0;
         
         /* Disable parallax on mobile for performance */
         transform-style: auto;
@@ -323,7 +352,7 @@
     }
 
     .menu-buttons {
-        flex-direction: column; /* Stack vertically on mobile */
+        flex-direction: column;
         gap: 14px;
     }
 
@@ -332,7 +361,7 @@
         font-size: 15px;
         border-radius: 12px;
         min-height: 70px;
-        flex: none; /* Remove flex on mobile */
+        flex: none;
     }
 
     .menu-button-text {
@@ -376,7 +405,7 @@
 @media (max-width: 480px) {
     .menu-overlay {
         width: 300px;
-        max-width: calc(100vw - 30px); /* Even more padding on small screens */
+        max-width: calc(100vw - 30px);
         padding: 28px 24px;
         border-radius: 18px;
     }
@@ -441,11 +470,6 @@
 
     .info-panel-content {
         font-size: 12px;
-    }
-
-    .info-link {
-        font-size: 11px;
-        padding: 6px 10px;
     }
 }
 
