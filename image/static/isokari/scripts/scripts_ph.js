@@ -614,13 +614,15 @@ async loadEnvironmentTexture(url, showLoading = false) {
 
     onKeyDown(event) {
         if (ISOKARI.State.currentSection !== 'pilots') return;
-
+    
         const hasModifiers = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
         
         if (!hasModifiers) {
             switch(event.code) {
                 case 'ArrowLeft':
                 case 'ArrowRight':
+                case 'ArrowUp':      // NEW
+                case 'ArrowDown':    // NEW
                 case 'Space':
                 case 'KeyR':
                     event.preventDefault();
@@ -638,6 +640,14 @@ async loadEnvironmentTexture(url, showLoading = false) {
                     this.goToPrevious();
                     break;
                     
+                case 'ArrowUp':      // NEW: Tilt camera up
+                    this.tiltCamera(-2);
+                    break;
+                    
+                case 'ArrowDown':    // NEW: Tilt camera down
+                    this.tiltCamera(2);
+                    break;
+                    
                 case 'Space':
                     this.toggleUIPanel();
                     break;
@@ -648,6 +658,15 @@ async loadEnvironmentTexture(url, showLoading = false) {
             }
         }
     }
+
+// FIXED METHOD: Tilt camera up/down without stopping rotation
+tiltCamera(deltaLat) {
+    // Apply the tilt with limits - no auto-rotation interruption
+    const newLat = this.lat + deltaLat;
+    this.lat = Math.max(-this.MAX_LAT_DEG, Math.min(this.MAX_LAT_DEG, newLat));
+    
+    console.log(`🏠 Camera tilted to ${this.lat.toFixed(1)}°`);
+}
 
     stopAnimation() {
         if (this.animationId) {
