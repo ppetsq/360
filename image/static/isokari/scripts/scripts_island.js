@@ -45,18 +45,18 @@ ISOKARI.IslandController = class {
 
         // Array of image URLs
         this.imageUrls = [
-            'https://assets.360.petsq.works/isokari/4960/01_4960.jpg',
-            'https://assets.360.petsq.works/isokari/4960/02_4960.jpg',
-            'https://assets.360.petsq.works/isokari/4960/03_4960.jpg',
-            'https://assets.360.petsq.works/isokari/4960/04_4960_7.jpg',
-            'https://assets.360.petsq.works/isokari/4960/05_4960.jpg',
-            'https://assets.360.petsq.works/isokari/4960/06_4960.jpg',
-            'https://assets.360.petsq.works/isokari/4960/07_4960.jpg',
-            'https://assets.360.petsq.works/isokari/4960/08_4960.jpg',
-            'https://assets.360.petsq.works/isokari/4960/09_4960.jpg',
-            'https://assets.360.petsq.works/isokari/4960/10_4960.jpg',
-            'https://assets.360.petsq.works/isokari/4960/11_4960.jpg',
-            'https://assets.360.petsq.works/isokari/4960/12_4960.jpg'
+            'https://assets.360.petsq.works/isokari/island_01.jpg',
+            'https://assets.360.petsq.works/isokari/island_02.jpg',
+            'https://assets.360.petsq.works/isokari/island_03.jpg',
+            'https://assets.360.petsq.works/isokari/island_04.jpg',
+            'https://assets.360.petsq.works/isokari/island_05.jpg',
+            'https://assets.360.petsq.works/isokari/island_06.jpg',
+            'https://assets.360.petsq.works/isokari/island_07.jpg',
+            'https://assets.360.petsq.works/isokari/island_08.jpg',
+            'https://assets.360.petsq.works/isokari/island_09.jpg',
+            'https://assets.360.petsq.works/isokari/island_10.jpg',
+            'https://assets.360.petsq.works/isokari/island_11.jpg',
+            'https://assets.360.petsq.works/isokari/island_12.jpg'
         ];
         this.currentImageIndex = 0;
 

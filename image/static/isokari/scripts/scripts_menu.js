@@ -112,7 +112,7 @@ ISOKARI.MenuController = class {
     async loadVideo() {
         return new Promise((resolve, reject) => {
             this.video = document.createElement('video');
-            this.video.src = 'https://assets.360.petsq.works/isokari/4960/menu_long.mp4';
+            this.video.src = 'https://assets.360.petsq.works/isokari/menu_long.mp4';
             this.video.crossOrigin = 'anonymous';
             this.video.loop = true;
             this.video.muted = true;
