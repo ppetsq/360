@@ -463,29 +463,30 @@ ISOKARI.IslandController = class {
 
     setupEventListeners() {
         const container = document.getElementById('island-viewer');
-
-        container.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
-        container.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
-        container.addEventListener('mouseup', (e) => this.onMouseUp(e), false);
-        container.addEventListener('mouseout', () => this.onMouseUp(), false);
+    
+        // Mouse events - attach to document for smooth dragging like menu
+        document.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
+        document.addEventListener('mousemove', (e) => this.onMouseMove(e), false);
+        document.addEventListener('mouseup', (e) => this.onMouseUp(e), false);
+        
+        // Keep wheel and touch events on container
         container.addEventListener('wheel', (e) => this.onMouseWheel(e), { passive: false });
-
         container.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
         container.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
         container.addEventListener('touchend', (e) => this.onTouchEnd(e), false);
-
+    
         const autoRotateToggle = document.getElementById('auto-rotate-toggle');
         const prevButton = document.getElementById('prev-button');
         const nextButton = document.getElementById('next-button');
         const uiToggleButton = document.getElementById('ui-toggle-button');
         const btqButton = document.getElementById('btq-button');
-
+    
         if (autoRotateToggle) autoRotateToggle.addEventListener('click', () => this.toggleAutoRotate());
         if (prevButton) prevButton.addEventListener('click', () => this.goToPrevious());
         if (nextButton) nextButton.addEventListener('click', () => this.goToNext());
         if (uiToggleButton) uiToggleButton.addEventListener('click', () => this.toggleUIPanel());
         if (btqButton) btqButton.addEventListener('click', () => this.openBTQ360());
-
+    
         document.addEventListener('keydown', (e) => this.onKeyDown(e), false);
     }
 
@@ -897,36 +898,38 @@ ISOKARI.IslandController = class {
     dispose() {
         this.stopAnimation();
         
+        // Clean up document event listeners
+        document.removeEventListener('mousedown', this.onMouseDown);
+        document.removeEventListener('mousemove', this.onMouseMove);
+        document.removeEventListener('mouseup', this.onMouseUp);
+        document.removeEventListener('keydown', this.onKeyDown);
+        
+        // Clean up container event listeners
         const container = document.getElementById('island-viewer');
         if (container) {
-            container.removeEventListener('mousedown', this.onMouseDown);
-            container.removeEventListener('mousemove', this.onMouseMove);
-            container.removeEventListener('mouseup', this.onMouseUp);
-            container.removeEventListener('mouseout', this.onMouseUp);
             container.removeEventListener('wheel', this.onMouseWheel);
             container.removeEventListener('touchstart', this.onTouchStart);
             container.removeEventListener('touchmove', this.onTouchMove);
             container.removeEventListener('touchend', this.onTouchEnd);
         }
-        document.removeEventListener('keydown', this.onKeyDown);
-
+    
         if (this.currentEnvTexture) {
             this.currentEnvTexture.dispose();
             this.currentEnvTexture = null;
         }
-
+    
         if (this.mirrorBallMesh) {
             ISOKARI.Utils.disposeThreeObject(this.mirrorBallMesh);
             this.scene?.remove(this.mirrorBallMesh);
             this.mirrorBallMesh = null;
         }
-
+    
         if (this.renderer) {
             this.renderer.dispose();
             this.renderer.domElement.remove();
             this.renderer = null;
         }
-
+    
         this.scene = null;
         this.camera = null;
     }
