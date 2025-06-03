@@ -325,11 +325,11 @@
 
 @media (max-width: 1024px) {
     
-    /* Mobile UI Panel */
+    /* Mobile UI Panel - REDUCED TOP PADDING */
     .ui-panel {
         height: auto !important;
-        max-height: 60vh !important;
-        min-height: 250px !important;
+        max-height: 65vh !important;
+        min-height: 280px !important;
         flex-direction: column;
         padding: 0;
         gap: 0;
@@ -341,10 +341,10 @@
         padding-bottom: 20px;
     }
 
-    /* Mobile Panel Content - LEFT ALIGNED */
+    /* Mobile Panel Content - REDUCED TOP PADDING & LEFT ALIGNED */
     .panel-header {
         order: 1;
-        padding: 120px 20px 16px 20px !important;
+        padding: 60px 20px 16px 20px !important; /* Reduced from 120px to 60px */
         text-align: left !important;
         min-width: auto;
         flex: none;
@@ -443,14 +443,14 @@
         height: 20px;
     }
 
-    /* Mobile Map Container - SHIFTED RIGHT and DOWN */
+    /* Mobile Map Container - BIGGER SIZE, BETTER POSITIONED */
     .map-container {
         position: fixed !important;
-        bottom: 160px !important; /* Moved down */
-        left: 75% !important; /* Moved right */
+        bottom: 300px !important; /* Higher position to avoid overlap */
+        left: 50% !important; /* Positioned right for balance */
         transform: translateX(-50%) !important;
-        width: 150px !important;
-        height: 234px !important;
+        width: 200px !important; /* Bigger - was 150px */
+        height: 300px !important; /* Bigger - was 234px */
         background: none !important;
         border: none !important;
         border-radius: 0 !important;
@@ -481,11 +481,11 @@
         object-fit: contain !important;
     }
 
-    /* Mobile Map Dots */
+    /* Mobile Map Dots - SLIGHTLY BIGGER FOR BETTER VISIBILITY */
     .dot {
         position: absolute !important;
-        width: 4px !important;
-        height: 4px !important;
+        width: 5px !important; /* Slightly bigger - was 4px */
+        height: 5px !important; /* Slightly bigger - was 4px */
         pointer-events: none !important;
         cursor: default !important;
         background: rgba(255, 255, 255, 0.4) !important;
@@ -503,7 +503,7 @@
 
     .dot.active {
         background: #FF8C00 !important;
-        transform: translate(-50%, -50%) scale(2.2) !important;
+        transform: translate(-50%, -50%) scale(2.0) !important; /* Slightly smaller scale */
         animation: pulse-mobile 2s infinite !important;
         box-shadow: 0 0 5px rgba(255, 140, 0, 0.9) !important;
     }
