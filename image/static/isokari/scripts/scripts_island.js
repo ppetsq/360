@@ -253,6 +253,7 @@ ISOKARI.IslandController = class {
             
             this.setupEventListeners();
             this.setupMobileUI();
+            this.createStandaloneNavButtons(); // Create standalone nav buttons
             this.startAnimation();
             
             if (this.autoRotateEnabled) {
@@ -391,6 +392,40 @@ ISOKARI.IslandController = class {
 
         this.mirrorBallMesh = new THREE.Mesh(geometry, material);
         this.mirrorBallMesh.position.set(0, 0, -2);
+    }
+
+    createStandaloneNavButtons() {
+        // Create container for standalone navigation buttons
+        const navContainer = document.createElement('div');
+        navContainer.className = 'standalone-nav-buttons';
+        navContainer.id = 'island-standalone-nav';
+
+        // Create previous button
+        const prevButton = document.createElement('button');
+        prevButton.className = 'standalone-nav-button';
+        prevButton.id = 'island-standalone-prev';
+        prevButton.title = 'Previous View';
+        prevButton.innerHTML = '<img src="assets/back.png" alt="Previous" class="standalone-nav-icon">';
+
+        // Create next button
+        const nextButton = document.createElement('button');
+        nextButton.className = 'standalone-nav-button';
+        nextButton.id = 'island-standalone-next';
+        nextButton.title = 'Next View';
+        nextButton.innerHTML = '<img src="assets/next.png" alt="Next" class="standalone-nav-icon">';
+
+        // Add buttons to container
+        navContainer.appendChild(prevButton);
+        navContainer.appendChild(nextButton);
+
+        // Add to DOM
+        document.getElementById('island-section').appendChild(navContainer);
+
+        // Add event listeners
+        prevButton.addEventListener('click', () => this.goToPrevious());
+        nextButton.addEventListener('click', () => this.goToNext());
+
+        console.log('🏝️ Standalone navigation buttons created');
     }
 
     setupMobileUI() {
@@ -676,11 +711,15 @@ ISOKARI.IslandController = class {
         const toggleButton = document.getElementById('ui-toggle-button');
         const btqButton = document.getElementById('btq-button');
         const mapContainer = document.getElementById('island-map-container');
+        const standaloneNav = document.getElementById('island-standalone-nav');
     
         panel?.classList.add('visible');
         toggleButton?.classList.add('panel-open');
         mapContainer?.classList.add('visible');
         mapContainer?.classList.remove('positioned');
+        
+        // Hide standalone navigation buttons immediately when UI starts showing
+        standaloneNav?.classList.remove('visible');
         
         if (!this.isMobile) {
             btqButton?.classList.add('hidden');
@@ -697,12 +736,18 @@ ISOKARI.IslandController = class {
         const toggleButton = document.getElementById('ui-toggle-button');
         const btqButton = document.getElementById('btq-button');
         const mapContainer = document.getElementById('island-map-container');
+        const standaloneNav = document.getElementById('island-standalone-nav');
     
         panel?.classList.remove('visible');
         toggleButton?.classList.remove('panel-open');
         mapContainer?.classList.remove('visible');
         mapContainer?.classList.remove('positioned');
         btqButton?.classList.remove('hidden');
+        
+        // Show standalone navigation buttons with small delay for clean transition
+        setTimeout(() => {
+            standaloneNav?.classList.add('visible');
+        }, 150); // Short delay for clean transition
         
         if (this.isMobile && mapContainer) {
             mapContainer.style.setProperty('opacity', '0', 'important');
@@ -899,6 +944,12 @@ ISOKARI.IslandController = class {
             container.removeEventListener('touchstart', this.onTouchStart);
             container.removeEventListener('touchmove', this.onTouchMove);
             container.removeEventListener('touchend', this.onTouchEnd);
+        }
+
+        // Clean up standalone navigation buttons
+        const standaloneNav = document.getElementById('island-standalone-nav');
+        if (standaloneNav) {
+            standaloneNav.remove();
         }
     
         if (this.currentEnvTexture) {

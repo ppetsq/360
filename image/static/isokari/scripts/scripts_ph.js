@@ -82,6 +82,7 @@ ISOKARI.PilotsController = class {
             
             if (this.app) this.app.updateLoadingProgress(75, 'pilots');
             
+            this.createStandaloneNavButtons(); // Create standalone nav buttons
             this.setupEventListeners();
             this.setupMobileUI();
             this.startAnimation();
@@ -216,6 +217,40 @@ ISOKARI.PilotsController = class {
 
         this.mirrorBallMesh = new THREE.Mesh(geometry, material);
         this.mirrorBallMesh.position.set(0, 0, -2);
+    }
+
+    createStandaloneNavButtons() {
+        // Create container for standalone navigation buttons
+        const navContainer = document.createElement('div');
+        navContainer.className = 'standalone-nav-buttons';
+        navContainer.id = 'pilots-standalone-nav';
+
+        // Create previous button
+        const prevButton = document.createElement('button');
+        prevButton.className = 'standalone-nav-button';
+        prevButton.id = 'pilots-standalone-prev';
+        prevButton.title = 'Previous View';
+        prevButton.innerHTML = '<img src="assets/back.png" alt="Previous" class="standalone-nav-icon">';
+
+        // Create next button
+        const nextButton = document.createElement('button');
+        nextButton.className = 'standalone-nav-button';
+        nextButton.id = 'pilots-standalone-next';
+        nextButton.title = 'Next View';
+        nextButton.innerHTML = '<img src="assets/next.png" alt="Next" class="standalone-nav-icon">';
+
+        // Add buttons to container
+        navContainer.appendChild(prevButton);
+        navContainer.appendChild(nextButton);
+
+        // Add to DOM
+        document.getElementById('pilots-section').appendChild(navContainer);
+
+        // Add event listeners
+        prevButton.addEventListener('click', () => this.goToPrevious());
+        nextButton.addEventListener('click', () => this.goToNext());
+
+        console.log('🏠 Standalone navigation buttons created');
     }
 
     setupMobileUI() {
@@ -493,11 +528,15 @@ ISOKARI.PilotsController = class {
         const toggleButton = document.getElementById('pilots-ui-toggle-button');
         const btqButton = document.getElementById('pilots-btq-button');
         const houseContainer = document.getElementById('pilots-house-container');
+        const standaloneNav = document.getElementById('pilots-standalone-nav');
     
         panel?.classList.add('visible');
         toggleButton?.classList.add('panel-open');
         houseContainer?.classList.add('visible');
         houseContainer?.classList.remove('positioned');
+        
+        // Hide standalone navigation buttons immediately when UI starts showing
+        standaloneNav?.classList.remove('visible');
         
         if (!this.isMobile) {
             btqButton?.classList.add('hidden');
@@ -514,12 +553,18 @@ ISOKARI.PilotsController = class {
         const toggleButton = document.getElementById('pilots-ui-toggle-button');
         const btqButton = document.getElementById('pilots-btq-button');
         const houseContainer = document.getElementById('pilots-house-container');
+        const standaloneNav = document.getElementById('pilots-standalone-nav');
     
         panel?.classList.remove('visible');
         toggleButton?.classList.remove('panel-open');
         houseContainer?.classList.remove('visible');
         houseContainer?.classList.remove('positioned');
         btqButton?.classList.remove('hidden');
+        
+        // Show standalone navigation buttons with small delay for smooth transition
+        setTimeout(() => {
+            standaloneNav?.classList.add('visible');
+        }, 150); // Short delay for clean transition
         
         if (this.isMobile && houseContainer) {
             houseContainer.style.setProperty('opacity', '0', 'important');
@@ -692,6 +737,12 @@ ISOKARI.PilotsController = class {
             container.removeEventListener('touchstart', this.onTouchStart);
             container.removeEventListener('touchmove', this.onTouchMove);
             container.removeEventListener('touchend', this.onTouchEnd);
+        }
+
+        // Clean up standalone navigation buttons
+        const standaloneNav = document.getElementById('pilots-standalone-nav');
+        if (standaloneNav) {
+            standaloneNav.remove();
         }
     
         if (this.currentEnvTexture) {
