@@ -77,7 +77,7 @@ ISOKARI.IslandController = class {
                 specs: {
                     date: "12/05/2025",
                     time: "17:56", 
-                    coordinates: "60.2451°N, 22.0823°E"
+                    coordinates: "60.7153°N, 21.0128°E"
                 }
             },
             {
@@ -87,7 +87,7 @@ ISOKARI.IslandController = class {
                 specs: {
                     date: "11/05/2025",
                     time: "14:06", 
-                    coordinates: "60.2451°N, 22.0823°E"
+                    coordinates: "60.7180°N, 21.0174°E"
                 }
             },
             {
@@ -97,7 +97,7 @@ ISOKARI.IslandController = class {
                 specs: {
                     date: "11/05/2025",
                     time: "13:04", 
-                    coordinates: "60.2451°N, 22.0823°E"
+                    coordinates: "60.7178°N, 21.0082°E"
                 }
             },
             {
@@ -107,7 +107,7 @@ ISOKARI.IslandController = class {
                 specs: {
                     date: "12/05/2025",
                     time: "18:16", 
-                    coordinates: "60.2451°N, 22.0823°E"
+                    coordinates: "60.7180°N, 21.0110°E"
                 }
             },
             {
@@ -117,7 +117,7 @@ ISOKARI.IslandController = class {
                 specs: {
                     date: "11/05/2025",
                     time: "13:39", 
-                    coordinates: "60.2451°N, 22.0823°E"
+                    coordinates: "60.7183°N, 21.0058°E"
                 }
             },
             {
@@ -127,7 +127,7 @@ ISOKARI.IslandController = class {
                 specs: {
                     date: "16/05/2025",
                     time: "11:01", 
-                    coordinates: "60.2451°N, 22.0823°E"
+                    coordinates: "60.7204°N, 21.0236°E"
                 }
             },
             {
@@ -137,7 +137,7 @@ ISOKARI.IslandController = class {
                 specs: {
                     date: "11/05/2025",
                     time: "14:14", 
-                    coordinates: "60.2451°N, 22.0823°E"
+                    coordinates: "60.7180°N, 21.0213°E"
                 }
             },
             {
@@ -147,7 +147,7 @@ ISOKARI.IslandController = class {
                 specs: {
                     date: "16/05/2025",
                     time: "12:56", 
-                    coordinates: "60.2451°N, 22.0823°E"
+                    coordinates: "60.7212°N, 21.0266°E"
                 }
             },
             {
@@ -157,7 +157,7 @@ ISOKARI.IslandController = class {
                 specs: {
                     date: "12/05/2025",
                     time: "20:27", 
-                    coordinates: "60.2451°N, 22.0823°E"
+                    coordinates: "60.7165°N, 21.0094°E"
                 }
             },
             {
@@ -167,7 +167,7 @@ ISOKARI.IslandController = class {
                 specs: {
                     date: "12/05/2025",
                     time: "20:49", 
-                    coordinates: "60.2451°N, 22.0823°E"
+                    coordinates: "60.7193°N, 21.0163°E"
                 }
             },
             {
@@ -177,7 +177,7 @@ ISOKARI.IslandController = class {
                 specs: {
                     date: "12/05/2025",
                     time: "18:23", 
-                    coordinates: "60.2451°N, 22.0823°E"
+                    coordinates: "60.7182°N, 21.0126°E"
                 }
             },
             {
@@ -187,7 +187,7 @@ ISOKARI.IslandController = class {
                 specs: {
                     date: "12/05/2025",
                     time: "23:07", 
-                    coordinates: "60.2451°N, 22.0823°E"
+                    coordinates: "60.7204°N, 21.0251°E"
                 }
             }
         ];
