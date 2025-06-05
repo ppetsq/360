@@ -75,8 +75,8 @@ ISOKARI.IslandController = class {
                 title: "Island Sheep",
                 description: "Every summer, volunteers sign up to spend a week on Isokari taking care of sheep. It's part of an old tradition where sheep keep the landscape healthy by eating grass and fertilizing the ground naturally. The volunteer shepherds stay in the historic pilots house and help maintain this centuries old way of managing island ecosystems.",
                 specs: {
-                    date: "Aug 15, 2024",
-                    time: "14:32 UTC", 
+                    date: "12/05/2025",
+                    time: "17:56", 
                     coordinates: "60.2451°N, 22.0823°E"
                 }
             },
@@ -85,8 +85,8 @@ ISOKARI.IslandController = class {
                 title: "The Supply Road",
                 description: "This path has been worn smooth by generations of lighthouse keepers hauling supplies from the harbor. Built on ancient granite bedrock, it's been the main road since the lighthouse was completed in 1833. Today, restaurant staff and maintenance crews still use this same route.",
                 specs: {
-                    date: "Aug 15, 2024",
-                    time: "14:32 UTC", 
+                    date: "11/05/2025",
+                    time: "14:06", 
                     coordinates: "60.2451°N, 22.0823°E"
                 }
             },
@@ -95,8 +95,8 @@ ISOKARI.IslandController = class {
                 title: "Between Fresh and Salt",
                 description: "These small lakes used to be part of the Baltic Sea, but the land here is slowly rising and has cut them off from the ocean. The water is still slightly salty, creating a unique environment where freshwater and marine life mix. Surrounding are one of the clearest water areas in the Baltic Sea.",
                 specs: {
-                    date: "Aug 15, 2024",
-                    time: "14:32 UTC", 
+                    date: "11/05/2025",
+                    time: "13:04", 
                     coordinates: "60.2451°N, 22.0823°E"
                 }
             },
@@ -105,8 +105,8 @@ ISOKARI.IslandController = class {
                 title: "The Lighthouse",
                 description: "At nearly 50 meters high, this is the tallest lighthouse in the Gulf of Bothnia. Built in 1833, it's been guiding ships for almost 200 years. During World War II, it was prepared for demolition but luckily survived. You can climb the 200 steps to the top for incredible views of the open sea.",
                 specs: {
-                    date: "Aug 15, 2024",
-                    time: "14:32 UTC", 
+                    date: "12/05/2025",
+                    time: "18:16", 
                     coordinates: "60.2451°N, 22.0823°E"
                 }
             },
@@ -115,8 +115,8 @@ ISOKARI.IslandController = class {
                 title: "Ancient Stone Walls",
                 description: "These cliffs are made of rock that's over a billion years old, some of the oldest you'll find anywhere. The smooth, rounded shapes were carved by massive glaciers that melted away 12,000 years ago. Despite being solid rock, this small island somehow supports over 380 different plant species in its cracks and crevices.",
                 specs: {
-                    date: "Aug 15, 2024",
-                    time: "14:32 UTC", 
+                    date: "11/05/2025",
+                    time: "13:39", 
                     coordinates: "60.2451°N, 22.0823°E"
                 }
             },
@@ -125,8 +125,8 @@ ISOKARI.IslandController = class {
                 title: "High Ground",
                 description: "This is one of the highest spots on the island, right next to the old building where maritime pilots used to live. Now it's where the volunteer sheep caretakers stay during their residencies. From here, you can see in every direction across the sea - perfect for keeping an eye on both ships and sheep.",
                 specs: {
-                    date: "Aug 15, 2024",
-                    time: "14:32 UTC", 
+                    date: "16/05/2025",
+                    time: "11:01", 
                     coordinates: "60.2451°N, 22.0823°E"
                 }
             },
@@ -135,8 +135,8 @@ ISOKARI.IslandController = class {
                 title: "Cold War Relic",
                 description: "This old artillery cannon was brought to the island during the Cold War when tensions ran high between East and West. It's been deactivated now, but it stands as a reminder that every island in the Baltic has strategic military importance.",
                 specs: {
-                    date: "Aug 15, 2024",
-                    time: "14:32 UTC", 
+                    date: "11/05/2025",
+                    time: "14:14", 
                     coordinates: "60.2451°N, 22.0823°E"
                 }
             },
@@ -145,28 +145,28 @@ ISOKARI.IslandController = class {
                 title: "Harbour",
                 description: "This is where visitors arrive by ferry or private boats, and you can see the modern pilot station in the distance. Black guillemots love nesting on the breakwater and boats can stay overnight for just 10 euros, continuing the island's long tradition of welcoming seafarers.",
                 specs: {
-                    date: "Aug 15, 2024",
-                    time: "14:32 UTC", 
+                    date: "16/05/2025",
+                    time: "12:56", 
                     coordinates: "60.2451°N, 22.0823°E"
                 }
             },
             {
                 // Image 09  
-                title: "The Secret Lake",
-                description: "Hidden in the middle of the island, this lake is slowly getting wilder as reeds and plants take over. It used to be much more open, but without constant management, nature is reclaiming it. This makes it a perfect resting spot for migrating birds and their spotters.",
+                title: "Wave-Worn Coastline", 
+                description: "These southern shores face the full power of waves rolling in across the Baltic Sea. Over thousands of years, the constant pounding has polished the ancient rocks into smooth, rounded shapes. Each storm continues this endless process of slowly reshaping the coastline.",
                 specs: {
-                    date: "Aug 15, 2024",
-                    time: "14:32 UTC", 
+                    date: "12/05/2025",
+                    time: "20:27", 
                     coordinates: "60.2451°N, 22.0823°E"
                 }
             },
             {
                 // Image 10
-                title: "Wave-Worn Coastline", 
-                description: "These southern shores face the full power of waves rolling in across the Baltic Sea. Over thousands of years, the constant pounding has polished the ancient rocks into smooth, rounded shapes. Each storm continues this endless process of slowly reshaping the coastline.",
+                title: "The Secret Lake",
+                description: "Hidden in the middle of the island, this lake is slowly getting wilder as reeds and plants take over. It used to be much more open, but without constant management, nature is reclaiming it. This makes it a perfect resting spot for migrating birds and their spotters.",
                 specs: {
-                    date: "Aug 15, 2024",
-                    time: "14:32 UTC", 
+                    date: "12/05/2025",
+                    time: "20:49", 
                     coordinates: "60.2451°N, 22.0823°E"
                 }
             },
@@ -175,8 +175,8 @@ ISOKARI.IslandController = class {
                 title: "Island Community",
                 description: "This cluster of old buildings houses everything needed for island life: guest rooms, restaurant, sauna, and staff quarters. Some of these structures are centuries old, built when this was a thriving fishing and pilot community. Now they serve the nature tourists during the summer season.",
                 specs: {
-                    date: "Aug 15, 2024",
-                    time: "14:32 UTC", 
+                    date: "12/05/2025",
+                    time: "18:23", 
                     coordinates: "60.2451°N, 22.0823°E"
                 }
             },
@@ -185,8 +185,8 @@ ISOKARI.IslandController = class {
                 title: "Remote Evening",
                 description: "This view captures what island life is really about - the vast solitude of being surrounded by water and sky. As the moon rises and the lighthouse begins its nightly watch, you feel the profound isolation that lighthouse keepers have experienced for nearly 200 years.",
                 specs: {
-                    date: "Aug 15, 2024",
-                    time: "14:32 UTC", 
+                    date: "12/05/2025",
+                    time: "23:07", 
                     coordinates: "60.2451°N, 22.0823°E"
                 }
             }
