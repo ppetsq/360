@@ -737,39 +737,76 @@ ISOKARI.PilotsController = class {
             container.removeEventListener('touchstart', this.onTouchStart);
             container.removeEventListener('touchmove', this.onTouchMove);
             container.removeEventListener('touchend', this.onTouchEnd);
+            container.removeEventListener('dblclick', this.onDoubleClick);
         }
-
+    
+        // CRITICAL: Dispose textures BEFORE mesh disposal
+        if (this.currentEnvTexture) {
+            this.currentEnvTexture.dispose();
+            this.currentEnvTexture = null;
+        }
+    
+        // Dispose mesh and its materials/geometry
+        if (this.mirrorBallMesh) {
+            if (this.mirrorBallMesh.material) {
+                if (this.mirrorBallMesh.material.envMap) {
+                    this.mirrorBallMesh.material.envMap.dispose();
+                }
+                this.mirrorBallMesh.material.dispose();
+            }
+            if (this.mirrorBallMesh.geometry) {
+                this.mirrorBallMesh.geometry.dispose();
+            }
+            this.scene?.remove(this.mirrorBallMesh);
+            this.mirrorBallMesh = null;
+        }
+    
         // Clean up standalone navigation buttons
         const standaloneNav = document.getElementById('pilots-standalone-nav');
         if (standaloneNav) {
             standaloneNav.remove();
         }
     
-        if (this.currentEnvTexture) {
-            this.currentEnvTexture.dispose();
-            this.currentEnvTexture = null;
-        }
-    
-        if (this.mirrorBallMesh) {
-            ISOKARI.Utils.disposeThreeObject(this.mirrorBallMesh);
-            this.scene?.remove(this.mirrorBallMesh);
-            this.mirrorBallMesh = null;
-        }
-    
+        // CRITICAL: Clean up renderer and force context loss
         if (this.renderer) {
+            // Get WebGL context before disposal
+            const gl = this.renderer.getContext();
+            
+            // Dispose renderer
             this.renderer.dispose();
-            this.renderer.domElement.remove();
+            
+            // Force context loss to free GPU memory
+            const loseContext = gl.getExtension('WEBGL_lose_context');
+            if (loseContext) {
+                loseContext.loseContext();
+            }
+            
+            // Remove canvas from DOM
+            if (this.renderer.domElement && this.renderer.domElement.parentNode) {
+                this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);
+            }
+            
             this.renderer = null;
         }
-
+    
+        // Clear scene references
+        if (this.scene) {
+            this.scene.clear();
+            this.scene = null;
+        }
+        
+        this.camera = null;
+    
         // Clean up double-tap detector
         if (this.doubleTapDetector) {
             this.doubleTapDetector.destroy();
             this.doubleTapDetector = null;
         }
     
-        this.scene = null;
-        this.camera = null;
+        // Clear arrays to break references
+        this.imageUrls = [];
+        
+        console.log('🏠 Pilots controller fully disposed with GPU memory cleanup');
     }
 
     jumpToImage(index) {

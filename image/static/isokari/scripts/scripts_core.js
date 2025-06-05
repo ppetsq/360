@@ -179,6 +179,7 @@ ISOKARI.App = class {
     async disposeCurrentSection() {
         const currentSection = ISOKARI.State.currentSection;
         const controller = ISOKARI.State.controllers[currentSection];
+        const renderer = ISOKARI.State.renderers[currentSection];
         
         if (controller && typeof controller.dispose === 'function') {
             console.log(`🧹 Disposing ${currentSection} section to free memory`);
@@ -188,22 +189,52 @@ ISOKARI.App = class {
                 controller.stopAnimation();
             }
             
+            // CRITICAL: Force GPU memory cleanup BEFORE disposing controller
+            if (renderer) {
+                const gl = renderer.getContext();
+                const info = renderer.info;
+                
+                console.log(`📊 GPU Memory before disposal: ${info.memory.textures} textures, ${info.memory.geometries} geometries`);
+                
+                // Force WebGL context cleanup
+                renderer.dispose();
+                renderer.forceContextLoss();
+                
+                // Clear the canvas to release any remaining GPU resources
+                const canvas = renderer.domElement;
+                if (canvas && canvas.parentNode) {
+                    canvas.width = 1;
+                    canvas.height = 1;
+                    const ctx = canvas.getContext('webgl') || canvas.getContext('webgl2');
+                    if (ctx) {
+                        ctx.clear(ctx.COLOR_BUFFER_BIT | ctx.DEPTH_BUFFER_BIT);
+                    }
+                }
+            }
+            
             // Dispose of Three.js resources
             controller.dispose();
             
-            // Clear references
+            // Clear ALL references to break circular dependencies
             ISOKARI.State.controllers[currentSection] = null;
             ISOKARI.State.scenes[currentSection] = null;
             ISOKARI.State.cameras[currentSection] = null;
             ISOKARI.State.renderers[currentSection] = null;
             ISOKARI.State.initialized[currentSection] = false;
             
-            // Force garbage collection hint (won't always work, but helps)
+            // CRITICAL: Force garbage collection on mobile devices
             if (window.gc) {
                 window.gc();
+            } else {
+                // Fallback: Create memory pressure to trigger GC
+                const memoryPressure = new Array(1000000).fill(0);
+                memoryPressure.length = 0;
             }
             
-            console.log(`✅ ${currentSection} section disposed`);
+            // Wait a frame for cleanup to complete
+            await new Promise(resolve => setTimeout(resolve, 16));
+            
+            console.log(`✅ ${currentSection} section fully disposed`);
         }
     }
 
@@ -476,6 +507,13 @@ ISOKARI.App = class {
                     event.preventDefault();
                     this.navigateToSection('pilots');
                     break;
+                case 'KeyS':
+                    event.preventDefault();
+                    // Only switch between viewers, not from menu
+                    if (ISOKARI.State.currentSection === 'island' || ISOKARI.State.currentSection === 'pilots') {
+                        this.switchBetweenViewers();
+                    }
+                    break;
                 case 'KeyM':
                     event.preventDefault();
                     this.toggleAudio();
@@ -497,6 +535,17 @@ ISOKARI.App = class {
                 }
             }
         });
+    }
+
+    switchBetweenViewers() {
+        if (ISOKARI.State.currentSection === 'island') {
+            this.navigateToSection('pilots');
+            console.log('🔄 Switched from Island to Pilots House');
+        } else if (ISOKARI.State.currentSection === 'pilots') {
+            this.navigateToSection('island');
+            console.log('🔄 Switched from Pilots House to Island');
+        }
+        // Do nothing if in intro/menu section
     }
 
     wait(ms) {
