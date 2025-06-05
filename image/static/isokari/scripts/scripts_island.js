@@ -1,5 +1,5 @@
-// ===== ISLAND CONTROLLER WITH STARTING POSITION =====
-// Handles mirror ball 360° experience with defined starting camera position
+// ===== ISLAND CONTROLLER WITH IMMEDIATE MAP POSITIONING =====
+// Handles mirror ball 360° experience with immediate map positioning (no delays)
 
 ISOKARI.IslandController = class {
     constructor() {
@@ -309,9 +309,8 @@ ISOKARI.IslandController = class {
             let loadingState = null;
             let timeoutId = null;
     
-            // ⭐ ENHANCED: Set up delayed loading for image switches
+            // Enhanced loading for image switches
             if (showLoading && this.app) {
-                // Start the delay timer - loading will show after 1 second if still loading
                 timeoutId = setTimeout(() => {
                     this.app.showImageLoading('Loading new view...');
                     loadingState = 'shown';
@@ -321,12 +320,12 @@ ISOKARI.IslandController = class {
             loader.load(
                 url,
                 (texture) => {
-                    // ⭐ CRITICAL: Cancel delayed loading if image loads quickly
+                    // Cancel delayed loading if image loads quickly
                     if (timeoutId) {
                         clearTimeout(timeoutId);
                     }
                     
-                    // ⭐ CRITICAL: Hide loading if it was shown
+                    // Hide loading if it was shown
                     if (loadingState === 'shown' && this.app) {
                         this.app.hideImageLoading();
                     }
@@ -357,10 +356,8 @@ ISOKARI.IslandController = class {
                         const percent = Math.round((progress.loaded / progress.total) * 100);
                         
                         if (showLoading && loadingState === 'shown' && this.app) {
-                            // Only update progress if loading overlay is actually shown
                             this.app.updateImageLoadingProgress(percent);
                         } else if (this.app && !ISOKARI.State.initialized.island) {
-                            // Update progress during initialization
                             this.app.updateLoadingProgress(25 + Math.round(percent * 0.5), 'island');
                         }
                     }
@@ -368,7 +365,6 @@ ISOKARI.IslandController = class {
                 (error) => {
                     console.error('Error loading texture:', error);
                     
-                    // ⭐ CRITICAL: Clean up on error
                     if (timeoutId) {
                         clearTimeout(timeoutId);
                     }
@@ -398,8 +394,6 @@ ISOKARI.IslandController = class {
     }
 
     setupMobileUI() {
-        // Remove all read-more functionality since we always show full text on mobile
-        
         window.addEventListener('resize', () => {
             const wasMobile = this.isMobile;
             this.isMobile = window.innerWidth <= 1024;
@@ -409,10 +403,8 @@ ISOKARI.IslandController = class {
                 this.resetMapPositioning();
             }
             
-            if (this.isMobile && this.uiPanelVisible && wasMobile === this.isMobile) {
-                setTimeout(() => {
-                    this.positionMapRelativeToUI();
-                }, 100);
+            if (this.isMobile && this.uiPanelVisible) {
+                this.positionMapRelativeToUI();
             }
         });
     }
@@ -429,9 +421,37 @@ ISOKARI.IslandController = class {
         console.log(`🔄 RESET MAP POSITIONING - Now ${this.isMobile ? 'MOBILE' : 'DESKTOP'} mode`);
         
         if (this.isMobile && this.uiPanelVisible) {
-            setTimeout(() => {
-                this.positionMapRelativeToUI();
-            }, 100);
+            this.positionMapRelativeToUI();
+        }
+    }
+
+    positionMapRelativeToUI() {
+        if (!this.isMobile) {
+            this.resetMapPositioning();
+            return;
+        }
+        
+        const uiPanel = document.getElementById('island-ui-panel');
+        const mapContainer = document.getElementById('island-map-container');
+        
+        if (uiPanel && mapContainer && uiPanel.classList.contains('visible')) {
+            const uiHeight = uiPanel.getBoundingClientRect().height;
+            const mapHeight = window.innerWidth <= 480 ? 195 : 234;
+            const bottomOffset = uiHeight - (mapHeight / 2) + 20;
+            
+            mapContainer.style.setProperty('bottom', `${bottomOffset}px`, 'important');
+            mapContainer.classList.add('positioned');
+            mapContainer.style.setProperty('opacity', '1', 'important');
+            mapContainer.style.setProperty('visibility', 'visible', 'important');
+            
+            console.log(`🗺️ MOBILE MAP POSITIONING: bottom ${bottomOffset}px`);
+        }
+    }
+
+    handleInitialShow() {
+        console.log('🏝️ HandleInitialShow called - mobile:', this.isMobile);
+        if (this.isMobile) {
+            this.positionMapRelativeToUI();
         }
     }
 
@@ -667,9 +687,7 @@ ISOKARI.IslandController = class {
         }
         
         if (this.isMobile) {
-            setTimeout(() => {
-                this.positionMapRelativeToUI();
-            }, 100);
+            this.positionMapRelativeToUI();
         }
     }
 
@@ -689,41 +707,6 @@ ISOKARI.IslandController = class {
         if (this.isMobile && mapContainer) {
             mapContainer.style.setProperty('opacity', '0', 'important');
             mapContainer.style.setProperty('visibility', 'hidden', 'important');
-        }
-    }
-
-    positionMapRelativeToUI() {
-        if (!this.isMobile) {
-            this.resetMapPositioning();
-            return;
-        }
-        
-        const uiPanel = document.getElementById('island-ui-panel');
-        const mapContainer = document.getElementById('island-map-container');
-        
-        if (uiPanel && mapContainer && uiPanel.classList.contains('visible')) {
-            const uiHeight = uiPanel.getBoundingClientRect().height;
-            const mapHeight = window.innerWidth <= 480 ? 195 : 234;
-            const bottomOffset = uiHeight - (mapHeight / 2) + 20;
-            
-            mapContainer.style.setProperty('bottom', `${bottomOffset}px`, 'important');
-            
-            setTimeout(() => {
-                mapContainer.classList.add('positioned');
-                mapContainer.style.setProperty('opacity', '1', 'important');
-                mapContainer.style.setProperty('visibility', 'visible', 'important');
-            }, 50);
-            
-            console.log(`🗺️ MOBILE MAP POSITIONING: bottom ${bottomOffset}px`);
-        }
-    }
-
-    handleInitialShow() {
-        console.log('🏝️ HandleInitialShow called - mobile:', this.isMobile);
-        if (this.isMobile) {
-            setTimeout(() => {
-                this.positionMapRelativeToUI();
-            }, 600);
         }
     }
 
@@ -846,8 +829,8 @@ ISOKARI.IslandController = class {
             switch(event.code) {
                 case 'ArrowLeft':
                 case 'ArrowRight':
-                case 'ArrowUp':      // NEW
-                case 'ArrowDown':    // NEW
+                case 'ArrowUp':
+                case 'ArrowDown':
                 case 'Space':
                 case 'KeyR':
                     event.preventDefault();
@@ -865,11 +848,11 @@ ISOKARI.IslandController = class {
                     this.goToPrevious();
                     break;
                     
-                case 'ArrowUp':      // NEW: Tilt camera up
+                case 'ArrowUp':
                     this.tiltCamera(-2);
                     break;
                     
-                case 'ArrowDown':    // NEW: Tilt camera down
+                case 'ArrowDown':
                     this.tiltCamera(2);
                     break;
                     
@@ -884,14 +867,13 @@ ISOKARI.IslandController = class {
         }
     }
 
-// FIXED METHOD: Tilt camera up/down without stopping rotation
-tiltCamera(deltaLat) {
-    // Apply the tilt with limits - no auto-rotation interruption
-    const newLat = this.lat + deltaLat;
-    this.lat = Math.max(-this.MAX_LAT_DEG, Math.min(this.MAX_LAT_DEG, newLat));
-    
-    console.log(`📐 Camera tilted to ${this.lat.toFixed(1)}°`);
-}
+    tiltCamera(deltaLat) {
+        // Apply the tilt with limits - no auto-rotation interruption
+        const newLat = this.lat + deltaLat;
+        this.lat = Math.max(-this.MAX_LAT_DEG, Math.min(this.MAX_LAT_DEG, newLat));
+        
+        console.log(`📐 Camera tilted to ${this.lat.toFixed(1)}°`);
+    }
 
     stopAnimation() {
         if (this.animationId) {
@@ -975,4 +957,4 @@ tiltCamera(deltaLat) {
     }
 };
 
-console.log('🏝️ Island Controller with Starting Position Loaded');
+console.log('🏝️ Island Controller with Immediate Map Positioning Loaded');

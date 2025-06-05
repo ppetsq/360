@@ -14,7 +14,7 @@ ISOKARI.PilotsController = class {
         this.iconRotationAngle = 0;
         this.animationId = null;
         this.iconAnimationId = null;
-        this.isMobile = window.innerWidth <= 768;
+        this.isMobile = window.innerWidth <= 1024; // Match island breakpoint
 
         // Interaction variables with pilots house starting position
         this.lon = 280;  // Start facing toward interior details
@@ -127,90 +127,82 @@ ISOKARI.PilotsController = class {
         container.appendChild(this.renderer.domElement);
     }
 
-    // ===== FIXED loadEnvironmentTexture method for Pilots Controller =====
-// Replace this method in your scripts_ph.js file
+    async loadEnvironmentTexture(url, showLoading = false) {
+        return new Promise((resolve, reject) => {
+            const loader = new THREE.TextureLoader();
+            loader.crossOrigin = 'anonymous';
 
-async loadEnvironmentTexture(url, showLoading = false) {
-    return new Promise((resolve, reject) => {
-        const loader = new THREE.TextureLoader();
-        loader.crossOrigin = 'anonymous';
+            let loadingState = null;
+            let timeoutId = null;
 
-        let loadingState = null;
-        let timeoutId = null;
-
-        // ⭐ ENHANCED: Set up delayed loading for image switches
-        if (showLoading && this.app) {
-            // Start the delay timer - loading will show after 1 second if still loading
-            timeoutId = setTimeout(() => {
-                this.app.showImageLoading('Loading 360° image...');
-                loadingState = 'shown';
-            }, 1000); // 1 second delay
-        }
-
-        loader.load(
-            url,
-            (texture) => {
-                // ⭐ CRITICAL: Cancel delayed loading if image loads quickly
-                if (timeoutId) {
-                    clearTimeout(timeoutId);
-                }
-                
-                // ⭐ CRITICAL: Hide loading if it was shown
-                if (loadingState === 'shown' && this.app) {
-                    this.app.hideImageLoading();
-                }
-
-                texture.mapping = THREE.EquirectangularReflectionMapping;
-                texture.minFilter = THREE.LinearFilter;
-                texture.magFilter = THREE.LinearFilter;
-                texture.flipY = false;
-
-                if (this.currentEnvTexture) {
-                    this.currentEnvTexture.dispose();
-                }
-                this.currentEnvTexture = texture;
-
-                if (!this.mirrorBallMesh) {
-                    this.createMirrorBallMesh();
-                    this.scene.add(this.mirrorBallMesh);
-                } else {
-                    this.mirrorBallMesh.material.envMap = this.currentEnvTexture;
-                    this.mirrorBallMesh.material.needsUpdate = true;
-                }
-
-                resolve();
-            },
-            (progress) => {
-                if (progress.total > 0) {
-                    const percent = Math.round((progress.loaded / progress.total) * 100);
-                    
-                    if (showLoading && loadingState === 'shown' && this.app) {
-                        // Only update progress if loading overlay is actually shown
-                        this.app.updateImageLoadingProgress(percent);
-                    } else if (this.app && !ISOKARI.State.initialized.pilots) {
-                        // Update progress during initialization
-                        this.app.updateLoadingProgress(25 + Math.round(percent * 0.5), 'pilots');
-                    }
-                }
-            },
-            (error) => {
-                console.error('Error loading texture:', error);
-                
-                // ⭐ CRITICAL: Clean up on error
-                if (timeoutId) {
-                    clearTimeout(timeoutId);
-                }
-                
-                if (loadingState === 'shown' && this.app) {
-                    this.app.hideImageLoading();
-                }
-                
-                reject(error);
+            // Enhanced loading for image switches
+            if (showLoading && this.app) {
+                timeoutId = setTimeout(() => {
+                    this.app.showImageLoading('Loading 360° image...');
+                    loadingState = 'shown';
+                }, 1000); // 1 second delay
             }
-        );
-    });
-}
-    
+
+            loader.load(
+                url,
+                (texture) => {
+                    // Cancel delayed loading if image loads quickly
+                    if (timeoutId) {
+                        clearTimeout(timeoutId);
+                    }
+                    
+                    // Hide loading if it was shown
+                    if (loadingState === 'shown' && this.app) {
+                        this.app.hideImageLoading();
+                    }
+
+                    texture.mapping = THREE.EquirectangularReflectionMapping;
+                    texture.minFilter = THREE.LinearFilter;
+                    texture.magFilter = THREE.LinearFilter;
+                    texture.flipY = false;
+
+                    if (this.currentEnvTexture) {
+                        this.currentEnvTexture.dispose();
+                    }
+                    this.currentEnvTexture = texture;
+
+                    if (!this.mirrorBallMesh) {
+                        this.createMirrorBallMesh();
+                        this.scene.add(this.mirrorBallMesh);
+                    } else {
+                        this.mirrorBallMesh.material.envMap = this.currentEnvTexture;
+                        this.mirrorBallMesh.material.needsUpdate = true;
+                    }
+
+                    resolve();
+                },
+                (progress) => {
+                    if (progress.total > 0) {
+                        const percent = Math.round((progress.loaded / progress.total) * 100);
+                        
+                        if (showLoading && loadingState === 'shown' && this.app) {
+                            this.app.updateImageLoadingProgress(percent);
+                        } else if (this.app && !ISOKARI.State.initialized.pilots) {
+                            this.app.updateLoadingProgress(25 + Math.round(percent * 0.5), 'pilots');
+                        }
+                    }
+                },
+                (error) => {
+                    console.error('Error loading texture:', error);
+                    
+                    if (timeoutId) {
+                        clearTimeout(timeoutId);
+                    }
+                    
+                    if (loadingState === 'shown' && this.app) {
+                        this.app.hideImageLoading();
+                    }
+                    
+                    reject(error);
+                }
+            );
+        });
+    }
 
     createMirrorBallMesh() {
         const geometry = new THREE.SphereGeometry(8, 64, 32);
@@ -227,41 +219,16 @@ async loadEnvironmentTexture(url, showLoading = false) {
     }
 
     setupMobileUI() {
-        const readMoreBtn = document.getElementById('pilots-read-more-btn');
-        const description = document.querySelector('#pilots-ui-panel .panel-description');
-        
-        if (readMoreBtn && description) {
-            readMoreBtn.addEventListener('click', () => {
-                if (description.classList.contains('collapsed')) {
-                    description.classList.remove('collapsed');
-                    readMoreBtn.textContent = 'Read less';
-                } else {
-                    description.classList.add('collapsed');
-                    readMoreBtn.textContent = 'Read more';
-                }
-            });
-    
-            if (this.isMobile) {
-                description.classList.add('collapsed');
-                readMoreBtn.textContent = 'Read more';
-            }
-        }
-    
         window.addEventListener('resize', () => {
             const wasMobile = this.isMobile;
-            this.isMobile = window.innerWidth <= 768;
+            this.isMobile = window.innerWidth <= 1024; // Match island breakpoint
             
             if (wasMobile !== this.isMobile) {
-                if (description && readMoreBtn) {
-                    if (this.isMobile) {
-                        description.classList.add('collapsed');
-                        readMoreBtn.textContent = 'Read more';
-                    } else {
-                        description.classList.remove('collapsed');
-                    }
-                }
-                
                 this.resetHousePositioning();
+            }
+            
+            if (this.isMobile && this.uiPanelVisible) {
+                this.positionHouseRelativeToUI();
             }
         });
     }
@@ -273,15 +240,35 @@ async loadEnvironmentTexture(url, showLoading = false) {
         houseContainer.style.removeProperty('bottom');
         houseContainer.style.removeProperty('opacity');
         houseContainer.style.removeProperty('visibility');
-        houseContainer.style.removeProperty('display');
         houseContainer.classList.remove('positioned');
         
         console.log(`🔄 RESET HOUSE POSITIONING - Now ${this.isMobile ? 'MOBILE' : 'DESKTOP'} mode`);
         
-        if (this.isMobile) {
-            houseContainer.style.setProperty('display', 'none', 'important');
-        } else if (this.uiPanelVisible) {
-            houseContainer.style.removeProperty('display');
+        if (this.isMobile && this.uiPanelVisible) {
+            this.positionHouseRelativeToUI();
+        }
+    }
+
+    positionHouseRelativeToUI() {
+        if (!this.isMobile) {
+            this.resetHousePositioning();
+            return;
+        }
+        
+        const uiPanel = document.getElementById('pilots-ui-panel');
+        const houseContainer = document.getElementById('pilots-house-container');
+        
+        if (uiPanel && houseContainer && uiPanel.classList.contains('visible')) {
+            const uiHeight = uiPanel.getBoundingClientRect().height;
+            const houseHeight = 120; // Mobile house height
+            const bottomOffset = uiHeight - (houseHeight / 2) + 20;
+            
+            houseContainer.style.setProperty('bottom', `${bottomOffset}px`, 'important');
+            houseContainer.classList.add('positioned');
+            houseContainer.style.setProperty('opacity', '1', 'important');
+            houseContainer.style.setProperty('visibility', 'visible', 'important');
+            
+            console.log(`🏠 MOBILE HOUSE POSITIONING: bottom ${bottomOffset}px`);
         }
     }
 
@@ -509,15 +496,15 @@ async loadEnvironmentTexture(url, showLoading = false) {
     
         panel?.classList.add('visible');
         toggleButton?.classList.add('panel-open');
+        houseContainer?.classList.add('visible');
+        houseContainer?.classList.remove('positioned');
         
         if (!this.isMobile) {
-            houseContainer?.classList.add('visible');
-            houseContainer?.classList.remove('positioned');
             btqButton?.classList.add('hidden');
-        } else {
-            houseContainer?.classList.remove('visible');
-            houseContainer?.classList.add('positioned');
-            btqButton?.classList.remove('hidden');
+        }
+        
+        if (this.isMobile) {
+            this.positionHouseRelativeToUI();
         }
     }
 
@@ -537,20 +524,13 @@ async loadEnvironmentTexture(url, showLoading = false) {
         if (this.isMobile && houseContainer) {
             houseContainer.style.setProperty('opacity', '0', 'important');
             houseContainer.style.setProperty('visibility', 'hidden', 'important');
-            houseContainer.style.setProperty('display', 'none', 'important');
         }
     }
 
     handleInitialShow() {
         console.log('🏠 HandleInitialShow called - mobile:', this.isMobile);
         if (this.isMobile) {
-            const houseContainer = document.getElementById('pilots-house-container');
-            if (houseContainer) {
-                houseContainer.style.setProperty('display', 'none', 'important');
-                houseContainer.style.setProperty('opacity', '0', 'important');
-                houseContainer.style.setProperty('visibility', 'hidden', 'important');
-            }
-            console.log('🏠 Pilots House image hidden on initial mobile show.');
+            this.positionHouseRelativeToUI();
         }
     }
 
@@ -642,8 +622,8 @@ async loadEnvironmentTexture(url, showLoading = false) {
             switch(event.code) {
                 case 'ArrowLeft':
                 case 'ArrowRight':
-                case 'ArrowUp':      // NEW
-                case 'ArrowDown':    // NEW
+                case 'ArrowUp':
+                case 'ArrowDown':
                 case 'Space':
                 case 'KeyR':
                     event.preventDefault();
@@ -661,11 +641,11 @@ async loadEnvironmentTexture(url, showLoading = false) {
                     this.goToPrevious();
                     break;
                     
-                case 'ArrowUp':      // NEW: Tilt camera up
+                case 'ArrowUp':
                     this.tiltCamera(-2);
                     break;
                     
-                case 'ArrowDown':    // NEW: Tilt camera down
+                case 'ArrowDown':
                     this.tiltCamera(2);
                     break;
                     
@@ -680,14 +660,13 @@ async loadEnvironmentTexture(url, showLoading = false) {
         }
     }
 
-// FIXED METHOD: Tilt camera up/down without stopping rotation
-tiltCamera(deltaLat) {
-    // Apply the tilt with limits - no auto-rotation interruption
-    const newLat = this.lat + deltaLat;
-    this.lat = Math.max(-this.MAX_LAT_DEG, Math.min(this.MAX_LAT_DEG, newLat));
-    
-    console.log(`🏠 Camera tilted to ${this.lat.toFixed(1)}°`);
-}
+    tiltCamera(deltaLat) {
+        // Apply the tilt with limits - no auto-rotation interruption
+        const newLat = this.lat + deltaLat;
+        this.lat = Math.max(-this.MAX_LAT_DEG, Math.min(this.MAX_LAT_DEG, newLat));
+        
+        console.log(`🏠 Camera tilted to ${this.lat.toFixed(1)}°`);
+    }
 
     stopAnimation() {
         if (this.animationId) {
@@ -771,4 +750,4 @@ tiltCamera(deltaLat) {
     }
 };
 
-console.log('🏠 Pilots House Controller with Starting Position Loaded');
+console.log('🏠 Pilots House Controller with Immediate House Positioning Loaded');
