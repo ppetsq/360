@@ -118,7 +118,7 @@ ISOKARI.App = class {
     }
 
     async startApplication() {
-        // ⭐ CRITICAL: Set initial loading state immediately to prevent flash
+        // CRITICAL: Set initial loading state immediately to prevent flash
         this.updateLoadingProgress(0, 'intro');
         
         // Initialize intro section
@@ -152,7 +152,7 @@ ISOKARI.App = class {
         const currentSectionEl = document.getElementById(`${ISOKARI.State.currentSection}-section`);
         currentSectionEl?.classList.remove('active');
 
-        // ⭐ CRITICAL: Dispose of current section to prevent memory leaks
+        // CRITICAL: Dispose of current section to prevent memory leaks
         await this.disposeCurrentSection();
 
         // Wait for fade out
@@ -182,7 +182,7 @@ ISOKARI.App = class {
         const renderer = ISOKARI.State.renderers[currentSection];
         
         if (controller && typeof controller.dispose === 'function') {
-            console.log(`🧹 Disposing ${currentSection} section to free memory`);
+            console.log(`Disposing ${currentSection} section to free memory`);
             
             // Stop any animations first
             if (typeof controller.stopAnimation === 'function') {
@@ -194,7 +194,7 @@ ISOKARI.App = class {
                 const gl = renderer.getContext();
                 const info = renderer.info;
                 
-                console.log(`📊 GPU Memory before disposal: ${info.memory.textures} textures, ${info.memory.geometries} geometries`);
+                console.log(`GPU Memory before disposal: ${info.memory.textures} textures, ${info.memory.geometries} geometries`);
                 
                 // Force WebGL context cleanup
                 renderer.dispose();
@@ -234,7 +234,7 @@ ISOKARI.App = class {
             // Wait a frame for cleanup to complete
             await new Promise(resolve => setTimeout(resolve, 16));
             
-            console.log(`✅ ${currentSection} section fully disposed`);
+            console.log(`${currentSection} section fully disposed`);
         }
     }
 
@@ -248,7 +248,7 @@ ISOKARI.App = class {
         });
     }
 
-    // ⭐ ENHANCED LOADING METHODS
+    // ENHANCED LOADING METHODS
     updateLoadingProgress(percent, section = null, showPercentage = true) {
         const loadingText = document.getElementById('loading-text');
         const loadingPercentage = document.getElementById('loading-percentage');
@@ -264,7 +264,7 @@ ISOKARI.App = class {
         
         const label = sectionLabels[sectionName] || sectionName;
         
-        // ⭐ FIX: Always show the structured format to prevent flashing
+        // FIX: Always show the structured format to prevent flashing
         loadingText.textContent = `Loading ${label}...`;
         
         if (loadingPercentage && showPercentage && percent < 100) {
@@ -275,7 +275,7 @@ ISOKARI.App = class {
         }
     }
 
-    // ⭐ NEW: Show loading for image changes within viewers
+    // NEW: Show loading for image changes within viewers
     showImageLoading(message = 'Loading image...') {
         const loadingText = document.getElementById('loading-text');
         const loadingPercentage = document.getElementById('loading-percentage');
@@ -291,7 +291,7 @@ ISOKARI.App = class {
         this.showLoadingOverlay();
     }
 
-    // ⭐ NEW: Update progress for image loading within viewers
+    // NEW: Update progress for image loading within viewers
     updateImageLoadingProgress(percent) {
         const loadingPercentage = document.getElementById('loading-percentage');
         
@@ -303,7 +303,7 @@ ISOKARI.App = class {
         }
     }
 
-    // ⭐ NEW: Hide loading for image changes
+    // NEW: Hide loading for image changes
     hideImageLoading() {
         const loadingPercentage = document.getElementById('loading-percentage');
         if (loadingPercentage) {
@@ -312,7 +312,7 @@ ISOKARI.App = class {
         this.hideLoadingOverlay();
     }
 
-    // ⭐ ENHANCED: Section initialization with progress
+    // ENHANCED: Section initialization with progress
     async initializeSection(section) {
         if (ISOKARI.State.initialized[section]) {
             return;
@@ -540,10 +540,10 @@ ISOKARI.App = class {
     switchBetweenViewers() {
         if (ISOKARI.State.currentSection === 'island') {
             this.navigateToSection('pilots');
-            console.log('🔄 Switched from Island to Pilots House');
+            console.log('Switched from Island to Pilots House');
         } else if (ISOKARI.State.currentSection === 'pilots') {
             this.navigateToSection('island');
-            console.log('🔄 Switched from Pilots House to Island');
+            console.log('Switched from Pilots House to Island');
         }
         // Do nothing if in intro/menu section
     }
@@ -674,4 +674,4 @@ if (typeof performance !== 'undefined' && performance.mark) {
     performance.mark('isokari-core-loaded');
 }
 
-console.log('🏝️ ISOKARI Core System Loaded');
+console.log('ISOKARI Core System Loaded');

@@ -79,7 +79,7 @@ ISOKARI.MenuController = class {
             ISOKARI.State.cameras.intro = this.camera;
             ISOKARI.State.renderers.intro = this.renderer;
     
-            console.log('🎬 Menu controller initialized');
+            console.log('Menu controller initialized');
         } catch (error) {
             console.error('Error initializing menu controller:', error);
             this.createFallbackBackground();
@@ -119,7 +119,7 @@ ISOKARI.MenuController = class {
             this.video.playsInline = true;
             this.video.preload = 'auto';
     
-            // Simple progress simulation for video (since video progress is harder to track)
+            // Simple progress simulation for video
             let progressStep = 40;
             const progressInterval = setInterval(() => {
                 if (this.app && progressStep < 75) {
@@ -140,15 +140,27 @@ ISOKARI.MenuController = class {
             this.video.addEventListener('error', (e) => {
                 clearInterval(progressInterval);
                 console.error('Video loading error:', e);
-                this.createFallbackBackground();
-                resolve();
+                
+                // Only check if scene exists (allow fallback on re-initialization)
+                if (this.scene) {
+                    this.createFallbackBackground();
+                } else {
+                    console.log('No scene available for fallback');
+                }
+                
+                resolve(); // Always resolve to continue initialization
             });
     
             this.video.addEventListener('canplay', () => {
-                this.video.play().catch(e => {
-                    console.warn('Video autoplay prevented:', e);
-                    this.createPlayButton();
-                });
+                // Only check if video exists, not section
+                if (this.video) {
+                    this.video.play().catch(e => {
+                        console.warn('Video autoplay prevented:', e);
+                        if (this.scene) {
+                            this.createPlayButton();
+                        }
+                    });
+                }
             });
     
             this.video.load();
@@ -156,26 +168,38 @@ ISOKARI.MenuController = class {
     }
 
     createVideoMesh() {
+        // Only check if scene exists (not section check)
+        if (!this.scene) {
+            console.log('📹 No scene available for video mesh');
+            return;
+        }
+        
         const videoTexture = new THREE.VideoTexture(this.video);
         videoTexture.minFilter = THREE.LinearFilter;
         videoTexture.magFilter = THREE.LinearFilter;
         videoTexture.format = THREE.RGBFormat;
         videoTexture.flipY = true;
-
+    
         const geometry = new THREE.SphereGeometry(500, 60, 40);
         geometry.scale(-1, 1, 1);
-
+    
         const material = new THREE.MeshBasicMaterial({ 
             map: videoTexture,
             side: THREE.FrontSide
         });
-
+    
         this.videoMesh = new THREE.Mesh(geometry, material);
         this.scene.add(this.videoMesh);
     }
 
     createFallbackBackground() {
-        console.log('🎨 Creating fallback gradient background');
+        // Only check if scene exists (not section check)
+        if (!this.scene) {
+            console.log('No scene available for fallback background');
+            return;
+        }
+        
+        console.log('Creating fallback gradient background');
         
         const canvas = document.createElement('canvas');
         canvas.width = 2048;
@@ -201,7 +225,7 @@ ISOKARI.MenuController = class {
                 Math.random() * 3
             );
         }
-
+    
         const texture = new THREE.CanvasTexture(canvas);
         const geometry = new THREE.SphereGeometry(500, 60, 40);
         geometry.scale(-1, 1, 1);
@@ -277,7 +301,7 @@ ISOKARI.MenuController = class {
             }
         });
         
-        console.log('ℹ️ Info button and expandable panel created');
+        console.log('Info button and expandable panel created');
     }
 
     toggleInfoPanel() {
@@ -324,7 +348,7 @@ ISOKARI.MenuController = class {
             this.mouseY = (e.clientY / window.innerHeight) * 2 - 1;
         });
 
-        console.log('✨ Parallax effects initialized');
+        console.log('Parallax effects initialized');
     }
 
     updateParallaxEffect() {
@@ -378,13 +402,13 @@ ISOKARI.MenuController = class {
         if (!hasModifiers && event.code === 'Space') {
             event.preventDefault();
             this.toggleAutoRotate();
-            console.log('🎯 Menu auto-rotation toggled via spacebar');
+            console.log('Menu auto-rotation toggled via spacebar');
         }
     }
 
     toggleAutoRotate() {
         this.autoRotateEnabled = !this.autoRotateEnabled;
-        console.log(`🔄 Menu auto-rotation: ${this.autoRotateEnabled ? 'enabled' : 'disabled'}`);
+        console.log(`Menu auto-rotation: ${this.autoRotateEnabled ? 'enabled' : 'disabled'}`);
     }
 
     onMouseDown(event) {
@@ -526,6 +550,9 @@ ISOKARI.MenuController = class {
     dispose() {
         this.stopAnimation();
         
+        // Set disposal flag to prevent async operations
+        this.isDisposed = true;
+        
         // Clean up document event listeners
         document.removeEventListener('mousedown', this.onMouseDown);
         document.removeEventListener('mousemove', this.onMouseMove);
@@ -538,26 +565,30 @@ ISOKARI.MenuController = class {
         if (infoButton) infoButton.remove();
         if (infoPanel) infoPanel.remove();
         
+        // CRITICAL: Clean up video properly
         if (this.video) {
             this.video.pause();
-            this.video.src = '';
+            this.video.removeAttribute('src');
+            this.video.load(); // Force cleanup
             this.video = null;
         }
-
+    
         if (this.videoMesh) {
             ISOKARI.Utils.disposeThreeObject(this.videoMesh);
             this.scene?.remove(this.videoMesh);
             this.videoMesh = null;
         }
-
+    
         if (this.renderer) {
             this.renderer.dispose();
             this.renderer.domElement.remove();
             this.renderer = null;
         }
-
+    
         this.scene = null;
         this.camera = null;
+        
+        console.log('Menu controller disposed');
     }
 
     setAutoRotate(enabled) {
@@ -573,4 +604,4 @@ ISOKARI.MenuController = class {
     }
 };
 
-console.log('🎬 Menu Controller with Parallax and Info Button Loaded');
+console.log('Menu Controller with Parallax and Info Button Loaded');

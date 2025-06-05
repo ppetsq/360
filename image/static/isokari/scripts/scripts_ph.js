@@ -56,7 +56,7 @@ ISOKARI.PilotsController = class {
         // Double-tap detector for UI reveal
         this.doubleTapDetector = new ISOKARI.DoubleTapDetector(() => {
             if (!this.uiPanelVisible) {
-                console.log('🏠 Double-tap detected - showing UI');
+                console.log('Double-tap detected - showing UI');
                 this.showUIPanel();
             }
         });
@@ -100,7 +100,7 @@ ISOKARI.PilotsController = class {
             ISOKARI.State.cameras.pilots = this.camera;
             ISOKARI.State.renderers.pilots = this.renderer;
 
-            console.log('🏠 Pilots House controller initialized');
+            console.log('Pilots House controller initialized');
         } catch (error) {
             console.error('Error initializing pilots house controller:', error);
         }
@@ -139,7 +139,7 @@ ISOKARI.PilotsController = class {
             // Enhanced loading for image switches
             if (showLoading && this.app) {
                 timeoutId = setTimeout(() => {
-                    this.app.showImageLoading('Loading 360° image...');
+                    this.app.showImageLoading('Loading new view...');
                     loadingState = 'shown';
                 }, 1000); // 1 second delay
             }
@@ -250,7 +250,7 @@ ISOKARI.PilotsController = class {
         prevButton.addEventListener('click', () => this.goToPrevious());
         nextButton.addEventListener('click', () => this.goToNext());
 
-        console.log('🏠 Standalone navigation buttons created');
+        console.log('Standalone navigation buttons created');
     }
 
     setupMobileUI() {
@@ -277,7 +277,7 @@ ISOKARI.PilotsController = class {
         houseContainer.style.removeProperty('visibility');
         houseContainer.classList.remove('positioned');
         
-        console.log(`🔄 RESET HOUSE POSITIONING - Now ${this.isMobile ? 'MOBILE' : 'DESKTOP'} mode`);
+        console.log(`RESET HOUSE POSITIONING - Now ${this.isMobile ? 'MOBILE' : 'DESKTOP'} mode`);
         
         if (this.isMobile && this.uiPanelVisible) {
             this.positionHouseRelativeToUI();
@@ -303,7 +303,7 @@ ISOKARI.PilotsController = class {
             houseContainer.style.setProperty('opacity', '1', 'important');
             houseContainer.style.setProperty('visibility', 'visible', 'important');
             
-            console.log(`🏠 MOBILE HOUSE POSITIONING: bottom ${bottomOffset}px`);
+            console.log(`MOBILE HOUSE POSITIONING: bottom ${bottomOffset}px`);
         }
     }
 
@@ -324,7 +324,7 @@ ISOKARI.PilotsController = class {
         container.addEventListener('dblclick', (e) => {
             e.preventDefault();
             if (!this.uiPanelVisible) {
-                console.log('🏠 Double-click detected - showing UI');
+                console.log('Double-click detected - showing UI');
                 this.showUIPanel();
             }
         }, false);
@@ -573,7 +573,7 @@ ISOKARI.PilotsController = class {
     }
 
     handleInitialShow() {
-        console.log('🏠 HandleInitialShow called - mobile:', this.isMobile);
+        console.log('HandleInitialShow called - mobile:', this.isMobile);
         if (this.isMobile) {
             this.positionHouseRelativeToUI();
         }
@@ -710,7 +710,7 @@ ISOKARI.PilotsController = class {
         const newLat = this.lat + deltaLat;
         this.lat = Math.max(-this.MAX_LAT_DEG, Math.min(this.MAX_LAT_DEG, newLat));
         
-        console.log(`🏠 Camera tilted to ${this.lat.toFixed(1)}°`);
+        console.log(`Camera tilted to ${this.lat.toFixed(1)}°`);
     }
 
     stopAnimation() {
@@ -806,7 +806,7 @@ ISOKARI.PilotsController = class {
         // Clear arrays to break references
         this.imageUrls = [];
         
-        console.log('🏠 Pilots controller fully disposed with GPU memory cleanup');
+        console.log('Pilots controller fully disposed with GPU memory cleanup');
     }
 
     jumpToImage(index) {
@@ -838,4 +838,4 @@ ISOKARI.PilotsController = class {
     }
 };
 
-console.log('🏠 Pilots House Controller with Immediate House Positioning Loaded');
+console.log('Pilots House Controller with Immediate House Positioning Loaded');

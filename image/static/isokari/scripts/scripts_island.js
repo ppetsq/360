@@ -274,7 +274,7 @@ ISOKARI.IslandController = class {
             // Initialize UI content
             this.updateUIContent();
     
-            console.log('🏝️ Island controller initialized');
+            console.log('Island controller initialized');
         } catch (error) {
             console.error('Error initializing island controller:', error);
         }
@@ -425,7 +425,7 @@ ISOKARI.IslandController = class {
         prevButton.addEventListener('click', () => this.goToPrevious());
         nextButton.addEventListener('click', () => this.goToNext());
 
-        console.log('🏝️ Standalone navigation buttons created');
+        console.log('Standalone navigation buttons created');
     }
 
     setupMobileUI() {
@@ -453,7 +453,7 @@ ISOKARI.IslandController = class {
         mapContainer.style.removeProperty('visibility');
         mapContainer.classList.remove('positioned');
         
-        console.log(`🔄 RESET MAP POSITIONING - Now ${this.isMobile ? 'MOBILE' : 'DESKTOP'} mode`);
+        console.log(`RESET MAP POSITIONING - Now ${this.isMobile ? 'MOBILE' : 'DESKTOP'} mode`);
         
         if (this.isMobile && this.uiPanelVisible) {
             this.positionMapRelativeToUI();
@@ -479,12 +479,12 @@ ISOKARI.IslandController = class {
             mapContainer.style.setProperty('opacity', '1', 'important');
             mapContainer.style.setProperty('visibility', 'visible', 'important');
             
-            console.log(`🗺️ MOBILE MAP POSITIONING: bottom ${bottomOffset}px`);
+            console.log(`MOBILE MAP POSITIONING: bottom ${bottomOffset}px`);
         }
     }
 
     handleInitialShow() {
-        console.log('🏝️ HandleInitialShow called - mobile:', this.isMobile);
+        console.log('HandleInitialShow called - mobile:', this.isMobile);
         if (this.isMobile) {
             this.positionMapRelativeToUI();
         }
@@ -507,7 +507,7 @@ ISOKARI.IslandController = class {
         container.addEventListener('dblclick', (e) => {
             e.preventDefault();
             if (!this.uiPanelVisible) {
-                console.log('🏝️ Double-click detected - showing UI');
+                console.log('Double-click detected - showing UI');
                 this.showUIPanel();
             }
         }, false);
@@ -1014,7 +1014,7 @@ ISOKARI.IslandController = class {
         this.imageUrls = [];
         this.imageContent = [];
         
-        console.log('🏝️ Island controller fully disposed with GPU memory cleanup');
+        console.log('Island controller fully disposed with GPU memory cleanup');
     }
 
     async jumpToImage(index) {
@@ -1046,4 +1046,4 @@ ISOKARI.IslandController = class {
     }
 };
 
-console.log('🏝️ Island Controller with Immediate Map Positioning Loaded');
+console.log('Island Controller with Immediate Map Positioning Loaded');
