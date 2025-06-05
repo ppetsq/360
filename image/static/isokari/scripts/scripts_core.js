@@ -434,7 +434,7 @@ ISOKARI.App = class {
         const messages = {
             intro: 'Loading menu...',
             island: 'Loading island experience...',
-            pilots: 'Loading pilots house...'
+            pilots: 'Loading old pilot house...'
         };
         if (loadingText) {
             loadingText.textContent = messages[targetSection] || 'Loading...';
