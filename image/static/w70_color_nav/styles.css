@@ -1,0 +1,780 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 62.5%; /* 1rem = 10px */
+}
+
+body {
+    font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #F2FCFC;
+    color: #372D73;
+    min-height: 100vh;
+    padding: 50px;
+}
+
+.main-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding-left: 2.4rem;
+    padding-right: 2.4rem;
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+.header {
+    text-align: left;
+    margin-bottom: 5rem;
+}
+
+.title {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 8.6rem;
+    font-weight: 900;
+    font-stretch: condensed;
+    color: #914C95;
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 90%;
+    text-transform: uppercase;
+    -webkit-font-smoothing: antialiased;
+    text-align: left;
+    margin-left: 10rem;
+    margin-top: 4rem;
+}
+
+.title a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ========================================
+   VIEWER SECTION
+   ======================================== */
+.viewer-section {
+    margin-bottom: 6rem;
+}
+
+.viewer-wrapper {
+    position: relative;
+    width: 100%;
+    height: 34.3rem;
+    background: #FFFFFF;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(55, 45, 115, 0.15);
+    border: 2px solid #372D73;
+}
+
+.viewer-container {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+    position: relative;
+    cursor: move;
+}
+
+.viewer-label {
+    position: absolute;
+    top: 2.5rem;
+    right: 3rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 4rem;
+    font-weight: 900;
+    font-stretch: condensed;
+    color: #FFFFFF;
+    opacity: 1;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    -webkit-font-smoothing: antialiased;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* ========================================
+   FULLSCREEN FUNCTIONALITY
+   ======================================== */
+.fullscreen-button {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    width: 4.4rem;
+    height: 4.4rem;
+    background: #EBD45A;
+    color: #372D73;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    z-index: 20;
+}
+
+.fullscreen-button:hover {
+    opacity: 0.8;
+}
+
+/* Fullscreen mode styles */
+.viewer-wrapper.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100svh;
+    z-index: 9999;
+    border-radius: 0;
+    border: none;
+}
+
+.viewer-wrapper.fullscreen .viewer-label {
+    font-size: 5rem;
+    top: 3rem;
+    right: 4rem;
+}
+
+/* This rule hides the standalone fullscreen button when the viewer is in fullscreen mode. */
+.viewer-wrapper.fullscreen > .fullscreen-button {
+    display: none;
+}
+
+/* Fullscreen navigation container - same for all devices */
+.fullscreen-nav-container {
+    position: absolute;
+    bottom: 2rem;
+    right: 3rem;
+    left: auto;
+    transform: none;
+    display: none;
+    align-items: center;
+    gap: 1.6rem;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 1.2rem 2rem;
+    border-radius: 4rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.viewer-wrapper.fullscreen .fullscreen-nav-container {
+    display: flex;
+}
+
+/* Fullscreen button inside nav container */
+.fullscreen-nav-container .fullscreen-button {
+    position: static;
+    width: 3.6rem;
+    height: 3.6rem;
+    background: #EBD45A;
+    color: #372D73;
+    font-size: 1.4rem;
+    display: flex;
+    /* Removed margin-left to ensure consistent spacing */
+}
+
+.fullscreen-nav-container .fullscreen-button:hover {
+    opacity: 0.8;
+}
+
+/* Hide regular navigation in fullscreen */
+.viewer-wrapper.fullscreen ~ .main-navigation,
+.viewer-wrapper.fullscreen ~ .auto-rotate-section,
+.viewer-wrapper.fullscreen ~ .viewer-footer {
+    display: none;
+}
+
+/* ========================================
+   NAVIGATION CONTROLS
+   ======================================== */
+.main-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2.4rem;
+    margin-top: 2.4rem;
+    padding: 0 2px;
+}
+
+.auto-rotate-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    padding: 0 2px;
+}
+
+.viewpoint-controls {
+    display: none; /* Hidden by default, shown only on desktop */
+}
+
+/* Viewpoint dots */
+.viewpoint-nav {
+    display: flex;
+    gap: 1.2rem;
+    transition: opacity 0.3s ease;
+}
+
+.viewpoint-button {
+    width: 1.2rem;
+    height: 1.2rem;
+    background: rgba(55, 45, 115, 0.3);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.viewpoint-button:hover {
+    background: rgba(55, 45, 115, 0.6);
+    transform: scale(1.2);
+}
+
+.viewpoint-button.active {
+    background: #372D73;
+    transform: scale(1.3);
+}
+
+/* Fullscreen navigation viewpoint dots */
+.fullscreen-nav-container .viewpoint-nav {
+    gap: 1rem;
+}
+
+.fullscreen-nav-container .viewpoint-button {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.fullscreen-nav-container .viewpoint-button:hover {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.fullscreen-nav-container .viewpoint-button.active {
+    background: #FFFFFF;
+}
+
+/* Control buttons */
+.control-button {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    background: #372D73;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 6.4rem;
+    padding: 1.2rem 2.4rem;
+    height: 4.4rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.control-button:hover {
+    opacity: 0.8;
+}
+
+.control-button.active {
+    background: #1F882F;
+    color: #FFFFFF;
+}
+
+/* Compact buttons for fullscreen */
+.control-button.compact {
+    padding: 0.8rem 1.2rem;
+    height: 3.6rem;
+    font-size: 1.2rem;
+    background: rgba(55, 45, 115, 0.9);
+}
+
+.control-button.compact:hover {
+    background: rgba(55, 45, 115, 1);
+}
+
+.control-button.compact.active {
+    background: rgba(31, 136, 47, 0.9);
+}
+
+.control-button .button-text {
+    display: inline;
+}
+
+/* Auto-rotate icon animation */
+.control-button .fa-sync-alt {
+    transition: transform 0.3s ease-out;
+}
+
+.control-button.active .fa-sync-alt {
+    animation: rotate 6s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   VIEWER FOOTER
+   ======================================== */
+.viewer-footer {
+    margin-top: 2.4rem;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.viewer-description {
+    text-align: left;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 1.6rem;
+    line-height: 1.5;
+    color: #372D73;
+}
+
+.viewer-description p {
+    margin: 0;
+}
+
+.description-highlight {
+    font-weight: 700;
+}
+
+.club-highlight {
+    color: #CF3D78;
+}
+
+.etage-highlight {
+    color: #CF3D78;
+}
+
+/* ========================================
+   LOADING OVERLAY
+   ======================================== */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #F2FCFC;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2.4rem;
+    transition: opacity 0.8s ease-out;
+}
+
+.loading-spinner {
+    position: relative;
+    width: 4.8rem;
+    height: 4.8rem;
+}
+
+.loading-spinner::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid rgba(55, 45, 115, 0.2);
+    border-top-color: #372D73;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: #372D73;
+    opacity: 0.8;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   GLASSMORPHISM HOTSPOT NAVIGATION
+   ======================================== */
+.hotspot-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.hotspot {
+    position: absolute;
+    pointer-events: auto;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+}
+
+.hotspot-glass {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow:
+        0 8px 32px rgba(55, 45, 115, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hotspot:hover .hotspot-glass {
+    transform: scale(1.15);
+    background: rgba(235, 213, 90, 0.25);
+    border-color: rgba(235, 213, 90, 0.4);
+    box-shadow:
+        0 12px 40px rgba(55, 45, 115, 0.3),
+        0 0 25px rgba(235, 213, 90, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.hotspot-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hotspot-dot {
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    background: rgba(55, 45, 115, 0.8);
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.hotspot:hover .hotspot-dot {
+    background: rgba(55, 45, 115, 1);
+    transform: scale(1.1);
+}
+
+.hotspot-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2.4rem;
+    height: 2.4rem;
+    border: 2px solid rgba(55, 45, 115, 0.3);
+    border-radius: 50%;
+    animation: hotspot-pulse 2s ease-in-out infinite;
+}
+
+.hotspot:hover .hotspot-ring {
+    border-color: rgba(55, 45, 115, 0.6);
+    animation-duration: 1s;
+}
+
+@keyframes hotspot-pulse {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.3);
+        opacity: 0.3;
+    }
+}
+
+.hotspot-glass::before {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 15%;
+    width: 35%;
+    height: 35%;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    filter: blur(1px);
+    transition: all 0.3s ease;
+}
+
+.hotspot:hover .hotspot-glass::before {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.2);
+}
+
+/* Hide hotspots during transitions */
+.viewer-container[style*="opacity: 0"] + .hotspot-overlay {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Responsive hotspot sizing */
+@media (max-width: 768px) {
+    .hotspot-glass {
+        width: 4.5rem;
+        height: 4.5rem;
+    }
+    
+    .hotspot-dot {
+        width: 1rem;
+        height: 1rem;
+    }
+    
+    .hotspot-ring {
+        width: 2rem;
+        height: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hotspot-glass {
+        width: 4rem;
+        height: 4rem;
+    }
+    
+    .hotspot-dot {
+        width: 0.8rem;
+        height: 0.8rem;
+    }
+    
+    .hotspot-ring {
+        width: 1.8rem;
+        height: 1.8rem;
+    }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.hidden {
+    display: none !important;
+}
+
+/* ========================================
+   RESPONSIVE STYLES
+   ======================================== */
+
+/* Large screens (1280px+) */
+@media screen and (min-width: 1280px) {
+    .title {
+        font-size: 13.6rem;
+    }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+    .viewer-wrapper {
+        height: 61.9rem;
+    }
+    
+    /* Hide mobile/tablet navigation */
+    .main-navigation,
+    .auto-rotate-section {
+        display: none;
+    }
+    
+    /* Desktop layout for footer */
+    .viewer-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-top: 2.4rem;
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+    
+    .viewer-description {
+        width: 50%;
+        padding-right: 2rem;
+    }
+    
+    /* Show desktop controls */
+    .viewpoint-controls {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 2.4rem;
+    }
+}
+
+/* Tablet and Mobile (below 1024px) */
+@media (max-width: 1023px) {
+    .viewpoint-controls {
+        display: none;
+    }
+    
+    .main-navigation,
+    .auto-rotate-section {
+        display: flex;
+    }
+    
+    .viewer-description {
+        width: 100%;
+    }
+}
+
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
+    body {
+        padding: 1.6rem;
+    }
+    
+    .main-container {
+        gap: 2.4rem;
+    }
+    
+    .title {
+        font-size: 5.6rem;
+        margin-left: 0;
+    }
+    
+    .viewer-wrapper {
+        height: 30rem;
+    }
+    
+    .viewer-label {
+        font-size: 1.8rem;
+        top: 1.5rem;
+        right: 1.5rem;
+    }
+    
+    .control-button {
+        font-size: 1.4rem;
+        height: 4.4rem;
+    }
+}
+
+/* Mobile specific (767px and below) */
+@media (max-width: 767px) {
+    /* Hide button text only for prev/next buttons */
+    .main-navigation .control-button .button-text {
+        display: none;
+    }
+    
+    .main-navigation .control-button {
+        padding: 1.2rem;
+        min-width: 4.4rem;
+        justify-content: center;
+    }
+    
+    /* Keep auto-rotate button text visible */
+    .auto-rotate-section .control-button .button-text {
+        display: inline;
+    }
+}
+
+/* Small mobile (480px and below) */
+@media (max-width: 480px) {
+    body {
+        padding: 1rem;
+    }
+    
+    .title {
+        font-size: 5.6rem;
+    }
+    
+    .viewer-wrapper {
+        height: 40rem;
+    }
+    
+    .viewer-label {
+        font-size: 1.6rem;
+        top: 1rem;
+        right: 1rem;
+    }
+    
+    .control-button {
+        font-size: 1.2rem;
+        height: 4rem;
+    }
+    
+    .main-navigation {
+        gap: 1.6rem;
+    }
+
+    .fullscreen-button {
+        width: 4rem;
+        height: 4rem;
+        font-size: 1.4rem;
+        bottom: 1.5rem;
+        right: 1.5rem;
+    }
+}
+
+/* Add these to your styles.css file */
+
+/* Fix canvas rendering in WebGL context */
+.viewer-container canvas {
+    image-rendering: auto !important;
+    -webkit-font-smoothing: subpixel-antialiased !important;
+    transform: translateZ(0); /* Force GPU acceleration */
+    backface-visibility: hidden; /* Prevent flickering */
+}
+
+/* Remove any filters that might interfere */
+.viewer-container {
+    filter: none !important;
+    -webkit-filter: none !important;
+}
+
+/* Ensure no backdrop filters on container */
+.viewer-wrapper {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Alternative CSS3D Hotspot Styles (if you want to try CSS3D approach) */
+.hotspot-3d {
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.hotspot-glass-3d {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.hotspot-glass-3d:hover {
+    background: rgba(235, 213, 90, 0.9);
+    border-color: rgba(235, 213, 90, 1);
+    transform: scale(1.1);
+}
+
+.hotspot-inner-3d {
+    width: 12px;
+    height: 12px;
+    background: rgba(55, 45, 115, 0.8);
+    border-radius: 50%;
+}
