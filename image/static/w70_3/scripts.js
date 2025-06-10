@@ -1,18 +1,68 @@
 // Configuration for viewpoints
 const viewpoints = {
     club: [
-        { id: 1, panorama: "https://assets.360.petsq.works/w70_2/club_001.jpg" },
-        { id: 2, panorama: "https://assets.360.petsq.works/w70_2/club_002.jpg" },
-        { id: 3, panorama: "https://assets.360.petsq.works/w70_2/club_003.jpg" },
-        { id: 4, panorama: "https://assets.360.petsq.works/w70_2/club_004.jpg" },
-        { id: 5, panorama: "https://assets.360.petsq.works/w70_2/club_005.jpg" }
+        { 
+            id: 1, 
+            panorama: "https://assets.360.petsq.works/w70_2/club_001.jpg",
+            startX: -15,     // Horizontal rotation (degrees: 0 = front, 90 = right, 180 = back, -90 = left)
+            startY: 15      // Vertical rotation (degrees: 0 = center, 30 = up, -30 = down)
+        },
+        { 
+            id: 2, 
+            panorama: "https://assets.360.petsq.works/w70_2/club_002.jpg",
+            startX: -20,
+            startY: 15
+        },
+        { 
+            id: 3, 
+            panorama: "https://assets.360.petsq.works/w70_2/club_003.jpg",
+            startX: 50,
+            startY: 15
+        },
+        { 
+            id: 4, 
+            panorama: "https://assets.360.petsq.works/w70_2/club_004.jpg",
+            startX: -60,
+            startY: 15
+        },
+        { 
+            id: 5, 
+            panorama: "https://assets.360.petsq.works/w70_2/club_005.jpg",
+            startX: -50,
+            startY: 15
+        }
     ],
     etage: [
-        { id: 1, panorama: "https://assets.360.petsq.works/w70_2/etage_01.jpg" },
-        { id: 2, panorama: "https://assets.360.petsq.works/w70_2/etage_02.jpg" },
-        { id: 3, panorama: "https://assets.360.petsq.works/w70_2/etage_03.jpg" },
-        { id: 4, panorama: "https://assets.360.petsq.works/w70_2/etage_04.jpg" },
-        { id: 5, panorama: "https://assets.360.petsq.works/w70_2/etage_05.jpg" }
+        { 
+            id: 1, 
+            panorama: "https://assets.360.petsq.works/w70_2/etage_02.jpg",
+            startX: -15,
+            startY: 15
+        },
+        { 
+            id: 2, 
+            panorama: "https://assets.360.petsq.works/w70_2/etage_01.jpg",
+            startX: 70,
+            startY: 15
+        },
+        { 
+            id: 3, 
+            panorama: "https://assets.360.petsq.works/w70_2/etage_03.jpg",
+            startX: -10,
+            startY: 15
+        },
+        { 
+            id: 4, 
+            panorama: "https://assets.360.petsq.works/w70_2/etage_04.jpg",
+            startX: -90,
+            startY: 15
+        },
+        { 
+            id: 5, 
+            panorama: "https://assets.360.petsq.works/w70_2/etage_05.jpg",
+            startX: -20,
+            startY: 15
+        }
     ]
 };
 
@@ -449,6 +499,18 @@ function loadViewpoint(location, id, isInitial = false) {
                     viewer.sphere.material.dispose();
                 }
                 viewer.sphere.material = newMaterial;
+                
+                // Set starting camera position from viewpoint configuration (convert degrees to radians)
+                if (viewpoint.startX !== undefined) {
+                    const startXRadians = (viewpoint.startX * Math.PI) / 180;
+                    viewer.targetRotationX = startXRadians;
+                    // Set sphere rotation immediately to avoid visual glitch
+                    viewer.sphere.rotation.y = startXRadians;
+                }
+                if (viewpoint.startY !== undefined) {
+                    const startYRadians = (viewpoint.startY * Math.PI) / 180;
+                    viewer.targetRotationY = startYRadians;
+                }
                 
                 // Show viewer with fade in
                 container.style.opacity = '1';
