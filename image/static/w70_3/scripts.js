@@ -1,11 +1,11 @@
 // Configuration for viewpoints
 const viewpoints = {
     club: [
-        { id: 1, panorama: "https://assets.360.petsq.works/w70_2/01_club.jpg" },
-        { id: 2, panorama: "https://assets.360.petsq.works/w70_2/02_club.jpg" },
-        { id: 3, panorama: "https://assets.360.petsq.works/w70_2/03_club.jpg" },
-        { id: 4, panorama: "https://assets.360.petsq.works/w70_2/04_club.jpg" },
-        { id: 5, panorama: "https://assets.360.petsq.works/w70_2/05_club.jpg" }
+        { id: 1, panorama: "https://assets.360.petsq.works/w70_2/club_001.jpg" },
+        { id: 2, panorama: "https://assets.360.petsq.works/w70_2/club_002.jpg" },
+        { id: 3, panorama: "https://assets.360.petsq.works/w70_2/club_003.jpg" },
+        { id: 4, panorama: "https://assets.360.petsq.works/w70_2/club_004.jpg" },
+        { id: 5, panorama: "https://assets.360.petsq.works/w70_2/club_005.jpg" }
     ],
     etage: [
         { id: 1, panorama: "https://assets.360.petsq.works/w70_2/etage_01.jpg" },
