@@ -10,9 +10,8 @@ const viewpoints = {
             startX: -15,     // Horizontal rotation (degrees: 0 = front, 90 = right, 180 = back, -90 = left)
             startY: 15,      // Vertical rotation (degrees: 0 = center, 30 = up, -30 = down)
             hotspots: [
-                { id: 'to_2', target: 2, position: { u: 0.625, v: 0.5 } },
-                { id: 'to_3', target: 3, position: { u: 0.208, v: 0.6 } },
-                { id: 'to_5', target: 5, position: { u: 0.5, v: 0.3 } }
+                { id: 'to_3', target: 3, position: { u: 0, v: 0.507 } },
+                { id: 'to_4', target: 4, position: { u: 0.5, v: 0.5 } },
             ]
         },
         { 
@@ -21,9 +20,7 @@ const viewpoints = {
             startX: -20,
             startY: 15,
             hotspots: [
-                { id: 'to_1', target: 1, position: { u: 0.125, v: 0.5 } },
-                { id: 'to_3', target: 3, position: { u: 0.667, v: 0.65 } },
-                { id: 'to_4', target: 4, position: { u: 0.583, v: 0.7 } }
+                { id: 'to_3', target: 3, position: { u: 0.335, v: 0.5 } },
             ]
         },
         { 
@@ -32,9 +29,8 @@ const viewpoints = {
             startX: 50,
             startY: 15,
             hotspots: [
-                { id: 'to_1', target: 1, position: { u: 0.625, v: 0.5 } },
-                { id: 'to_2', target: 2, position: { u: 0.292, v: 0.6 } },
-                { id: 'to_4', target: 4, position: { u: 1.0, v: 0.5 } }
+                { id: 'to_1', target: 1, position: { u: 0.769, v: 0.5 } },
+                { id: 'to_2', target: 2, position: { u: 0.264, v: 0.52 } },
             ]
         },
         { 
@@ -43,9 +39,8 @@ const viewpoints = {
             startX: -60,
             startY: 15,
             hotspots: [
-                { id: 'to_2', target: 2, position: { u: 0.5, v: 0.35 } },
-                { id: 'to_3', target: 3, position: { u: 0.125, v: 0.5 } },
-                { id: 'to_5', target: 5, position: { u: 0.625, v: 0.7 } }
+                { id: 'to_5', target: 5, position: { u: 0.982, v: 0.5 } },
+                { id: 'to_1', target: 1, position: { u: 0.492, v: 0.5 } },
             ]
         },
         { 
@@ -54,8 +49,7 @@ const viewpoints = {
             startX: -50,
             startY: 15,
             hotspots: [
-                { id: 'to_1', target: 1, position: { u: 0.5, v: 0.75 } },
-                { id: 'to_4', target: 4, position: { u: 0.125, v: 0.4 } }
+                { id: 'to_4', target: 4, position: { u: 0.088, v: 0.5 } }
             ]
         }
     ],
@@ -240,7 +234,7 @@ class HotspotManager {
                     clientX: touch.clientX,
                     clientY: touch.clientY,
                     preventDefault: () => {},
-                    stopPropagation: () => {}
+                    stopPropagation: () => {},
                 };
                 
                 this.onContainerClick(syntheticEvent);
@@ -248,7 +242,7 @@ class HotspotManager {
         }, { passive: true });
     }
 
-    loadHotspots(viewpointId) {
+    loadHotspots(viewpointId, startVisible = true) {
         this.currentViewpoint = viewpointId;
         this.clearHotspots();
         
@@ -256,11 +250,11 @@ class HotspotManager {
         if (!viewpoint?.hotspots) return;
         
         viewpoint.hotspots.forEach(hotspotData => {
-            this.create3DHotspot(hotspotData);
+            this.create3DHotspot(hotspotData, startVisible);
         });
     }
 
-    create3DHotspot(hotspotData) {
+    create3DHotspot(hotspotData, startVisible = true) {
         const viewer = viewers[this.location];
         
         // Convert UV coordinates to 3D world position
@@ -269,14 +263,13 @@ class HotspotManager {
         // Create container group for the hotspot
         const hotspotGroup = new THREE.Group();
         
-        // Subtle background circle with transparency and soft appearance
+        // Always create with normal opacity values, but set group visibility
         const circleGeometry = new THREE.CircleGeometry(36, 32);
         const circleMaterial = new THREE.MeshBasicMaterial({
             color: 0xffffff,
             side: THREE.DoubleSide,
             transparent: true,
-            opacity: 0.85, // Subtle transparency
-            // Simple depth-based "shadow" effect using slightly darker background
+            opacity: 0.85,
         });
         
         const circle = new THREE.Mesh(circleGeometry, circleMaterial);
@@ -289,7 +282,7 @@ class HotspotManager {
             color: 0x000000,
             side: THREE.DoubleSide,
             transparent: true,
-            opacity: 0.1, // Very subtle shadow
+            opacity: 0.1,
         });
         
         const shadowCircle = new THREE.Mesh(shadowGeometry, shadowMaterial);
@@ -329,6 +322,9 @@ class HotspotManager {
         // Position the group
         hotspotGroup.position.copy(worldPosition);
         hotspotGroup.lookAt(0, 0, 0);
+        
+        // Set initial visibility by controlling the whole group
+        hotspotGroup.visible = startVisible;
         
         // Add to sphere
         viewer.sphere.add(hotspotGroup);
@@ -667,6 +663,7 @@ drawHoverGlassmorphismHotspot(ctx, width, height) {
     onContainerClick(event) {
         if (viewers[this.location].isTransitioning) return;
         
+        
         const container = document.getElementById(`${this.location}-viewer`);
         const rect = container.getBoundingClientRect();
         
@@ -808,6 +805,115 @@ drawHoverGlassmorphismHotspot(ctx, width, height) {
     show() {
         this.hotspots.forEach(hotspot => {
             hotspot.visible = true;
+        });
+    }
+
+    fadeOut(duration = 400) {
+        return new Promise((resolve) => {
+            if (this.hotspots.length === 0) {
+                resolve();
+                return;
+            }
+
+            // Make sure all hotspots are visible before fading
+            this.hotspots.forEach(hotspotGroup => {
+                hotspotGroup.visible = true;
+            });
+
+            const startTime = Date.now();
+            const animate = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const opacity = 1 - progress;
+
+                this.hotspots.forEach(hotspotGroup => {
+                    // Fade main circle
+                    if (hotspotGroup.userData.circle) {
+                        hotspotGroup.userData.circle.material.opacity = 0.85 * opacity;
+                    }
+                    
+                    // Fade shadow
+                    if (hotspotGroup.userData.shadowCircle) {
+                        hotspotGroup.userData.shadowCircle.material.opacity = 0.1 * opacity;
+                    }
+                    
+                    // Fade plus sign
+                    if (hotspotGroup.userData.horizontalLine) {
+                        hotspotGroup.userData.horizontalLine.material.opacity = 0.9 * opacity;
+                    }
+                    if (hotspotGroup.userData.verticalLine) {
+                        hotspotGroup.userData.verticalLine.material.opacity = 0.9 * opacity;
+                    }
+                });
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    resolve();
+                }
+            };
+            animate();
+        });
+    }
+
+    fadeIn(duration = 400) {
+        return new Promise((resolve) => {
+            if (this.hotspots.length === 0) {
+                resolve();
+                return;
+            }
+
+            // Make sure all hotspots are visible and start with 0 opacity
+            this.hotspots.forEach(hotspotGroup => {
+                hotspotGroup.visible = true;
+                
+                // Set initial opacity to 0
+                if (hotspotGroup.userData.circle) {
+                    hotspotGroup.userData.circle.material.opacity = 0;
+                }
+                if (hotspotGroup.userData.shadowCircle) {
+                    hotspotGroup.userData.shadowCircle.material.opacity = 0;
+                }
+                if (hotspotGroup.userData.horizontalLine) {
+                    hotspotGroup.userData.horizontalLine.material.opacity = 0;
+                }
+                if (hotspotGroup.userData.verticalLine) {
+                    hotspotGroup.userData.verticalLine.material.opacity = 0;
+                }
+            });
+
+            const startTime = Date.now();
+            const animate = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                this.hotspots.forEach(hotspotGroup => {
+                    // Fade in main circle
+                    if (hotspotGroup.userData.circle) {
+                        hotspotGroup.userData.circle.material.opacity = 0.85 * progress;
+                    }
+                    
+                    // Fade in shadow
+                    if (hotspotGroup.userData.shadowCircle) {
+                        hotspotGroup.userData.shadowCircle.material.opacity = 0.1 * progress;
+                    }
+                    
+                    // Fade in plus sign
+                    if (hotspotGroup.userData.horizontalLine) {
+                        hotspotGroup.userData.horizontalLine.material.opacity = 0.9 * progress;
+                    }
+                    if (hotspotGroup.userData.verticalLine) {
+                        hotspotGroup.userData.verticalLine.material.opacity = 0.9 * progress;
+                    }
+                });
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    resolve();
+                }
+            };
+            animate();
         });
     }
 }
@@ -1232,7 +1338,7 @@ function toggleAutoRotate(location) {
 }
 
 // Load viewpoint with fade transition
-function loadViewpoint(location, id, isInitial = false) {
+async function loadViewpoint(location, id, isInitial = false) {
     const viewer = viewers[location];
     const wasAutoRotating = viewer.isAutoRotating;
     
@@ -1241,6 +1347,12 @@ function loadViewpoint(location, id, isInitial = false) {
     
     const viewpoint = viewpoints[location][id - 1]; // Get viewpoint data by id (1-based)
     const container = document.getElementById(`${location}-viewer`);
+    
+    // Fade out hotspots first, then clear them (only if not initial load)
+    if (hotspotManagers[location] && !isInitial) {
+        await hotspotManagers[location].fadeOut(300);
+        hotspotManagers[location].clearHotspots();
+    }
     
     // Fade out current view (only if not initial load)
     if (!isInitial) {
@@ -1296,9 +1408,13 @@ function loadViewpoint(location, id, isInitial = false) {
                     // to correctly set the active state on the dot when the panorama is visible.
                     updateNavigation(location); 
                     
-                    // Load hotspots for the new viewpoint
+                    // Load hotspots for the new viewpoint with fade in
                     if (hotspotManagers[location]) {
-                        hotspotManagers[location].loadHotspots(id);
+                        hotspotManagers[location].loadHotspots(id, false); // Start invisible
+                        // Add a small delay before fading in hotspots for better visual flow
+                        setTimeout(() => {
+                            hotspotManagers[location].fadeIn(400);
+                        }, 200);
                     }
 
                     // Check if all initial viewers are loaded to hide the global loading overlay
@@ -1345,7 +1461,11 @@ function loadViewpoint(location, id, isInitial = false) {
             
             // Load hotspots even on error to maintain consistent state
             if (hotspotManagers[location]) {
-                hotspotManagers[location].loadHotspots(id);
+                hotspotManagers[location].loadHotspots(id, false); // Start invisible
+                // Fade in hotspots even on error
+                setTimeout(() => {
+                    hotspotManagers[location].fadeIn(400);
+                }, 200);
             }
 
             // Also handle loading overlay if initial load fails for a viewer
@@ -1365,97 +1485,197 @@ function loadViewpoint(location, id, isInitial = false) {
     );
 }
 
-// Developer positioning tools (set DEV_MODE = true to enable)
-const DEV_MODE = true; // Enable dev mode to help position hotspots
+// Simple Positioning Mode System
+const PositioningMode = {
+    enabled: false,
+    overlay: null,
+    mouseHandlers: new Map(),
 
-if (DEV_MODE) {
-    let positioningMode = false;
-    
-    // Add development mode toggle
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'P' && e.ctrlKey) {
-            e.preventDefault();
-            positioningMode = !positioningMode;
-            togglePositioningMode();
+    init() {
+        this.createOverlay();
+        this.setupKeyboardToggle();
+        console.log('Positioning system initialized. Press P to toggle.');
+    },
+
+    createOverlay() {
+        if (this.overlay) return;
+
+        this.overlay = document.createElement('div');
+        this.overlay.id = 'positioning-overlay';
+        this.overlay.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 9999;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            display: none;
+        `;
+
+        this.overlay.innerHTML = `
+            <div>Positioning Mode: <span id="pos-status">OFF</span></div>
+            <div>Location: <span id="pos-location">-</span></div>
+            <div>Viewpoint: <span id="pos-viewpoint">-</span></div>
+            <div>UV: <span id="pos-coords">-</span></div>
+            <button id="pos-copy" style="margin-top: 8px; padding: 4px 8px; font-size: 11px;">Copy Config</button>
+            <div style="font-size: 10px; margin-top: 8px; opacity: 0.7;">Press P to toggle</div>
+        `;
+
+        document.body.appendChild(this.overlay);
+
+        // Setup copy button
+        document.getElementById('pos-copy').addEventListener('click', () => {
+            const coords = document.getElementById('pos-coords').textContent;
+            if (coords !== '-') {
+                const [u, v] = coords.split(', ');
+                const config = `{ id: 'hotspot_X', target: X, position: { u: ${u}, v: ${v} } }`;
+                navigator.clipboard.writeText(config).then(() => {
+                    console.log('Hotspot config copied to clipboard:', config);
+                });
+            }
+        });
+    },
+
+    setupKeyboardToggle() {
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'p' || e.key === 'P') {
+                e.preventDefault();
+                this.toggle();
+            }
+        });
+    },
+
+    toggle() {
+        this.enabled = !this.enabled;
+        console.log(`Positioning mode: ${this.enabled ? 'ON' : 'OFF'}`);
+        
+        if (this.enabled) {
+            this.enable();
+        } else {
+            this.disable();
         }
-    });
-    
-    function togglePositioningMode() {
-        const containers = document.querySelectorAll('.viewer-container');
-        containers.forEach(container => {
-            if (positioningMode) {
+    },
+
+    enable() {
+        this.overlay.style.display = 'block';
+        document.getElementById('pos-status').textContent = 'ON';
+        
+        // Setup click handlers for each viewer
+        ['club', 'etage'].forEach(location => {
+            const container = document.getElementById(`${location}-viewer`);
+            const canvas = container ? container.querySelector('canvas') : null;
+            
+            if (canvas) {
+                const handler = (event) => this.handleClick(event, location);
+                this.mouseHandlers.set(location, handler);
+                canvas.addEventListener('mousedown', handler);
+                
+                // Visual feedback
                 container.style.cursor = 'crosshair';
-                container.addEventListener('click', onPositioningClick);
-            } else {
-                container.style.cursor = 'move';
-                container.removeEventListener('click', onPositioningClick);
+                canvas.style.cursor = 'crosshair';
             }
         });
         
-        console.log(`Positioning mode: ${positioningMode ? 'ON' : 'OFF'}`);
-        if (positioningMode) {
-            console.log('Click on viewers to get coordinates. Ctrl+P to toggle off.');
-        }
-    }
-    
-    function onPositioningClick(e) {
-        e.preventDefault();
-        e.stopPropagation();
+        console.log('Click on viewers to get coordinates. Press P to toggle off.');
+    },
+
+    disable() {
+        this.overlay.style.display = 'none';
         
-        const location = e.target.id.includes('club') ? 'club' : 'etage';
+        // Remove click handlers and reset cursors
+        ['club', 'etage'].forEach(location => {
+            const container = document.getElementById(`${location}-viewer`);
+            const canvas = container ? container.querySelector('canvas') : null;
+            
+            if (canvas) {
+                const handler = this.mouseHandlers.get(location);
+                if (handler) {
+                    canvas.removeEventListener('mousedown', handler);
+                    this.mouseHandlers.delete(location);
+                }
+                
+                // Reset cursors
+                container.style.cursor = 'move';
+                canvas.style.cursor = 'move';
+            }
+        });
+        
+        // Clear display
+        document.getElementById('pos-location').textContent = '-';
+        document.getElementById('pos-viewpoint').textContent = '-';
+        document.getElementById('pos-coords').textContent = '-';
+    },
+
+    handleClick(event, location) {
+        console.log('=== POSITIONING CLICK ===');
+        event.preventDefault();
+        event.stopPropagation();
+        
         const viewer = viewers[location];
-        const currentViewpoint = viewer.currentViewpoint;
+        if (!viewer) {
+            console.error('Viewer not found:', location);
+            return;
+        }
         
-        // Get click position relative to viewer
         const container = document.getElementById(`${location}-viewer`);
         const rect = container.getBoundingClientRect();
+        const currentViewpoint = viewer.currentViewpoint;
         
-        // Calculate mouse position in normalized device coordinates
+        // Update display
+        document.getElementById('pos-location').textContent = location;
+        document.getElementById('pos-viewpoint').textContent = currentViewpoint;
+        
+        // Calculate normalized device coordinates
         const mouse = new THREE.Vector2(
-            ((e.clientX - rect.left) / rect.width) * 2 - 1,
-            -((e.clientY - rect.top) / rect.height) * 2 + 1
+            ((event.clientX - rect.left) / rect.width) * 2 - 1,
+            -((event.clientY - rect.top) / rect.height) * 2 + 1
         );
         
-        // Cast ray from camera through mouse position
+        // Raycast to find intersection
         const raycaster = new THREE.Raycaster();
         raycaster.setFromCamera(mouse, viewer.camera);
-        
-        // Intersect with the panorama sphere
         const intersects = raycaster.intersectObjects([viewer.sphere]);
         
         if (intersects.length > 0) {
             const intersectionPoint = intersects[0].point;
-            
-            // Convert 3D world position back to UV coordinates
-            const uvPos = worldPositionToUV(intersectionPoint);
+            const uvPos = this.worldPositionToUV(intersectionPoint);
             
             const uFormatted = uvPos.u.toFixed(3);
             const vFormatted = uvPos.v.toFixed(3);
             
+            // Update display
+            document.getElementById('pos-coords').textContent = `${uFormatted}, ${vFormatted}`;
+            
             console.log(`Location: ${location}, Viewpoint: ${currentViewpoint}`);
-            console.log(`Click position: ${(e.clientX - rect.left).toFixed(0)}, ${(e.clientY - rect.top).toFixed(0)}`);
             console.log(`UV coordinates: u: ${uFormatted}, v: ${vFormatted}`);
-            console.log(`Hotspot config: { id: 'to_X', target: X, position: { u: ${uFormatted}, v: ${vFormatted} } }`);
+            console.log(`Config: { id: 'hotspot_X', target: X, position: { u: ${uFormatted}, v: ${vFormatted} } }`);
+        } else {
+            console.log('No intersection found');
+            document.getElementById('pos-coords').textContent = 'No intersection';
         }
-    }
-    
-    function worldPositionToUV(worldPos) {
-        // Normalize to get direction
+    },
+
+    worldPositionToUV(worldPos) {
         const dir = worldPos.clone().normalize();
+        const phi = Math.acos(dir.y);
+        let theta = Math.atan2(dir.x, dir.z);
         
-        // Convert to spherical coordinates
-        const phi = Math.acos(dir.y); // 0 to π
-        let theta = Math.atan2(dir.x, dir.z); // -π to π
-        
-        // Normalize theta to 0-2π
         if (theta < 0) theta += Math.PI * 2;
         
-        // For inverted sphere, reverse the U coordinate
         const u = 1 - (theta / (Math.PI * 2));
         const v = phi / Math.PI;
         
         return { u, v };
     }
-    
-    console.log('Developer mode enabled. Press Ctrl+P to toggle positioning mode.');
-}
+};
+
+// Initialize positioning system when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    PositioningMode.init();
+});
+
