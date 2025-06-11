@@ -257,7 +257,7 @@ class HotspotManager {
         const hotspotGroup = new THREE.Group();
         
         // Main circle
-        const circleGeometry = new THREE.CircleGeometry(36, 32);
+        const circleGeometry = new THREE.CircleGeometry(32, 28);
         const circleMaterial = new THREE.MeshBasicMaterial({
             color: 0xffffff,
             side: THREE.DoubleSide,
@@ -272,7 +272,7 @@ class HotspotManager {
         hotspotGroup.add(circle);
         
         // Shadow
-        const shadowGeometry = new THREE.CircleGeometry(38, 32);
+        const shadowGeometry = new THREE.CircleGeometry(34, 30);
         const shadowMaterial = new THREE.MeshBasicMaterial({
             color: 0x000000,
             side: THREE.DoubleSide,
@@ -287,29 +287,25 @@ class HotspotManager {
         shadowCircle.renderOrder = 998;
         hotspotGroup.add(shadowCircle);
         
-        // Plus sign
-        const plusSize = 18;
-        const lineMaterial = new THREE.LineBasicMaterial({
-            color: 0x333333,
-            transparent: true,
-            opacity: this.hotspotsVisible ? 0.9 : 0
-        });
-        
-        const horizontalLine = new THREE.Line(
-            new THREE.BufferGeometry().setFromPoints([
-                new THREE.Vector3(-plusSize, 0, 0.1),
-                new THREE.Vector3(plusSize, 0, 0.1)
-            ]), 
-            lineMaterial.clone()
-        );
-        
-        const verticalLine = new THREE.Line(
-            new THREE.BufferGeometry().setFromPoints([
-                new THREE.Vector3(0, -plusSize, 0.1),
-                new THREE.Vector3(0, plusSize, 0.1)
-            ]), 
-            lineMaterial.clone()
-        );
+// Plus sign - using thick cylinders instead of thin lines
+const lineThickness = 1.1;  // Adjust this for thickness
+const lineLength = 24;    // Length of the lines
+const lineMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: this.hotspotsVisible ? 0.9 : 0
+});
+
+// Horizontal line (cylinder rotated)
+const horizontalGeometry = new THREE.CylinderGeometry(lineThickness, lineThickness, lineLength, 8);
+horizontalGeometry.rotateZ(Math.PI / 2); // Rotate to make it horizontal
+const horizontalLine = new THREE.Mesh(horizontalGeometry, lineMaterial.clone());
+horizontalLine.position.z = 0.1;
+
+// Vertical line (cylinder)
+const verticalGeometry = new THREE.CylinderGeometry(lineThickness, lineThickness, lineLength, 8);
+const verticalLine = new THREE.Mesh(verticalGeometry, lineMaterial.clone());
+verticalLine.position.z = 0.1;
         
         hotspotGroup.add(horizontalLine);
         hotspotGroup.add(verticalLine);
@@ -385,19 +381,19 @@ class HotspotManager {
         const intersects = this.raycaster.intersectObjects(this.hotspots, true);
         
         // Reset all hotspots
-        this.hotspots.forEach(hotspotGroup => {
-            hotspotGroup.scale.set(1, 1, 1);
-            
-            if (hotspotGroup.userData.circle) {
-                hotspotGroup.userData.circle.material.color.setHex(0xffffff);
-            }
-            if (hotspotGroup.userData.horizontalLine) {
-                hotspotGroup.userData.horizontalLine.material.color.setHex(0x333333);
-            }
-            if (hotspotGroup.userData.verticalLine) {
-                hotspotGroup.userData.verticalLine.material.color.setHex(0x333333);
-            }
-        });
+this.hotspots.forEach(hotspotGroup => {
+    hotspotGroup.scale.set(1, 1, 1);
+    
+    if (hotspotGroup.userData.circle) {
+        hotspotGroup.userData.circle.material.color.setHex(0xffffff);
+    }
+    if (hotspotGroup.userData.horizontalLine) {
+        hotspotGroup.userData.horizontalLine.material.color.setHex(0xffffff); // Now white
+    }
+    if (hotspotGroup.userData.verticalLine) {
+        hotspotGroup.userData.verticalLine.material.color.setHex(0xffffff); // Now white
+    }
+});
         
         // Highlight hovered hotspot
         if (intersects.length > 0 && !('ontouchstart' in window)) {
@@ -412,12 +408,12 @@ class HotspotManager {
                 if (hoveredGroup.userData.circle) {
                     hoveredGroup.userData.circle.material.color.setHex(0xebd55a);
                 }
-                if (hoveredGroup.userData.horizontalLine) {
-                    hoveredGroup.userData.horizontalLine.material.color.setHex(0x000000);
-                }
-                if (hoveredGroup.userData.verticalLine) {
-                    hoveredGroup.userData.verticalLine.material.color.setHex(0x000000);
-                }
+if (hoveredGroup.userData.horizontalLine) {
+    hoveredGroup.userData.horizontalLine.material.color.setHex(0xffffff);
+}
+if (hoveredGroup.userData.verticalLine) {
+    hoveredGroup.userData.verticalLine.material.color.setHex(0xffffff);
+}
                 
                 container.style.cursor = 'pointer';
             }
