@@ -57,9 +57,9 @@ const viewpoints = {
             startX: -15,
             startY: 15,
             hotspots: [
-                { id: 'to_2', target: 2, position: { u: 0.625, v: 0.5 } },
-                { id: 'to_3', target: 3, position: { u: 0.292, v: 0.6 } },
-                { id: 'to_5', target: 5, position: { u: 0.708, v: 0.35 } }
+                { id: 'to_3', target: 3, position: { u: 0.655, v: 0.55 } },
+                { id: 'to_5', target: 5, position: { u: 0.7, v: 0.52 } },
+                { id: 'to_2', target: 2, position: { u: 0.292, v: 0.55 } }
             ]
         },
         { 
@@ -68,9 +68,8 @@ const viewpoints = {
             startX: 70,
             startY: 15,
             hotspots: [
-                { id: 'to_1', target: 1, position: { u: 0.042, v: 0.5 } },
-                { id: 'to_3', target: 3, position: { u: 0.625, v: 0.65 } },
-                { id: 'to_4', target: 4, position: { u: 0.5, v: 0.7 } }
+                { id: 'to_1', target: 1, position: { u: 0.048, v: 0.65 } },
+                { id: 'to_3', target: 3, position: { u: 0, v: 0.52 } }
             ]
         },
         { 
@@ -79,9 +78,10 @@ const viewpoints = {
             startX: -10,
             startY: 15,
             hotspots: [
-                { id: 'to_1', target: 1, position: { u: 0.625, v: 0.5 } },
-                { id: 'to_2', target: 2, position: { u: 0.208, v: 0.6 } },
-                { id: 'to_4', target: 4, position: { u: 1.0, v: 0.5 } }
+                { id: 'to_4', target: 4, position: { u: 0.585, v: 0.5 } },
+                { id: 'to_2', target: 2, position: { u: 0.088, v: 0.52 } },
+                { id: 'to_5', target: 5, position: { u: 0.672, v: 0.52 } },
+                { id: 'to_1', target: 1, position: { u: 0.020, v: 0.58 } }
             ]
         },
         { 
@@ -90,9 +90,9 @@ const viewpoints = {
             startX: -90,
             startY: 15,
             hotspots: [
-                { id: 'to_2', target: 2, position: { u: 0.5, v: 0.3 } },
-                { id: 'to_3', target: 3, position: { u: 0.125, v: 0.5 } },
-                { id: 'to_5', target: 5, position: { u: 0.625, v: 0.65 } }
+                { id: 'to_1', target: 1, position: { u: 0.78, v: 0.53 } },
+                { id: 'to_3', target: 3, position: { u: 0.84, v: 0.52 } },
+                { id: 'to_5', target: 5, position: { u: 0.66, v: 0.55 } }
             ]
         },
         { 
@@ -101,8 +101,8 @@ const viewpoints = {
             startX: -20,
             startY: 15,
             hotspots: [
-                { id: 'to_1', target: 1, position: { u: 0.292, v: 0.75 } },
-                { id: 'to_4', target: 4, position: { u: 0.125, v: 0.4 } }
+                { id: 'to_3', target: 3, position: { u: 0.29, v: 0.54 } },
+                { id: 'to_4', target: 4, position: { u: 0.525, v: 0.5 } }
             ]
         }
     ]
