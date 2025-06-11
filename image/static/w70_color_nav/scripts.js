@@ -250,85 +250,108 @@ class HotspotManager {
         });
     }
 
-    createHotspot(hotspotData) {
-        const viewer = viewers[this.location];
-        const worldPosition = this.uvToWorldPosition(hotspotData.position);
-        
-        // Create hotspot group
-        const hotspotGroup = new THREE.Group();
-        
-        // Main circle
-        const circleGeometry = new THREE.CircleGeometry(32, 28);
-        const circleMaterial = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
-            side: THREE.DoubleSide,
-            transparent: true,
-            opacity: this.hotspotsVisible ? 0.85 : 0,
-            depthWrite: false,
-            depthTest: false
-        });
-        
-        const circle = new THREE.Mesh(circleGeometry, circleMaterial);
-        circle.renderOrder = 999;
-        hotspotGroup.add(circle);
-        
-        // Shadow
-        const shadowGeometry = new THREE.CircleGeometry(34, 30);
-        const shadowMaterial = new THREE.MeshBasicMaterial({
-            color: 0x000000,
-            side: THREE.DoubleSide,
-            transparent: true,
-            opacity: this.hotspotsVisible ? 0.1 : 0,
-            depthWrite: false,
-            depthTest: false
-        });
-        
-        const shadowCircle = new THREE.Mesh(shadowGeometry, shadowMaterial);
-        shadowCircle.position.z = -0.5;
-        shadowCircle.renderOrder = 998;
-        hotspotGroup.add(shadowCircle);
-        
-// Plus sign - using thick cylinders instead of thin lines
-const lineThickness = 1.1;  // Adjust this for thickness
-const lineLength = 24;    // Length of the lines
-const lineMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    transparent: true,
-    opacity: this.hotspotsVisible ? 0.9 : 0
-});
-
-// Horizontal line (cylinder rotated)
-const horizontalGeometry = new THREE.CylinderGeometry(lineThickness, lineThickness, lineLength, 8);
-horizontalGeometry.rotateZ(Math.PI / 2); // Rotate to make it horizontal
-const horizontalLine = new THREE.Mesh(horizontalGeometry, lineMaterial.clone());
-horizontalLine.position.z = 0.1;
-
-// Vertical line (cylinder)
-const verticalGeometry = new THREE.CylinderGeometry(lineThickness, lineThickness, lineLength, 8);
-const verticalLine = new THREE.Mesh(verticalGeometry, lineMaterial.clone());
-verticalLine.position.z = 0.1;
-        
-        hotspotGroup.add(horizontalLine);
-        hotspotGroup.add(verticalLine);
-        
-        // Position and orient
-        hotspotGroup.position.copy(worldPosition);
-        hotspotGroup.lookAt(0, 0, 0);
-        
-        // Store references
-        hotspotGroup.userData = {
-            target: hotspotData.target,
-            id: hotspotData.id,
-            isHotspot: true,
-            circle: circle,
-            shadowCircle: shadowCircle,
-            horizontalLine: horizontalLine,
-            verticalLine: verticalLine
-        };
-        
-        viewer.sphere.add(hotspotGroup);
-        this.hotspots.push(hotspotGroup);
-    }
+    // Replace the location icon section in your createHotspot method
+createHotspot(hotspotData) {
+    const viewer = viewers[this.location];
+    const worldPosition = this.uvToWorldPosition(hotspotData.position);
+    
+    // Create hotspot group
+    const hotspotGroup = new THREE.Group();
+    
+    // Main circle (background)
+    const circleGeometry = new THREE.CircleGeometry(32, 28);
+    const circleMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: this.hotspotsVisible ? 0.85 : 0,
+        depthWrite: false,
+        depthTest: false
+    });
+    
+    const circle = new THREE.Mesh(circleGeometry, circleMaterial);
+    circle.renderOrder = 999;
+    hotspotGroup.add(circle);
+    
+    // Shadow
+    const shadowGeometry = new THREE.CircleGeometry(34, 30);
+    const shadowMaterial = new THREE.MeshBasicMaterial({
+        color: 0x000000,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: this.hotspotsVisible ? 0.1 : 0,
+        depthWrite: false,
+        depthTest: false
+    });
+    
+    const shadowCircle = new THREE.Mesh(shadowGeometry, shadowMaterial);
+    shadowCircle.position.z = -0.5;
+    shadowCircle.renderOrder = 998;
+    hotspotGroup.add(shadowCircle);
+    
+    // Location icon using texture - BIGGER SIZE + NO BORDER FIX
+    const iconGeometry = new THREE.PlaneGeometry(32, 32); // Increased from 24x24 to 32x32
+    
+    // Load the location icon texture
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.crossOrigin = 'anonymous';
+    
+    const iconMaterial = new THREE.MeshBasicMaterial({
+        transparent: true,
+        opacity: this.hotspotsVisible ? 0.9 : 0,
+        depthWrite: false,
+        depthTest: false,
+        side: THREE.DoubleSide,
+        alphaTest: 0.1, // THIS FIXES THE DARK BORDER - pixels with alpha < 0.1 won't render
+        premultipliedAlpha: false // Ensure proper alpha handling
+    });
+    
+const locationIcon = new THREE.Mesh(iconGeometry, iconMaterial);
+    locationIcon.position.z = 0.2;
+    locationIcon.renderOrder = 1000;
+    locationIcon.rotation.z = Math.PI; // Rotate 180 degrees to flip it right-side up
+    
+    // Load texture and apply to material
+    textureLoader.load(
+        'https://assets.360.petsq.works/w70_2/location.png',
+        (texture) => {
+            // IMPORTANT: These settings fix transparency issues
+            texture.premultiplyAlpha = false;
+            texture.flipY = false; // Sometimes helps with texture rendering
+            texture.format = THREE.RGBAFormat; // Ensure alpha channel is preserved
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            
+            iconMaterial.map = texture;
+            iconMaterial.needsUpdate = true;
+        },
+        undefined,
+        (error) => {
+            console.warn('Could not load location icon:', error);
+            // Fallback: create a simple colored circle
+            iconMaterial.color.setHex(0x372D73);
+        }
+    );
+    
+    hotspotGroup.add(locationIcon);
+    
+    // Position and orient
+    hotspotGroup.position.copy(worldPosition);
+    hotspotGroup.lookAt(0, 0, 0);
+    
+    // Store references
+    hotspotGroup.userData = {
+        target: hotspotData.target,
+        id: hotspotData.id,
+        isHotspot: true,
+        circle: circle,
+        shadowCircle: shadowCircle,
+        locationIcon: locationIcon
+    };
+    
+    viewer.sphere.add(hotspotGroup);
+    this.hotspots.push(hotspotGroup);
+}
 
     uvToWorldPosition(uvPos) {
         const theta = (1 - uvPos.u) * Math.PI * 2;
@@ -371,57 +394,45 @@ verticalLine.position.z = 0.1;
         }
     }
     
-    onContainerMouseMove(event) {
-        const container = document.getElementById(`${this.location}-viewer`);
-        const rect = container.getBoundingClientRect();
-        
-        this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-        
-        this.raycaster.setFromCamera(this.mouse, viewers[this.location].camera);
-        const intersects = this.raycaster.intersectObjects(this.hotspots, true);
-        
-        // Reset all hotspots
-this.hotspots.forEach(hotspotGroup => {
-    hotspotGroup.scale.set(1, 1, 1);
+onContainerMouseMove(event) {
+    const container = document.getElementById(`${this.location}-viewer`);
+    const rect = container.getBoundingClientRect();
     
-    if (hotspotGroup.userData.circle) {
-        hotspotGroup.userData.circle.material.color.setHex(0xffffff);
-    }
-    if (hotspotGroup.userData.horizontalLine) {
-        hotspotGroup.userData.horizontalLine.material.color.setHex(0xffffff); // Now white
-    }
-    if (hotspotGroup.userData.verticalLine) {
-        hotspotGroup.userData.verticalLine.material.color.setHex(0xffffff); // Now white
-    }
-});
+    this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    
+    this.raycaster.setFromCamera(this.mouse, viewers[this.location].camera);
+    const intersects = this.raycaster.intersectObjects(this.hotspots, true);
+    
+    // Reset all hotspots
+    this.hotspots.forEach(hotspotGroup => {
+        hotspotGroup.scale.set(1, 1, 1);
         
-        // Highlight hovered hotspot
-        if (intersects.length > 0 && !('ontouchstart' in window)) {
-            let hoveredGroup = intersects[0].object;
-            while (hoveredGroup.parent && !hoveredGroup.userData.isHotspot) {
-                hoveredGroup = hoveredGroup.parent;
+        if (hotspotGroup.userData.circle) {
+            hotspotGroup.userData.circle.material.color.setHex(0xffffff);
+        }
+        // Remove the cross line color changes since we don't have them anymore
+    });
+    
+    // Highlight hovered hotspot
+    if (intersects.length > 0 && !('ontouchstart' in window)) {
+        let hoveredGroup = intersects[0].object;
+        while (hoveredGroup.parent && !hoveredGroup.userData.isHotspot) {
+            hoveredGroup = hoveredGroup.parent;
+        }
+        
+        if (hoveredGroup.userData.isHotspot) {
+            // Removed scale change - only color changes now
+            if (hoveredGroup.userData.circle) {
+                hoveredGroup.userData.circle.material.color.setHex(0xebd55a);
             }
             
-            if (hoveredGroup.userData.isHotspot) {
-                hoveredGroup.scale.set(1.05, 1.05, 1.05);
-                
-                if (hoveredGroup.userData.circle) {
-                    hoveredGroup.userData.circle.material.color.setHex(0xebd55a);
-                }
-if (hoveredGroup.userData.horizontalLine) {
-    hoveredGroup.userData.horizontalLine.material.color.setHex(0xffffff);
-}
-if (hoveredGroup.userData.verticalLine) {
-    hoveredGroup.userData.verticalLine.material.color.setHex(0xffffff);
-}
-                
-                container.style.cursor = 'pointer';
-            }
-        } else {
-            container.style.cursor = 'move';
+            container.style.cursor = 'pointer';
         }
+    } else {
+        container.style.cursor = 'move';
     }
+}
 
     clearHotspots() {
         const viewer = viewers[this.location];
@@ -447,39 +458,37 @@ if (hoveredGroup.userData.verticalLine) {
         switchViewpoint(this.location, targetViewpoint);
     }
 
-    setVisibility(visible, duration = 400) {
-        this.hotspotsVisible = visible;
-        const targetOpacity = visible ? 1 : 0;
+// Replace the setVisibility method in your HotspotManager class
+setVisibility(visible, duration = 400) {
+    this.hotspotsVisible = visible;
+    const targetOpacity = visible ? 1 : 0;
+    
+    const startTime = Date.now();
+    
+    const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const currentOpacity = visible ? progress : 1 - progress;
         
-        const startTime = Date.now();
-        
-        const animate = () => {
-            const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const currentOpacity = visible ? progress : 1 - progress;
-            
-            this.hotspots.forEach(hotspotGroup => {
-                if (hotspotGroup.userData.circle) {
-                    hotspotGroup.userData.circle.material.opacity = 0.85 * currentOpacity;
-                }
-                if (hotspotGroup.userData.shadowCircle) {
-                    hotspotGroup.userData.shadowCircle.material.opacity = 0.1 * currentOpacity;
-                }
-                if (hotspotGroup.userData.horizontalLine) {
-                    hotspotGroup.userData.horizontalLine.material.opacity = 0.9 * currentOpacity;
-                }
-                if (hotspotGroup.userData.verticalLine) {
-                    hotspotGroup.userData.verticalLine.material.opacity = 0.9 * currentOpacity;
-                }
-            });
-            
-            if (progress < 1) {
-                requestAnimationFrame(animate);
+        this.hotspots.forEach(hotspotGroup => {
+            if (hotspotGroup.userData.circle) {
+                hotspotGroup.userData.circle.material.opacity = 0.85 * currentOpacity;
             }
-        };
+            if (hotspotGroup.userData.shadowCircle) {
+                hotspotGroup.userData.shadowCircle.material.opacity = 0.1 * currentOpacity;
+            }
+            if (hotspotGroup.userData.locationIcon) {
+                hotspotGroup.userData.locationIcon.material.opacity = 0.9 * currentOpacity;
+            }
+        });
         
-        animate();
-    }
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        }
+    };
+    
+    animate();
+}
 }
 
 // Initialize
