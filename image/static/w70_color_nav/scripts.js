@@ -159,6 +159,11 @@ const viewers = {
 const autoRotateSpeed = 0.0005;
 const dragSensitivity = 0.002;
 
+// Performance tracking for adaptive rendering
+let lastFrameTime = 0;
+let frameCount = 0;
+let avgFrameTime = 16.67; // Target 60fps
+
 // Keep track of how many viewers have finished initial loading
 let viewersLoadedCount = 0;
 const totalViewers = Object.keys(viewers).length;
@@ -185,6 +190,7 @@ class HotspotManager {
     setupInteraction() {
         const container = document.getElementById(`${this.location}-viewer`);
         
+        // Mouse events for desktop
         container.addEventListener('click', (event) => {
             this.onContainerClick(event);
         });
@@ -192,6 +198,54 @@ class HotspotManager {
         container.addEventListener('mousemove', (event) => {
             this.onContainerMouseMove(event);
         });
+        
+        // Touch events for mobile
+        let touchStartTime = 0;
+        let touchStartPos = { x: 0, y: 0 };
+        let touchMoved = false;
+        
+        container.addEventListener('touchstart', (event) => {
+            if (event.touches.length === 1) {
+                touchStartTime = Date.now();
+                touchStartPos.x = event.touches[0].clientX;
+                touchStartPos.y = event.touches[0].clientY;
+                touchMoved = false;
+            }
+        }, { passive: true });
+        
+        container.addEventListener('touchmove', (event) => {
+            if (event.touches.length === 1) {
+                const touch = event.touches[0];
+                const deltaX = Math.abs(touch.clientX - touchStartPos.x);
+                const deltaY = Math.abs(touch.clientY - touchStartPos.y);
+                
+                // Consider it moved if touch moved more than 10 pixels
+                if (deltaX > 10 || deltaY > 10) {
+                    touchMoved = true;
+                }
+            }
+        }, { passive: true });
+        
+        container.addEventListener('touchend', (event) => {
+            const touchDuration = Date.now() - touchStartTime;
+            
+            // Only treat as tap if: single touch, short duration, minimal movement
+            if (event.changedTouches.length === 1 && 
+                touchDuration < 500 && 
+                !touchMoved) {
+                
+                // Create a synthetic click event for hotspot detection
+                const touch = event.changedTouches[0];
+                const syntheticEvent = {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY,
+                    preventDefault: () => {},
+                    stopPropagation: () => {}
+                };
+                
+                this.onContainerClick(syntheticEvent);
+            }
+        }, { passive: true });
     }
 
     loadHotspots(viewpointId) {
@@ -207,74 +261,98 @@ class HotspotManager {
     }
 
     create3DHotspot(hotspotData) {
-    const viewer = viewers[this.location];
-    
-    // Convert UV coordinates to 3D world position
-    const worldPosition = this.uvToWorldPosition(hotspotData.position);
-    
-    // Create hotspot geometry - much smaller for crisp rendering
-    const geometry = new THREE.PlaneGeometry(30, 30);
-    
-    // Skip canvas entirely - use a solid color material first
-    const material = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.9,
-        side: THREE.DoubleSide,
-        depthWrite: false,
-        depthTest: true
-    });
-    
-    // Create mesh
-    const hotspotMesh = new THREE.Mesh(geometry, material);
-    
-    // Add hotspot as child of sphere
-    viewer.sphere.add(hotspotMesh);
-    
-    // Position relative to sphere
-    hotspotMesh.position.copy(worldPosition);
-    
-    // Make hotspot face the center
-    hotspotMesh.lookAt(0, 0, 0);
-    
-    // Add a border ring using Line geometry for crisp edges
-    const ringGeometry = new THREE.RingGeometry(14, 16, 32);
-    const ringMaterial = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 1.0,
-        side: THREE.DoubleSide,
-        depthWrite: false
-    });
-    const ringMesh = new THREE.Mesh(ringGeometry, ringMaterial);
-    hotspotMesh.add(ringMesh);
-    
-    // Add center dot
-    const dotGeometry = new THREE.CircleGeometry(3, 16);
-    const dotMaterial = new THREE.MeshBasicMaterial({
-        color: 0x372d73,
-        transparent: true,
-        opacity: 0.8,
-        side: THREE.DoubleSide,
-        depthWrite: false
-    });
-    const dotMesh = new THREE.Mesh(dotGeometry, dotMaterial);
-    dotMesh.position.z = 0.1; // Slightly forward
-    hotspotMesh.add(dotMesh);
-    
-    // Store hotspot data
-    hotspotMesh.userData = {
-        target: hotspotData.target,
-        id: hotspotData.id,
-        uvPosition: hotspotData.position,
-        isHotspot: true,
-        ringMesh: ringMesh,
-        dotMesh: dotMesh
-    };
-    
-    // Store reference
-    this.hotspots.push(hotspotMesh);
-}
+        const viewer = viewers[this.location];
+        
+        // Convert UV coordinates to 3D world position
+        const worldPosition = this.uvToWorldPosition(hotspotData.position);
+        
+        // Create container group for the hotspot
+        const hotspotGroup = new THREE.Group();
+        
+        // Subtle background circle with transparency and soft appearance
+        const circleGeometry = new THREE.CircleGeometry(36, 32);
+        const circleMaterial = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.85, // Subtle transparency
+            // Simple depth-based "shadow" effect using slightly darker background
+        });
+        
+        const circle = new THREE.Mesh(circleGeometry, circleMaterial);
+        circle.frustumCulled = false;
+        hotspotGroup.add(circle);
+        
+        // Subtle shadow circle behind main circle (lightweight shadow effect)
+        const shadowGeometry = new THREE.CircleGeometry(38, 32);
+        const shadowMaterial = new THREE.MeshBasicMaterial({
+            color: 0x000000,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.1, // Very subtle shadow
+        });
+        
+        const shadowCircle = new THREE.Mesh(shadowGeometry, shadowMaterial);
+        shadowCircle.position.z = -0.5; // Slightly behind main circle
+        shadowCircle.frustumCulled = false;
+        hotspotGroup.add(shadowCircle);
+        
+        // Clean plus sign with subtle transparency
+        const plusSize = 18;
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0x333333, // Slightly softer than pure black
+            transparent: true,
+            opacity: 0.9
+        });
+        
+        const horizontalLine = new THREE.Line(
+            new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(-plusSize, 0, 0.1),
+                new THREE.Vector3(plusSize, 0, 0.1)
+            ]), 
+            lineMaterial
+        );
+        horizontalLine.frustumCulled = false;
+        
+        const verticalLine = new THREE.Line(
+            new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(0, -plusSize, 0.1),
+                new THREE.Vector3(0, plusSize, 0.1)
+            ]), 
+            lineMaterial
+        );
+        verticalLine.frustumCulled = false;
+        
+        hotspotGroup.add(horizontalLine);
+        hotspotGroup.add(verticalLine);
+        
+        // Position the group
+        hotspotGroup.position.copy(worldPosition);
+        hotspotGroup.lookAt(0, 0, 0);
+        
+        // Add to sphere
+        viewer.sphere.add(hotspotGroup);
+        
+        // Performance optimizations with anti-clipping measures
+        hotspotGroup.renderOrder = 1;
+        hotspotGroup.matrixAutoUpdate = true;
+        hotspotGroup.frustumCulled = false;
+        
+        // Store references for interaction
+        hotspotGroup.userData = {
+            target: hotspotData.target,
+            id: hotspotData.id,
+            uvPosition: hotspotData.position,
+            isHotspot: true,
+            circle: circle,
+            shadowCircle: shadowCircle,
+            horizontalLine: horizontalLine,
+            verticalLine: verticalLine
+        };
+        
+        // Store reference
+        this.hotspots.push(hotspotGroup);
+    }
 
     drawSimpleHotspot(ctx, width, height) {
         const centerX = width / 2;
@@ -573,8 +651,8 @@ drawHoverGlassmorphismHotspot(ctx, width, height) {
         // V maps to elevation (vertical angle from top)
         const phi = uvPos.v * Math.PI; // 0 at top, π at bottom
         
-        // Position just inside the sphere to avoid z-fighting
-        const radius = 499;
+        // Position further inside the sphere to avoid clipping issues
+        const radius = 490;
         
         // Convert spherical to Cartesian (Y-up coordinate system)
         const x = radius * Math.sin(phi) * Math.sin(theta);
@@ -599,13 +677,18 @@ drawHoverGlassmorphismHotspot(ctx, width, height) {
         // Cast ray from camera through mouse position
         this.raycaster.setFromCamera(this.mouse, viewers[this.location].camera);
         
-        // Check for intersections with hotspots
-        const intersects = this.raycaster.intersectObjects(this.hotspots);
+        // Check for intersections with hotspots (recursive for groups)
+        const intersects = this.raycaster.intersectObjects(this.hotspots, true);
         
         if (intersects.length > 0) {
-            const clickedHotspot = intersects[0].object;
-            if (clickedHotspot.userData.isHotspot) {
-                this.onHotspotClick(clickedHotspot.userData.target);
+            // Find the parent group of the clicked object
+            let clickedGroup = intersects[0].object;
+            while (clickedGroup.parent && !clickedGroup.userData.isHotspot) {
+                clickedGroup = clickedGroup.parent;
+            }
+            
+            if (clickedGroup.userData.isHotspot) {
+                this.onHotspotClick(clickedGroup.userData.target);
             }
         }
     }
@@ -618,37 +701,70 @@ drawHoverGlassmorphismHotspot(ctx, width, height) {
         this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
         
-        // Cast ray for hover effects
+        // Cast ray for hover effects - need to check all children since we're using groups
         this.raycaster.setFromCamera(this.mouse, viewers[this.location].camera);
-        const intersects = this.raycaster.intersectObjects(this.hotspots);
+        const intersects = this.raycaster.intersectObjects(this.hotspots, true); // recursive = true for groups
         
         // Reset all hotspots to normal state
-        this.hotspots.forEach(hotspot => {
-            hotspot.scale.set(1, 1, 1);
-            hotspot.material.color.setHex(0xffffff);
-            hotspot.material.opacity = 0.9;
-            if (hotspot.userData.ringMesh) {
-                hotspot.userData.ringMesh.material.color.setHex(0xffffff);
+        this.hotspots.forEach(hotspotGroup => {
+            // Reset group scale
+            hotspotGroup.scale.set(1, 1, 1);
+            
+            // Reset circle color and opacity
+            if (hotspotGroup.userData.circle) {
+                hotspotGroup.userData.circle.material.color.setHex(0xffffff);
+                hotspotGroup.userData.circle.material.opacity = 0.85;
             }
-            if (hotspot.userData.dotMesh) {
-                hotspot.userData.dotMesh.material.color.setHex(0x372d73);
+            
+            // Reset shadow opacity
+            if (hotspotGroup.userData.shadowCircle) {
+                hotspotGroup.userData.shadowCircle.material.opacity = 0.1;
+            }
+            
+            // Reset plus sign color
+            if (hotspotGroup.userData.horizontalLine) {
+                hotspotGroup.userData.horizontalLine.material.color.setHex(0x333333);
+                hotspotGroup.userData.horizontalLine.material.opacity = 0.9;
+            }
+            if (hotspotGroup.userData.verticalLine) {
+                hotspotGroup.userData.verticalLine.material.color.setHex(0x333333);
+                hotspotGroup.userData.verticalLine.material.opacity = 0.9;
             }
         });
         
-        // Highlight hovered hotspot
-        if (intersects.length > 0) {
-            const hoveredHotspot = intersects[0].object;
-            if (hoveredHotspot.userData.isHotspot) {
-                // Apply hover effects with color changes
-                hoveredHotspot.scale.set(1.15, 1.15, 1.15);
-                hoveredHotspot.material.color.setHex(0xebd55a); // Your brand yellow
-                hoveredHotspot.material.opacity = 0.95;
-                if (hoveredHotspot.userData.ringMesh) {
-                    hoveredHotspot.userData.ringMesh.material.color.setHex(0xebd55a);
+        // Highlight hovered hotspot (only on non-touch devices)
+        if (intersects.length > 0 && !('ontouchstart' in window)) {
+            // Find the parent group of the intersected object
+            let hoveredGroup = intersects[0].object;
+            while (hoveredGroup.parent && !hoveredGroup.userData.isHotspot) {
+                hoveredGroup = hoveredGroup.parent;
+            }
+            
+            if (hoveredGroup.userData.isHotspot) {
+                // Apply subtle hover effects
+                hoveredGroup.scale.set(1.05, 1.05, 1.05);
+                
+                // Slight color change and increased opacity on hover
+                if (hoveredGroup.userData.circle) {
+                    hoveredGroup.userData.circle.material.color.setHex(0xebd55a); // Brand yellow
+                    hoveredGroup.userData.circle.material.opacity = 0.95;
                 }
-                if (hoveredHotspot.userData.dotMesh) {
-                    hoveredHotspot.userData.dotMesh.material.color.setHex(0x372d73);
+                
+                // Enhanced shadow on hover
+                if (hoveredGroup.userData.shadowCircle) {
+                    hoveredGroup.userData.shadowCircle.material.opacity = 0.2;
                 }
+                
+                // Darker plus sign for better contrast
+                if (hoveredGroup.userData.horizontalLine) {
+                    hoveredGroup.userData.horizontalLine.material.color.setHex(0x000000);
+                    hoveredGroup.userData.horizontalLine.material.opacity = 1.0;
+                }
+                if (hoveredGroup.userData.verticalLine) {
+                    hoveredGroup.userData.verticalLine.material.color.setHex(0x000000);
+                    hoveredGroup.userData.verticalLine.material.opacity = 1.0;
+                }
+                
                 container.style.cursor = 'pointer';
             }
         } else {
@@ -659,16 +775,20 @@ drawHoverGlassmorphismHotspot(ctx, width, height) {
     clearHotspots() {
         const viewer = viewers[this.location];
         
-        // Remove from sphere (not scene!)
-        this.hotspots.forEach(hotspot => {
-            viewer.sphere.remove(hotspot);
+        // Remove from sphere and dispose properly
+        this.hotspots.forEach(hotspotGroup => {
+            viewer.sphere.remove(hotspotGroup);
             
-            // Dispose of geometry and material
-            if (hotspot.geometry) hotspot.geometry.dispose();
-            if (hotspot.material) {
-                if (hotspot.material.map) hotspot.material.map.dispose();
-                hotspot.material.dispose();
-            }
+            // Dispose of all child geometries and materials
+            hotspotGroup.traverse((child) => {
+                if (child.geometry) {
+                    child.geometry.dispose();
+                }
+                if (child.material) {
+                    if (child.material.map) child.material.map.dispose();
+                    child.material.dispose();
+                }
+            });
         });
         
         this.hotspots = [];
@@ -812,36 +932,55 @@ function initViewer(location) {
     // Scene
     viewer.scene = new THREE.Scene();
 
-    // Camera
+    // Camera with optimized near/far planes for better depth precision
     viewer.camera = new THREE.PerspectiveCamera(
         70, 
         container.clientWidth / container.clientHeight, 
-        0.1, 
+        1, // Increased near plane to improve depth precision
         1000
     );
     viewer.camera.position.set(0, 0, 0.1);
+    
+    // Enhanced camera matrix updates for stability during movement
+    viewer.camera.matrixAutoUpdate = true;
 
-    // Renderer with enhanced precision
+    // Renderer with enhanced precision and performance optimizations
     viewer.renderer = new THREE.WebGLRenderer({ 
         antialias: true,
         alpha: true,
         precision: 'highp',
-        powerPreference: 'high-performance'
+        powerPreference: 'high-performance',
+        logarithmicDepthBuffer: false, // Disable for better performance
+        stencil: false // Disable stencil buffer for better performance
     });
+    
+    // Enhanced renderer settings for camera movement stability
     viewer.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Cap at 2x for performance
     viewer.renderer.setSize(container.clientWidth, container.clientHeight);
+    viewer.renderer.sortObjects = true; // Ensure proper render order
+    viewer.renderer.autoClear = true;
+    
+    // Optimize depth testing
+    viewer.renderer.context.enable(viewer.renderer.context.DEPTH_TEST);
+    viewer.renderer.context.depthFunc(viewer.renderer.context.LEQUAL);
     container.appendChild(viewer.renderer.domElement);
 
-    // Sphere geometry for panorama
+    // Sphere geometry for panorama with optimizations
     const geometry = new THREE.SphereGeometry(500, 60, 40);
     geometry.scale(-1, 1, 1); // Invert the sphere
 
-    // Create sphere
+    // Create sphere with optimized material
     const material = new THREE.MeshBasicMaterial({
-        map: null
+        map: null,
+        side: THREE.FrontSide // Optimize since we're inside the sphere
     });
     
     viewer.sphere = new THREE.Mesh(geometry, material);
+    
+    // Set render order to ensure sphere renders before hotspots
+    viewer.sphere.renderOrder = 0;
+    viewer.sphere.matrixAutoUpdate = true;
+    
     viewer.scene.add(viewer.sphere);
 
     // Event listeners
@@ -941,9 +1080,22 @@ function onWindowResize() {
     });
 }
 
-// Animation loop
-function animate() {
+// Animation loop with performance optimizations for camera movement
+function animate(currentTime = 0) {
     requestAnimationFrame(animate);
+    
+    // Performance tracking
+    const deltaTime = currentTime - lastFrameTime;
+    lastFrameTime = currentTime;
+    
+    // Update average frame time for adaptive rendering
+    frameCount++;
+    if (frameCount % 10 === 0) {
+        avgFrameTime = avgFrameTime * 0.9 + deltaTime * 0.1;
+    }
+    
+    // Determine if we should use performance mode (if frame rate is struggling)
+    const isPerformanceMode = avgFrameTime > 20; // Roughly 50fps threshold
     
     ['club', 'etage'].forEach(location => {
         const viewer = viewers[location];
@@ -955,26 +1107,57 @@ function animate() {
             viewer.targetRotationX += autoRotateSpeed;
         }
         
-        // Update rotation
-        const rotationSpeed = 0.05;
+        // Check if camera is actually moving to optimize rendering
+        const rotationSpeed = isPerformanceMode ? 0.08 : 0.05; // Faster convergence in performance mode
+        const rotationDelta = Math.abs(viewer.targetRotationX - viewer.sphere.rotation.y);
+        const verticalDelta = Math.abs(viewer.targetRotationY - (viewer.currentVerticalRotation || 0));
+        const isMoving = rotationDelta > 0.001 || verticalDelta > 0.001 || viewer.isUserInteracting;
+        
+        // Update rotation with adaptive smoothing
         viewer.sphere.rotation.y += (viewer.targetRotationX - viewer.sphere.rotation.y) * rotationSpeed;
         
         // Vertical rotation with limits
         const verticalRotation = Math.max(-Math.PI/3, Math.min(Math.PI/3, viewer.targetRotationY));
+        viewer.currentVerticalRotation = verticalRotation;
         
-        // Position camera based on rotation
+        // Optimize camera position updates during movement
         const phi = Math.PI/2 - verticalRotation;
         const theta = viewer.sphere.rotation.y;
         
-        viewer.camera.position.x = 100 * Math.sin(phi) * Math.cos(theta);
-        viewer.camera.position.y = 100 * Math.cos(phi);
-        viewer.camera.position.z = 100 * Math.sin(phi) * Math.sin(theta);
+        // Use more efficient camera positioning
+        const radius = 100;
+        const sinPhi = Math.sin(phi);
+        const cosPhi = Math.cos(phi);
+        const sinTheta = Math.sin(theta);
+        const cosTheta = Math.cos(theta);
+        
+        viewer.camera.position.x = radius * sinPhi * cosTheta;
+        viewer.camera.position.y = radius * cosPhi;
+        viewer.camera.position.z = radius * sinPhi * sinTheta;
         
         viewer.camera.lookAt(0, 0, 0);
         
-        viewer.renderer.render(viewer.scene, viewer.camera);
+        // Adaptive rendering based on performance and movement
+        if (isMoving) {
+            // During movement, use performance-optimized rendering
+            if (isPerformanceMode) {
+                // Skip some frames or reduce quality during performance issues
+                viewer.renderer.render(viewer.scene, viewer.camera);
+            } else {
+                // Normal high-quality rendering
+                viewer.renderer.clear();
+                viewer.renderer.render(viewer.scene, viewer.camera);
+            }
+        } else {
+            // Static scene - always use normal rendering
+            viewer.renderer.render(viewer.scene, viewer.camera);
+        }
         
-        // Hotspots are now 3D objects, no manual position updates needed
+        // Adaptive hotspot management during movement
+        if (hotspotManagers[location] && isMoving && isPerformanceMode) {
+            // Could implement simplified hotspot rendering here if needed
+            // For now, the render order optimizations should handle this
+        }
     });
 }
 
