@@ -263,13 +263,15 @@ class HotspotManager {
         // Create container group for the hotspot
         const hotspotGroup = new THREE.Group();
         
-        // Always create with normal opacity values, but set group visibility
+        // Create materials with opacity based on startVisible
+        const initialOpacity = startVisible ? 1 : 0;
+        
         const circleGeometry = new THREE.CircleGeometry(36, 32);
         const circleMaterial = new THREE.MeshBasicMaterial({
             color: 0xffffff,
             side: THREE.DoubleSide,
             transparent: true,
-            opacity: 0.85,
+            opacity: 0.85 * initialOpacity,
         });
         
         const circle = new THREE.Mesh(circleGeometry, circleMaterial);
@@ -282,7 +284,7 @@ class HotspotManager {
             color: 0x000000,
             side: THREE.DoubleSide,
             transparent: true,
-            opacity: 0.1,
+            opacity: 0.1 * initialOpacity,
         });
         
         const shadowCircle = new THREE.Mesh(shadowGeometry, shadowMaterial);
@@ -295,7 +297,7 @@ class HotspotManager {
         const lineMaterial = new THREE.LineBasicMaterial({
             color: 0x333333, // Slightly softer than pure black
             transparent: true,
-            opacity: 0.9
+            opacity: 0.9 * initialOpacity
         });
         
         const horizontalLine = new THREE.Line(
@@ -323,8 +325,8 @@ class HotspotManager {
         hotspotGroup.position.copy(worldPosition);
         hotspotGroup.lookAt(0, 0, 0);
         
-        // Set initial visibility by controlling the whole group
-        hotspotGroup.visible = startVisible;
+        // Always keep group visible, manage opacity through materials
+        hotspotGroup.visible = true;
         
         // Add to sphere
         viewer.sphere.add(hotspotGroup);
@@ -815,11 +817,6 @@ drawHoverGlassmorphismHotspot(ctx, width, height) {
                 return;
             }
 
-            // Make sure all hotspots are visible before fading
-            this.hotspots.forEach(hotspotGroup => {
-                hotspotGroup.visible = true;
-            });
-
             const startTime = Date.now();
             const animate = () => {
                 const elapsed = Date.now() - startTime;
@@ -863,11 +860,8 @@ drawHoverGlassmorphismHotspot(ctx, width, height) {
                 return;
             }
 
-            // Make sure all hotspots are visible and start with 0 opacity
+            // Set initial opacity to 0 for all hotspot elements
             this.hotspots.forEach(hotspotGroup => {
-                hotspotGroup.visible = true;
-                
-                // Set initial opacity to 0
                 if (hotspotGroup.userData.circle) {
                     hotspotGroup.userData.circle.material.opacity = 0;
                 }
