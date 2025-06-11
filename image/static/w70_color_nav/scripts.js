@@ -68,7 +68,7 @@ const viewpoints = {
             startX: 70,
             startY: 15,
             hotspots: [
-                { id: 'to_1', target: 1, position: { u: 0.048, v: 0.65 } },
+                { id: 'to_1', target: 1, position: { u: 0.07, v: 0.65 } },
                 { id: 'to_3', target: 3, position: { u: 0, v: 0.52 } }
             ]
         },
@@ -81,7 +81,7 @@ const viewpoints = {
                 { id: 'to_4', target: 4, position: { u: 0.585, v: 0.5 } },
                 { id: 'to_2', target: 2, position: { u: 0.088, v: 0.52 } },
                 { id: 'to_5', target: 5, position: { u: 0.672, v: 0.52 } },
-                { id: 'to_1', target: 1, position: { u: 0.020, v: 0.58 } }
+                { id: 'to_1', target: 1, position: { u: 0.028, v: 0.58 } }
             ]
         },
         { 
@@ -102,6 +102,7 @@ const viewpoints = {
             startY: 15,
             hotspots: [
                 { id: 'to_3', target: 3, position: { u: 0.29, v: 0.54 } },
+                { id: 'to_1', target: 1, position: { u: 0.22, v: 0.55 } },
                 { id: 'to_4', target: 4, position: { u: 0.525, v: 0.5 } }
             ]
         }
