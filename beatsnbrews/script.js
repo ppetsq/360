@@ -56,12 +56,14 @@ function initNavigation() {
         });
     });
 
-    // Navigation background on scroll
+    // Navigation visibility on scroll
     window.addEventListener('scroll', function() {
         const nav = document.querySelector('.nav');
-        if (window.scrollY > 50) {
+        if (window.scrollY > 100) {
+            nav.classList.add('visible');
             nav.style.background = 'rgba(26, 26, 26, 0.98)';
         } else {
+            nav.classList.remove('visible');
             nav.style.background = 'rgba(26, 26, 26, 0.95)';
         }
     });
@@ -70,21 +72,12 @@ function initNavigation() {
 // Hero section animations
 function initHeroAnimations() {
     const heroContent = document.querySelector('.hero-content');
-    const scrollIndicator = document.querySelector('.scroll-indicator');
     
     // Animate hero content on load
     setTimeout(() => {
         heroContent.style.opacity = '1';
         heroContent.style.transform = 'translateY(0)';
     }, 500);
-
-    // Scroll indicator click
-    scrollIndicator.addEventListener('click', function() {
-        const eventSection = document.querySelector('#event');
-        if (eventSection) {
-            eventSection.scrollIntoView({ behavior: 'smooth' });
-        }
-    });
 
     // Hero parallax effect
     window.addEventListener('scroll', function() {

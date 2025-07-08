@@ -57,6 +57,13 @@ p {
     z-index: 1000;
     padding: 1rem 0;
     transition: all 0.3s ease;
+    transform: translateY(-100%);
+    opacity: 0;
+}
+
+.nav.visible {
+    transform: translateY(0);
+    opacity: 1;
 }
 
 .nav-container {
@@ -106,7 +113,7 @@ p {
 /* Hero Section */
 .hero {
     position: relative;
-    height: 100vh;
+    height: 90vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -165,53 +172,13 @@ p {
     flex-wrap: wrap;
 }
 
-.hero-scroll {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1;
-}
-
-.scroll-indicator {
-    width: 30px;
-    height: 50px;
-    border: 2px solid #fff;
-    border-radius: 15px;
-    position: relative;
-    cursor: pointer;
-}
-
-.scroll-indicator::before {
-    content: '';
-    position: absolute;
-    top: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 6px;
-    height: 6px;
-    background: #fff;
-    border-radius: 50%;
-    animation: scroll 2s infinite;
-}
-
-@keyframes scroll {
-    0% {
-        transform: translateX(-50%) translateY(0);
-        opacity: 1;
-    }
-    100% {
-        transform: translateX(-50%) translateY(20px);
-        opacity: 0;
-    }
-}
 
 /* Buttons */
 .btn {
     display: inline-block;
     padding: 12px 24px;
     text-decoration: none;
-    border-radius: 30px;
+    border-radius: 8px;
     font-weight: 600;
     transition: all 0.3s ease;
     border: 2px solid transparent;
@@ -280,9 +247,10 @@ section {
 .event-card {
     background: #333;
     padding: 2rem;
-    border-radius: 15px;
+    border-radius: 8px;
     text-align: center;
     transition: transform 0.3s ease;
+    border: 2px solid #444;
 }
 
 .event-card:hover {
@@ -330,9 +298,10 @@ section {
 
 .artist-card {
     background: #333;
-    border-radius: 15px;
+    border-radius: 8px;
     overflow: hidden;
     transition: transform 0.3s ease;
+    border: 2px solid #444;
 }
 
 .artist-card:hover {
@@ -344,15 +313,16 @@ section {
     overflow: hidden;
 }
 
-.artist-placeholder {
+.artist-image img {
     width: 100%;
     height: 100%;
-    background: linear-gradient(45deg, #555, #777);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #999;
-    font-size: 1.2rem;
+    object-fit: cover;
+    filter: grayscale(100%);
+    transition: filter 0.3s ease;
+}
+
+.artist-card:hover .artist-image img {
+    filter: grayscale(0%);
 }
 
 .artist-info {
@@ -401,8 +371,9 @@ section {
 .stampcard {
     background: #333;
     padding: 2rem;
-    border-radius: 15px;
+    border-radius: 8px;
     border: 2px solid #FFAC3C;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
 .stampcard h3 {
@@ -421,10 +392,11 @@ section {
 .stamp {
     background: #444;
     padding: 1rem;
-    border-radius: 10px;
+    border-radius: 6px;
     text-align: center;
     transition: all 0.3s ease;
     cursor: pointer;
+    border: 2px solid #555;
 }
 
 .stamp:hover {
@@ -449,8 +421,23 @@ section {
     color: #fff;
 }
 
+.stamp-number {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.stamp-name.hidden {
+    display: none;
+}
+
 .stamp.stamped .stamp-name {
     color: #1a1a1a;
+    display: block;
+}
+
+.stamp.stamped .stamp-number {
+    display: none;
 }
 
 .stampcard-description {
@@ -462,8 +449,9 @@ section {
 .brewery-highlight {
     background: #333;
     padding: 2rem;
-    border-radius: 15px;
+    border-radius: 8px;
     height: fit-content;
+    border: 2px solid #444;
 }
 
 .brewery-highlight h3 {
@@ -491,8 +479,9 @@ section {
     text-align: center;
     padding: 2rem;
     background: #333;
-    border-radius: 15px;
+    border-radius: 8px;
     transition: transform 0.3s ease;
+    border: 2px solid #444;
 }
 
 .unique-item:hover {
@@ -522,7 +511,7 @@ section {
 .about-text {
     max-width: 800px;
     margin: 0 auto;
-    text-align: center;
+    text-align: left;
 }
 
 .about-text p {
@@ -559,7 +548,8 @@ section {
 .signup-form {
     background: #333;
     padding: 2rem;
-    border-radius: 15px;
+    border-radius: 8px;
+    border: 2px solid #444;
 }
 
 .form-group {
@@ -597,8 +587,9 @@ section {
     text-decoration: none;
     padding: 1rem;
     background: #333;
-    border-radius: 10px;
+    border-radius: 6px;
     transition: all 0.3s ease;
+    border: 2px solid #444;
 }
 
 .social-link:hover {
@@ -664,10 +655,11 @@ section {
 .modal-content {
     background: #333;
     padding: 2rem;
-    border-radius: 15px;
+    border-radius: 8px;
     max-width: 500px;
     width: 90%;
     position: relative;
+    border: 2px solid #444;
 }
 
 .modal-close {
