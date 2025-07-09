@@ -207,14 +207,14 @@ p {
     border-top: 2px solid #EAC435;
 }
 
-.event-info-grid {
+.hero-event-info-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 2rem;
     text-align: center;
 }
 
-.event-info-item {
+.hero-event-info-item {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -792,6 +792,87 @@ section {
     line-height: 1.6;
 }
 
+/* Event Information */
+.event-info {
+    background: #1a1a1a;
+    position: relative;
+}
+
+.event-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        repeating-linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.02) 1px, transparent 2px, transparent 40px),
+        repeating-linear-gradient(0deg, transparent 0%, rgba(255, 255, 255, 0.01) 1px, transparent 2px, transparent 40px);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.event-info > * {
+    position: relative;
+    z-index: 2;
+}
+
+.event-info-content {
+    /* Uses standard container width */
+}
+
+.event-info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+}
+
+.event-info-section {
+    padding: 0;
+}
+
+.event-info-section h3 {
+    color: #EAC435;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: left;
+}
+
+.event-info-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #ccc;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-align: left;
+}
+
+.event-info-item {
+    margin-bottom: 0.8rem;
+}
+
+.event-info-item:last-child {
+    margin-bottom: 0;
+}
+
+.event-info-link {
+    color: #ccc;
+    text-decoration: underline;
+    text-decoration-color: #B87333;
+    text-underline-offset: 3px;
+    transition: all 0.3s ease;
+}
+
+.event-info-link:hover {
+    color: #EAC435;
+    text-decoration-color: #EAC435;
+}
+
 /* About */
 .about {
     background: #222;
@@ -1161,7 +1242,7 @@ section {
         height: 300px;
     }
     
-    .event-info-grid {
+    .hero-event-info-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 1.5rem;
     }
@@ -1185,6 +1266,11 @@ section {
 
     .contact-content {
         grid-template-columns: 1fr;
+    }
+
+    .event-info-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
     }
 
     .footer-logo-wide {
@@ -1244,11 +1330,24 @@ section {
     
     .event-info-grid {
         grid-template-columns: 1fr;
-        gap: 1rem;
+        gap: 2rem;
     }
     
     .hero-event-info {
         padding: 1.5rem 0;
+    }
+
+    .hero-event-info-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .event-info-section h3 {
+        font-size: 0.9rem;
+    }
+
+    .event-info-text {
+        font-size: 0.85rem;
     }
     
     .info-value {
