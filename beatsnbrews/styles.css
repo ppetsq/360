@@ -63,7 +63,7 @@ p {
     transition: all 0.3s ease;
     transform: translateY(-100%);
     opacity: 0;
-    border-bottom: 2px solid #4682B4;
+    border-bottom: 2px solid #EAC435
 }
 
 .nav.visible {
@@ -106,7 +106,7 @@ p {
 
 .nav-link:hover {
     color: #1a1a1a;
-    background: #B87333;
+    background: #EAC435;
     transform: translateY(-2px);
 }
 
@@ -119,7 +119,7 @@ p {
 .nav-toggle span {
     width: 25px;
     height: 3px;
-    background: #4682B4;
+    background: #EAC435;
     margin: 3px 0;
     transition: 0.3s;
     clip-path: polygon(0 0, calc(100% - 3px) 0, 100% 100%, 3px 100%);
@@ -169,7 +169,6 @@ p {
     color: white;
     z-index: 1;
     padding-bottom: 140px;
-    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
 }
 
 .hero-logo img {
@@ -205,7 +204,7 @@ p {
     backdrop-filter: blur(10px);
     padding: 2rem 0;
     z-index: 2;
-    border-top: 3px solid #4682B4;
+    border-top: 2px solid #EAC435;
 }
 
 .event-info-grid {
@@ -222,7 +221,7 @@ p {
 }
 
 .info-label {
-    color: #B87333;
+    color: #EAC435;
     font-family: 'Bebas Neue', cursive;
     font-size: 1rem;
     font-weight: 400;
@@ -261,18 +260,17 @@ p {
 }
 
 .btn-primary {
-    background: #D2691E;
+    background: #EAC435;
     color: #1a1a1a;
-    border-color: #D2691E;
+    border-color: #EAC435;
     box-shadow: 0 0 20px rgba(210, 105, 30, 0.3);
 }
 
 .btn-primary:hover {
     background: transparent;
-    color: #D2691E;
-    border-color: #D2691E;
+    color: #EAC435;
+    border-color: #EAC435;
     box-shadow: 0 0 30px rgba(210, 105, 30, 0.5);
-    transform: translateY(-2px);
 }
 
 .btn-secondary {
@@ -286,7 +284,6 @@ p {
     background: #fff;
     color: #1a1a1a;
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
 }
 
 /* Sections */
@@ -301,7 +298,7 @@ section {
 
 .section-header h2 {
     color: #fff;
-    font-size: 2.5rem;
+    font-size: 4rem;
     margin-bottom: 1rem;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -315,9 +312,9 @@ section {
     bottom: -10px;
     left: 50%;
     transform: translateX(-50%);
-    width: 60px;
+    width: 80px;
     height: 4px;
-    background: linear-gradient(90deg, #4682B4, #B87333);
+    background: linear-gradient(90deg, #EAC435, #B87333);
     clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%);
 }
 
@@ -419,7 +416,7 @@ section {
     background: #3C3C3C;
     padding: 1.5rem;
     border-radius: 0;
-    border: 3px solid #4682B4;
+    border: 3px solid #EAC435;
     color: #fff;
     font-size: 1.1rem;
     line-height: 1.6;
@@ -437,7 +434,7 @@ section {
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, #4682B4, #B87333);
+    background: linear-gradient(90deg, #EAC435, #B87333);
 }
 
 /* Artists */
@@ -478,7 +475,7 @@ section {
     overflow: hidden;
     transition: all 0.3s ease;
     border: none;
-    border-left: 4px solid #4682B4;
+    border-left: 4px solid #B87333;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     position: relative;
     clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 100%, 10px 100%);
@@ -487,7 +484,7 @@ section {
 .artist-card:hover {
     transform: translateY(-8px) scale(1.02);
     box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-    border-left-color: #B87333;
+    border-left-color: #EAC435;
 }
 
 .artist-image {
@@ -520,7 +517,7 @@ section {
 }
 
 .artist-genre {
-    color: #D2691E;
+    color: #EAC435;
     font-family: 'Bebas Neue', cursive;
     font-weight: 400;
     margin-bottom: 1rem;
@@ -596,7 +593,7 @@ section {
     left: -2px;
     right: -2px;
     bottom: -2px;
-    background: linear-gradient(45deg, #B87333, #D2691E, #B87333, #D2691E);
+    background: linear-gradient(45deg, #B87333, #EAC435, #B87333, #EAC435);
     z-index: -1;
     animation: borderGlow 3s ease-in-out infinite;
 }
@@ -626,7 +623,7 @@ section {
     text-align: center;
     transition: all 0.3s ease;
     cursor: pointer;
-    border: 2px solid #4682B4;
+    border: 2px solid #EAC435;
     position: relative;
     overflow: hidden;
     clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%);
@@ -653,7 +650,7 @@ section {
 }
 
 .stamp.stamped {
-    background: #D2691E;
+    background: #EAC435;
     color: #1a1a1a;
 }
 
@@ -751,7 +748,7 @@ section {
     border-radius: 0;
     transition: all 0.3s ease;
     border: none;
-    border-bottom: 3px solid #4682B4;
+    border-bottom: 3px solid #B87333;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     position: relative;
     overflow: hidden;
@@ -761,7 +758,7 @@ section {
 .unique-item:hover {
     transform: translateY(-8px);
     box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-    border-bottom-color: #B87333;
+    border-bottom-color: #EAC435;
 }
 
 .unique-item::before {
@@ -771,7 +768,7 @@ section {
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, #4682B4, #B87333);
+    background: linear-gradient(90deg, #EAC435, #B87333);
     transform: scaleX(0);
     transition: transform 0.3s ease;
 }
@@ -786,7 +783,7 @@ section {
 }
 
 .unique-item h3 {
-    color: #4682B4;
+    color: #EAC435;
     margin-bottom: 1rem;
 }
 
@@ -873,7 +870,7 @@ section {
 .contact-signup h3,
 .contact-social h3,
 .contact-location h3 {
-    color: #B87333;
+    color: #ffffff;
     margin-bottom: 1.5rem;
 }
 
@@ -881,7 +878,7 @@ section {
     background: #3C3C3C;
     padding: 2rem;
     border-radius: 0;
-    border: 3px solid #4682B4;
+    border: 3px solid #EAC435;
     box-shadow: 0 8px 20px rgba(0,0,0,0.4);
     position: relative;
     overflow: hidden;
@@ -895,7 +892,7 @@ section {
     left: -2px;
     right: -2px;
     bottom: -2px;
-    background: linear-gradient(45deg, #4682B4, #B87333, #4682B4, #B87333);
+    background: linear-gradient(45deg, #EAC435, #B87333, #EAC435, #B87333);
     z-index: -1;
     animation: borderGlow 3s ease-in-out infinite;
 }
@@ -909,7 +906,7 @@ section {
 
 .form-group input {
     padding: 12px;
-    border: 2px solid #4682B4;
+    border: 2px solid #EAC435;
     border-radius: 0;
     background: #2C2C2C;
     color: #fff;
@@ -919,11 +916,11 @@ section {
 
 .form-group input:focus {
     outline: none;
-    border-color: #4682B4;
+    border-color: #B87333;
 }
 
 .form-note {
-    color: #999;
+    color: #fff;
     font-size: 0.9rem;
     line-height: 1.4;
 }
@@ -938,7 +935,7 @@ section {
     background: #3C3C3C;
     border-radius: 0;
     transition: all 0.3s ease;
-    border: 2px solid #4682B4;
+    border: 2px solid #B87333;
     text-transform: uppercase;
     font-family: 'Bebas Neue', cursive;
     font-weight: 400;
@@ -964,7 +961,7 @@ section {
 }
 
 .social-link:hover {
-    background: #4682B4;
+    background: #B87333;
     color: #1a1a1a;
 }
 
@@ -981,7 +978,7 @@ section {
 .footer {
     background: #111;
     padding: 2rem 0;
-    border-top: 2px solid #4682B4;
+    border-top: 2px solid #B87333;
     position: relative;
 }
 
@@ -1050,7 +1047,6 @@ section {
     max-width: 500px;
     width: 90%;
     position: relative;
-    border: 3px solid #4682B4;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 100%, 15px 100%);
 }
@@ -1065,7 +1061,7 @@ section {
 }
 
 .modal-close:hover {
-    color: #4682B4;
+    color: #B87333;
 }
 
 .modal h2 {
@@ -1088,7 +1084,6 @@ section {
 
 .modal-form input {
     padding: 12px;
-    border: 2px solid #4682B4;
     border-radius: 0;
     background: #2C2C2C;
     color: #fff;
@@ -1098,7 +1093,6 @@ section {
 
 .modal-form input:focus {
     outline: none;
-    border-color: #4682B4;
 }
 
 /* Mobile Responsive */
@@ -1147,7 +1141,7 @@ section {
     }
 
     .section-header h2 {
-        font-size: 2rem;
+        font-size: 4rem;
     }
 
     .location-content {
@@ -1221,7 +1215,7 @@ section {
     }
 
     .section-header h2 {
-        font-size: 1.8rem;
+        font-size: 2.5rem;
     }
 
     .stamps-grid {
