@@ -160,50 +160,128 @@
         <div class="container">
             <div class="section-header">
                 <h2>Brewery Experience</h2>
-                <p class="section-subtitle">Discover local flavors with our stampcard journey. Your festival ticket includes a beer from all breweries below. Non-alcoholic options are also available.</p>
+                <p class="section-subtitle">Discover local flavors with our premium passport journey. Your festival ticket includes a beer from all breweries below. Non-alcoholic options are also available.</p>
             </div>
             <div class="brewery-content">
                 <div class="stampcard-container">
-                    <div class="stampcard">
-                        <h3>Your Brewery Passport</h3>
-                        <div class="stamps-grid">
-                            <div class="stamp" data-brewery="stadshaven">
-                                <span class="stamp-icon">🍺</span>
-                                <span class="stamp-name hidden">Stadshaven Brouwerij</span>
-                                <span class="stamp-number">Brewery #1</span>
+                    <div class="passport-book">
+                        <div class="passport-cover" role="button" tabindex="0" aria-label="Open brewery passport to start collecting stamps" aria-expanded="false">
+                            <div class="passport-title">BREWERY PASSPORT</div>
+                            <div class="passport-subtitle">Beats & Brews Festival 2025</div>
+                        </div>
+                        <div class="passport-inner">
+                            <div class="passport-header">
+                                <h3>Your Brewery Journey</h3>
+                                <div class="progress-indicator">
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="6" aria-label="Brewery passport completion progress">
+                                        <div class="progress-fill" id="progress-fill"></div>
+                                    </div>
+                                    <div class="progress-text"><span id="progress-count">0</span> / 6 Complete</div>
+                                    <div id="progress-announcer" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+                                </div>
                             </div>
-                            <div class="stamp" data-brewery="kaapse">
-                                <span class="stamp-icon">🍺</span>
-                                <span class="stamp-name hidden">Kaapse Brouwers</span>
-                                <span class="stamp-number">Brewery #2</span>
+                            <div class="stamps-grid">
+                                <div class="stamp-slot" data-brewery="stadshaven" role="button" tabindex="0" aria-label="Stamp for Stadshaven Brouwerij - Host Brewery. Click to collect stamp.">
+                                    <div class="stamp-indentation">
+                                        <div class="stamp-placeholder"></div>
+                                        <div class="stamp-overlay">
+                                            <div class="brewery-logo">SB</div>
+                                            <div class="brewery-name">Stadshaven Brouwerij</div>
+                                            <div class="stamp-ink-effect"></div>
+                                        </div>
+                                    </div>
+                                    <div class="stamp-label">Host Brewery</div>
+                                </div>
+                                <div class="stamp-slot" data-brewery="kaapse" role="button" tabindex="0" aria-label="Stamp for Kaapse Brouwers - Local Craft. Click to collect stamp.">
+                                    <div class="stamp-indentation">
+                                        <div class="stamp-placeholder"></div>
+                                        <div class="stamp-overlay">
+                                            <div class="brewery-logo">KB</div>
+                                            <div class="brewery-name">Kaapse Brouwers</div>
+                                            <div class="stamp-ink-effect"></div>
+                                        </div>
+                                    </div>
+                                    <div class="stamp-label">Local Craft</div>
+                                </div>
+                                <div class="stamp-slot" data-brewery="noordt" role="button" tabindex="0" aria-label="Stamp for Brouwerij Noordt - Artisan Ales. Click to collect stamp.">
+                                    <div class="stamp-indentation">
+                                        <div class="stamp-placeholder"></div>
+                                        <div class="stamp-overlay">
+                                            <div class="brewery-logo">BN</div>
+                                            <div class="brewery-name">Brouwerij Noordt</div>
+                                            <div class="stamp-ink-effect"></div>
+                                        </div>
+                                    </div>
+                                    <div class="stamp-label">Artisan Ales</div>
+                                </div>
+                                <div class="stamp-slot" data-brewery="reijp" role="button" tabindex="0" aria-label="Stamp for Eurobrouwers - European Style. Click to collect stamp.">
+                                    <div class="stamp-indentation">
+                                        <div class="stamp-placeholder"></div>
+                                        <div class="stamp-overlay">
+                                            <div class="brewery-logo">EB</div>
+                                            <div class="brewery-name">Eurobrouwers</div>
+                                            <div class="stamp-ink-effect"></div>
+                                        </div>
+                                    </div>
+                                    <div class="stamp-label">European Style</div>
+                                </div>
+                                <div class="stamp-slot" data-brewery="beatsnbrews" role="button" tabindex="0" aria-label="Stamp for Beats & Brews - Festival Exclusive. Click to collect stamp.">
+                                    <div class="stamp-indentation">
+                                        <div class="stamp-placeholder"></div>
+                                        <div class="stamp-overlay">
+                                            <div class="brewery-logo">B&B</div>
+                                            <div class="brewery-name">Beats & Brews</div>
+                                            <div class="stamp-ink-effect"></div>
+                                        </div>
+                                    </div>
+                                    <div class="stamp-label">Festival Exclusive</div>
+                                </div>
+                                <div class="stamp-slot" data-brewery="surprise" role="button" tabindex="0" aria-label="Stamp for BrewDog - Craft Pioneer. Click to collect stamp.">
+                                    <div class="stamp-indentation">
+                                        <div class="stamp-placeholder"></div>
+                                        <div class="stamp-overlay">
+                                            <div class="brewery-logo">BD</div>
+                                            <div class="brewery-name">BrewDog</div>
+                                            <div class="stamp-ink-effect"></div>
+                                        </div>
+                                    </div>
+                                    <div class="stamp-label">Craft Pioneer</div>
+                                </div>
                             </div>
-                            <div class="stamp" data-brewery="noordt">
-                                <span class="stamp-icon">🍺</span>
-                                <span class="stamp-name hidden">Brouwerij Noordt</span>
-                                <span class="stamp-number">Brewery #3</span>
-                            </div>
-                            <div class="stamp" data-brewery="reijp">
-                                <span class="stamp-icon">🍺</span>
-                                <span class="stamp-name hidden">Eurobrouwers</span>
-                                <span class="stamp-number">Brewery #4</span>
-                            </div>
-                            <div class="stamp" data-brewery="beatsnbrews">
-                                <span class="stamp-icon">🍺</span>
-                                <span class="stamp-name hidden">Beats & Brews</span>
-                                <span class="stamp-number">Brewery #5</span>
-                            </div>
-                            <div class="stamp" data-brewery="surprise">
-                                <span class="stamp-icon">🍺</span>
-                                <span class="stamp-name hidden">Brewdog</span>
-                                <span class="stamp-number">Brewery #6</span>
+                            <div class="passport-footer">
+                                <p>Collect all stamps to unlock your exclusive festival reward!</p>
                             </div>
                         </div>
-                        <p class="stampcard-description">Complete your passport by trying beers from all participating breweries!</p>
                     </div>
                 </div>
                 <div class="brewery-highlight">
-                    <h3>Special Launch</h3>
-                    <p>Experience the debut of our very own <strong>"Beats & Brews" beer</strong> - crafted exclusively for the festival in collaboration with Stadshaven Brouwerij.</p>
+                    <div class="special-launch-header">
+                        <h3>Festival Exclusive</h3>
+                        <div class="launch-badge">NEW</div>
+                    </div>
+                    <div class="beer-showcase">
+                        <div class="beer-image">
+                            <img src="https://files.petsq.works/beatsnbrews/bnb-beer.png" alt="Beats & Brews Beer" class="beer-mockup">
+                        </div>
+                        <div class="beer-info">
+                            <h4>Beats & Brews Original</h4>
+                            <p>A premium craft beer created exclusively for our festival in collaboration with Stadshaven Brouwerij. This unique brew combines traditional brewing techniques with modern flavor profiles.</p>
+                            <div class="beer-details">
+                                <div class="beer-detail">
+                                    <span class="detail-label">Style:</span>
+                                    <span class="detail-value">Golden Ale</span>
+                                </div>
+                                <div class="beer-detail">
+                                    <span class="detail-label">ABV:</span>
+                                    <span class="detail-value">5.2%</span>
+                                </div>
+                                <div class="beer-detail">
+                                    <span class="detail-label">IBU:</span>
+                                    <span class="detail-value">28</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -408,6 +486,36 @@
                 <input type="email" placeholder="Enter your email" required>
                 <button type="submit" class="btn btn-primary">Sign Me Up</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Passport Completion Modal -->
+    <div class="modal" id="completion-modal">
+        <div class="completion-modal-content">
+            <div class="completion-animation">
+                <div class="celebration-sparkles">
+                    <div class="sparkle sparkle-1"></div>
+                    <div class="sparkle sparkle-2"></div>
+                    <div class="sparkle sparkle-3"></div>
+                    <div class="sparkle sparkle-4"></div>
+                    <div class="sparkle sparkle-5"></div>
+                    <div class="sparkle sparkle-6"></div>
+                </div>
+                <div class="completion-badge">
+                    <div class="badge-text">PASSPORT COMPLETE</div>
+                </div>
+            </div>
+            <div class="completion-content">
+                <h2>Passport Complete!</h2>
+                <p>Get your 15% discount code</p>
+                <form class="completion-form" id="completion-form">
+                    <div class="form-group">
+                        <input type="email" placeholder="Enter your email" required>
+                        <button type="submit" class="btn btn-primary">Get Discount</button>
+                    </div>
+                </form>
+            </div>
+            <span class="modal-close completion-close">&times;</span>
         </div>
     </div>
 
