@@ -68,7 +68,7 @@ p {
 
 .nav.visible {
     transform: translateY(0);
-    opacity: 1;
+    opacity: 0.9;
 }
 
 .nav-container {
@@ -232,7 +232,7 @@ p {
 
 .info-value {
     color: #fff;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 1.2rem;
     font-weight: 700;
     text-shadow: 0 2px 4px rgba(0,0,0,0.5);
@@ -1913,13 +1913,44 @@ section {
         margin-top: 0.6rem;
     }
 
+    /* Festival Exclusive Mobile Changes */
     .beer-showcase {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
+        display: grid;
+        grid-template-columns: 30% 70%;
+        gap: 1rem;
+        align-items: start;
+    }
+    
+    .beer-showcase .beer-image {
+        text-align: center;
+        padding-right: 0;
+        margin-right: 0.5rem;
+    }
+    
+    .beer-showcase .beer-info {
+        /* normal flow */
+    }
+    
+    .beer-showcase .beer-info h4,
+    .beer-showcase .beer-info p {
+        margin-bottom: 1rem;
+    }
+    
+    .beer-showcase .beer-info .beer-details {
+        display: none;
+    }
+    
+    .beer-showcase + .beer-details-mobile {
+        display: block;
+        margin-top: 1rem;
+        width: 100%;
     }
 
     .beer-mockup {
-        max-width: 120px;
+        max-width: 80px;
+        width: 80px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .beer-info h4 {
@@ -2000,6 +2031,40 @@ section {
 
     .form-group {
         flex-direction: column;
+    }
+}
+
+/* Desktop layout (769px and up) */
+@media (min-width: 769px) {
+    .beer-showcase {
+        display: grid;
+        grid-template-columns: 1fr 3fr;
+        gap: 3rem;
+        align-items: center;
+    }
+    
+    .beer-showcase .beer-image {
+        text-align: center;
+        padding-right: 0;
+    }
+    
+    .beer-showcase .beer-info .beer-details {
+        display: block;
+        margin-top: 1.5rem;
+        width: auto;
+    }
+    
+    .beer-details-mobile {
+        display: none;
+    }
+    
+    .beer-mockup {
+        max-width: 120px;
+        width: auto;
+    }
+
+    .beer-info h4 {
+        font-size: 1.3rem;
     }
 }
 
