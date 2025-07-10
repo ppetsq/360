@@ -413,7 +413,7 @@ section {
     border: 3px solid #EAC435;
     color: #fff;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     line-height: 1.6;
     margin-top: 2rem;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
@@ -546,10 +546,17 @@ section {
 }
 
 .artists-more p {
-    color: #B87333;
-    font-size: 1rem;
-    font-weight: 300;
-    font-style:italic
+    color: #1a1a1a;
+    background: #EAC435;
+    font-family: 'Bebas Neue', cursive;
+    font-weight: 400;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0.5rem 1rem;
+    display: inline-block;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%);
+    transition: all 0.3s ease;
 }
 
 /* Social Media Buttons */
@@ -681,7 +688,7 @@ section {
 }
 
 .passport-cover::after {
-    content: 'Click to Open →';
+    content: 'Click to open →';
     position: absolute;
     bottom: 10%;
     right: 20%;
@@ -691,6 +698,7 @@ section {
     font-weight: 500;
     opacity: 0.7;
     animation: pulse-hint 2s ease-in-out infinite;
+    transition: opacity 0.4s ease;
 }
 
 @keyframes pulse-hint {
@@ -706,11 +714,12 @@ section {
     text-align: center;
     letter-spacing: 3px;
     text-shadow: 
-        0 0 10px rgba(234, 196, 53, 0.4),
+        0 0 5px rgba(234, 196, 53, 0.2),
         0 2px 4px rgba(0,0,0,0.8);
     line-height: 1.1;
     margin-bottom: 1rem;
     z-index: 2;
+    transition: opacity 0.4s ease;
 }
 
 .passport-subtitle {
@@ -722,6 +731,7 @@ section {
     letter-spacing: 1px;
     text-transform: uppercase;
     z-index: 2;
+    transition: opacity 0.4s ease;
 }
 
 .passport-inner {
@@ -1040,7 +1050,7 @@ section {
     color: #EAC435;
     margin-bottom: 0;
     font-size: 2rem;
-    text-shadow: 0 0 10px rgba(234, 196, 53, 0.3);
+    text-shadow: 0 0 5px rgba(234, 196, 53, 0.15);
 }
 
 .launch-badge {
@@ -1090,7 +1100,7 @@ section {
     font-size: 1.5rem;
     margin-bottom: 1rem;
     font-family: 'Bebas Neue', cursive;
-    text-shadow: 0 0 8px rgba(234, 196, 53, 0.3);
+    text-shadow: 0 0 4px rgba(234, 196, 53, 0.15);
 }
 
 .beer-info p {
@@ -1411,11 +1421,10 @@ section {
 .form-group input {
     padding: 12px;
     border: 2px solid #EAC435;
-    border-radius: 0;
+    border-radius: 4px;
     background: #2C2C2C;
     color: #fff;
     font-size: 1rem;
-    clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%);
 }
 
 .form-group input:focus {
@@ -1436,7 +1445,6 @@ section {
     color: #fff;
     text-decoration: none;
     padding: 1rem;
-    background: #3C3C3C;
     border-radius: 0;
     transition: all 0.3s ease;
     border: 2px solid #B87333;
@@ -1605,11 +1613,11 @@ section {
 
 .modal-form input {
     padding: 12px;
-    border-radius: 0;
+    border: 2px solid #EAC435;
+    border-radius: 4px;
     background: #2C2C2C;
     color: #fff;
     font-size: 1rem;
-    clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%);
 }
 
 .modal-form input:focus {
@@ -1813,6 +1821,12 @@ section {
     .location-content {
         grid-template-columns: 1fr;
         gap: 2rem;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .location-image {
+        order: -1;
     }
     
     .location-image img {
@@ -1866,8 +1880,8 @@ section {
     }
 
     .passport-cover::after {
-        content: 'Tap to Open →';
-        font-size: 0.7rem;
+        content: 'Tap to open →';
+        font-size: 0.8rem;
         bottom: 15%;
         right: 15%;
     }
@@ -2053,8 +2067,8 @@ section {
     }
 
     .passport-cover::after {
-        content: 'Tap →';
-        font-size: 0.6rem;
+        content: 'Tap to open →';
+        font-size: 0.7rem;
         bottom: 10%;
         right: 10%;
     }
