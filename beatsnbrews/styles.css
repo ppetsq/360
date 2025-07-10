@@ -1682,22 +1682,19 @@ section {
 }
 
 .completion-badge {
-    background: #EAC435;
     color: #1a1a1a;
     padding: 0.8rem 1.5rem;
     border-radius: 8px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(234, 196, 53, 0.4);
-    margin-bottom: 1rem;
 }
 
 
 
 .badge-text {
     font-family: 'Bebas Neue', cursive;
-    font-size: 1rem;
+    font-size: 4rem;
     font-weight: 700;
     letter-spacing: 1px;
 }
