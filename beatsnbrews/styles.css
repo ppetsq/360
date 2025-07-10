@@ -506,6 +506,7 @@ section {
 
 .artist-info {
     padding: 1.5rem;
+    position: relative;
 }
 
 .artist-info h3 {
@@ -541,6 +542,46 @@ section {
     font-size: 1rem;
     font-weight: 300;
     font-style:italic
+}
+
+/* Social Media Buttons */
+.artist-social {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #4A4A4A;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.social-btn:hover {
+    background: #EAC435;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.social-btn img {
+    width: 18px;
+    height: 18px;
+    filter: brightness(0) invert(1);
+    transition: filter 0.3s ease;
+}
+
+.social-btn:hover img {
+    filter: brightness(0) invert(0);
 }
 
 /* Breweries */
@@ -1043,6 +1084,15 @@ section {
 
 .social-icon {
     font-size: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 0.5rem;
+}
+
+.social-icon img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
 }
 
 .contact-location p {
