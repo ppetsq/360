@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W70.club 360°</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <link rel="stylesheet" href="styles.css">
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 62.5%; /* 1rem = 10px */
+}
+
+body {
+    font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #F2FCFC;
+    color: #372D73;
+    min-height: 100vh;
+    padding: 50px;
+}
+
+.main-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding-left: 2.4rem;
+    padding-right: 2.4rem;
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+.header {
+    text-align: left;
+    margin-bottom: 5rem;
+}
+
+.title {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 8.6rem;
+    font-weight: 900;
+    font-stretch: condensed;
+    color: #914C95;
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 90%;
+    text-transform: uppercase;
+    -webkit-font-smoothing: antialiased;
+    text-align: left;
+    margin-left: 10rem;
+    margin-top: 4rem;
+}
+
+.title a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ========================================
+   VIEWER SECTION
+   ======================================== */
+.viewer-section {
+    margin-bottom: 6rem;
+}
+
+.viewer-wrapper {
+    position: relative;
+    width: 100%;
+    height: 34.3rem;
+    background: #FFFFFF;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(55, 45, 115, 0.15);
+    border: 2px solid #372D73;
+}
+
+.viewer-container {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+    position: relative;
+    cursor: move;
+}
+
+.viewer-label {
+    position: absolute;
+    top: 2.5rem;
+    right: 3rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 4rem;
+    font-weight: 900;
+    font-stretch: condensed;
+    color: #FFFFFF;
+    opacity: 1;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    -webkit-font-smoothing: antialiased;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* ========================================
+   FULLSCREEN FUNCTIONALITY
+   ======================================== */
+.fullscreen-button {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    width: 4.4rem;
+    height: 4.4rem;
+    background: #EBD45A;
+    color: #372D73;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    z-index: 20;
+}
+
+.fullscreen-button:hover {
+    opacity: 0.8;
+}
+
+/* Fullscreen mode styles */
+.viewer-wrapper.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100svh;
+    z-index: 9999;
+    border-radius: 0;
+    border: none;
+}
+
+.viewer-wrapper.fullscreen .viewer-label {
+    font-size: 5rem;
+    top: 3rem;
+    right: 4rem;
+}
+
+/* This rule hides the standalone fullscreen button when the viewer is in fullscreen mode. */
+.viewer-wrapper.fullscreen > .fullscreen-button {
+    display: none;
+}
+
+/* Fullscreen navigation container - same for all devices */
+.fullscreen-nav-container {
+    position: absolute;
+    bottom: 2rem;
+    right: 3rem;
+    left: auto;
+    transform: none;
+    display: none;
+    align-items: center;
+    gap: 1.6rem;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 1.2rem 2rem;
+    border-radius: 4rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.viewer-wrapper.fullscreen .fullscreen-nav-container {
+    display: flex;
+}
+
+/* Fullscreen button inside nav container */
+.fullscreen-nav-container .fullscreen-button {
+    position: static;
+    width: 3.6rem;
+    height: 3.6rem;
+    background: #EBD45A;
+    color: #372D73;
+    font-size: 1.4rem;
+    display: flex;
+    /* Removed margin-left to ensure consistent spacing */
+}
+
+.fullscreen-nav-container .fullscreen-button:hover {
+    opacity: 0.8;
+}
+
+/* Hide regular navigation in fullscreen */
+.viewer-wrapper.fullscreen ~ .main-navigation,
+.viewer-wrapper.fullscreen ~ .auto-rotate-section,
+.viewer-wrapper.fullscreen ~ .viewer-footer {
+    display: none;
+}
+
+/* ========================================
+   NAVIGATION CONTROLS
+   ======================================== */
+.main-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2.4rem;
+    margin-top: 2.4rem;
+    padding: 0 2px;
+}
+
+.auto-rotate-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    padding: 0 2px;
+}
+
+.viewpoint-controls {
+    display: none; /* Hidden by default, shown only on desktop */
+}
+
+/* Viewpoint dots */
+.viewpoint-nav {
+    display: flex;
+    gap: 1.2rem;
+    transition: opacity 0.3s ease;
+}
+
+.viewpoint-button {
+    width: 1.2rem;
+    height: 1.2rem;
+    background: rgba(55, 45, 115, 0.3);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.viewpoint-button:hover {
+    background: rgba(55, 45, 115, 0.6);
+    transform: scale(1.2);
+}
+
+.viewpoint-button.active {
+    background: #372D73;
+    transform: scale(1.3);
+}
+
+/* Fullscreen navigation viewpoint dots */
+.fullscreen-nav-container .viewpoint-nav {
+    gap: 1rem;
+}
+
+.fullscreen-nav-container .viewpoint-button {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.fullscreen-nav-container .viewpoint-button:hover {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.fullscreen-nav-container .viewpoint-button.active {
+    background: #FFFFFF;
+}
+
+/* Control buttons */
+.control-button {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    background: #372D73;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 6.4rem;
+    padding: 1.2rem 2.4rem;
+    height: 4.4rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.control-button:hover {
+    opacity: 0.8;
+}
+
+.control-button.active {
+    background: #1F882F;
+    color: #FFFFFF;
+}
+
+/* Compact buttons for fullscreen */
+.control-button.compact {
+    padding: 0.8rem 1.2rem;
+    height: 3.6rem;
+    font-size: 1.2rem;
+    background: rgba(55, 45, 115, 0.9);
+}
+
+.control-button.compact:hover {
+    background: rgba(55, 45, 115, 1);
+}
+
+.control-button.compact.active {
+    background: rgba(31, 136, 47, 0.9);
+}
+
+.control-button .button-text {
+    display: inline;
+}
+
+/* Auto-rotate icon animation */
+.control-button .fa-sync-alt {
+    transition: transform 0.3s ease-out;
+}
+
+.control-button.active .fa-sync-alt {
+    animation: rotate 6s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   VIEWER FOOTER
+   ======================================== */
+.viewer-footer {
+    margin-top: 2.4rem;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.viewer-description {
+    text-align: left;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 1.6rem;
+    line-height: 1.5;
+    color: #372D73;
+}
+
+.viewer-description p {
+    margin: 0;
+}
+
+.description-highlight {
+    font-weight: 700;
+}
+
+.club-highlight {
+    color: #CF3D78;
+}
+
+.etage-highlight {
+    color: #CF3D78;
+}
+
+/* ========================================
+   LOADING OVERLAY
+   ======================================== */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #F2FCFC;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2.4rem;
+    transition: opacity 0.8s ease-out;
+}
+
+.loading-spinner {
+    position: relative;
+    width: 4.8rem;
+    height: 4.8rem;
+}
+
+.loading-spinner::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid rgba(55, 45, 115, 0.2);
+    border-top-color: #372D73;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: #372D73;
+    opacity: 0.8;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.hidden {
+    display: none !important;
+}
+
+/* ========================================
+   RESPONSIVE STYLES
+   ======================================== */
+
+/* Large screens (1280px+) */
+@media screen and (min-width: 1280px) {
+    .title {
+        font-size: 13.6rem;
+    }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+    .viewer-wrapper {
+        height: 61.9rem;
+    }
+    
+    /* Hide mobile/tablet navigation */
+    .main-navigation,
+    .auto-rotate-section {
+        display: none;
+    }
+    
+    /* Desktop layout for footer */
+    .viewer-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-top: 2.4rem;
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+    
+    .viewer-description {
+        width: 50%;
+        padding-right: 2rem;
+    }
+    
+    /* Show desktop controls */
+    .viewpoint-controls {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 2.4rem;
+    }
+}
+
+/* Tablet and Mobile (below 1024px) */
+@media (max-width: 1023px) {
+    .viewpoint-controls {
+        display: none;
+    }
+    
+    .main-navigation,
+    .auto-rotate-section {
+        display: flex;
+    }
+    
+    .viewer-description {
+        width: 100%;
+    }
+}
+
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
+    body {
+        padding: 1.6rem;
+    }
+    
+    .main-container {
+        gap: 2.4rem;
+    }
+    
+    .title {
+        font-size: 5.6rem;
+        margin-left: 0;
+    }
+    
+    .viewer-wrapper {
+        height: 30rem;
+    }
+    
+    .viewer-label {
+        font-size: 1.8rem;
+        top: 1.5rem;
+        right: 1.5rem;
+    }
+    
+    .control-button {
+        font-size: 1.4rem;
+        height: 4.4rem;
+    }
+}
+
+/* Mobile specific (767px and below) */
+@media (max-width: 767px) {
+    /* Hide button text only for prev/next buttons */
+    .main-navigation .control-button .button-text {
+        display: none;
+    }
+    
+    .main-navigation .control-button {
+        padding: 1.2rem;
+        min-width: 4.4rem;
+        justify-content: center;
+    }
+    
+    /* Keep auto-rotate button text visible */
+    .auto-rotate-section .control-button .button-text {
+        display: inline;
+    }
+}
+
+/* Small mobile (480px and below) */
+@media (max-width: 480px) {
+    body {
+        padding: 1rem;
+    }
+    
+    .title {
+        font-size: 5.6rem;
+    }
+    
+    .viewer-wrapper {
+        height: 40rem;
+    }
+    
+    .viewer-label {
+        font-size: 1.6rem;
+        top: 1rem;
+        right: 1rem;
+    }
+    
+    .control-button {
+        font-size: 1.2rem;
+        height: 4rem;
+    }
+    
+    .main-navigation {
+        gap: 1.6rem;
+    }
+
+    .fullscreen-button {
+        width: 4rem;
+        height: 4rem;
+        font-size: 1.4rem;
+        bottom: 1.5rem;
+        right: 1.5rem;
+    }
+}
+
+/* Add these to your styles.css file */
+
+/* Fix canvas rendering in WebGL context */
+.viewer-container canvas {
+    image-rendering: auto !important;
+    -webkit-font-smoothing: subpixel-antialiased !important;
+    transform: translateZ(0); /* Force GPU acceleration */
+    backface-visibility: hidden; /* Prevent flickering */
+}
+
+/* Remove any filters that might interfere */
+.viewer-container {
+    filter: none !important;
+    -webkit-filter: none !important;
+}
+
+/* Ensure no backdrop filters on container */
+.viewer-wrapper {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+</style>
+
+</head>
+
+<body>
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Virtuele tour wordt geladen...</div>
+    </div>
+
+    <div class="main-container">
+        <div class="header">
+            <h1 class="title">
+                <a href="https://www.w70.club/" target="_blank" rel="noopener noreferrer">
+                    Virtuele Tour
+                </a>
+            </h1>
+        </div>
+
+        <div class="viewer-section">
+            <div class="viewer-wrapper">
+                <div class="viewer-container" id="club-viewer">
+                </div>
+                <div class="viewer-label">W70.CLUB</div>
+                
+                <!-- Fullscreen navigation container -->
+                <div class="fullscreen-nav-container" id="club-fullscreen-nav">
+                    <button class="control-button compact" onclick="prevViewpoint('club')">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    
+                    <div class="viewpoint-nav">
+                        <button class="viewpoint-button" id="club-fs-1" onclick="switchViewpoint('club', 1)"></button>
+                        <button class="viewpoint-button" id="club-fs-2" onclick="switchViewpoint('club', 2)"></button>
+                        <button class="viewpoint-button" id="club-fs-3" onclick="switchViewpoint('club', 3)"></button>
+                        <button class="viewpoint-button" id="club-fs-4" onclick="switchViewpoint('club', 4)"></button>
+                        <button class="viewpoint-button" id="club-fs-5" onclick="switchViewpoint('club', 5)"></button>
+                    </div>
+                    
+                    <button class="control-button compact" onclick="nextViewpoint('club')">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    
+                    <button class="control-button compact" id="club-fs-rotate-button" onclick="toggleAutoRotate('club')">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    
+                    <button class="fullscreen-button" onclick="toggleFullscreen('club')" title="Volledig scherm">
+                        <i class="fas fa-compress"></i>
+                    </button>
+                </div>
+                
+                <button class="fullscreen-button" onclick="toggleFullscreen('club')" title="Volledig scherm">
+                    <i class="fas fa-expand" id="club-fullscreen-icon"></i>
+                </button>
+            </div>
+
+            <!-- Mobile/Tablet Navigation (prev/dots/next) -->
+            <div class="main-navigation">
+                <button class="control-button" onclick="prevViewpoint('club')">
+                    <i class="fas fa-arrow-left"></i> 
+                    <span class="button-text">Vorige</span>
+                </button>
+                
+                <div class="viewpoint-nav">
+                    <button class="viewpoint-button" id="club-1" onclick="switchViewpoint('club', 1)"></button>
+                    <button class="viewpoint-button" id="club-2" onclick="switchViewpoint('club', 2)"></button>
+                    <button class="viewpoint-button" id="club-3" onclick="switchViewpoint('club', 3)"></button>
+                    <button class="viewpoint-button" id="club-4" onclick="switchViewpoint('club', 4)"></button>
+                    <button class="viewpoint-button" id="club-5" onclick="switchViewpoint('club', 5)"></button>
+                </div>
+                
+                <button class="control-button" onclick="nextViewpoint('club')">
+                    <span class="button-text">Volgende</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- Mobile/Tablet Auto-rotate section -->
+            <div class="auto-rotate-section">
+                <button class="control-button" id="club-rotate-button" onclick="toggleAutoRotate('club')">
+                    <i class="fas fa-sync-alt"></i> 
+                    <span class="button-text">Auto-rotate</span>
+                </button>
+            </div>
+
+            <div class="viewer-footer">
+                <div class="viewer-description">
+                    <p><span class="description-highlight club-highlight">W70.CLUB</span> is een 1400m2 clubruimte met werkplekken, meeting rooms en eventspace. De 1e etage van W70 is het sociale hart. Hier staat ontmoeten, informeel werken, eten en drinken centraal. In CLUB is niets te gek. Van borrels tot inspirational talks. Van feestjes tot fine dining. CLUB is het kloppende hart waar 24/7, 365 dagen per jaar iets te beleven valt.</p>
+                </div>
+
+                <!-- Desktop controls (hidden on mobile/tablet) -->
+                <div class="viewpoint-controls">
+                    <button class="control-button" onclick="prevViewpoint('club')">
+                        <i class="fas fa-arrow-left"></i> Vorige
+                    </button>
+                    
+                    <div class="viewpoint-nav">
+                        <button class="viewpoint-button" id="club-1" onclick="switchViewpoint('club', 1)"></button>
+                        <button class="viewpoint-button" id="club-2" onclick="switchViewpoint('club', 2)"></button>
+                        <button class="viewpoint-button" id="club-3" onclick="switchViewpoint('club', 3)"></button>
+                        <button class="viewpoint-button" id="club-4" onclick="switchViewpoint('club', 4)"></button>
+                        <button class="viewpoint-button" id="club-5" onclick="switchViewpoint('club', 5)"></button>
+                    </div>
+                    
+                    <button class="control-button" onclick="nextViewpoint('club')">
+                        Volgende <i class="fas fa-arrow-right"></i>
+                    </button>
+                    
+                    <button class="control-button" id="club-rotate-button" onclick="toggleAutoRotate('club')">
+                        <i class="fas fa-sync-alt"></i> Auto-rotate
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="viewer-section">
+            <div class="viewer-wrapper">
+                <div class="viewer-container" id="etage-viewer">
+                </div>
+                <div class="viewer-label">ETAGE16</div>
+                
+                <!-- Fullscreen navigation container -->
+                <div class="fullscreen-nav-container" id="etage-fullscreen-nav">
+                    <button class="control-button compact" onclick="prevViewpoint('etage')">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    
+                    <div class="viewpoint-nav">
+                        <button class="viewpoint-button" id="etage-fs-1" onclick="switchViewpoint('etage', 1)"></button>
+                        <button class="viewpoint-button" id="etage-fs-2" onclick="switchViewpoint('etage', 2)"></button>
+                        <button class="viewpoint-button" id="etage-fs-3" onclick="switchViewpoint('etage', 3)"></button>
+                        <button class="viewpoint-button" id="etage-fs-4" onclick="switchViewpoint('etage', 4)"></button>
+                        <button class="viewpoint-button" id="etage-fs-5" onclick="switchViewpoint('etage', 5)"></button>
+                    </div>
+                    
+                    <button class="control-button compact" onclick="nextViewpoint('etage')">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    
+                    <button class="control-button compact" id="etage-fs-rotate-button" onclick="toggleAutoRotate('etage')">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+
+                    <button class="fullscreen-button" onclick="toggleFullscreen('etage')" title="Volledig scherm">
+                        <i class="fas fa-compress"></i>
+                    </button>
+
+                </div>
+                
+                <button class="fullscreen-button" onclick="toggleFullscreen('etage')" title="Volledig scherm">
+                    <i class="fas fa-expand" id="etage-fullscreen-icon"></i>
+                </button>
+            </div>
+
+            <!-- Mobile/Tablet Navigation (prev/dots/next) -->
+            <div class="main-navigation">
+                <button class="control-button" onclick="prevViewpoint('etage')">
+                    <i class="fas fa-arrow-left"></i> 
+                    <span class="button-text">Vorige</span>
+                </button>
+                
+                <div class="viewpoint-nav">
+                    <button class="viewpoint-button" id="etage-1" onclick="switchViewpoint('etage', 1)"></button>
+                    <button class="viewpoint-button" id="etage-2" onclick="switchViewpoint('etage', 2)"></button>
+                    <button class="viewpoint-button" id="etage-3" onclick="switchViewpoint('etage', 3)"></button>
+                    <button class="viewpoint-button" id="etage-4" onclick="switchViewpoint('etage', 4)"></button>
+                    <button class="viewpoint-button" id="etage-5" onclick="switchViewpoint('etage', 5)"></button>
+                </div>
+                
+                <button class="control-button" onclick="nextViewpoint('etage')">
+                    <span class="button-text">Volgende</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- Mobile/Tablet Auto-rotate section -->
+            <div class="auto-rotate-section">
+                <button class="control-button" id="etage-rotate-button" onclick="toggleAutoRotate('etage')">
+                    <i class="fas fa-sync-alt"></i> 
+                    <span class="button-text">Auto-rotate</span>
+                </button>
+            </div>
+
+            <div class="viewer-footer">
+                <div class="viewer-description">
+                    <p><span class="description-highlight etage-highlight">ETAGE16</span> is een unieke locatie waar je, met een panoramisch uitzicht over de skyline van Rotterdam, de binnenstad en de haven en Rotterdam airport kan vergaderen, yoga lessen kan volgen, events kan organiseren, en relaties kan uitnodigen. De bijzondere skybar op de 16e etage is de Gers op de taart. Zien is geloven.</p>
+                </div>
+
+                <!-- Desktop controls (hidden on mobile/tablet) -->
+                <div class="viewpoint-controls">
+                    <button class="control-button" onclick="prevViewpoint('etage')">
+                        <i class="fas fa-arrow-left"></i> Vorige
+                    </button>
+                    
+                    <div class="viewpoint-nav">
+                        <button class="viewpoint-button" id="etage-1" onclick="switchViewpoint('etage', 1)"></button>
+                        <button class="viewpoint-button" id="etage-2" onclick="switchViewpoint('etage', 2)"></button>
+                        <button class="viewpoint-button" id="etage-3" onclick="switchViewpoint('etage', 3)"></button>
+                        <button class="viewpoint-button" id="etage-4" onclick="switchViewpoint('etage', 4)"></button>
+                        <button class="viewpoint-button" id="etage-5" onclick="switchViewpoint('etage', 5)"></button>
+                    </div>
+                    
+                    <button class="control-button" onclick="nextViewpoint('etage')">
+                        Volgende <i class="fas fa-arrow-right"></i>
+                    </button>
+                    
+                    <button class="control-button" id="etage-rotate-button" onclick="toggleAutoRotate('etage')">
+                        <i class="fas fa-sync-alt"></i> Auto-rotate
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script src="scripts.js"></script>
+
+<script>
+
+// Configuration for viewpoints with UV texture coordinate hotspots
+const viewpoints = {
+    club: [
+        { 
+            id: 1, 
+            panorama: "https://assets.360.petsq.works/w70_2/club_001.jpg",
+            startX: -15,
+            startY: 15,
+            hotspots: [
+                { id: 'to_3', target: 3, position: { u: 0, v: 0.507 } },
+                { id: 'to_4', target: 4, position: { u: 0.5, v: 0.5 } },
+            ]
+        },
+        { 
+            id: 2, 
+            panorama: "https://assets.360.petsq.works/w70_2/club_002.jpg",
+            startX: -20,
+            startY: 15,
+            hotspots: [
+                { id: 'to_3', target: 3, position: { u: 0.335, v: 0.5 } },
+            ]
+        },
+        { 
+            id: 3, 
+            panorama: "https://assets.360.petsq.works/w70_2/club_003.jpg",
+            startX: 50,
+            startY: 15,
+            hotspots: [
+                { id: 'to_1', target: 1, position: { u: 0.769, v: 0.5 } },
+                { id: 'to_2', target: 2, position: { u: 0.264, v: 0.52 } },
+            ]
+        },
+        { 
+            id: 4, 
+            panorama: "https://assets.360.petsq.works/w70_2/club_004.jpg",
+            startX: -60,
+            startY: 15,
+            hotspots: [
+                { id: 'to_5', target: 5, position: { u: 0.982, v: 0.5 } },
+                { id: 'to_1', target: 1, position: { u: 0.492, v: 0.5 } },
+            ]
+        },
+        { 
+            id: 5, 
+            panorama: "https://assets.360.petsq.works/w70_2/club_005.jpg",
+            startX: -50,
+            startY: 15,
+            hotspots: [
+                { id: 'to_4', target: 4, position: { u: 0.088, v: 0.5 } }
+            ]
+        }
+    ],
+    etage: [
+        { 
+            id: 1, 
+            panorama: "https://assets.360.petsq.works/w70_2/etage_02.jpg",
+            startX: -15,
+            startY: 15,
+            hotspots: [
+                { id: 'to_3', target: 3, position: { u: 0.655, v: 0.55 } },
+                { id: 'to_5', target: 5, position: { u: 0.7, v: 0.52 } },
+                { id: 'to_2', target: 2, position: { u: 0.292, v: 0.55 } }
+            ]
+        },
+        { 
+            id: 2, 
+            panorama: "https://assets.360.petsq.works/w70_2/etage_01.jpg",
+            startX: 70,
+            startY: 15,
+            hotspots: [
+                { id: 'to_1', target: 1, position: { u: 0.07, v: 0.65 } },
+                { id: 'to_3', target: 3, position: { u: 0, v: 0.52 } }
+            ]
+        },
+        { 
+            id: 3, 
+            panorama: "https://assets.360.petsq.works/w70_2/etage_03.jpg",
+            startX: -10,
+            startY: 15,
+            hotspots: [
+                { id: 'to_4', target: 4, position: { u: 0.585, v: 0.5 } },
+                { id: 'to_2', target: 2, position: { u: 0.088, v: 0.52 } },
+                { id: 'to_5', target: 5, position: { u: 0.672, v: 0.52 } },
+                { id: 'to_1', target: 1, position: { u: 0.028, v: 0.58 } }
+            ]
+        },
+        { 
+            id: 4, 
+            panorama: "https://assets.360.petsq.works/w70_2/etage_04.jpg",
+            startX: -90,
+            startY: 15,
+            hotspots: [
+                { id: 'to_1', target: 1, position: { u: 0.78, v: 0.53 } },
+                { id: 'to_3', target: 3, position: { u: 0.84, v: 0.52 } },
+                { id: 'to_5', target: 5, position: { u: 0.66, v: 0.55 } }
+            ]
+        },
+        { 
+            id: 5, 
+            panorama: "https://assets.360.petsq.works/w70_2/etage_05.jpg",
+            startX: -20,
+            startY: 15,
+            hotspots: [
+                { id: 'to_3', target: 3, position: { u: 0.29, v: 0.54 } },
+                { id: 'to_1', target: 1, position: { u: 0.22, v: 0.55 } },
+                { id: 'to_4', target: 4, position: { u: 0.525, v: 0.5 } }
+            ]
+        }
+    ]
+};
+
+// Viewer states
+const viewers = {
+    club: {
+        currentViewpoint: 1,
+        isAutoRotating: false,
+        isTransitioning: false,
+        isFullscreen: false,
+        scene: null,
+        camera: null,
+        renderer: null,
+        sphere: null,
+        targetRotationX: 0,
+        targetRotationY: 0,
+        currentRotationX: 0,
+        currentRotationY: 0,
+        mouseXOnMouseDown: 0,
+        targetRotationOnMouseDownX: 0,
+        mouseYOnMouseDown: 0,
+        targetRotationOnMouseDownY: 0,
+        isUserInteracting: false,
+        animationId: null
+    },
+    etage: {
+        currentViewpoint: 1,
+        isAutoRotating: false,
+        isTransitioning: false,
+        isFullscreen: false,
+        scene: null,
+        camera: null,
+        renderer: null,
+        sphere: null,
+        targetRotationX: 0,
+        targetRotationY: 0,
+        currentRotationX: 0,
+        currentRotationY: 0,
+        mouseXOnMouseDown: 0,
+        targetRotationOnMouseDownX: 0,
+        mouseYOnMouseDown: 0,
+        targetRotationOnMouseDownY: 0,
+        isUserInteracting: false,
+        animationId: null
+    }
+};
+
+// Settings
+const autoRotateSpeed = 0.0005;
+const dragSensitivity = 0.002;
+const smoothingFactor = 0.05;
+
+// Keep track of loading
+let viewersLoadedCount = 0;
+const totalViewers = Object.keys(viewers).length;
+
+// Hotspot managers
+const hotspotManagers = {
+    club: null,
+    etage: null
+};
+
+// HotspotManager class - simplified and fixed
+class HotspotManager {
+    constructor(location) {
+        this.location = location;
+        this.currentViewpoint = 1;
+        this.hotspots = [];
+        this.hotspotsVisible = true;
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
+        
+        this.setupInteraction();
+    }
+
+    setupInteraction() {
+        const container = document.getElementById(`${this.location}-viewer`);
+        
+        container.addEventListener('click', (event) => {
+            this.onContainerClick(event);
+        });
+        
+        container.addEventListener('mousemove', (event) => {
+            this.onContainerMouseMove(event);
+        });
+        
+        // Touch events
+        let touchStartTime = 0;
+        let touchStartPos = { x: 0, y: 0 };
+        let touchMoved = false;
+        
+        container.addEventListener('touchstart', (event) => {
+            if (event.touches.length === 1) {
+                touchStartTime = Date.now();
+                touchStartPos.x = event.touches[0].clientX;
+                touchStartPos.y = event.touches[0].clientY;
+                touchMoved = false;
+            }
+        }, { passive: true });
+        
+        container.addEventListener('touchmove', (event) => {
+            if (event.touches.length === 1) {
+                const touch = event.touches[0];
+                const deltaX = Math.abs(touch.clientX - touchStartPos.x);
+                const deltaY = Math.abs(touch.clientY - touchStartPos.y);
+                
+                if (deltaX > 10 || deltaY > 10) {
+                    touchMoved = true;
+                }
+            }
+        }, { passive: true });
+        
+        container.addEventListener('touchend', (event) => {
+            const touchDuration = Date.now() - touchStartTime;
+            
+            if (event.changedTouches.length === 1 && 
+                touchDuration < 500 && 
+                !touchMoved) {
+                
+                const touch = event.changedTouches[0];
+                const syntheticEvent = {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY,
+                    preventDefault: () => {},
+                    stopPropagation: () => {},
+                };
+                
+                this.onContainerClick(syntheticEvent);
+            }
+        }, { passive: true });
+    }
+
+    loadHotspots(viewpointId) {
+        this.currentViewpoint = viewpointId;
+        this.clearHotspots();
+        
+        const viewpoint = viewpoints[this.location][viewpointId - 1];
+        if (!viewpoint?.hotspots) return;
+        
+        viewpoint.hotspots.forEach(hotspotData => {
+            this.createHotspot(hotspotData);
+        });
+    }
+
+    // Replace the location icon section in your createHotspot method
+createHotspot(hotspotData) {
+    const viewer = viewers[this.location];
+    const worldPosition = this.uvToWorldPosition(hotspotData.position);
+    
+    // Create hotspot group
+    const hotspotGroup = new THREE.Group();
+    
+    // Main circle (background)
+    const circleGeometry = new THREE.CircleGeometry(32, 28);
+    const circleMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: this.hotspotsVisible ? 0.85 : 0,
+        depthWrite: false,
+        depthTest: false
+    });
+    
+    const circle = new THREE.Mesh(circleGeometry, circleMaterial);
+    circle.renderOrder = 999;
+    hotspotGroup.add(circle);
+    
+    // Shadow
+    const shadowGeometry = new THREE.CircleGeometry(34, 30);
+    const shadowMaterial = new THREE.MeshBasicMaterial({
+        color: 0x000000,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: this.hotspotsVisible ? 0.1 : 0,
+        depthWrite: false,
+        depthTest: false
+    });
+    
+    const shadowCircle = new THREE.Mesh(shadowGeometry, shadowMaterial);
+    shadowCircle.position.z = -0.5;
+    shadowCircle.renderOrder = 998;
+    hotspotGroup.add(shadowCircle);
+    
+    // Location icon using texture - BIGGER SIZE + NO BORDER FIX
+    const iconGeometry = new THREE.PlaneGeometry(32, 32); // Increased from 24x24 to 32x32
+    
+    // Load the location icon texture
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.crossOrigin = 'anonymous';
+    
+    const iconMaterial = new THREE.MeshBasicMaterial({
+        transparent: true,
+        opacity: this.hotspotsVisible ? 0.9 : 0,
+        depthWrite: false,
+        depthTest: false,
+        side: THREE.DoubleSide,
+        alphaTest: 0.1, // THIS FIXES THE DARK BORDER - pixels with alpha < 0.1 won't render
+        premultipliedAlpha: false // Ensure proper alpha handling
+    });
+    
+const locationIcon = new THREE.Mesh(iconGeometry, iconMaterial);
+    locationIcon.position.z = 0.2;
+    locationIcon.renderOrder = 1000;
+    locationIcon.rotation.z = Math.PI; // Rotate 180 degrees to flip it right-side up
+    
+    // Load texture and apply to material
+    textureLoader.load(
+        'https://assets.360.petsq.works/w70_2/location.png',
+        (texture) => {
+            // IMPORTANT: These settings fix transparency issues
+            texture.premultiplyAlpha = false;
+            texture.flipY = false; // Sometimes helps with texture rendering
+            texture.format = THREE.RGBAFormat; // Ensure alpha channel is preserved
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            
+            iconMaterial.map = texture;
+            iconMaterial.needsUpdate = true;
+        },
+        undefined,
+        (error) => {
+            console.warn('Could not load location icon:', error);
+            // Fallback: create a simple colored circle
+            iconMaterial.color.setHex(0x372D73);
+        }
+    );
+    
+    hotspotGroup.add(locationIcon);
+    
+    // Position and orient
+    hotspotGroup.position.copy(worldPosition);
+    hotspotGroup.lookAt(0, 0, 0);
+    
+    // Store references
+    hotspotGroup.userData = {
+        target: hotspotData.target,
+        id: hotspotData.id,
+        isHotspot: true,
+        circle: circle,
+        shadowCircle: shadowCircle,
+        locationIcon: locationIcon
+    };
+    
+    viewer.sphere.add(hotspotGroup);
+    this.hotspots.push(hotspotGroup);
+}
+
+    uvToWorldPosition(uvPos) {
+        const theta = (1 - uvPos.u) * Math.PI * 2;
+        const phi = uvPos.v * Math.PI;
+        const radius = 490;
+        
+        const x = radius * Math.sin(phi) * Math.sin(theta);
+        const y = radius * Math.cos(phi);
+        const z = radius * Math.sin(phi) * Math.cos(theta);
+        
+        return new THREE.Vector3(x, y, z);
+    }
+
+    onContainerClick(event) {
+        if (viewers[this.location].isTransitioning) return;
+        
+        const container = document.getElementById(`${this.location}-viewer`);
+        const rect = container.getBoundingClientRect();
+        
+        this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        
+        this.raycaster.setFromCamera(this.mouse, viewers[this.location].camera);
+        const intersects = this.raycaster.intersectObjects(this.hotspots, true);
+        
+        if (intersects.length > 0) {
+            let clickedGroup = intersects[0].object;
+            while (clickedGroup.parent && !clickedGroup.userData.isHotspot) {
+                clickedGroup = clickedGroup.parent;
+            }
+            
+            if (clickedGroup.userData.isHotspot) {
+                // Stop camera movement immediately
+                const viewer = viewers[this.location];
+                viewer.targetRotationX = viewer.currentRotationX;
+                viewer.targetRotationY = viewer.currentRotationY;
+                
+                this.onHotspotClick(clickedGroup.userData.target);
+            }
+        }
+    }
+    
+onContainerMouseMove(event) {
+    const container = document.getElementById(`${this.location}-viewer`);
+    const rect = container.getBoundingClientRect();
+    
+    this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    
+    this.raycaster.setFromCamera(this.mouse, viewers[this.location].camera);
+    const intersects = this.raycaster.intersectObjects(this.hotspots, true);
+    
+    // Reset all hotspots
+    this.hotspots.forEach(hotspotGroup => {
+        hotspotGroup.scale.set(1, 1, 1);
+        
+        if (hotspotGroup.userData.circle) {
+            hotspotGroup.userData.circle.material.color.setHex(0xffffff);
+        }
+        // Remove the cross line color changes since we don't have them anymore
+    });
+    
+    // Highlight hovered hotspot
+    if (intersects.length > 0 && !('ontouchstart' in window)) {
+        let hoveredGroup = intersects[0].object;
+        while (hoveredGroup.parent && !hoveredGroup.userData.isHotspot) {
+            hoveredGroup = hoveredGroup.parent;
+        }
+        
+        if (hoveredGroup.userData.isHotspot) {
+            // Removed scale change - only color changes now
+            if (hoveredGroup.userData.circle) {
+                hoveredGroup.userData.circle.material.color.setHex(0xebd55a);
+            }
+            
+            container.style.cursor = 'pointer';
+        }
+    } else {
+        container.style.cursor = 'move';
+    }
+}
+
+    clearHotspots() {
+        const viewer = viewers[this.location];
+        
+        this.hotspots.forEach(hotspotGroup => {
+            viewer.sphere.remove(hotspotGroup);
+            
+            hotspotGroup.traverse((child) => {
+                if (child.geometry) {
+                    child.geometry.dispose();
+                }
+                if (child.material) {
+                    child.material.dispose();
+                }
+            });
+        });
+        
+        this.hotspots = [];
+    }
+
+    onHotspotClick(targetViewpoint) {
+        if (viewers[this.location].isTransitioning) return;
+        switchViewpoint(this.location, targetViewpoint);
+    }
+
+// Replace the setVisibility method in your HotspotManager class
+setVisibility(visible, duration = 400) {
+    this.hotspotsVisible = visible;
+    const targetOpacity = visible ? 1 : 0;
+    
+    const startTime = Date.now();
+    
+    const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const currentOpacity = visible ? progress : 1 - progress;
+        
+        this.hotspots.forEach(hotspotGroup => {
+            if (hotspotGroup.userData.circle) {
+                hotspotGroup.userData.circle.material.opacity = 0.85 * currentOpacity;
+            }
+            if (hotspotGroup.userData.shadowCircle) {
+                hotspotGroup.userData.shadowCircle.material.opacity = 0.1 * currentOpacity;
+            }
+            if (hotspotGroup.userData.locationIcon) {
+                hotspotGroup.userData.locationIcon.material.opacity = 0.9 * currentOpacity;
+            }
+        });
+        
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        }
+    };
+    
+    animate();
+}
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize hotspot managers
+    hotspotManagers.club = new HotspotManager('club');
+    hotspotManagers.etage = new HotspotManager('etage');
+    
+    // Initialize viewers
+    initViewer('club');
+    initViewer('etage');
+    
+    // Start animation loop
+    animate();
+    
+    // Load initial viewpoints
+    loadViewpoint('club', 1, true); 
+    loadViewpoint('etage', 1, true);
+
+    // Keyboard controls
+    document.addEventListener('keydown', (e) => {
+        let activeFullscreenViewerLocation = null;
+        for (const loc in viewers) {
+            if (viewers[loc].isFullscreen) {
+                activeFullscreenViewerLocation = loc;
+                break;
+            }
+        }
+
+        if (activeFullscreenViewerLocation) {
+            switch (e.key) {
+                case ' ':
+                    e.preventDefault();
+                    toggleAutoRotate(activeFullscreenViewerLocation);
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    prevViewpoint(activeFullscreenViewerLocation);
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    nextViewpoint(activeFullscreenViewerLocation);
+                    break;
+                case 'Escape':
+                    e.preventDefault();
+                    exitFullscreen();
+                    break;
+            }
+        } else if (e.key === 'Escape') {
+            exitFullscreen();
+        }
+    });
+});
+
+// Initialize viewer
+function initViewer(location) {
+    const container = document.getElementById(`${location}-viewer`);
+    const viewer = viewers[location];
+
+    // Scene
+    viewer.scene = new THREE.Scene();
+
+    // Camera
+    viewer.camera = new THREE.PerspectiveCamera(
+        70, 
+        container.clientWidth / container.clientHeight, 
+        1,
+        1000
+    );
+    viewer.camera.position.set(0, 0, 0.1);
+
+    // Renderer
+    viewer.renderer = new THREE.WebGLRenderer({ 
+        antialias: true,
+        alpha: true,
+        powerPreference: 'high-performance'
+    });
+    
+    viewer.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    viewer.renderer.setSize(container.clientWidth, container.clientHeight);
+    viewer.renderer.sortObjects = false;
+    container.appendChild(viewer.renderer.domElement);
+
+    // Sphere
+    const geometry = new THREE.SphereGeometry(500, 60, 40);
+    geometry.scale(-1, 1, 1);
+
+    const material = new THREE.MeshBasicMaterial({
+        map: null,
+        side: THREE.FrontSide
+    });
+    
+    viewer.sphere = new THREE.Mesh(geometry, material);
+    viewer.scene.add(viewer.sphere);
+
+    // Event listeners
+    container.addEventListener('mousedown', (e) => onMouseDown(e, location), false);
+    container.addEventListener('mousemove', (e) => onMouseMove(e, location), false);
+    container.addEventListener('mouseup', () => onMouseUp(location), false);
+    container.addEventListener('mouseout', () => onMouseUp(location), false);
+    
+    container.addEventListener('touchstart', (e) => onTouchStart(e, location), { passive: false });
+    container.addEventListener('touchmove', (e) => onTouchMove(e, location), { passive: false });
+    container.addEventListener('touchend', () => onTouchEnd(location), false);
+
+    window.addEventListener('resize', onWindowResize, false);
+}
+
+// Mouse controls
+function onMouseDown(event, location) {
+    event.preventDefault();
+    const viewer = viewers[location];
+    viewer.isUserInteracting = true;
+    
+    viewer.mouseXOnMouseDown = event.clientX;
+    viewer.mouseYOnMouseDown = event.clientY;
+    viewer.targetRotationOnMouseDownX = viewer.targetRotationX;
+    viewer.targetRotationOnMouseDownY = viewer.targetRotationY;
+}
+
+function onMouseMove(event, location) {
+    const viewer = viewers[location];
+    if (viewer.isUserInteracting) {
+        const mouseX = event.clientX;
+        const mouseY = event.clientY;
+        
+        viewer.targetRotationX = viewer.targetRotationOnMouseDownX + (mouseX - viewer.mouseXOnMouseDown) * dragSensitivity;
+        viewer.targetRotationY = Math.max(
+            -Math.PI / 3,
+            Math.min(
+                Math.PI / 3,
+                viewer.targetRotationOnMouseDownY + (mouseY - viewer.mouseYOnMouseDown) * dragSensitivity
+            )
+        );
+    }
+}
+
+function onMouseUp(location) {
+    viewers[location].isUserInteracting = false;
+}
+
+// Touch controls
+function onTouchStart(event, location) {
+    if (event.touches.length === 1) {
+        event.preventDefault();
+        const viewer = viewers[location];
+        viewer.isUserInteracting = true;
+        
+        viewer.mouseXOnMouseDown = event.touches[0].pageX;
+        viewer.mouseYOnMouseDown = event.touches[0].pageY;
+        viewer.targetRotationOnMouseDownX = viewer.targetRotationX;
+        viewer.targetRotationOnMouseDownY = viewer.targetRotationY;
+    }
+}
+
+function onTouchMove(event, location) {
+    const viewer = viewers[location];
+    if (event.touches.length === 1 && viewer.isUserInteracting) {
+        event.preventDefault();
+        
+        const mouseX = event.touches[0].pageX;
+        const mouseY = event.touches[0].pageY;
+        
+        viewer.targetRotationX = viewer.targetRotationOnMouseDownX + (mouseX - viewer.mouseXOnMouseDown) * dragSensitivity;
+        viewer.targetRotationY = Math.max(
+            -Math.PI / 3,
+            Math.min(
+                Math.PI / 3,
+                viewer.targetRotationOnMouseDownY + (mouseY - viewer.mouseYOnMouseDown) * dragSensitivity
+            )
+        );
+    }
+}
+
+function onTouchEnd(location) {
+    viewers[location].isUserInteracting = false;
+}
+
+// Window resize
+function onWindowResize() {
+    ['club', 'etage'].forEach(location => {
+        const container = document.getElementById(`${location}-viewer`);
+        const viewer = viewers[location];
+        
+        if (viewer.camera && viewer.renderer) {
+            viewer.camera.aspect = container.clientWidth / container.clientHeight;
+            viewer.camera.updateProjectionMatrix();
+            viewer.renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+    });
+}
+
+// Animation loop - simplified and fixed
+function animate() {
+    requestAnimationFrame(animate);
+    
+    ['club', 'etage'].forEach(location => {
+        const viewer = viewers[location];
+        
+        if (!viewer.sphere || !viewer.camera || !viewer.renderer) return;
+        
+        // Auto-rotation
+        if (viewer.isAutoRotating && !viewer.isUserInteracting && !viewer.isTransitioning) {
+            viewer.targetRotationX += autoRotateSpeed;
+        }
+        
+        // Smooth rotation updates
+        viewer.currentRotationX += (viewer.targetRotationX - viewer.currentRotationX) * smoothingFactor;
+        viewer.currentRotationY += (viewer.targetRotationY - viewer.currentRotationY) * smoothingFactor;
+        
+        // Apply rotation to sphere
+        viewer.sphere.rotation.y = viewer.currentRotationX;
+        
+        // Update camera position
+        const phi = Math.PI/2 - viewer.currentRotationY;
+        const theta = viewer.currentRotationX;
+        
+        const radius = 100;
+        viewer.camera.position.x = radius * Math.sin(phi) * Math.cos(theta);
+        viewer.camera.position.y = radius * Math.cos(phi);
+        viewer.camera.position.z = radius * Math.sin(phi) * Math.sin(theta);
+        
+        viewer.camera.lookAt(0, 0, 0);
+        
+        // Render
+        viewer.renderer.render(viewer.scene, viewer.camera);
+    });
+}
+
+// Navigation UI update
+function updateNavigation(location) {
+    const viewer = viewers[location];
+    
+    // Update viewpoint buttons
+    const allViewpointButtons = document.querySelectorAll(`[id^="${location}-"]:not([id$="rotate-button"]):not([id$="fullscreen-icon"]):not([id$="fullscreen-nav"])`);
+    allViewpointButtons.forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    const activeButtons = document.querySelectorAll(`#${location}-${viewer.currentViewpoint}, #${location}-fs-${viewer.currentViewpoint}`);
+    activeButtons.forEach(btn => {
+        btn.classList.add('active');
+    });
+    
+    // Update rotate buttons
+    const rotateButtons = document.querySelectorAll(`#${location}-rotate-button, #${location}-fs-rotate-button`);
+    rotateButtons.forEach(btn => {
+        btn.classList.toggle('active', viewer.isAutoRotating);
+    });
+}
+
+// Navigation functions
+function switchViewpoint(location, id) {
+    const viewer = viewers[location];
+    if (viewer.isTransitioning && viewer.currentViewpoint === id) return;
+    
+    viewer.currentViewpoint = id;
+    loadViewpoint(location, id);
+}
+
+function nextViewpoint(location) {
+    const viewer = viewers[location];
+    if (viewer.isTransitioning) return;
+    const max = viewpoints[location].length;
+    switchViewpoint(location, viewer.currentViewpoint >= max ? 1 : viewer.currentViewpoint + 1);
+}
+
+function prevViewpoint(location) {
+    const viewer = viewers[location];
+    if (viewer.isTransitioning) return;
+    const max = viewpoints[location].length;
+    switchViewpoint(location, viewer.currentViewpoint <= 1 ? max : viewer.currentViewpoint - 1);
+}
+
+// Auto-rotation
+function startAutoRotate(location) {
+    const viewer = viewers[location];
+    viewer.isAutoRotating = true;
+    updateNavigation(location);
+}
+
+function stopAutoRotate(location) {
+    const viewer = viewers[location];
+    viewer.isAutoRotating = false;
+    updateNavigation(location);
+}
+
+function toggleAutoRotate(location) {
+    const viewer = viewers[location];
+    if (viewer.isAutoRotating) {
+        stopAutoRotate(location);
+    } else {
+        startAutoRotate(location);
+    }
+}
+
+// Load viewpoint - simplified and fixed
+async function loadViewpoint(location, id, isInitial = false) {
+    const viewer = viewers[location];
+    const wasAutoRotating = viewer.isAutoRotating;
+    
+    viewer.isTransitioning = true;
+    stopAutoRotate(location);
+    
+    const viewpoint = viewpoints[location][id - 1];
+    const container = document.getElementById(`${location}-viewer`);
+    
+    // Hide hotspots before transition
+    if (hotspotManagers[location] && !isInitial) {
+        hotspotManagers[location].setVisibility(false, 300);
+    }
+    
+    // Fade out current view
+    if (!isInitial) {
+        container.style.opacity = '0';
+    }
+    
+    // Load texture
+    const loader = new THREE.TextureLoader();
+    loader.crossOrigin = 'anonymous';
+    
+    loader.load(
+        viewpoint.panorama,
+        (texture) => {
+            setTimeout(() => {
+                // Configure texture
+                texture.minFilter = THREE.LinearFilter;
+                texture.magFilter = THREE.LinearFilter;
+                
+                // Replace sphere material
+                if (viewer.sphere.material) {
+                    viewer.sphere.material.dispose();
+                }
+                viewer.sphere.material = new THREE.MeshBasicMaterial({ 
+                    map: texture
+                });
+                
+                // Set starting camera position
+                if (viewpoint.startX !== undefined) {
+                    const startXRadians = (viewpoint.startX * Math.PI) / 180;
+                    viewer.targetRotationX = startXRadians;
+                    viewer.currentRotationX = startXRadians;
+                    viewer.sphere.rotation.y = startXRadians;
+                }
+                if (viewpoint.startY !== undefined) {
+                    const startYRadians = (viewpoint.startY * Math.PI) / 180;
+                    viewer.targetRotationY = startYRadians;
+                    viewer.currentRotationY = startYRadians;
+                }
+                
+                // Clear old hotspots and load new ones
+                if (hotspotManagers[location]) {
+                    hotspotManagers[location].loadHotspots(id);
+                }
+                
+                // Show viewer
+                container.style.opacity = '1';
+                
+                // Complete transition
+                setTimeout(() => {
+                    viewer.isTransitioning = false;
+                    if (wasAutoRotating || isInitial) {
+                        startAutoRotate(location);
+                    }
+                    updateNavigation(location);
+                    
+                    // Show hotspots
+                    if (hotspotManagers[location]) {
+                        hotspotManagers[location].setVisibility(true, 400);
+                    }
+                    
+                    if (isInitial) {
+                        viewersLoadedCount++;
+                        if (viewersLoadedCount === totalViewers) {
+                            const loadingOverlay = document.getElementById('loading-overlay');
+                            if (loadingOverlay) { 
+                                loadingOverlay.style.opacity = '0';
+                                setTimeout(() => {
+                                    loadingOverlay.style.display = 'none';
+                                }, 800);
+                            }
+                        }
+                    }
+                }, 800);
+                
+            }, isInitial ? 0 : 800);
+        },
+        (xhr) => {
+            // Progress callback
+        },
+        (error) => {
+            console.error('Error loading panorama:', error);
+            viewer.isTransitioning = false;
+            
+            if (viewer.sphere && viewer.sphere.material) {
+                viewer.sphere.material.dispose();
+                viewer.sphere.material = new THREE.MeshBasicMaterial({ 
+                    color: 0x333333
+                });
+            }
+            container.style.opacity = '1';
+            updateNavigation(location);
+            
+            if (wasAutoRotating) {
+                startAutoRotate(location);
+            }
+            
+            if (isInitial) {
+                viewersLoadedCount++;
+                if (viewersLoadedCount === totalViewers) {
+                    const loadingOverlay = document.getElementById('loading-overlay');
+                    if (loadingOverlay) { 
+                        loadingOverlay.style.opacity = '0';
+                        setTimeout(() => {
+                            loadingOverlay.style.display = 'none';
+                        }, 800);
+                    }
+                }
+            }
+        }
+    );
+}
+
+// Fullscreen functionality
+function toggleFullscreen(location) {
+    const viewer = viewers[location];
+    const wrapper = document.querySelector(`#${location}-viewer`).parentElement;
+    
+    if (viewer.isFullscreen) {
+        exitFullscreen();
+    } else {
+        enterFullscreen(location, wrapper);
+    }
+}
+
+function enterFullscreen(location, wrapper) {
+    const viewer = viewers[location];
+    
+    // Exit any other fullscreen viewers first
+    Object.keys(viewers).forEach(loc => {
+        if (loc !== location && viewers[loc].isFullscreen) {
+            exitFullscreen();
+        }
+    });
+    
+    viewer.isFullscreen = true;
+    wrapper.classList.add('fullscreen');
+    
+    // Update icon
+    const icon = document.getElementById(`${location}-fullscreen-icon`);
+    icon.classList.remove('fa-expand');
+    icon.classList.add('fa-compress');
+    
+    // Resize renderer after transition
+    setTimeout(() => {
+        onWindowResize();
+    }, 100);
+}
+
+function exitFullscreen() {
+    Object.keys(viewers).forEach(location => {
+        const viewer = viewers[location];
+        if (viewer.isFullscreen) {
+            const wrapper = document.querySelector(`#${location}-viewer`).parentElement;
+            
+            viewer.isFullscreen = false;
+            wrapper.classList.remove('fullscreen');
+            
+            // Update icon
+            const icon = document.getElementById(`${location}-fullscreen-icon`);
+            icon.classList.remove('fa-compress');
+            icon.classList.add('fa-expand');
+            
+            // Resize renderer after transition
+            setTimeout(() => {
+                onWindowResize();
+            }, 100);
+        }
+    });
+}
+
+// Positioning Mode System (for development)
+const PositioningMode = {
+    enabled: false,
+    overlay: null,
+    mouseHandlers: new Map(),
+
+    init() {
+        this.createOverlay();
+        this.setupKeyboardToggle();
+        console.log('Positioning system initialized. Press P to toggle.');
+    },
+
+    createOverlay() {
+        if (this.overlay) return;
+
+        this.overlay = document.createElement('div');
+        this.overlay.id = 'positioning-overlay';
+        this.overlay.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 9999;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            display: none;
+        `;
+
+        this.overlay.innerHTML = `
+            <div>Positioning Mode: <span id="pos-status">OFF</span></div>
+            <div>Location: <span id="pos-location">-</span></div>
+            <div>Viewpoint: <span id="pos-viewpoint">-</span></div>
+            <div>UV: <span id="pos-coords">-</span></div>
+            <button id="pos-copy" style="margin-top: 8px; padding: 4px 8px; font-size: 11px;">Copy Config</button>
+            <div style="font-size: 10px; margin-top: 8px; opacity: 0.7;">Press P to toggle</div>
+        `;
+
+        document.body.appendChild(this.overlay);
+
+        document.getElementById('pos-copy').addEventListener('click', () => {
+            const coords = document.getElementById('pos-coords').textContent;
+            if (coords !== '-') {
+                const [u, v] = coords.split(', ');
+                const config = `{ id: 'hotspot_X', target: X, position: { u: ${u}, v: ${v} } }`;
+                navigator.clipboard.writeText(config).then(() => {
+                    console.log('Hotspot config copied to clipboard:', config);
+                });
+            }
+        });
+    },
+
+    setupKeyboardToggle() {
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'p' || e.key === 'P') {
+                e.preventDefault();
+                this.toggle();
+            }
+        });
+    },
+
+    toggle() {
+        this.enabled = !this.enabled;
+        console.log(`Positioning mode: ${this.enabled ? 'ON' : 'OFF'}`);
+        
+        if (this.enabled) {
+            this.enable();
+        } else {
+            this.disable();
+        }
+    },
+
+    enable() {
+        this.overlay.style.display = 'block';
+        document.getElementById('pos-status').textContent = 'ON';
+        
+        ['club', 'etage'].forEach(location => {
+            const container = document.getElementById(`${location}-viewer`);
+            const canvas = container ? container.querySelector('canvas') : null;
+            
+            if (canvas) {
+                const handler = (event) => this.handleClick(event, location);
+                this.mouseHandlers.set(location, handler);
+                canvas.addEventListener('mousedown', handler);
+                
+                container.style.cursor = 'crosshair';
+                canvas.style.cursor = 'crosshair';
+            }
+        });
+        
+        console.log('Click on viewers to get coordinates. Press P to toggle off.');
+    },
+
+    disable() {
+        this.overlay.style.display = 'none';
+        
+        ['club', 'etage'].forEach(location => {
+            const container = document.getElementById(`${location}-viewer`);
+            const canvas = container ? container.querySelector('canvas') : null;
+            
+            if (canvas) {
+                const handler = this.mouseHandlers.get(location);
+                if (handler) {
+                    canvas.removeEventListener('mousedown', handler);
+                    this.mouseHandlers.delete(location);
+                }
+                
+                container.style.cursor = 'move';
+                canvas.style.cursor = 'move';
+            }
+        });
+        
+        document.getElementById('pos-location').textContent = '-';
+        document.getElementById('pos-viewpoint').textContent = '-';
+        document.getElementById('pos-coords').textContent = '-';
+    },
+
+    handleClick(event, location) {
+        console.log('=== POSITIONING CLICK ===');
+        event.preventDefault();
+        event.stopPropagation();
+        
+        const viewer = viewers[location];
+        if (!viewer) {
+            console.error('Viewer not found:', location);
+            return;
+        }
+        
+        const container = document.getElementById(`${location}-viewer`);
+        const rect = container.getBoundingClientRect();
+        const currentViewpoint = viewer.currentViewpoint;
+        
+        document.getElementById('pos-location').textContent = location;
+        document.getElementById('pos-viewpoint').textContent = currentViewpoint;
+        
+        const mouse = new THREE.Vector2(
+            ((event.clientX - rect.left) / rect.width) * 2 - 1,
+            -((event.clientY - rect.top) / rect.height) * 2 + 1
+        );
+        
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(mouse, viewer.camera);
+        const intersects = raycaster.intersectObjects([viewer.sphere]);
+        
+        if (intersects.length > 0) {
+            const intersectionPoint = intersects[0].point;
+            const uvPos = this.worldPositionToUV(intersectionPoint);
+            
+            const uFormatted = uvPos.u.toFixed(3);
+            const vFormatted = uvPos.v.toFixed(3);
+            
+            document.getElementById('pos-coords').textContent = `${uFormatted}, ${vFormatted}`;
+            
+            console.log(`Location: ${location}, Viewpoint: ${currentViewpoint}`);
+            console.log(`UV coordinates: u: ${uFormatted}, v: ${vFormatted}`);
+            console.log(`Config: { id: 'hotspot_X', target: X, position: { u: ${uFormatted}, v: ${vFormatted} } }`);
+        } else {
+            console.log('No intersection found');
+            document.getElementById('pos-coords').textContent = 'No intersection';
+        }
+    },
+
+    worldPositionToUV(worldPos) {
+        const dir = worldPos.clone().normalize();
+        const phi = Math.acos(dir.y);
+        let theta = Math.atan2(dir.x, dir.z);
+        
+        if (theta < 0) theta += Math.PI * 2;
+        
+        const u = 1 - (theta / (Math.PI * 2));
+        const v = phi / Math.PI;
+        
+        return { u, v };
+    }
+};
+
+// Initialize positioning system
+document.addEventListener('DOMContentLoaded', () => {
+    PositioningMode.init();
+});
+
+</script>
+
+</body>
+</html>
