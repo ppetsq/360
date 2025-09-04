@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate Books - Children's Books by a Real Airline Captain</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.8rem;
+            color: #1E3A8A;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #333;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 999;
+            transition: top 0.3s ease;
+        }
+
+        .mobile-menu.active {
+            top: 80px;
+            display: block;
+        }
+
+        .mobile-menu ul {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .mobile-menu li {
+            border-bottom: 1px solid #eee;
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .mobile-menu a:hover {
+            background: #f8f9fa;
+            color: #1E3A8A;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #1E3A8A;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 80vh;
+            margin-top: 80px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: blur(8px);
+            z-index: 1;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(30, 58, 138, 0.3), rgba(30, 58, 138, 0.3));
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+        }
+
+        .hero-content h1 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-content .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+
+        .hero-content .tagline {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            background: #F97316;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background: #EA580C;
+            transform: translateY(-2px);
+        }
+
+        /* Section Styling */
+        .section {
+            padding: 5rem 0;
+        }
+
+        .section-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #1E3A8A;
+        }
+
+        /* Books Section */
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .book-cover {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        .book-info {
+            padding: 2rem;
+        }
+
+        .book-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+            color: #1E3A8A;
+            margin-bottom: 1rem;
+        }
+
+        .book-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .book-price {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #F97316;
+            margin-bottom: 1rem;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .testimonials-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: blur(8px);
+            transform: scaleX(-1);
+            z-index: 1;
+        }
+
+        .testimonials::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(248, 250, 252, 0.4);
+            z-index: 2;
+        }
+
+        .testimonials .container {
+            position: relative;
+            z-index: 3;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 1rem;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: #1E3A8A;
+        }
+
+        /* About Section */
+        .about-content {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-photos {
+            display: grid;
+            grid-template-columns: 180px 180px;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+
+        .about-image {
+            width: 180px;
+            height: 240px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .about-image:hover {
+            transform: translateY(-5px);
+        }
+
+        .about-image:first-child {
+            margin-top: 2rem;
+        }
+
+        .about-image:last-child {
+            margin-top: -2rem;
+        }
+
+        .about-text h3 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.8rem;
+            color: #1E3A8A;
+            margin-bottom: 1rem;
+        }
+
+        .about-text p {
+            margin-bottom: 1rem;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        /* Footer */
+        footer {
+            background: #1E3A8A;
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .newsletter {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 15px;
+        }
+
+        .newsletter h4 {
+            font-family: 'Fredoka One', cursive;
+            margin-bottom: 1rem;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .newsletter-form input {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        .newsletter-form button {
+            background: #F97316;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .contact-info h4 {
+            font-family: 'Fredoka One', cursive;
+            margin-bottom: 1rem;
+        }
+
+        .contact-info p {
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-content .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .hero-content {
+                padding: 0 1.5rem;
+            }
+
+            .books-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                text-align: center;
+            }
+
+            .about-photos {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+                justify-content: center;
+                margin: 0 auto;
+                max-width: 300px;
+            }
+
+            .about-image {
+                width: 140px;
+                height: 180px;
+            }
+
+            .about-image:first-child,
+            .about-image:last-child {
+                margin-top: 0;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">Navigate Books</a>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#shop">Shop</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#educators">For Educators</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+            </nav>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <ul>
+                <li><a href="#home" onclick="closeMobileMenu()">Home</a></li>
+                <li><a href="#shop" onclick="closeMobileMenu()">Shop</a></li>
+                <li><a href="#about" onclick="closeMobileMenu()">About</a></li>
+                <li><a href="#educators" onclick="closeMobileMenu()">For Educators</a></li>
+                <li><a href="#contact" onclick="closeMobileMenu()">Contact</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="https://assets.360.petsq.works/navigate/flyby-comp.mp4" type="video/mp4">
+        </video>
+        <div class="hero-content">
+            <h1>Real pilot. Real adventures.<br>Real learning.</h1>
+            <p class="subtitle">Children's books written by airline captain Ricardo Aguilar</p>
+            <p class="tagline">Adventures in rhyme, from 30,000 feet</p>
+            <a href="#shop" class="cta-button">Explore Our Books</a>
+        </div>
+    </section>
+
+    <!-- Books Section -->
+    <section class="section" id="shop">
+        <div class="container">
+            <h2 class="section-title">Our Books</h2>
+            <div class="books-grid">
+                <div class="book-card">
+                    <img src="https://navigate-books.com/wp-content/uploads/2013/06/So-You-Want-To-Be-A-Pilot-front-cover-scaled.jpg" alt="So You Want To Be A Pilot" class="book-cover">
+                    <div class="book-info">
+                        <h3 class="book-title">So You Want To Be A Pilot</h3>
+                        <p class="book-description">Join us on an exciting journey through the world of aviation! This rhyming adventure introduces young readers to the amazing career of being a pilot.</p>
+                        <div class="book-price">$14.99</div>
+                        <a href="#" class="cta-button">Buy Now</a>
+                    </div>
+                </div>
+                
+                <div class="book-card">
+                    <img src="https://navigate-books.com/wp-content/uploads/2022/04/So-Lets-Take-a-Flight-front-cover-copy-1-scaled.jpg" alt="So Let's Take a Flight" class="book-cover">
+                    <div class="book-info">
+                        <h3 class="book-title">So Let's Take a Flight</h3>
+                        <p class="book-description">Experience the wonder of flight through the eyes of a real airline captain. Perfect for young aviation enthusiasts and curious minds!</p>
+                        <div class="book-price">$14.99</div>
+                        <a href="#" class="cta-button">Buy Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="section testimonials">
+        <video class="testimonials-video" autoplay muted loop playsinline>
+            <source src="https://assets.360.petsq.works/navigate/flyby-comp.mp4" type="video/mp4">
+        </video>
+        <div class="container">
+            <h2 class="section-title">What Parents Say</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"This is a great book to introduce children to the sky above us. My son loves this book and gets a kick at the pictures. Ricardo does a great job of selecting the right words to make every sentence rhyme. A complete delight to read!"</p>
+                    <p class="testimonial-author">- Antonio Varela</p>
+                </div>
+                
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"My 5 year old is fascinated with airplanes and he absolutely loved this book! We loved the illustrations and the way it is worded for his reading level and understanding. HIGHLY recommend this book!!"</p>
+                    <p class="testimonial-author">- Kerry Currie</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section" id="about">
+        <div class="container">
+            <h2 class="section-title">Meet Captain Ricardo</h2>
+            <div class="about-content">
+                <div class="about-photos">
+                    <img src="https://navigate-books.com/wp-content/uploads/2022/06/IMG_7720-768x1024.jpg" alt="Captain Ricardo Aguilar" class="about-image">
+                    <img src="https://navigate-books.com/wp-content/uploads/2022/06/IMG_1624-768x1024.jpg" alt="Captain Ricardo Aguilar in cockpit" class="about-image">
+                </div>
+                <div class="about-text">
+                    <h3>Real pilot writing real stories for young dreamers</h3>
+                    <p>Captain Ricardo Aguilar brings 31 years of aviation experience to children's literature. After graduating from the US Air Force Academy and serving 21 years in the Air Force, he continued his flying career with Southwest Airlines for 10 years.</p>
+                    <p>Combining his love of poetry with his aviation expertise, Ricardo creates engaging, rhyming stories that inspire young readers to dream big. Through the Southwest Airlines Adopt-A-Pilot program, he volunteers at local schools, sharing his passion for both flying and reading.</p>
+                    <p>His mission is simple: to write children's books about various professions that are both educational and fun, helping young people develop a love of reading while exploring what they might become someday.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="newsletter">
+                    <h4>Stay Connected</h4>
+                    <p>Get updates on new books and educational resources</p>
+                    <br>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button>Subscribe</button>
+                    </div>
+                </div>
+                
+                <div class="contact-info">
+                    <h4>Contact Us</h4>
+                    <p>P.O. Box 7479, York, PA 17404</p>
+                    <p>Phone: (717) 841-5131</p>
+                    <p>Email: info@navigate-books.com</p>
+                </div>
+            </div>
+            
+            <div style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 2rem; margin-top: 2rem;">
+                <p>&copy; 2025 Navigate Books. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to header
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.backdropFilter = 'blur(10px)';
+            } else {
+                header.style.background = 'white';
+                header.style.backdropFilter = 'none';
+            }
+        });
+
+        // Newsletter form submission
+        document.querySelector('.newsletter-form button').addEventListener('click', function(e) {
+            e.preventDefault();
+            const email = document.querySelector('.newsletter-form input').value;
+            if (email) {
+                alert('Thanks for subscribing! (This is just a demo)');
+                document.querySelector('.newsletter-form input').value = '';
+            }
+        });
+
+        // Mobile menu functions
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('active');
+        }
+
+        function closeMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.remove('active');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (!mobileMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+                mobileMenu.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
