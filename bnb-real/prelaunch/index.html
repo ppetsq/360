@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beats & Brews Festival 2025 - Coming Soon</title>
+    <meta name="description" content="Something amazing is brewing... Beats & Brews Festival 2025 coming to Rotterdam.">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Beats & Brews Festival 2025 - Coming Soon">
+    <meta property="og:description" content="Something amazing is brewing... October 26th, 2025 in Rotterdam">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://files.petsq.works/beatsnbrews/bnb-logo-placeholder.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'JetBrains Mono', monospace;
+            background: #000;
+        }
+
+        /* Video Background */
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: blur(3px) brightness(0.7);
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(70, 130, 180, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(184, 115, 51, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.8) 100%);
+            z-index: -1;
+        }
+
+        /* Main Content */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Logo */
+        .logo {
+            width: 400px;
+            max-width: 80vw;
+            height: auto;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+            animation: logoAppear 1.5s ease-out 0.5s forwards;
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.7));
+        }
+
+        /* Coming Soon Text */
+        .coming-soon {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3rem;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: textAppear 1s ease-out 1.8s forwards;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            display: none;
+        }
+
+        /* Subtitle */
+        .subtitle {
+            font-size: 1.1rem;
+            color: #EAC435;
+            font-weight: 300;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0;
+            transform: translateY(15px);
+            animation: textAppear 1s ease-out 1.8s forwards;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        }
+
+        /* Date Info */
+        .date-info {
+            margin-top: 3rem;
+            padding: 1.5rem 2.5rem;
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid #EAC435;
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 100%, 15px 100%);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: infoAppear 1s ease-out 2.2s forwards;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .date-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            color: #fff;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .date-value {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.8rem;
+            color: #EAC435;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        }
+
+
+
+        /* Animations */
+        @keyframes logoAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes textAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes infoAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                opacity: 0;
+                transform: translateY(0px) scale(0.5);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+                transform: translateY(-20px) scale(1);
+            }
+        }
+
+        /* Pulse animation for logo */
+        .logo {
+            animation: logoAppear 1.5s ease-out 0.5s forwards;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .logo {
+                width: 300px;
+                margin-bottom: 2rem;
+            }
+
+            .coming-soon {
+                font-size: 2.2rem;
+                letter-spacing: 4px;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+                letter-spacing: 2px;
+            }
+
+            .date-info {
+                margin-top: 2rem;
+                padding: 1.2rem 2rem;
+            }
+
+            .date-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .logo {
+                width: 250px;
+                margin-bottom: 1.5rem;
+            }
+
+            .coming-soon {
+                font-size: 1.8rem;
+                letter-spacing: 3px;
+            }
+
+            .subtitle {
+                font-size: 0.9rem;
+                letter-spacing: 1px;
+            }
+
+            .date-info {
+                padding: 1rem 1.5rem;
+                margin-top: 1.5rem;
+            }
+
+            .date-text {
+                font-size: 0.9rem;
+            }
+
+            .date-value {
+                font-size: 1.3rem;
+                letter-spacing: 1px;
+            }
+        }
+
+        /* Reduced motion accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .logo,
+            .coming-soon,
+            .subtitle,
+            .date-info {
+                animation: none;
+                opacity: 1;
+                transform: none;
+            }
+
+            .particle {
+                display: none;
+            }
+        }
+
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            .overlay {
+                background: rgba(0, 0, 0, 0.9);
+            }
+
+            .date-info {
+                border-width: 3px;
+                background: rgba(0, 0, 0, 0.95);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <div class="video-container">
+        <video autoplay muted loop playsinline>
+            <source src="https://files.petsq.works/beatsnbrews/bnb-hero.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay"></div>
+
+    <!-- Floating Particles -->
+
+    <!-- Main Content -->
+    <div class="container">
+        <img src="https://files.petsq.works/beatsnbrews/bnb-logo-placeholder.png" alt="Beats & Brews Festival" class="logo">
+        
+        <p class="subtitle">Something Amazing is Brewing</p>
+        
+        <div class="date-info">
+            <div class="date-text">Save the Date</div>
+            <div class="date-value">October 26, 2025</div>
+        </div>
+    </div>
+</body>
+</html>
