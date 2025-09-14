@@ -1,4 +1,4 @@
-// Beats & Brews Festival - Interactive JavaScript
+// Beats and Brews Festival - Interactive JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all components
     initNavigation();
