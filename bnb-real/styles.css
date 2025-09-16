@@ -478,71 +478,102 @@ section {
 
 .artists-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
     margin-bottom: 3rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .artist-card {
-    background: #3C3C3C;
-    border-radius: 0;
+    background: #2C2C2C;
+    border: 2px solid #B87333;
     overflow: hidden;
     transition: all 0.3s ease;
-    border: none;
-    border-left: 4px solid #B87333;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
     position: relative;
-    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 100%, 10px 100%);
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 100%, 15px 100%);
+    height: 300px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
 }
 
 .artist-card:hover {
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-    border-left-color: #EAC435;
+    transform: translateY(-8px);
+    border-color: #EAC435;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
 .artist-image {
-    height: 200px;
+    width: 50%;
+    height: 100%;
     overflow: hidden;
+    position: relative;
 }
 
 .artist-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: grayscale(100%);
-    transition: filter 0.3s ease;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    filter: brightness(0.9) contrast(1.1);
 }
 
 .artist-card:hover .artist-image img {
-    filter: grayscale(0%);
+    transform: scale(1.05);
+    filter: brightness(1) contrast(1.2);
 }
 
-.artist-info {
-    padding: 1.5rem;
+.artist-overlay {
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(135deg, #3C3C3C 0%, #2C2C2C 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 1rem;
     position: relative;
 }
 
-.artist-info h3 {
-    color: #fff;
+.artist-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(234, 196, 53, 0.05) 0%, transparent 70%),
+        repeating-linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.01) 1px, transparent 3px);
+    pointer-events: none;
+}
+
+.artist-overlay > * {
+    position: relative;
+    z-index: 2;
+}
+
+.artist-overlay h3 {
+    color: #EAC435;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 2rem;
     margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 900;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    line-height: 1;
 }
 
 .artist-genre {
-    color: #EAC435;
-    font-family: 'Bebas Neue', cursive;
-    font-weight: 400;
-    margin-bottom: 1rem;
+    color: #B87333;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-size: 1rem;
-}
-
-.artist-bio {
-    color: #999;
-    line-height: 1.6;
+    margin: 0;
 }
 
 .artists-more {
@@ -1634,7 +1665,7 @@ section {
 .modal-close {
     position: absolute;
     top: 1rem;
-    right: 1rem;
+    right: calc(1rem + 40px);
     font-size: 2rem;
     cursor: pointer;
     color: #999;
@@ -1673,6 +1704,151 @@ section {
 
 .modal-form input:focus {
     outline: none;
+}
+
+/* Artist Modal */
+.artist-modal-content {
+    background: #2C2C2C;
+    padding: 0;
+    border-radius: 0;
+    max-width: 900px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 100%, 20px 100%);
+}
+
+.artist-modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 500px;
+}
+
+.artist-modal-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.artist-modal-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.artist-modal-info {
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(135deg, #2C2C2C 0%, #1a1a1a 100%);
+}
+
+.artist-modal-info h2 {
+    color: #EAC435;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.artist-modal-genre {
+    color: #B87333;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.artist-modal-bio {
+    color: #E8E8E8;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+}
+
+.artist-modal-social {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.artist-modal-social .social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #EAC435;
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.8rem 1.2rem;
+    background: rgba(234, 196, 53, 0.1);
+    border: 1px solid #EAC435;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%);
+    transition: all 0.3s ease;
+}
+
+.artist-modal-social .social-link:hover {
+    background: #EAC435;
+    color: #1a1a1a;
+    transform: translateY(-2px);
+}
+
+.artist-modal-social .social-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.artist-modal-social .social-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: brightness(0) saturate(100%) invert(82%) sepia(59%) saturate(287%) hue-rotate(15deg) brightness(97%) contrast(87%);
+    transition: filter 0.3s ease;
+}
+
+.artist-modal-social .social-link:hover .social-icon img {
+    filter: brightness(0) saturate(100%) invert(7%) sepia(6%) saturate(885%) hue-rotate(314deg) brightness(98%) contrast(87%);
+}
+
+/* Artist Card Updates */
+.artist-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.artist-card:not(.artist-tba):hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+}
+
+.artist-cta {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(234, 196, 53, 0.2);
+}
+
+.learn-more {
+    color: #EAC435;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.artist-card:hover .learn-more {
+    opacity: 1;
 }
 
 /* Completion Modal */
@@ -1827,20 +2003,35 @@ section {
 
 @media (max-width: 768px) {
     .schedule-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
         gap: 1rem;
+        overflow-x: visible;
+        padding: 0;
     }
-    
+
     .schedule-item {
-        padding: 0.8rem;
+        padding: 1.2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+        min-width: unset;
     }
-    
+
     .schedule-time {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #EAC435;
+        flex-shrink: 0;
     }
-    
+
     .schedule-event {
-        font-size: 0.8rem;
+        font-size: 1rem;
+        color: #E8E8E8 !important;
+        font-weight: 500;
+        text-align: right;
+        flex-grow: 1;
+        margin-left: 1rem;
     }
 }
 
@@ -1848,24 +2039,34 @@ section {
     .schedule-grid {
         grid-template-columns: 1fr;
         gap: 0.8rem;
+        overflow-x: visible;
+        padding: 0;
     }
-    
+
     .schedule-item {
-        padding: 1.2rem;
+        padding: 1rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
         text-align: left;
+        min-width: unset;
     }
-    
+
     .schedule-time {
-        font-size: 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #EAC435;
+        flex-shrink: 0;
         margin-bottom: 0;
     }
-    
+
     .schedule-event {
         font-size: 0.9rem;
+        color: #E8E8E8 !important;
+        font-weight: 500;
         text-align: right;
+        flex-grow: 1;
+        margin-left: 1rem;
     }
 }
 
@@ -1947,8 +2148,28 @@ section {
     }
 
     .artists-grid {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 1.5rem;
+    }
+
+    .artists-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .artist-card {
+        height: 200px;
+    }
+
+    .artist-overlay {
+        padding: 1rem;
+    }
+
+    .artist-overlay h3 {
+        font-size: 1.5rem;
+    }
+
+    .artist-genre {
+        font-size: 0.8rem;
     }
 
     .beer-list {
@@ -2253,10 +2474,11 @@ section {
 
 .schedule-grid {
     display: grid;
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(9, 1fr);
     gap: 1rem;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
+    justify-content: center;
 }
 
 .schedule-item {
@@ -2298,6 +2520,244 @@ section {
 
 .schedule-item:hover .schedule-event {
     color: #fff;
+}
+
+/* Schedule item types */
+.schedule-performance {
+    border-color: #EAC435;
+    background: linear-gradient(135deg, #EAC435 0%, #D4A625 100%);
+    transform: scale(1.05);
+    box-shadow: 0 8px 30px rgba(234, 196, 53, 0.3);
+}
+
+.schedule-performance .schedule-time {
+    color: #1a1a1a;
+    font-weight: 700;
+    text-shadow: none;
+}
+
+.schedule-performance .schedule-event {
+    color: #1a1a1a;
+    font-weight: 600;
+    text-shadow: none;
+}
+
+.schedule-performance:hover {
+    background: linear-gradient(135deg, #F5D542 0%, #E4B528 100%);
+    transform: scale(1.08) translateY(-3px);
+    box-shadow: 0 12px 35px rgba(234, 196, 53, 0.4);
+}
+
+.schedule-tba {
+    border-color: #555;
+    background: linear-gradient(135deg, #2A2A2A 0%, #1a1a1a 100%);
+    opacity: 0.6;
+    cursor: default;
+}
+
+.schedule-tba .schedule-time {
+    color: #777;
+}
+
+.schedule-tba .schedule-event {
+    color: #555;
+    font-style: italic;
+}
+
+.schedule-tba:hover {
+    transform: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.schedule-event-type {
+    border-color: #666;
+    background: linear-gradient(135deg, #3C3C3C 0%, #2C2C2C 100%);
+}
+
+.schedule-event-type .schedule-time {
+    color: #999;
+}
+
+.schedule-event-type .schedule-event {
+    color: #ccc;
+}
+
+.schedule-event-type:hover {
+    transform: none;
+    border-color: #666;
+    background: linear-gradient(135deg, #3C3C3C 0%, #2C2C2C 100%);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* Clickable artist names in schedule */
+.clickable-artist {
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.clickable-artist:hover {
+    text-decoration-color: #EAC435;
+    text-shadow: 0 0 8px rgba(234, 196, 53, 0.5);
+    transform: scale(1.05);
+}
+
+/* Beer Grid Styles */
+.beer-grid-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.beer-grid-container h3 {
+    color: #EAC435;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.beer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.beer-card {
+    background: linear-gradient(135deg, #3C3C3C 0%, #2C2C2C 100%);
+    border: 2px solid #B87333;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s ease;
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 100%, 15px 100%);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.beer-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 30% 30%, rgba(184, 115, 51, 0.05) 0%, transparent 50%),
+        repeating-linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.01) 1px, transparent 3px);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.beer-card > * {
+    position: relative;
+    z-index: 2;
+}
+
+.beer-card:hover {
+    transform: translateY(-5px);
+    border-color: #EAC435;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+}
+
+.beer-bottle-image {
+    margin-bottom: 1.5rem;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.beer-bottle-image img {
+    max-height: 100%;
+    max-width: 120px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 15px rgba(0,0,0,0.3));
+    transition: transform 0.3s ease;
+}
+
+.beer-card:hover .beer-bottle-image img {
+    transform: scale(1.05);
+}
+
+.beer-card-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.beer-card-info h4 {
+    color: #EAC435;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.5rem;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.beer-abv {
+    background: #EAC435;
+    color: #1a1a1a;
+    padding: 0.3rem 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%);
+    letter-spacing: 0.5px;
+}
+
+.beer-type {
+    color: #B87333;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid #B87333;
+    clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%);
+}
+
+.beer-description {
+    color: #ccc;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 1rem 0 0 0;
+    max-width: 280px;
+}
+
+.beer-more {
+    text-align: center;
+    margin-top: 3rem;
+}
+
+.beer-more p {
+    color: #1a1a1a;
+    background: #EAC435;
+    font-family: 'Bebas Neue', cursive;
+    font-weight: 400;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0.5rem 1rem;
+    display: inline-block;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.beer-more p:hover {
+    background: #F5D542;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
     
     .beer-mockup {
@@ -2351,6 +2811,22 @@ section {
     .artists-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
+    }
+
+    .artist-card {
+        height: 180px;
+    }
+
+    .artist-overlay {
+        padding: 0.8rem;
+    }
+
+    .artist-overlay h3 {
+        font-size: 1.2rem;
+    }
+
+    .artist-genre {
+        font-size: 0.7rem;
     }
 
     .stamps-grid {
@@ -2588,6 +3064,135 @@ a:focus {
     outline: none;
 }
 
+/* Artist Modal Mobile Styles */
+@media (max-width: 768px) {
+    .artist-modal-content {
+        width: 100%;
+        max-width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        clip-path: none;
+        border-radius: 0;
+    }
+
+    .artist-modal-grid {
+        grid-template-columns: 1fr;
+        min-height: 100vh;
+    }
+
+    .artist-modal-image {
+        max-height: 50vh;
+        position: relative;
+    }
+
+    .artist-modal-info {
+        padding: 2rem;
+        min-height: 50vh;
+    }
+
+    /* Mobile-specific close button */
+    .modal-close {
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.8rem;
+        z-index: 3000;
+    }
+
+    .modal-close:hover {
+        background: rgba(0, 0, 0, 0.9);
+    }
+
+    .artist-modal-info h2 {
+        font-size: 2.5rem;
+    }
+
+    .artist-modal-genre {
+        font-size: 1rem;
+    }
+
+    .artist-modal-bio {
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .artist-modal-social .social-link {
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .artist-modal-info {
+        padding: 1.5rem;
+    }
+
+    .artist-modal-info h2 {
+        font-size: 2rem;
+    }
+
+    .artist-modal-genre {
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .artist-modal-bio {
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .artist-modal-social {
+        gap: 0.5rem;
+    }
+
+    .artist-modal-social .social-link {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.7rem;
+        clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%);
+    }
+
+    /* Beer Grid Mobile Styles */
+    .beer-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .beer-card {
+        padding: 1.5rem;
+        clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 100%, 10px 100%);
+    }
+
+    .beer-bottle-image {
+        height: 150px;
+        margin-bottom: 1rem;
+    }
+
+    .beer-bottle-image img {
+        max-width: 100px;
+    }
+
+    .beer-card-info h4 {
+        font-size: 1.3rem;
+        color: #fff !important;
+    }
+
+    .beer-abv {
+        background: #EAC435;
+        color: #1a1a1a !important;
+    }
+
+    .beer-grid-container h3 {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+}
+
 /* Print Styles */
 @media print {
     .nav,
@@ -2595,12 +3200,12 @@ a:focus {
     .modal {
         display: none;
     }
-    
+
     body {
         background: white;
         color: black;
     }
-    
+
     .hero {
         background: #f0f0f0;
         min-height: 50vh;

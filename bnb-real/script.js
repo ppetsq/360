@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initEmailSignup();
     initLoadingAnimations();
     initParallaxEffects();
+    initArtistModal();
     // initTimeline(); // Removed - using simple grid now
 });
 
@@ -700,3 +701,171 @@ const additionalStyles = `
 `;
 
 document.head.insertAdjacentHTML('beforeend', additionalStyles);
+
+// Artist data
+const artists = {
+    'doris-bae': {
+        name: "Doris Bae",
+        genre: "Urban • Dancehall • Afro",
+        image: "https://files.petsq.works/beatsnbrews/doris-00.jpg",
+        bio: "Doris Bae brings the heat to Stadshaven! Jazz pianist's daughter who's lit up stages like Milkshake Festival, Zwarte Cross, and toured internationally with Ronnie Flex. Urban-dancehall-afro vibes that turn every crowd into pure energy.",
+        instagram: "https://www.instagram.com/dorissbae/",
+        soundcloud: "https://soundcloud.com/club-turn/dorisbae-djset"
+    },
+    'kid-kiddo': {
+        name: "Kid Kiddo",
+        genre: "Baile Funk • Afro Funk • Jersey • Dembow",
+        image: "https://files.petsq.works/beatsnbrews/kid-00.jpg",
+        bio: "Kid Kiddo brings Curaçao energy to Rotterdam. Born in the Caribbean, raised in the city. High-energy Baile Funk, Afro Funk, Jersey, Dembow & Bouyon sounds that pull crowds into pure movement.",
+        instagram: "https://www.instagram.com/officialkidkiddo/"
+    },
+    'petsq': {
+        name: "petsq",
+        genre: "House • Electronica",
+        image: "https://files.petsq.works/beatsnbrews/petsq-00.jpg",
+        bio: "petsq brings the feels. Finnish producer based in Rotterdam, crafting house and electronica that bends in unexpected ways. His biweekly show 'OFFBEAT' on Radio WORM spans genres with emotional depth and twisted rhythms.",
+        instagram: "https://www.instagram.com/petsq010",
+        soundcloud: "https://soundcloud.com/petsq010/bloom"
+    }
+};
+
+// Simple global function to open artist modal
+function openArtist(artistId) {
+    const artist = artists[artistId];
+    if (!artist) return;
+
+    const modal = document.getElementById('artist-modal');
+    const modalImg = document.getElementById('artist-modal-img');
+    const modalName = document.getElementById('artist-modal-name');
+    const modalGenre = document.getElementById('artist-modal-genre');
+    const modalBio = document.getElementById('artist-modal-bio');
+    const modalSocial = document.getElementById('artist-modal-social');
+
+    if (!modal || !modalImg || !modalName || !modalGenre || !modalBio || !modalSocial) {
+        return;
+    }
+
+    // Populate modal content
+    modalImg.src = artist.image;
+    modalImg.alt = artist.name;
+    modalName.textContent = artist.name;
+    modalGenre.textContent = artist.genre;
+    modalBio.textContent = artist.bio;
+
+    // Clear and populate social links
+    modalSocial.innerHTML = '';
+
+    if (artist.instagram) {
+        const instagramLink = document.createElement('a');
+        instagramLink.href = artist.instagram;
+        instagramLink.target = '_blank';
+        instagramLink.rel = 'noopener noreferrer';
+        instagramLink.className = 'social-link';
+        instagramLink.innerHTML = '<span class="social-icon"><img src="https://files.petsq.works/beatsnbrews/ig.svg" alt="Instagram" width="20" height="20"></span>Instagram';
+        modalSocial.appendChild(instagramLink);
+    }
+
+    if (artist.soundcloud) {
+        const soundcloudLink = document.createElement('a');
+        soundcloudLink.href = artist.soundcloud;
+        soundcloudLink.target = '_blank';
+        soundcloudLink.rel = 'noopener noreferrer';
+        soundcloudLink.className = 'social-link';
+        soundcloudLink.innerHTML = '<span class="social-icon"><img src="https://files.petsq.works/beatsnbrews/soundcloud.svg" alt="SoundCloud" width="20" height="20"></span>SoundCloud';
+        modalSocial.appendChild(soundcloudLink);
+    }
+
+    // Show modal
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// Close modal function - make it global and simple
+window.closeArtistModal = function() {
+    const modal = document.getElementById('artist-modal');
+    const modalContent = document.querySelector('.artist-modal-content');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+
+        // Reset any transformations from swipe gestures
+        if (modalContent) {
+            modalContent.style.transform = '';
+        }
+        modal.style.backgroundColor = '';
+    }
+}
+
+// Artist modal functionality
+function initArtistModal() {
+    // Simple ESC key handler
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('artist-modal');
+            if (modal && modal.classList.contains('active')) {
+                closeArtistModal();
+            }
+        }
+    });
+
+    // Touch swipe functionality
+    let startY = 0;
+    let startX = 0;
+    let currentY = 0;
+    let currentX = 0;
+    let isDragging = false;
+
+    const modal = document.getElementById('artist-modal');
+    const modalContent = document.querySelector('.artist-modal-content');
+
+    if (modal && modalContent) {
+        // Touch start
+        modalContent.addEventListener('touchstart', function(e) {
+            startY = e.touches[0].clientY;
+            startX = e.touches[0].clientX;
+            isDragging = false;
+        }, { passive: true });
+
+        // Touch move
+        modalContent.addEventListener('touchmove', function(e) {
+            if (!modal.classList.contains('active')) return;
+
+            currentY = e.touches[0].clientY;
+            currentX = e.touches[0].clientX;
+
+            const deltaY = currentY - startY;
+            const deltaX = currentX - startX;
+
+            // Check if it's a vertical swipe (more Y movement than X)
+            if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 50) {
+                isDragging = true;
+
+                // Only apply transform for downward swipes
+                if (deltaY > 0) {
+                    const opacity = Math.max(0.3, 1 - (deltaY / 300));
+                    modal.style.backgroundColor = `rgba(0, 0, 0, ${opacity * 0.8})`;
+                    modalContent.style.transform = `translateY(${deltaY}px)`;
+                }
+            }
+        }, { passive: true });
+
+        // Touch end
+        modalContent.addEventListener('touchend', function(e) {
+            if (!modal.classList.contains('active') || !isDragging) return;
+
+            const deltaY = currentY - startY;
+            const deltaX = currentX - startX;
+
+            // If it's a significant downward swipe, close the modal
+            if (deltaY > 150 && Math.abs(deltaY) > Math.abs(deltaX)) {
+                closeArtistModal();
+            } else {
+                // Reset position
+                modal.style.backgroundColor = '';
+                modalContent.style.transform = '';
+            }
+
+            isDragging = false;
+        }, { passive: true });
+    }
+}
