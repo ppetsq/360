@@ -1856,17 +1856,19 @@ section {
     .artist-modal-grid {
         grid-template-columns: 1fr;
         height: 100%;
+        grid-template-rows: 40vh 1fr;
     }
 
     .artist-modal-image {
-        height: 40vh;
-        max-height: 40vh;
+        height: 100%;
+        max-height: none;
     }
 
     .artist-modal-info {
         padding: 2rem 1.5rem 4rem 1.5rem;
-        height: calc(60vh - 6rem);
+        height: 100%;
         overflow-y: auto;
+        background: linear-gradient(135deg, #2C2C2C 0%, #1a1a1a 100%);
     }
 
     .modal-close {
@@ -1926,6 +1928,7 @@ section {
     .artist-modal-bio {
         font-size: 1rem;
         line-height: 1.6;
+        padding: 0 30px;
     }
 
     .artist-modal-social .social-link {
@@ -2079,9 +2082,14 @@ section {
         margin: 10px;
     }
 
+    .artist-modal-grid {
+        grid-template-rows: 40vh 1fr;
+    }
+
     .artist-modal-info {
         padding: 1.5rem 1rem 4rem 1rem;
-        height: calc(60vh - 5.5rem);
+        height: 100%;
+        background: linear-gradient(135deg, #2C2C2C 0%, #1a1a1a 100%);
     }
 
     .artist-modal-info h2 {
@@ -2096,6 +2104,7 @@ section {
     .artist-modal-bio {
         font-size: 0.9rem;
         margin-bottom: 1.5rem;
+        padding: 0 30px;
     }
 
     .artist-modal-social {
