@@ -729,6 +729,52 @@ const artists = {
     }
 };
 
+// Beer data
+const beers = {
+    'limoncello-neipa': {
+        name: "Limoncello Neipa",
+        type: "NEIPA",
+        abv: "5.8% ABV",
+        image: "https://files.petsq.works/beatsnbrews/beers/beer-06-neipa.jpg",
+        description: "Experience Rotterdam's Fruit Harbor heritage in this refreshing NEIPA. Brewed in collaboration with Lemon Spirit from Den Haag, this creation bursts with fresh citrus and bold hops, featuring a limoncello twist. Crafted with recycled lemon peels from limoncello production, combining flavor with sustainability in every sip."
+    },
+    'octopus-blonde': {
+        name: "Octopus Blonde",
+        type: "Blonde",
+        abv: "6.0% ABV",
+        image: "https://files.petsq.works/beatsnbrews/beers/beer-03-blond.jpg",
+        description: "Blonde beer with kiwi berry and blood orange twist, hint of juniper. A refreshing and fruity experience that balances traditional blonde characteristics with innovative flavor additions."
+    },
+    'devils-fruit': {
+        name: "Devil's Fruit",
+        type: "Fruit Beer",
+        abv: "3.8% ABV",
+        image: "https://files.petsq.works/beatsnbrews/beers/beer-02-devil.jpg",
+        description: "Fruit beer with cherry, raspberry & black currant. A lower alcohol option that doesn't compromise on flavor, delivering a rich berry experience with perfect balance."
+    },
+    'great-white': {
+        name: "Great White",
+        type: "Wheat Beer",
+        abv: "5.3% ABV",
+        image: "https://files.petsq.works/beatsnbrews/beers/beer-01-white.jpg",
+        description: "Wheat beer with grapefruit and orange. Classic wheat beer style enhanced with citrus notes that provide a crisp, refreshing taste perfect for any occasion."
+    },
+    'moray-ipa': {
+        name: "Moray IPA non-alc",
+        type: "Non-Alcoholic",
+        abv: "0.4% ABV",
+        image: "https://files.petsq.works/beatsnbrews/beers/beer-05-moray.jpg",
+        description: "Non-alcoholic IPA with tangerine and carambola. Proof that great taste doesn't require alcohol - all the hoppy character and citrus complexity you expect from an IPA."
+    },
+    'bock-rammer': {
+        name: "Bock Rammer",
+        type: "Limited Edition",
+        abv: "7.8% ABV",
+        image: "https://files.petsq.works/beatsnbrews/beers/beer-04-bock.jpg",
+        description: "Dark double bock with caramel tones. A rich, malty masterpiece with deep flavors and higher alcohol content. This limited edition beer showcases traditional brewing mastery."
+    }
+};
+
 // Simple global function to open artist modal
 function openArtist(artistId) {
     const artist = artists[artistId];
@@ -774,6 +820,37 @@ function openArtist(artistId) {
         soundcloudLink.innerHTML = '<span class="social-icon"><img src="https://files.petsq.works/beatsnbrews/soundcloud.svg" alt="SoundCloud" width="20" height="20"></span>SoundCloud';
         modalSocial.appendChild(soundcloudLink);
     }
+
+    // Show modal
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// Simple global function to open beer modal (reuses artist modal)
+function openBeer(beerId) {
+    const beer = beers[beerId];
+    if (!beer) return;
+
+    const modal = document.getElementById('artist-modal');
+    const modalImg = document.getElementById('artist-modal-img');
+    const modalName = document.getElementById('artist-modal-name');
+    const modalGenre = document.getElementById('artist-modal-genre');
+    const modalBio = document.getElementById('artist-modal-bio');
+    const modalSocial = document.getElementById('artist-modal-social');
+
+    if (!modal || !modalImg || !modalName || !modalGenre || !modalBio || !modalSocial) {
+        return;
+    }
+
+    // Populate modal content with beer data
+    modalImg.src = beer.image;
+    modalImg.alt = beer.name;
+    modalName.textContent = beer.name;
+    modalGenre.textContent = `${beer.type} • ${beer.abv}${beer.ibu ? ' • ' + beer.ibu : ''}`;
+    modalBio.textContent = beer.description;
+
+    // Clear social links for beer modal
+    modalSocial.innerHTML = '';
 
     // Show modal
     modal.classList.add('active');

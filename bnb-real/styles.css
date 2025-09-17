@@ -683,13 +683,25 @@ section {
 
 /* Breweries */
 .breweries {
-    background: 
+    background:
         linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 100%),
         url('https://files.petsq.works/beatsnbrews/bnb-stadshaven.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     position: relative;
+}
+
+.breweries::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    backdrop-filter: blur(3px);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .breweries::before {
@@ -2160,6 +2172,12 @@ section {
         height: 200px;
     }
 
+    /* Alternating layout for tablet (2 columns) */
+    .artists-grid .artist-card:nth-child(even),
+    .beer-grid .artist-card:nth-child(even) {
+        flex-direction: row-reverse;
+    }
+
     .artist-overlay {
         padding: 1rem;
     }
@@ -2171,6 +2189,7 @@ section {
     .artist-genre {
         font-size: 0.8rem;
     }
+
 
     .beer-list {
         grid-template-columns: 1fr;
@@ -2620,119 +2639,6 @@ section {
     text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-.beer-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
-    margin-bottom: 2rem;
-}
-
-.beer-card {
-    background: linear-gradient(135deg, #3C3C3C 0%, #2C2C2C 100%);
-    border: 2px solid #B87333;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    transition: all 0.3s ease;
-    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 100%, 15px 100%);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.beer-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background:
-        radial-gradient(circle at 30% 30%, rgba(184, 115, 51, 0.05) 0%, transparent 50%),
-        repeating-linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.01) 1px, transparent 3px);
-    pointer-events: none;
-    z-index: 1;
-}
-
-.beer-card > * {
-    position: relative;
-    z-index: 2;
-}
-
-.beer-card:hover {
-    transform: translateY(-5px);
-    border-color: #EAC435;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-}
-
-.beer-bottle-image {
-    margin-bottom: 1.5rem;
-    height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.beer-bottle-image img {
-    max-height: 100%;
-    max-width: 120px;
-    width: auto;
-    object-fit: contain;
-    filter: drop-shadow(0 4px 15px rgba(0,0,0,0.3));
-    transition: transform 0.3s ease;
-}
-
-.beer-card:hover .beer-bottle-image img {
-    transform: scale(1.05);
-}
-
-.beer-card-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.beer-card-info h4 {
-    color: #EAC435;
-    font-family: 'Bebas Neue', cursive;
-    font-size: 1.5rem;
-    margin: 0;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-}
-
-.beer-abv {
-    background: #EAC435;
-    color: #1a1a1a;
-    padding: 0.3rem 0.8rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    font-weight: 600;
-    clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%);
-    letter-spacing: 0.5px;
-}
-
-.beer-type {
-    color: #B87333;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 0.2rem 0.5rem;
-    border: 1px solid #B87333;
-    clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 100%, 4px 100%);
-}
-
-.beer-description {
-    color: #ccc;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin: 1rem 0 0 0;
-    max-width: 280px;
-}
 
 .beer-more {
     text-align: center;
@@ -2750,24 +2656,9 @@ section {
     padding: 0.5rem 1rem;
     display: inline-block;
     clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%);
-    transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
-.beer-more p:hover {
-    background: #F5D542;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-}
-    
-    .beer-mockup {
-        max-width: 120px;
-        width: auto;
-    }
-
-    .beer-info h4 {
-        font-size: 1.3rem;
-    }
 }
 
 /* Tablet Responsive */
@@ -2817,6 +2708,12 @@ section {
         height: 180px;
     }
 
+    /* Alternating layout for mobile (1 column) */
+    .artists-grid .artist-card:nth-child(even),
+    .beer-grid .artist-card:nth-child(even) {
+        flex-direction: row-reverse;
+    }
+
     .artist-overlay {
         padding: 0.8rem;
     }
@@ -2827,6 +2724,27 @@ section {
 
     .artist-genre {
         font-size: 0.7rem;
+    }
+
+    /* Mobile beer section styling */
+    .beer-grid-container h3 {
+        color: #fff !important;
+        text-align: center !important;
+        margin-bottom: 2rem !important;
+    }
+
+    .beer-more p {
+        color: #1a1a1a !important;
+        background: #EAC435 !important;
+        font-family: 'Bebas Neue', cursive !important;
+        font-weight: 400 !important;
+        font-size: 1rem !important;
+        letter-spacing: 1px !important;
+        text-transform: uppercase !important;
+        padding: 0.5rem 1rem !important;
+        display: inline-block !important;
+        clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
     }
 
     .stamps-grid {
@@ -3157,40 +3075,6 @@ a:focus {
         clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%);
     }
 
-    /* Beer Grid Mobile Styles */
-    .beer-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-
-    .beer-card {
-        padding: 1.5rem;
-        clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 100%, 10px 100%);
-    }
-
-    .beer-bottle-image {
-        height: 150px;
-        margin-bottom: 1rem;
-    }
-
-    .beer-bottle-image img {
-        max-width: 100px;
-    }
-
-    .beer-card-info h4 {
-        font-size: 1.3rem;
-        color: #fff !important;
-    }
-
-    .beer-abv {
-        background: #EAC435;
-        color: #1a1a1a !important;
-    }
-
-    .beer-grid-container h3 {
-        font-size: 2rem;
-        margin-bottom: 2rem;
-    }
 }
 
 /* Print Styles */

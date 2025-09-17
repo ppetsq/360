@@ -94,15 +94,6 @@
                 <p class="section-subtitle">Experience diverse sounds from talented local artists</p>
             </div>
             <div class="artists-grid">
-                <div class="artist-card" onclick="openArtist('doris-bae')">
-                    <div class="artist-image">
-                        <img src="https://files.petsq.works/beatsnbrews/doris-00.jpg" alt="Doris Bae" loading="lazy">
-                    </div>
-                    <div class="artist-overlay">
-                        <h3>Doris Bae</h3>
-                        <p class="artist-genre">Urban • Dancehall • Afro</p>
-                    </div>
-                </div>
                 <div class="artist-card" onclick="openArtist('kid-kiddo')">
                     <div class="artist-image">
                         <img src="https://files.petsq.works/beatsnbrews/kid-00.jpg" alt="Kid Kiddo" loading="lazy">
@@ -110,6 +101,15 @@
                     <div class="artist-overlay">
                         <h3>Kid Kiddo</h3>
                         <p class="artist-genre">Baile Funk • Afro Funk • Jersey • Dembow</p>
+                    </div>
+                </div>
+                <div class="artist-card" onclick="openArtist('doris-bae')">
+                    <div class="artist-image">
+                        <img src="https://files.petsq.works/beatsnbrews/doris-00.jpg" alt="Doris Bae" loading="lazy">
+                    </div>
+                    <div class="artist-overlay">
+                        <h3>Doris Bae</h3>
+                        <p class="artist-genre">Urban • Dancehall • Afro</p>
                     </div>
                 </div>
                 <div class="artist-card" onclick="openArtist('petsq')">
@@ -229,70 +229,59 @@
                 </div>
                 <div class="beer-grid-container">
                     <h3>Available at the Bar</h3>
-                    <div class="beer-grid">
-                        <div class="beer-card">
-                            <div class="beer-bottle-image">
-                                <img src="https://files.petsq.works/beatsnbrews/bbb.png" alt="Beats & Brews Exclusive">
+                    <div class="artists-grid beer-grid">
+                        <div class="artist-card beer-card" onclick="openBeer('octopus-blonde')">
+                            <div class="artist-image">
+                                <img src="https://files.petsq.works/beatsnbrews/beers/beer-03-blond.jpg" alt="Octopus Blonde" loading="lazy">
                             </div>
-                            <div class="beer-card-info">
-                                <h4>Beats & Brews Exclusive</h4>
-                                <span class="beer-type">Festival Exclusive</span>
-                                <p class="beer-description">Premium craft lager created exclusively for our festival in collaboration with Stadshaven Brouwerij</p>
-                            </div>
-                        </div>
-                        <div class="beer-card">
-                            <div class="beer-bottle-image">
-                                <img src="https://stadshavenbrouwerij.nl/images/beers/SHB-octopus-blond.png" alt="Octopus Blonde">
-                            </div>
-                            <div class="beer-card-info">
-                                <h4>Octopus Blonde</h4>
-                                <span class="beer-abv">6.0% ABV</span>
-                                <span class="beer-type">Blonde</span>
-                                <p class="beer-description">Blonde beer with kiwi berry and blood orange twist, hint of juniper</p>
+                            <div class="artist-overlay">
+                                <h3>Octopus Blonde</h3>
+                                <p class="artist-genre">Blonde • 6.0% ABV</p>
                             </div>
                         </div>
-                        <div class="beer-card">
-                            <div class="beer-bottle-image">
-                                <img src="https://stadshavenbrouwerij.nl/images/beers/Stadshaven-Brouwerj_Bottle_DevilsFruit.png.png" alt="Devil's Fruit">
+                        <div class="artist-card beer-card" onclick="openBeer('devils-fruit')">
+                            <div class="artist-image">
+                                <img src="https://files.petsq.works/beatsnbrews/beers/beer-02-devil.jpg" alt="Devil's Fruit" loading="lazy">
                             </div>
-                            <div class="beer-card-info">
-                                <h4>Devil's Fruit</h4>
-                                <span class="beer-abv">3.8% ABV</span>
-                                <span class="beer-type">Fruit Beer</span>
-                                <p class="beer-description">Fruit beer with cherry, raspberry & black currant</p>
+                            <div class="artist-overlay">
+                                <h3>Devil's Fruit</h3>
+                                <p class="artist-genre">Fruit Beer • 3.8% ABV</p>
                             </div>
                         </div>
-                        <div class="beer-card">
-                            <div class="beer-bottle-image">
-                                <img src="https://stadshavenbrouwerij.nl/images/beers/SHB-Great-White.png" alt="Great White">
+                        <div class="artist-card beer-card" onclick="openBeer('great-white')">
+                            <div class="artist-image">
+                                <img src="https://files.petsq.works/beatsnbrews/beers/beer-01-white.jpg" alt="Great White" loading="lazy">
                             </div>
-                            <div class="beer-card-info">
-                                <h4>Great White</h4>
-                                <span class="beer-abv">5.3% ABV</span>
-                                <span class="beer-type">Wheat Beer</span>
-                                <p class="beer-description">Wheat beer with grapefruit and orange</p>
+                            <div class="artist-overlay">
+                                <h3>Great White</h3>
+                                <p class="artist-genre">Wheat Beer • 5.3% ABV</p>
                             </div>
                         </div>
-                        <div class="beer-card">
-                            <div class="beer-bottle-image">
-                                <img src="https://stadshavenbrouwerij.nl/images/beers/Stadshaven-Brouwerij_Bottle_MorayIPA-Non-Alcoholic.png" alt="Moray IPA non-alc">
+                        <div class="artist-card beer-card" onclick="openBeer('limoncello-neipa')">
+                            <div class="artist-image">
+                                <img src="https://files.petsq.works/beatsnbrews/beers/beer-06-neipa.jpg" alt="Limoncello Neipa" loading="lazy">
                             </div>
-                            <div class="beer-card-info">
-                                <h4>Moray IPA non-alc</h4>
-                                <span class="beer-abv">0.4% ABV</span>
-                                <span class="beer-type">Non-Alcoholic</span>
-                                <p class="beer-description">Non-alcoholic IPA with tangerine and carambola</p>
+                            <div class="artist-overlay">
+                                <h3>Limoncello Neipa</h3>
+                                <p class="artist-genre">NEIPA • 5.8% ABV</p>
                             </div>
                         </div>
-                        <div class="beer-card">
-                            <div class="beer-bottle-image">
-                                <img src="https://stadshavenbrouwerij.nl/images/beers/bock-rammer-stadshaven.png" alt="Bock Rammer">
+                        <div class="artist-card beer-card" onclick="openBeer('bock-rammer')">
+                            <div class="artist-image">
+                                <img src="https://files.petsq.works/beatsnbrews/beers/beer-04-bock.jpg" alt="Bock Rammer" loading="lazy">
                             </div>
-                            <div class="beer-card-info">
-                                <h4>Bock Rammer</h4>
-                                <span class="beer-abv">7.8% ABV</span>
-                                <span class="beer-type">Limited Edition</span>
-                                <p class="beer-description">Dark double bock with caramel tones (Limited Edition)</p>
+                            <div class="artist-overlay">
+                                <h3>Bock Rammer</h3>
+                                <p class="artist-genre">Limited Edition • 7.8% ABV</p>
+                            </div>
+                        </div>
+                        <div class="artist-card beer-card" onclick="openBeer('moray-ipa')">
+                            <div class="artist-image">
+                                <img src="https://files.petsq.works/beatsnbrews/beers/beer-05-moray.jpg" alt="Moray IPA non-alc" loading="lazy">
+                            </div>
+                            <div class="artist-overlay">
+                                <h3>Moray IPA non-alc</h3>
+                                <p class="artist-genre">Non-Alcoholic • 0.4% ABV</p>
                             </div>
                         </div>
                     </div>
