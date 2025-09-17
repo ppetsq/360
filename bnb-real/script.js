@@ -604,14 +604,15 @@ function updateNavigationButtons() {
 
     if (!prevBtn || !nextBtn) return;
 
-    if (modalItems.length <= 1) {
-        prevBtn.style.display = 'none';
-        nextBtn.style.display = 'none';
-        return;
-    }
-
+    // Always show navigation buttons
     prevBtn.style.display = 'flex';
     nextBtn.style.display = 'flex';
-    prevBtn.disabled = false;
-    nextBtn.disabled = false;
+
+    if (modalItems.length <= 1) {
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+    } else {
+        prevBtn.disabled = false;
+        nextBtn.disabled = false;
+    }
 }

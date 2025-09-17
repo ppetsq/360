@@ -1357,6 +1357,10 @@ section {
     display: flex;
 }
 
+.modal.active .modal-nav {
+    display: flex !important;
+}
+
 .modal-content {
     background: #3C3C3C;
     padding: 2rem;
@@ -1379,6 +1383,11 @@ section {
 
 .modal-close:hover {
     color: #B87333;
+}
+
+/* Hide bottom close button on desktop */
+.modal-close-bottom {
+    display: none;
 }
 
 .modal h2 {
@@ -1429,38 +1438,42 @@ section {
 
 /* Modal Navigation Buttons */
 .modal-nav {
-    position: fixed;
+    position: fixed !important;
     top: 50%;
     transform: translateY(-50%);
-    width: 60px;
-    height: 60px;
-    background: rgba(234, 196, 53, 0.9);
-    border: none;
-    color: #1a1a1a;
-    font-size: 1.8rem;
-    font-weight: bold;
+    width: 70px;
+    height: 70px;
+    background: rgba(234, 196, 53, 0.95) !important;
+    border: 3px solid #EAC435 !important;
+    color: #1a1a1a !important;
+    font-size: 2.2rem;
+    font-weight: 900;
     cursor: pointer;
-    z-index: 2001;
+    z-index: 9999 !important;
     transition: all 0.3s ease;
-    display: flex;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     align-items: center;
     justify-content: center;
-    clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
 }
 
 .modal-nav:hover {
     background: #EAC435;
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 6px 20px rgba(234, 196, 53, 0.6);
+    transform: translateY(-50%) scale(1.15);
+    box-shadow: 0 8px 25px rgba(234, 196, 53, 0.7);
+    border-color: #fff;
 }
 
 .modal-nav-prev {
-    left: 20px;
+    left: calc(50% - 485px);
 }
 
 .modal-nav-next {
-    right: 20px;
+    right: calc(50% - 485px);
 }
 
 .modal-nav:disabled {
@@ -1657,11 +1670,16 @@ section {
         grid-template-columns: 1fr;
     }
 
+    .beer-grid {
+        grid-template-columns: 1fr;
+    }
+
     .artist-card {
         height: 200px;
     }
 
-    .artist-card:nth-child(even) {
+    .artist-card:nth-child(even),
+    .beer-card:nth-child(even) {
         flex-direction: row-reverse;
     }
 
@@ -1810,8 +1828,8 @@ section {
     }
 
     .artist-modal-info {
-        padding: 1.5rem;
-        height: calc(60vh - 3rem);
+        padding: 1rem 1.5rem;
+        height: calc(60vh - 2rem);
         overflow-y: auto;
     }
 
@@ -1824,13 +1842,41 @@ section {
         align-items: center;
         justify-content: center;
         top: 1rem;
-        right: 1rem;
+        right: calc(1rem + 10px);
         font-size: 1.8rem;
         z-index: 3000;
     }
 
     .modal-close:hover {
         background: rgba(0, 0, 0, 0.9);
+    }
+
+    /* Bottom close button for mobile */
+    .modal-close-bottom {
+        position: fixed;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 60px;
+        background: rgba(0, 0, 0, 0.8);
+        border: 2px solid #EAC435;
+        border-radius: 50%;
+        color: #EAC435;
+        font-size: 1.8rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3000;
+        transition: all 0.3s ease;
+    }
+
+    .modal-close-bottom:hover {
+        background: rgba(0, 0, 0, 0.9);
+        border-color: #fff;
+        color: #fff;
+        transform: translateX(-50%) scale(1.1);
     }
 
     .artist-modal-info h2 {
@@ -1853,17 +1899,19 @@ section {
 
     /* Mobile navigation buttons */
     .modal-nav {
-        width: 50px;
-        height: 50px;
-        font-size: 1.5rem;
+        width: 55px;
+        height: 55px;
+        font-size: 1.6rem;
+        border-width: 2px;
+        top: 40%;
     }
 
     .modal-nav-prev {
-        left: 10px;
+        left: 0px;
     }
 
     .modal-nav-next {
-        right: 10px;
+        right: 0px;
     }
 }
 
@@ -1893,11 +1941,17 @@ section {
         gap: 1rem;
     }
 
+    .beer-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
     .artist-card {
         height: 180px;
     }
 
-    .artist-card:nth-child(even) {
+    .artist-card:nth-child(even),
+    .beer-card:nth-child(even) {
         flex-direction: row-reverse;
     }
 
@@ -1990,8 +2044,8 @@ section {
     }
 
     .artist-modal-info {
-        padding: 1rem;
-        height: calc(60vh - 2rem);
+        padding: 0.8rem 1rem;
+        height: calc(60vh - 1.6rem);
     }
 
     .artist-modal-info h2 {
@@ -2019,9 +2073,11 @@ section {
     }
 
     .modal-nav {
-        width: 45px;
-        height: 45px;
-        font-size: 1.3rem;
+        width: 50px;
+        height: 50px;
+        font-size: 1.4rem;
+        border-width: 2px;
+        top: 40%;
     }
 
     .modal-nav-prev {
