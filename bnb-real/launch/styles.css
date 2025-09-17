@@ -1724,7 +1724,12 @@ section {
     }
 
     .artist-overlay h3 {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
+    }
+
+    .beer-card .artist-overlay h3 {
+        font-size: 1.6rem !important;
+        margin-bottom: 0.5rem !important;
     }
 
     .artist-genre {
@@ -1999,7 +2004,12 @@ section {
     }
 
     .artist-overlay h3 {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
+    }
+
+    .beer-card .artist-overlay h3 {
+        font-size: 1.4rem !important;
+        margin-bottom: 0.5rem !important;
     }
 
     .artist-genre {
@@ -2007,7 +2017,8 @@ section {
     }
 
     .beer-grid-container h3 {
-        color: #fff !important;
+        color: #EAC435 !important;
+        font-size: 2rem !important;
         text-align: center !important;
         margin-bottom: 2rem !important;
     }
