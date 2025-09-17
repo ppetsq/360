@@ -780,6 +780,11 @@ function openArtist(artistId) {
     const artist = artists[artistId];
     if (!artist) return;
 
+    // Set up navigation context for artists
+    currentModalType = 'artist';
+    modalItems = Object.keys(artists);
+    currentModalIndex = modalItems.indexOf(artistId);
+
     const modal = document.getElementById('artist-modal');
     const modalImg = document.getElementById('artist-modal-img');
     const modalName = document.getElementById('artist-modal-name');
@@ -821,15 +826,23 @@ function openArtist(artistId) {
         modalSocial.appendChild(soundcloudLink);
     }
 
-    // Show modal
+    // Show modal and prevent scrolling
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
+
+    // Update navigation buttons
+    updateNavigationButtons();
 }
 
 // Simple global function to open beer modal (reuses artist modal)
 function openBeer(beerId) {
     const beer = beers[beerId];
     if (!beer) return;
+
+    // Set up navigation context for beers
+    currentModalType = 'beer';
+    modalItems = Object.keys(beers);
+    currentModalIndex = modalItems.indexOf(beerId);
 
     const modal = document.getElementById('artist-modal');
     const modalImg = document.getElementById('artist-modal-img');
@@ -852,9 +865,12 @@ function openBeer(beerId) {
     // Clear social links for beer modal
     modalSocial.innerHTML = '';
 
-    // Show modal
+    // Show modal and prevent scrolling
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
+
+    // Update navigation buttons
+    updateNavigationButtons();
 }
 
 // Close modal function - make it global and simple
@@ -863,6 +879,8 @@ window.closeArtistModal = function() {
     const modalContent = document.querySelector('.artist-modal-content');
     if (modal) {
         modal.classList.remove('active');
+
+        // Restore body scrolling
         document.body.style.overflow = '';
 
         // Reset any transformations from swipe gestures
@@ -870,79 +888,164 @@ window.closeArtistModal = function() {
             modalContent.style.transform = '';
         }
         modal.style.backgroundColor = '';
+
+        // Reset navigation context
+        currentModalType = null;
+        modalItems = [];
+        currentModalIndex = 0;
     }
 }
 
+// Global variables for modal navigation
+let currentModalType = null; // 'artist' or 'beer'
+let currentModalIndex = 0;
+let modalItems = [];
+
 // Artist modal functionality
 function initArtistModal() {
+    const modal = document.getElementById('artist-modal');
+    const modalContent = document.querySelector('.artist-modal-content');
+
     // Simple ESC key handler
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            const modal = document.getElementById('artist-modal');
             if (modal && modal.classList.contains('active')) {
                 closeArtistModal();
             }
         }
     });
 
-    // Touch swipe functionality
-    let startY = 0;
-    let startX = 0;
-    let currentY = 0;
-    let currentX = 0;
-    let isDragging = false;
+    // Click anywhere on modal content to close (but not on links, buttons, or close button)
+    modalContent.addEventListener('click', function(e) {
+        // Don't close if clicking on interactive elements
+        if (e.target.closest('a') || e.target.closest('.modal-close') || e.target.closest('.modal-nav')) {
+            return;
+        }
+        closeArtistModal();
+    });
+
+    // Click outside modal content to close
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeArtistModal();
+        }
+    });
+
+    // Simple touch swipe functionality
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    if (modal && modalContent) {
+        modalContent.addEventListener('touchstart', function(e) {
+            // Don't interfere with interactive elements
+            if (e.target.closest('a') || e.target.closest('.modal-close') || e.target.closest('.modal-nav')) {
+                return;
+            }
+
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        modalContent.addEventListener('touchend', function(e) {
+            if (!modal.classList.contains('active')) return;
+
+            // Don't interfere with interactive elements
+            if (e.target.closest('a') || e.target.closest('.modal-close') || e.target.closest('.modal-nav')) {
+                return;
+            }
+
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            // Minimum swipe distance
+            const minSwipeDistance = 50;
+
+            // Check if it's a horizontal swipe (left/right)
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+                if (deltaX > 0) {
+                    // Swipe right - go to previous
+                    if (canNavigate()) {
+                        navigateModal('prev');
+                    }
+                } else {
+                    // Swipe left - go to next
+                    if (canNavigate()) {
+                        navigateModal('next');
+                    }
+                }
+            }
+            // Check if it's a vertical swipe down to close
+            else if (deltaY > minSwipeDistance && Math.abs(deltaY) > Math.abs(deltaX)) {
+                closeArtistModal();
+            }
+            // If no significant swipe, treat as tap to close
+            else if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
+                closeArtistModal();
+            }
+        }, { passive: true });
+    }
+}
+
+// Check if navigation is possible (always true for infinite looping)
+function canNavigate(direction) {
+    // With infinite looping, navigation is always possible if we have items
+    return modalItems.length > 1;
+}
+
+// Navigate between modal items with infinite looping
+function navigateModal(direction) {
+    if (!modalItems.length) return;
 
     const modal = document.getElementById('artist-modal');
     const modalContent = document.querySelector('.artist-modal-content');
 
-    if (modal && modalContent) {
-        // Touch start
-        modalContent.addEventListener('touchstart', function(e) {
-            startY = e.touches[0].clientY;
-            startX = e.touches[0].clientX;
-            isDragging = false;
-        }, { passive: true });
-
-        // Touch move
-        modalContent.addEventListener('touchmove', function(e) {
-            if (!modal.classList.contains('active')) return;
-
-            currentY = e.touches[0].clientY;
-            currentX = e.touches[0].clientX;
-
-            const deltaY = currentY - startY;
-            const deltaX = currentX - startX;
-
-            // Check if it's a vertical swipe (more Y movement than X)
-            if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 50) {
-                isDragging = true;
-
-                // Only apply transform for downward swipes
-                if (deltaY > 0) {
-                    const opacity = Math.max(0.3, 1 - (deltaY / 300));
-                    modal.style.backgroundColor = `rgba(0, 0, 0, ${opacity * 0.8})`;
-                    modalContent.style.transform = `translateY(${deltaY}px)`;
-                }
-            }
-        }, { passive: true });
-
-        // Touch end
-        modalContent.addEventListener('touchend', function(e) {
-            if (!modal.classList.contains('active') || !isDragging) return;
-
-            const deltaY = currentY - startY;
-            const deltaX = currentX - startX;
-
-            // If it's a significant downward swipe, close the modal
-            if (deltaY > 150 && Math.abs(deltaY) > Math.abs(deltaX)) {
-                closeArtistModal();
-            } else {
-                // Reset position
-                modal.style.backgroundColor = '';
-                modalContent.style.transform = '';
-            }
-
-            isDragging = false;
-        }, { passive: true });
+    if (direction === 'next') {
+        currentModalIndex++;
+        if (currentModalIndex >= modalItems.length) {
+            currentModalIndex = 0; // Loop back to beginning
+        }
+    } else if (direction === 'prev') {
+        currentModalIndex--;
+        if (currentModalIndex < 0) {
+            currentModalIndex = modalItems.length - 1; // Loop to end
+        }
     }
+
+    // Reset visual feedback
+    modal.style.backgroundColor = '';
+    modalContent.style.transform = '';
+
+    // Get the current item
+    const currentItem = modalItems[currentModalIndex];
+
+    // Open the appropriate modal type
+    if (currentModalType === 'artist') {
+        openArtist(currentItem);
+    } else if (currentModalType === 'beer') {
+        openBeer(currentItem);
+    }
+}
+
+// Update navigation button states
+function updateNavigationButtons() {
+    const prevBtn = document.getElementById('modal-nav-prev');
+    const nextBtn = document.getElementById('modal-nav-next');
+
+    if (!prevBtn || !nextBtn) return;
+
+    // Always show buttons if there are multiple items
+    if (modalItems.length <= 1) {
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+        return;
+    }
+
+    prevBtn.style.display = 'flex';
+    nextBtn.style.display = 'flex';
+
+    // Always enable buttons for infinite looping
+    prevBtn.disabled = false;
+    nextBtn.disabled = false;
 }

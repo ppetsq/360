@@ -511,6 +511,8 @@
     <div class="modal" id="artist-modal" onclick="closeArtistModal()">
         <div class="modal-content artist-modal-content" onclick="event.stopPropagation()">
             <span class="modal-close" onclick="closeArtistModal()">&times;</span>
+            <button class="modal-nav modal-nav-prev" id="modal-nav-prev" onclick="navigateModal('prev')">&larr;</button>
+            <button class="modal-nav modal-nav-next" id="modal-nav-next" onclick="navigateModal('next')">&rarr;</button>
             <div class="artist-modal-grid">
                 <div class="artist-modal-image">
                     <img id="artist-modal-img" src="" alt="" loading="lazy">
