@@ -126,7 +126,7 @@ function initEmailSignup() {
     const signupForm = document.getElementById('signup-form');
     const modalForm = document.getElementById('modal-form');
 
-    // Form submissions
+    // Form submissions - let Formspree handle the actual submission
     if (signupForm) {
         signupForm.addEventListener('submit', handleSignup);
     }
@@ -135,32 +135,31 @@ function initEmailSignup() {
     }
 
     function handleSignup(e) {
-        e.preventDefault();
-
         const form = e.target;
         const emailInput = form.querySelector('input[type="email"]');
         const email = emailInput.value.trim();
 
         // Basic email validation
         if (!isValidEmail(email)) {
+            e.preventDefault();
             showNotification('Please enter a valid email address', 'error');
             return;
         }
 
-        // Simulate API call
+        // Show submitting state
         const button = form.querySelector('button[type="submit"]');
         const originalText = button.textContent;
-
-        button.textContent = 'Signing up...';
+        button.textContent = 'Submitting...';
         button.disabled = true;
 
+        // Let the form submit naturally to Formspree
+        // Don't prevent default - let it go through
+
+        // Re-enable button after a delay (in case user stays on page)
         setTimeout(() => {
-            // Simulate successful signup
-            showNotification('Thanks for signing up! Stay tuned for festival updates.', 'success');
-            form.reset();
             button.textContent = originalText;
             button.disabled = false;
-        }, 1500);
+        }, 3000);
     }
 
     function isValidEmail(email) {
@@ -256,6 +255,14 @@ const optimizedScroll = throttle(function() {
 }, 16);
 
 window.addEventListener('scroll', optimizedScroll);
+
+// Scroll to hero section function
+function scrollToHero() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
 
 // Notification styles
 const notificationStyles = `

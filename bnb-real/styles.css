@@ -68,7 +68,7 @@ p {
 
 .nav.visible {
     transform: translateY(0);
-    opacity: 0.9;
+    opacity: 1;
 }
 
 .nav-container {
@@ -622,7 +622,7 @@ section {
     left: 0;
     right: 0;
     bottom: 0;
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(5px);
     pointer-events: none;
     z-index: 1;
 }
@@ -1047,9 +1047,7 @@ section {
     left: 0;
     right: 0;
     bottom: 0;
-    background:
-        repeating-linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.02) 1px, transparent 2px, transparent 40px),
-        repeating-linear-gradient(0deg, transparent 0%, rgba(255, 255, 255, 0.01) 1px, transparent 2px, transparent 40px);
+    background: none;
     pointer-events: none;
     z-index: 1;
 }
@@ -1120,6 +1118,18 @@ section {
     background-position: center;
     background-attachment: fixed;
     position: relative;
+}
+
+.about::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    backdrop-filter: blur(5px);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .about::before {

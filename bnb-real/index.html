@@ -32,7 +32,7 @@
     <nav class="nav">
         <div class="nav-container">
             <div class="nav-logo">
-                <img src="https://files.petsq.works/beatsnbrews/bnb-logo-placeholder.png" alt="Beats and Brews Festival" class="nav-logo-img">
+                <img src="https://files.petsq.works/beatsnbrews/bnb-logo-placeholder.png" alt="Beats and Brews Festival" class="nav-logo-img" onclick="scrollToHero()" style="cursor: pointer;">
             </div>
             <div class="nav-menu" id="nav-menu">
                 <a href="#artists" class="nav-link">Artists</a>
@@ -449,7 +449,7 @@
             </div>
             <div class="contact-content">
                 <div class="contact-signup">
-                    <form class="signup-form" id="signup-form">
+                    <form class="signup-form" id="signup-form" action="https://formspree.io/f/mnnbkglz" method="POST">
                         <h3>Join Our Community</h3>
                         <div class="form-group">
                             <input type="email" id="email" name="email" placeholder="Enter your email" required>
@@ -499,8 +499,8 @@
             <span class="modal-close">&times;</span>
             <h2>Join the Community</h2>
             <p>Get exclusive updates about our free festival</p>
-            <form class="modal-form" id="modal-form">
-                <input type="email" placeholder="Enter your email" required>
+            <form class="modal-form" id="modal-form" action="https://formspree.io/f/mnnbkglz" method="POST">
+                <input type="email" name="email" placeholder="Enter your email" required>
                 <button type="submit" class="btn btn-primary">Sign Me Up</button>
             </form>
         </div>
