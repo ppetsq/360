@@ -1,5 +1,8 @@
 // Beats and Brews Festival - Interactive JavaScript
 document.addEventListener('DOMContentLoaded', function() {
+    // Force scroll to top on page load to prevent jump
+    window.scrollTo(0, 0);
+
     // Initialize all components
     initNavigation();
     initHeroAnimations();
@@ -563,6 +566,45 @@ function initArtistModal() {
             }
         }
     });
+
+    // Touch event handling for navigation buttons
+    const setupNavigationTouchEvents = () => {
+        const prevBtn = document.getElementById('modal-nav-prev');
+        const nextBtn = document.getElementById('modal-nav-next');
+
+        if (prevBtn) {
+            prevBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }, { passive: false });
+
+            prevBtn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (canNavigate()) {
+                    navigateModal('prev');
+                }
+            }, { passive: false });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }, { passive: false });
+
+            nextBtn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (canNavigate()) {
+                    navigateModal('next');
+                }
+            }, { passive: false });
+        }
+    };
+
+    // Setup touch events after DOM is ready
+    setupNavigationTouchEvents();
 }
 
 // Check if navigation is possible
@@ -571,8 +613,15 @@ function canNavigate() {
 }
 
 // Navigate between modal items with infinite looping
+let navigationThrottle = false;
 function navigateModal(direction) {
-    if (!modalItems.length) return;
+    if (!modalItems.length || navigationThrottle) return;
+
+    // Throttle navigation to prevent rapid-fire issues
+    navigationThrottle = true;
+    setTimeout(() => {
+        navigationThrottle = false;
+    }, 300);
 
     const modal = document.getElementById('artist-modal');
     const modalContent = document.querySelector('.artist-modal-content');

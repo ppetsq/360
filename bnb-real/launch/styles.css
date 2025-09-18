@@ -7,6 +7,12 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+html, body {
+    scroll-padding-top: 0;
+    scroll-margin-top: 0;
 }
 
 body {
@@ -148,7 +154,7 @@ p {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: blur(1px);
+    filter: blur(1px) brightness(0.5) contrast(1);
 }
 
 .hero-overlay {
@@ -158,9 +164,9 @@ p {
     width: 100%;
     height: 100%;
     background:
-        linear-gradient(135deg, rgba(70, 130, 180, 0.3) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(184, 115, 51, 0.3) 100%),
-        radial-gradient(circle at 30% 30%, rgba(210, 105, 30, 0.2) 0%, transparent 50%),
-        rgba(0, 0, 0, 0.5);
+        linear-gradient(135deg, rgba(70, 130, 180, 0.5) 0%, rgba(0, 0, 0, 0.9) 50%, rgba(184, 115, 51, 0.5) 100%),
+        radial-gradient(circle at 30% 30%, rgba(210, 105, 30, 0.3) 0%, transparent 50%),
+        rgba(0, 0, 0, 0.85);
     z-index: -1;
 }
 
@@ -181,6 +187,7 @@ p {
     height: 500px;
     width: auto;
     max-width: 95vw;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
 }
 
 /* Hero Event Info Band */
@@ -304,6 +311,13 @@ section {
     height: 4px;
     background: linear-gradient(90deg, #EAC435, #B87333);
     clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%);
+}
+
+.section-header p {
+    color: #ccc;
+    font-size: 1rem;
+    margin-top: 30px;
+    text-align: center;
 }
 
 .section-subtitle {
@@ -613,7 +627,7 @@ section {
 .breweries {
     background:
         linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 100%),
-        url('https://files.petsq.works/beatsnbrews/bnb-stadshaven.jpg');
+        url('https://files.petsq.works/beatsnbrews/sb-01.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -808,8 +822,28 @@ section {
     font-family: 'Bebas Neue', cursive;
     font-size: 2.5rem;
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem;
     text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.beer-grid-container > p {
+    color: #ccc;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.beer-grid-container > p::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #EAC435, #B87333);
+    clip-path: polygon(0 0, calc(100% - 3px) 0, 100% 100%, 3px 100%);
 }
 
 .beer-grid {
@@ -1421,10 +1455,6 @@ section {
     color: #B87333;
 }
 
-/* Hide bottom close button on desktop */
-.modal-close-bottom {
-    display: none;
-}
 
 .modal h2 {
     color: #fff;
@@ -1495,6 +1525,8 @@ section {
     clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(5px);
+    touch-action: manipulation;
+    user-select: none;
 }
 
 .modal-nav:hover {
@@ -1852,8 +1884,8 @@ section {
     .artist-modal-content {
         width: calc(100% - 40px);
         max-width: calc(100% - 40px);
-        height: calc(100vh - 40px);
-        max-height: calc(100vh - 40px);
+        height: calc(100svh - 40px);
+        max-height: calc(100svh - 40px);
         margin: 20px;
         clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 100%, 15px 100%);
     }
@@ -1894,33 +1926,6 @@ section {
         background: rgba(0, 0, 0, 0.9);
     }
 
-    /* Bottom close button for mobile */
-    .modal-close-bottom {
-        position: fixed;
-        bottom: 40px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 60px;
-        background: rgba(0, 0, 0, 0.8);
-        border: 2px solid #EAC435;
-        border-radius: 50%;
-        color: #EAC435;
-        font-size: 1.8rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 3000;
-        transition: all 0.3s ease;
-    }
-
-    .modal-close-bottom:hover {
-        background: rgba(0, 0, 0, 0.9);
-        border-color: #fff;
-        color: #fff;
-        transform: translateX(-50%) scale(1.1);
-    }
 
     .artist-modal-info h2 {
         font-size: 2.5rem;
@@ -2088,8 +2093,8 @@ section {
     .artist-modal-content {
         width: calc(100% - 20px);
         max-width: calc(100% - 20px);
-        height: calc(100vh - 20px);
-        max-height: calc(100vh - 20px);
+        height: calc(100svh - 20px);
+        max-height: calc(100svh - 20px);
         margin: 10px;
     }
 
@@ -2171,6 +2176,14 @@ section {
 }
 
 /* Tablet Responsive */
+@media (max-width: 1024px) {
+    /* Disable BBB bottle hover interaction on mobile and tablet */
+    .beer-image:hover .beer-mockup {
+        transform: none;
+        filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+    }
+}
+
 @media (max-width: 1024px) and (min-width: 769px) {
     .unique-scattered {
         grid-template-columns: repeat(2, 1fr);

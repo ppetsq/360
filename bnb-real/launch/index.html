@@ -12,20 +12,30 @@
     <meta property="og:description" content="Join us October 26th, 2025 for the first edition of Beats and Brews Festival in Rotterdam. Experience local breweries, amazing music, and community celebration. Free Entry!">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://beatsnbrewsfestival.com">
-    <meta property="og:image" content="https://files.petsq.works/beatsnbrews/bnb-logo-placeholder.png">
+    <meta property="og:image" content="https://files.petsq.works/beatsnbrews/bnb-og.png">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Beats and Brews Festival 2025">
     <meta name="twitter:description" content="Where Sound Meets Flavor - October 26th, 2025 in Rotterdam - Free Entry!">
-    <meta name="twitter:image" content="https://files.petsq.works/beatsnbrews/bnb-logo-placeholder.png">
+    <meta name="twitter:image" content="https://files.petsq.works/beatsnbrews/bnb-og.png">
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://files.petsq.works/beatsnbrews/bnb-favicon.png">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Open+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="styles.css">
+    <script>
+        // Immediate scroll prevention
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.scrollTo(0, 0);
+    </script>
 </head>
 <body>
     <!-- Navigation -->
@@ -90,6 +100,7 @@
         <div class="container">
             <div class="section-header">
                 <h2>Artist Lineup</h2>
+                <p>Click artists to learn more</p>
             </div>
             <div class="artists-grid">
                 <div class="artist-card" onclick="openArtist('kid-kiddo')">
@@ -225,6 +236,7 @@
                 </div>
                 <div class="beer-grid-container">
                     <h3>Available at the Bar</h3>
+                    <p>Click beers to learn more</p>
                     <div class="beer-grid">
                         <div class="artist-card beer-card" onclick="openBeer('octopus-blonde')">
                             <div class="artist-image">
@@ -502,7 +514,6 @@
         <button class="modal-nav modal-nav-next" id="modal-nav-next" onclick="event.stopPropagation(); navigateModal('next')">&rarr;</button>
         <div class="modal-content artist-modal-content" onclick="event.stopPropagation()">
             <span class="modal-close" onclick="closeArtistModal()">&times;</span>
-            <span class="modal-close-bottom" onclick="closeArtistModal()">&times;</span>
             <div class="artist-modal-grid">
                 <div class="artist-modal-image">
                     <img id="artist-modal-img" src="" alt="" loading="lazy">
