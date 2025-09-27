@@ -359,6 +359,12 @@ const artists = {
         bio: "petsq brings the feels. Finnish producer based in Rotterdam, crafting house and electronica that bends in unexpected ways. His biweekly show 'OFFBEAT' on Radio WORM spans genres with emotional depth and twisted rhythms.",
         instagram: "https://www.instagram.com/petsq010",
         soundcloud: "https://soundcloud.com/petsq010/bloom"
+    },
+    'percy-thrills': {
+        name: "Percy Thrills",
+        genre: "Funky Soul • Afrobeat • Disco House",
+        image: "https://files.petsq.works/beatsnbrews/percy-000.jpg",
+        bio: "Percy blends an eclectic mix of funky soul, Afrobeat, and disco house into seamless, feel-good sets that guarantee to keep you dancing."
     }
 };
 
