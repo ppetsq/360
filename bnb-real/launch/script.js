@@ -364,7 +364,16 @@ const artists = {
         name: "Percy Thrills",
         genre: "Funky Soul • Afrobeat • Disco House",
         image: "https://files.petsq.works/beatsnbrews/percy-000.jpg",
-        bio: "Percy blends an eclectic mix of funky soul, Afrobeat, and disco house into seamless, feel-good sets that guarantee to keep you dancing."
+        bio: "Percy blends an eclectic mix of funky soul, Afrobeat, and disco house into seamless, feel-good sets that guarantee to keep you dancing.",
+        instagram: "https://www.instagram.com/percythrillz/"
+    },
+    'electronic-visions': {
+        name: "Electronic Visions",
+        genre: "Ambient • Synthwave • Electronic",
+        image: "https://files.petsq.works/beatsnbrews/ev-00.jpg",
+        bio: "Music that feels like floating through memories you wish you had. Warm synths, nostalgic waves, and ambient textures that make time move in a completely different way.",
+        instagram: "https://www.instagram.com/electronicvisions/",
+        spotify: "https://open.spotify.com/artist/3hjM20WPb34IxZEvOIh0e2"
     }
 };
 
@@ -472,6 +481,11 @@ function populateModal(item, type) {
         if (item.soundcloud) {
             const soundcloudLink = createSocialLink(item.soundcloud, 'SoundCloud', 'https://files.petsq.works/beatsnbrews/soundcloud.svg');
             modalSocial.appendChild(soundcloudLink);
+        }
+
+        if (item.spotify) {
+            const spotifyLink = createSocialLink(item.spotify, 'Spotify', 'https://files.petsq.works/beatsnbrews/spotify.svg');
+            modalSocial.appendChild(spotifyLink);
         }
     } else if (type === 'beer') {
         modalGenre.textContent = `${item.type} • ${item.abv}`;
