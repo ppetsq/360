@@ -374,6 +374,13 @@ const artists = {
         bio: "Music that feels like floating through memories you wish you had. Warm synths, nostalgic waves, and ambient textures that make time move in a completely different way.",
         instagram: "https://www.instagram.com/electronicvisions/",
         spotify: "https://open.spotify.com/artist/3hjM20WPb34IxZEvOIh0e2"
+    },
+    'partners-in-crime': {
+        name: "PARTNERS IN CRIME (COL)",
+        genre: "Tech House • Latin Tech • Deep Tech",
+        image: "https://files.petsq.works/beatsnbrews/pic-00.jpg",
+        bio: "Born in Colombia and raised in Mallorca, creating a unique fusion of tech house, latin tech, minimal deep-tech and house. This set will pulse with rhythm, colour, and a drive to connect beyond the dancefloor.",
+        instagram: "https://www.instagram.com/partnersincrime.col/"
     }
 };
 
