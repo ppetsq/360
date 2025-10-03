@@ -116,6 +116,19 @@ p {
     transform: translateY(-2px);
 }
 
+.nav-link-tickets {
+    background: #EAC435;
+    color: #1a1a1a;
+    padding: 8px 16px;
+    border: 2px solid #EAC435;
+}
+
+.nav-link-tickets:hover {
+    background: transparent;
+    color: #EAC435;
+    border-color: #EAC435;
+}
+
 .nav-toggle {
     display: none;
     flex-direction: column;
@@ -188,6 +201,38 @@ p {
     width: auto;
     max-width: 95vw;
     filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+}
+
+/* Hero CTA */
+.hero-cta {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn-hero {
+    font-size: 1.4rem;
+    padding: 18px 40px;
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(234, 196, 53, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(234, 196, 53, 0.6);
+    }
+}
+
+.hero-cta-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Hero Event Info Band */
@@ -1275,6 +1320,29 @@ section {
     clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 100%, 15px 100%);
 }
 
+/* Ticket CTA Block */
+.ticket-cta-block {
+    background: #3C3C3C;
+    padding: 2rem;
+    border-radius: 0;
+    border: 3px solid #EAC435;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 100%, 15px 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.ticket-cta-description {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    margin: 0;
+    font-weight: 500;
+}
+
 .form-group {
     display: flex;
     flex-direction: column;
@@ -1702,6 +1770,16 @@ section {
         padding-bottom: 180px;
     }
 
+    .btn-hero {
+        font-size: 1.2rem;
+        padding: 16px 32px;
+    }
+
+    .hero-cta-subtitle {
+        font-size: 0.9rem;
+        padding: 0 1rem;
+    }
+
     .section-header h2 {
         font-size: 4rem;
     }
@@ -1979,6 +2057,15 @@ section {
 
     .hero-content {
         padding-bottom: 200px;
+    }
+
+    .btn-hero {
+        font-size: 1.1rem;
+        padding: 14px 28px;
+    }
+
+    .hero-cta-subtitle {
+        font-size: 0.85rem;
     }
 
     .section-header h2 {
