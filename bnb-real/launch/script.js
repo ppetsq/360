@@ -343,6 +343,13 @@ document.head.insertAdjacentHTML('beforeend', notificationStyles);
 
 // Artist data
 const artists = {
+    'henri-gorr': {
+        name: "Henri Gorr",
+        genre: "Deep House • Melodic House",
+        image: "https://files.petsq.works/beatsnbrews/henri-000.jpg",
+        bio: "Classical training meets contemporary sound. German producer crafting deep house and melodic house with musical depth that comes from years at the orchestra before ever touching a mixer. Designed to inspire and ground you.",
+        instagram: "https://www.instagram.com/henri_gorr/"
+    },
     'doris-bae': {
         name: "Doris Bae",
         genre: "Urban • Dancehall • Afro",
@@ -357,6 +364,14 @@ const artists = {
         image: "https://files.petsq.works/beatsnbrews/kid-00.jpg",
         bio: "Kid Kiddo brings Curaçao energy to Rotterdam. Born in the Caribbean, raised in the city. High-energy Baile Funk, Afro Funk, Jersey, Dembow & Bouyon sounds that pull crowds into pure movement.",
         instagram: "https://www.instagram.com/officialkidkiddo/"
+    },
+    'matte': {
+        name: "MATTE",
+        genre: "Techno • Uplifting Grooves",
+        image: "https://files.petsq.works/beatsnbrews/matte-00.jpg",
+        bio: "Born in Italy and settled in Rotterdam, blending spacey atmospheres with intense techno kicks and uplifting grooves. Sets built for that moment when the bass drops and everything else disappears.",
+        instagram: "https://www.instagram.com/matte.13/",
+        spotify: "https://open.spotify.com/artist/66E33Ed362Q7MeNjwyovVk"
     },
     'petsq': {
         name: "petsq",
