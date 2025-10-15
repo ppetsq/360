@@ -402,6 +402,14 @@ const artists = {
         image: "https://files.petsq.works/beatsnbrews/pic-00.jpg",
         bio: "Born in Colombia and raised in Mallorca, creating a unique fusion of tech house, latin tech, minimal deep-tech and house. This set will pulse with rhythm, colour, and a drive to connect beyond the dancefloor.",
         instagram: "https://www.instagram.com/partnersincrime.col/"
+    },
+    'marcus-maze': {
+        name: "Marcus Maze",
+        genre: "Trance • Bass • Rave",
+        image: "https://files.petsq.works/beatsnbrews/marcus-00.jpg",
+        bio: "Trance meets bass meets rave-inspired electronics - danceable and unpredictable in equal measure. Just don't forget your beer when you get lost on the dancefloor.",
+        instagram: "https://www.instagram.com/marcusmazemusic",
+        soundcloud: "https://soundcloud.com/marcusmazemusic"
     }
 };
 
