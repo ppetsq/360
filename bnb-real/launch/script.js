@@ -410,6 +410,14 @@ const artists = {
         bio: "Trance meets bass meets rave-inspired electronics - danceable and unpredictable in equal measure. Just don't forget your beer when you get lost on the dancefloor.",
         instagram: "https://www.instagram.com/marcusmazemusic",
         soundcloud: "https://soundcloud.com/marcusmazemusic"
+    },
+    'ziza-fueguito': {
+        name: "Ziza & Fueguito",
+        genre: "Reggae • Rumba • Latin",
+        image: "https://files.petsq.works/beatsnbrews/zf-000.jpg",
+        bio: "A mixed fermentation of reggae, rumba, punk, fado, latin and flamenco. Two voices and two guitars that will make you dance and sing along.",
+        instagram: "https://www.instagram.com/miguel_fueguito",
+        instagram2: "https://www.instagram.com/santiagozizamusic"
     }
 };
 
@@ -512,6 +520,11 @@ function populateModal(item, type) {
         if (item.instagram) {
             const instagramLink = createSocialLink(item.instagram, 'Instagram', 'https://files.petsq.works/beatsnbrews/ig.svg');
             modalSocial.appendChild(instagramLink);
+        }
+
+        if (item.instagram2) {
+            const instagramLink2 = createSocialLink(item.instagram2, 'Instagram', 'https://files.petsq.works/beatsnbrews/ig.svg');
+            modalSocial.appendChild(instagramLink2);
         }
 
         if (item.soundcloud) {
