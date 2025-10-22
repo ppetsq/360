@@ -418,6 +418,13 @@ const artists = {
         bio: "A mixed fermentation of reggae, rumba, punk, fado, latin and flamenco. Two voices and two guitars that will make you dance and sing along.",
         instagram: "https://www.instagram.com/miguel_fueguito",
         instagram2: "https://www.instagram.com/santiagozizamusic"
+    },
+    'beats-and-brews-live': {
+        name: "Beats and Brews Live!",
+        genre: "Pop • Indie • Dance",
+        image: "https://files.petsq.works/beatsnbrews/000-live.jpg",
+        bio: "Our very own live band featuring seven Rotterdam musicians. Covering the songs you know by heart with live instruments and voices that fill the room.",
+        instagram: "https://www.instagram.com/p/DQEDscBCCBT/"
     }
 };
 
