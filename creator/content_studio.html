@@ -135,10 +135,6 @@
             border-left-color: var(--brand-orange);
         }
 
-        .sidebar-footer {
-            padding: 20px;
-            border-top: 1px solid var(--border-color);
-        }
 
         /* Main Content Area */
         .main-content {
@@ -157,7 +153,6 @@
             left: 240px;
             height: 60px;
             background: var(--container-bg);
-            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: flex-end;
@@ -237,20 +232,13 @@
         .source-view,
         .preferences-view {
             display: none;
-            padding: 60px 40px;
+            padding: 40px;
             overflow-y: auto;
         }
 
         .source-view.visible,
         .preferences-view.visible {
             display: block;
-        }
-
-        .view-title {
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 40px;
         }
 
         .content-row {
@@ -487,23 +475,6 @@
             display: flex;
         }
 
-        .generator-header {
-            padding: 30px 40px;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .generator-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--text-primary);
-        }
-
-        .generator-subtitle {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
         .post-display {
             flex: 1;
             padding: 40px;
@@ -538,6 +509,33 @@
             font-size: 28px;
             color: #0a66c2;
             font-weight: bold;
+        }
+
+        .header-undo-redo {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-undo-btn, .header-redo-btn {
+            padding: 6px 10px;
+            background: #f3f2ef;
+            color: #666;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .header-undo-btn:hover:not(:disabled),
+        .header-redo-btn:hover:not(:disabled) {
+            background: #e0dfdc;
+        }
+
+        .header-undo-btn:disabled,
+        .header-redo-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
         }
 
         .post-container {
@@ -866,17 +864,6 @@
             display: flex;
         }
 
-        .list-header {
-            padding: 30px 40px;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .list-title {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
         .list-items {
             flex: 1;
             overflow-y: auto;
@@ -950,34 +937,6 @@
             transform: translateY(-1px);
         }
 
-        .undo-redo-controls {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-        }
-
-        .undo-btn, .redo-btn {
-            padding: 8px 16px;
-            background: var(--button-secondary-bg);
-            color: var(--text-primary);
-            border: none;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .undo-btn:hover:not(:disabled),
-        .redo-btn:hover:not(:disabled) {
-            background: var(--button-secondary-hover);
-        }
-
-        .undo-btn:disabled,
-        .redo-btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
 
         .draft-post-content {
             cursor: text;
@@ -1169,8 +1128,6 @@
             <button class="sidebar-item" onclick="showView('drafts')">Drafts (<span id="draftsCount">0</span>)</button>
             <button class="sidebar-item" onclick="showView('archive')">Archive (<span id="archiveCount">0</span>)</button>
         </div>
-
-        <div class="sidebar-footer"></div>
     </div>
 
     <!-- Main Content Area -->
@@ -1189,7 +1146,6 @@
         <div class="container">
             <!-- Source View -->
             <div class="source-view visible" id="sourceView">
-                <div class="view-title">Source</div>
                 <div class="content-row">
                     <div class="about-section">
                         <div class="section-title">About You</div>
@@ -1212,7 +1168,6 @@
 
             <!-- Preferences View -->
             <div class="preferences-view" id="preferencesView">
-                <div class="view-title">Preferences</div>
                 <div class="content-row">
                     <div class="section-title">Tone of Voice</div>
                     <div class="tone-sliders" id="toneSliders"></div>
@@ -1238,11 +1193,6 @@
 
         <!-- Generator View -->
         <div class="generator-view" id="generatorView">
-            <div class="generator-header">
-                <div class="generator-title">Review & Refine</div>
-                <div class="generator-subtitle">Like it, improve it, or generate new</div>
-            </div>
-
             <div class="post-display">
                 <div class="phone-frame" id="phoneFrame">
                     <div class="linkedin-header">
@@ -1301,9 +1251,6 @@
 
         <!-- Drafts View -->
         <div class="content-list" id="draftsView">
-            <div class="list-header">
-                <div class="list-title">Drafts</div>
-            </div>
             <div class="list-items" id="draftsList">
                 <div class="empty-state">No drafts yet. Like posts in the generator to save them here.</div>
             </div>
@@ -1311,9 +1258,6 @@
 
         <!-- Archive View -->
         <div class="content-list" id="archiveView">
-            <div class="list-header">
-                <div class="list-title">Archive</div>
-            </div>
             <div class="list-items" id="archiveList">
                 <div class="empty-state">No archived posts yet. Finalize drafts to archive them.</div>
             </div>
@@ -2106,9 +2050,25 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
             const contentId = isEditable ? `draft-content-${draftId}` : '';
             const onClick = isEditable ? `onclick="enableDraftEditing(${draftId})"` : '';
 
+            // Add undo/redo buttons for editable drafts
+            let undoRedoButtons = '';
+            if (isEditable && draftId !== null) {
+                const draft = state.drafts.find(d => d.id === draftId);
+                const canUndo = draft && draft.versionIndex > 0;
+                const canRedo = draft && draft.versionIndex < draft.versions.length - 1;
+
+                undoRedoButtons = `
+                    <div class="header-undo-redo">
+                        <button class="header-undo-btn" id="undo-${draftId}" ${!canUndo ? 'disabled' : ''} onclick="event.stopPropagation(); undoDraft(${draftId})">←</button>
+                        <button class="header-redo-btn" id="redo-${draftId}" ${!canRedo ? 'disabled' : ''} onclick="event.stopPropagation(); redoDraft(${draftId})">→</button>
+                    </div>
+                `;
+            }
+
             return `
                 <div class="linkedin-header">
                     <div class="linkedin-logo">in</div>
+                    ${undoRedoButtons}
                 </div>
                 <div class="post-container">
                     <div class="post">
@@ -2141,21 +2101,15 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
                 list.innerHTML = state.drafts.map(draft => {
                     const date = new Date(draft.timestamp).toLocaleDateString();
                     const currentVersionContent = draft.versions[draft.versionIndex];
-                    const canUndo = draft.versionIndex > 0;
-                    const canRedo = draft.versionIndex < draft.versions.length - 1;
 
                     return `
                         <div class="list-item-card">
-                            <div class="list-item-phone" onclick="event.stopPropagation();">
+                            <div class="list-item-phone">
                                 ${createPhoneMockup(currentVersionContent, draft.id, true)}
-                            </div>
-                            <div class="undo-redo-controls">
-                                <button class="undo-btn" ${!canUndo ? 'disabled' : ''} onclick="undoDraft(${draft.id})">Undo</button>
-                                <button class="redo-btn" ${!canRedo ? 'disabled' : ''} onclick="redoDraft(${draft.id})">Redo</button>
                             </div>
                             <div class="list-item-actions">
                                 <button class="copy-btn" data-copy-id="${draft.id}" onclick="event.stopPropagation(); copyToClipboard(\`${currentVersionContent.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`, ${draft.id})">Copy</button>
-                                <button class="archive-btn" onclick="archiveDraft(${draft.id})">Archive</button>
+                                <button class="archive-btn" onclick="event.stopPropagation(); archiveDraft(${draft.id})">Archive</button>
                             </div>
                             <div class="item-meta">Saved ${date}</div>
                         </div>
@@ -2165,7 +2119,8 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
                 // Attach input listeners for auto-save
                 state.drafts.forEach(draft => {
                     const contentEl = document.getElementById(`draft-content-${draft.id}`);
-                    if (contentEl) {
+                    if (contentEl && !contentEl.dataset.listenerAttached) {
+                        contentEl.dataset.listenerAttached = 'true';
                         contentEl.addEventListener('input', () => handleDraftEdit(draft.id));
                     }
                 });
@@ -2236,11 +2191,27 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
                         draft.versionIndex++;
                         draft.content = newContent;
 
-                        // Update undo/redo buttons
-                        updateDraftsList();
+                        // Update only the undo/redo buttons without re-rendering everything
+                        updateUndoRedoButtons(draftId);
                     }
                 }
             }, 500);
+        }
+
+        // Update undo/redo button states without re-rendering
+        function updateUndoRedoButtons(draftId) {
+            const draft = state.drafts.find(d => d.id === draftId);
+            if (!draft) return;
+
+            const undoBtn = document.getElementById(`undo-${draftId}`);
+            const redoBtn = document.getElementById(`redo-${draftId}`);
+
+            if (undoBtn) {
+                undoBtn.disabled = draft.versionIndex <= 0;
+            }
+            if (redoBtn) {
+                redoBtn.disabled = draft.versionIndex >= draft.versions.length - 1;
+            }
         }
 
         // Undo draft change
@@ -2249,7 +2220,15 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
             if (draft && draft.versionIndex > 0) {
                 draft.versionIndex--;
                 draft.content = draft.versions[draft.versionIndex];
-                updateDraftsList();
+
+                // Update content without re-rendering
+                const contentEl = document.getElementById(`draft-content-${draftId}`);
+                if (contentEl) {
+                    contentEl.textContent = draft.content;
+                }
+
+                // Update button states
+                updateUndoRedoButtons(draftId);
             }
         }
 
@@ -2259,7 +2238,15 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
             if (draft && draft.versionIndex < draft.versions.length - 1) {
                 draft.versionIndex++;
                 draft.content = draft.versions[draft.versionIndex];
-                updateDraftsList();
+
+                // Update content without re-rendering
+                const contentEl = document.getElementById(`draft-content-${draftId}`);
+                if (contentEl) {
+                    contentEl.textContent = draft.content;
+                }
+
+                // Update button states
+                updateUndoRedoButtons(draftId);
             }
         }
 
