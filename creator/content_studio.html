@@ -166,23 +166,46 @@
             z-index: 50;
         }
 
-        .theme-toggle {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background: var(--button-secondary-bg);
-            border: none;
-            cursor: pointer;
+        .theme-toggle-wrapper {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            transition: all 0.2s;
+            gap: 12px;
         }
 
-        .theme-toggle:hover {
-            background: var(--button-secondary-hover);
-            transform: scale(1.05);
+        .theme-toggle-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .theme-toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--slider-bg);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .theme-toggle.dark {
+            background: var(--brand-orange);
+        }
+
+        .theme-toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .theme-toggle.dark .theme-toggle-thumb {
+            transform: translateX(20px);
         }
 
         .demo-mode-badge {
@@ -909,11 +932,11 @@
             transform: translateY(-1px);
         }
 
-        .edit-draft-btn {
+        .archive-btn {
             flex: 1;
             padding: 12px;
-            background: var(--button-secondary-bg);
-            color: var(--text-primary);
+            background: var(--brand-orange);
+            color: white;
             border: none;
             border-radius: 10px;
             font-size: 14px;
@@ -922,9 +945,47 @@
             transition: all 0.2s;
         }
 
-        .edit-draft-btn:hover {
-            background: var(--button-secondary-hover);
+        .archive-btn:hover {
+            background: var(--button-primary-hover);
             transform: translateY(-1px);
+        }
+
+        .undo-redo-controls {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .undo-btn, .redo-btn {
+            padding: 8px 16px;
+            background: var(--button-secondary-bg);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .undo-btn:hover:not(:disabled),
+        .redo-btn:hover:not(:disabled) {
+            background: var(--button-secondary-hover);
+        }
+
+        .undo-btn:disabled,
+        .redo-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .draft-post-content {
+            cursor: text;
+        }
+
+        .draft-post-content.editing {
+            outline: 2px solid var(--brand-orange);
+            border-radius: 4px;
         }
 
         .item-meta {
@@ -1117,7 +1178,12 @@
         <!-- Top Header -->
         <div class="top-header">
             <div class="demo-mode-badge" id="demoModeBadge">Demo Mode - API Offline</div>
-            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">☾</button>
+            <div class="theme-toggle-wrapper">
+                <span class="theme-toggle-label">Dark</span>
+                <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                    <div class="theme-toggle-thumb"></div>
+                </div>
+            </div>
         </div>
 
         <div class="container">
@@ -1128,6 +1194,11 @@
                     <div class="about-section">
                         <div class="section-title">About You</div>
                         <textarea class="about-input" id="aboutYou" placeholder="Add context about yourself: your background, expertise, positioning, industry, or any relevant information that should inform the content style..."></textarea>
+                    </div>
+
+                    <div class="about-section">
+                        <div class="section-title">Custom Instructions</div>
+                        <textarea class="about-input" id="customInstructions" placeholder="Any specific instructions for the AI to keep in mind while creating content (e.g., 'Always include a call-to-action', 'Avoid technical jargon', 'Focus on storytelling')..."></textarea>
                     </div>
 
                     <div class="about-section">
@@ -1274,6 +1345,7 @@
         // State Management
         const state = {
             aboutYou: '',
+            customInstructions: '',
             toneSettings: {
                 seriousness: 2, // 0=serious, 4=humor
                 formality: 2, // 0=formal, 4=casual
@@ -1293,7 +1365,8 @@
             isGenerating: false,
             drafts: [],
             archive: [],
-            currentDraftId: null
+            currentDraftId: null,
+            editingDraftId: null
         };
 
         // Tone slider configuration
@@ -1511,6 +1584,7 @@
         // Start generation
         async function startGeneration() {
             state.aboutYou = document.getElementById('aboutYou').value.trim();
+            state.customInstructions = document.getElementById('customInstructions').value.trim();
             state.sourceMaterial = document.getElementById('sourceMaterial').value.trim();
 
             if (!state.aboutYou) {
@@ -1579,12 +1653,13 @@
         function buildPrompt(sourceMaterial, previousPost) {
             const toneDescription = buildToneDescription();
             const wordRange = `${state.wordLength.min}-${state.wordLength.max}`;
-            
+
             let prompt = `You are a LinkedIn content creator.
 
 ABOUT THE AUTHOR:
 ${state.aboutYou}
 
+${state.customInstructions ? `CUSTOM INSTRUCTIONS:\n${state.customInstructions}\n` : ''}
 SOURCE MATERIAL:
 ${sourceMaterial}
 
@@ -1598,7 +1673,7 @@ REQUIREMENTS:
 - Create ONE engaging LinkedIn post
 - Word count: ${wordRange} words
 - Follow all content principles above
-- Match the tone of voice settings
+${state.customInstructions ? '- Follow the custom instructions provided\n' : ''}- Match the tone of voice settings
 - Use the source material as the basis
 - Be specific, show examples when possible
 ${previousPost ? '\n- Create a DIFFERENT angle/approach than the previous post\n- Vary structure and style significantly' : ''}
@@ -2012,7 +2087,7 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
         }
 
         // Create phone mockup HTML
-        function createPhoneMockup(content) {
+        function createPhoneMockup(content, draftId = null, isEditable = false) {
             const aboutYou = state.aboutYou || 'Your Name';
             const lines = aboutYou.split('\n').filter(line => line.trim());
             const firstLine = lines.length > 0 ? lines[0].trim() : 'Your Name';
@@ -2025,6 +2100,11 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
 
             const titleText = lines.length > 1 ? lines.slice(1, 3).join(' • ') : 'Your Title';
             const authorTitle = titleText.length > 100 ? titleText.substring(0, 100) + '...' : titleText;
+
+            const contentClass = isEditable ? 'post-content draft-post-content' : 'post-content';
+            const contentEditableAttr = isEditable ? 'contenteditable="true"' : '';
+            const contentId = isEditable ? `draft-content-${draftId}` : '';
+            const onClick = isEditable ? `onclick="enableDraftEditing(${draftId})"` : '';
 
             return `
                 <div class="linkedin-header">
@@ -2040,7 +2120,7 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
                                 <div class="post-time">Just now</div>
                             </div>
                         </div>
-                        <div class="post-content" style="white-space: pre-wrap;">${content}</div>
+                        <div class="${contentClass}" id="${contentId}" ${contentEditableAttr} ${onClick} style="white-space: pre-wrap;">${content}</div>
                         <div class="post-actions">
                             <button class="linkedin-action-btn">👍 Like</button>
                             <button class="linkedin-action-btn">💬 Comment</button>
@@ -2060,20 +2140,35 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
             } else {
                 list.innerHTML = state.drafts.map(draft => {
                     const date = new Date(draft.timestamp).toLocaleDateString();
+                    const currentVersionContent = draft.versions[draft.versionIndex];
+                    const canUndo = draft.versionIndex > 0;
+                    const canRedo = draft.versionIndex < draft.versions.length - 1;
 
                     return `
                         <div class="list-item-card">
-                            <div class="list-item-phone">
-                                ${createPhoneMockup(draft.content)}
+                            <div class="list-item-phone" onclick="event.stopPropagation();">
+                                ${createPhoneMockup(currentVersionContent, draft.id, true)}
+                            </div>
+                            <div class="undo-redo-controls">
+                                <button class="undo-btn" ${!canUndo ? 'disabled' : ''} onclick="undoDraft(${draft.id})">Undo</button>
+                                <button class="redo-btn" ${!canRedo ? 'disabled' : ''} onclick="redoDraft(${draft.id})">Redo</button>
                             </div>
                             <div class="list-item-actions">
-                                <button class="copy-btn" data-copy-id="${draft.id}" onclick="event.stopPropagation(); copyToClipboard(\`${draft.content.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`, ${draft.id})">Copy</button>
-                                <button class="edit-draft-btn" onclick="openDraft(${draft.id})">Edit</button>
+                                <button class="copy-btn" data-copy-id="${draft.id}" onclick="event.stopPropagation(); copyToClipboard(\`${currentVersionContent.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`, ${draft.id})">Copy</button>
+                                <button class="archive-btn" onclick="archiveDraft(${draft.id})">Archive</button>
                             </div>
                             <div class="item-meta">Saved ${date}</div>
                         </div>
                     `;
                 }).join('');
+
+                // Attach input listeners for auto-save
+                state.drafts.forEach(draft => {
+                    const contentEl = document.getElementById(`draft-content-${draft.id}`);
+                    if (contentEl) {
+                        contentEl.addEventListener('input', () => handleDraftEdit(draft.id));
+                    }
+                });
             }
 
             updateNavCounts();
@@ -2104,6 +2199,88 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
             }
 
             updateNavCounts();
+        }
+
+        // Enable draft editing
+        function enableDraftEditing(draftId) {
+            const contentEl = document.getElementById(`draft-content-${draftId}`);
+            if (contentEl) {
+                contentEl.classList.add('editing');
+                contentEl.focus();
+            }
+        }
+
+        // Handle draft edit with auto-save
+        let draftEditTimeout = null;
+        function handleDraftEdit(draftId) {
+            // Clear existing timeout
+            if (draftEditTimeout) {
+                clearTimeout(draftEditTimeout);
+            }
+
+            // Set new timeout for auto-save (500ms debounce)
+            draftEditTimeout = setTimeout(() => {
+                const draft = state.drafts.find(d => d.id === draftId);
+                const contentEl = document.getElementById(`draft-content-${draftId}`);
+
+                if (draft && contentEl) {
+                    const newContent = contentEl.textContent;
+
+                    // Only save if content actually changed
+                    if (newContent !== draft.versions[draft.versionIndex]) {
+                        // Truncate versions after current index if we're not at the end
+                        draft.versions = draft.versions.slice(0, draft.versionIndex + 1);
+
+                        // Add new version
+                        draft.versions.push(newContent);
+                        draft.versionIndex++;
+                        draft.content = newContent;
+
+                        // Update undo/redo buttons
+                        updateDraftsList();
+                    }
+                }
+            }, 500);
+        }
+
+        // Undo draft change
+        function undoDraft(draftId) {
+            const draft = state.drafts.find(d => d.id === draftId);
+            if (draft && draft.versionIndex > 0) {
+                draft.versionIndex--;
+                draft.content = draft.versions[draft.versionIndex];
+                updateDraftsList();
+            }
+        }
+
+        // Redo draft change
+        function redoDraft(draftId) {
+            const draft = state.drafts.find(d => d.id === draftId);
+            if (draft && draft.versionIndex < draft.versions.length - 1) {
+                draft.versionIndex++;
+                draft.content = draft.versions[draft.versionIndex];
+                updateDraftsList();
+            }
+        }
+
+        // Archive draft directly from drafts view
+        function archiveDraft(draftId) {
+            const draft = state.drafts.find(d => d.id === draftId);
+            if (!draft) return;
+
+            // Add to archive
+            state.archive.push({
+                id: Date.now(),
+                content: draft.content,
+                timestamp: new Date().toISOString()
+            });
+
+            // Remove from drafts
+            state.drafts = state.drafts.filter(d => d.id !== draftId);
+
+            // Update both lists
+            updateDraftsList();
+            updateArchiveList();
         }
 
         // View archived post (read-only)
@@ -2284,11 +2461,11 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
 
             if (currentTheme === 'dark') {
                 html.removeAttribute('data-theme');
-                themeToggle.textContent = '☾';
+                themeToggle.classList.remove('dark');
                 localStorage.setItem('theme', 'light');
             } else {
                 html.setAttribute('data-theme', 'dark');
-                themeToggle.textContent = '☀';
+                themeToggle.classList.add('dark');
                 localStorage.setItem('theme', 'dark');
             }
         }
@@ -2300,9 +2477,37 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
 
             if (savedTheme === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
-                if (themeToggle) themeToggle.textContent = '☀';
+                if (themeToggle) themeToggle.classList.add('dark');
             }
         }
+
+        // Keyboard shortcuts for undo/redo
+        document.addEventListener('keydown', (e) => {
+            // Only handle shortcuts if we're editing a draft
+            if (state.editingDraftId) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                    e.preventDefault();
+                    undoDraft(state.editingDraftId);
+                } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+                    e.preventDefault();
+                    redoDraft(state.editingDraftId);
+                }
+            }
+        });
+
+        // Track which draft is being edited for keyboard shortcuts
+        document.addEventListener('focusin', (e) => {
+            if (e.target.classList.contains('draft-post-content')) {
+                const id = e.target.id.replace('draft-content-', '');
+                state.editingDraftId = parseInt(id);
+            }
+        });
+
+        document.addEventListener('focusout', (e) => {
+            if (e.target.classList.contains('draft-post-content')) {
+                state.editingDraftId = null;
+            }
+        });
 
         // Initialize on load
         loadTheme();
