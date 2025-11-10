@@ -378,28 +378,154 @@
             padding: 40px;
             overflow-y: auto;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* LinkedIn Preview Phone Frame */
+        .phone-frame {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+            max-width: 450px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .linkedin-header {
+            background: white;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .linkedin-logo {
+            font-size: 28px;
+            color: #0a66c2;
+            font-weight: bold;
+        }
+
+        .post-container {
+            background: white;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .post {
+            background: white;
+            padding-bottom: 12px;
+        }
+
+        .post-header {
+            padding: 12px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .post-author {
+            flex: 1;
+        }
+
+        .author-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #000;
+            margin-bottom: 2px;
+        }
+
+        .author-title {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.3;
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
         }
 
         .post-content {
-            background: #f9f9f9;
-            padding: 30px;
-            border-radius: 12px;
-            font-size: 15px;
-            line-height: 1.6;
+            padding: 0 16px 12px 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #000;
             white-space: pre-wrap;
-            min-height: 200px;
+            min-height: 100px;
             cursor: text;
-            position: relative;
         }
 
-        .post-content:hover {
-            background: #f5f5f5;
+        .post-content:focus {
+            outline: none;
         }
 
         .post-content.editing {
-            background: white;
-            border: 2px solid #667eea;
-            cursor: auto;
+            outline: 2px solid #667eea;
+            border-radius: 4px;
+            padding: 16px;
+            margin: 0 16px 12px 16px;
+        }
+
+        .post-actions {
+            padding: 8px 16px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .linkedin-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #666;
+            font-size: 13px;
+            font-weight: 500;
+            background: none;
+            border: none;
+            padding: 8px 12px;
+            cursor: default;
+            border-radius: 4px;
+        }
+
+        /* Character Counter */
+        .char-counter {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .char-counter.ok {
+            color: #10b981;
+        }
+
+        .char-counter.warning {
+            color: #f59e0b;
+        }
+
+        .char-counter.over {
+            color: #ef4444;
         }
 
         .edit-mode-indicator {
@@ -920,10 +1046,33 @@
             </div>
 
             <div class="post-display">
-                <div class="post-content" id="postContent" contenteditable="false" onclick="enableEditing()">
-                    <div class="edit-mode-indicator">Editing</div>
-                    <div class="loading-indicator">Generating your first post...</div>
+                <div class="phone-frame" id="phoneFrame">
+                    <div class="linkedin-header">
+                        <div class="linkedin-logo">in</div>
+                    </div>
+                    <div class="post-container">
+                        <div class="post">
+                            <div class="post-header">
+                                <div class="avatar">U</div>
+                                <div class="post-author">
+                                    <div class="author-name" id="authorName">Your Name</div>
+                                    <div class="author-title" id="authorTitle">Your Title</div>
+                                    <div class="post-time">Just now</div>
+                                </div>
+                            </div>
+                            <div class="post-content" id="postContent" contenteditable="false" onclick="enableEditing()">
+                                <div class="loading-indicator">Generating your first post...</div>
+                            </div>
+                            <div class="post-actions">
+                                <button class="linkedin-action-btn">👍 Like</button>
+                                <button class="linkedin-action-btn">💬 Comment</button>
+                                <button class="linkedin-action-btn">🔄 Repost</button>
+                                <button class="linkedin-action-btn">📤 Send</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <div class="char-counter ok" id="charCounter">0 characters</div>
                 <button class="revert-btn" id="revertBtn" onclick="revertToOriginal()">Revert to Original</button>
             </div>
 
@@ -1264,6 +1413,36 @@
             document.getElementById('settingsPanel').classList.remove('visible');
         }
 
+        // Update author info in preview
+        function updateAuthorInfo() {
+            const aboutYou = state.aboutYou || '';
+            const lines = aboutYou.split('\n').filter(line => line.trim());
+
+            // Try to extract name and title from first lines
+            const authorName = document.getElementById('authorName');
+            const authorTitle = document.getElementById('authorTitle');
+            const avatar = document.querySelector('.avatar');
+
+            if (lines.length > 0) {
+                // Use first line or first sentence as name
+                const firstLine = lines[0].trim();
+                authorName.textContent = firstLine.length > 50 ? firstLine.substring(0, 50) + '...' : firstLine;
+
+                // Use initials for avatar
+                const words = firstLine.split(' ');
+                const initials = words.length > 1 ?
+                    words[0][0].toUpperCase() + words[words.length-1][0].toUpperCase() :
+                    words[0][0].toUpperCase();
+                avatar.textContent = initials;
+            }
+
+            if (lines.length > 1) {
+                // Use remaining text as title
+                const titleText = lines.slice(1, 3).join(' • ');
+                authorTitle.textContent = titleText.length > 100 ? titleText.substring(0, 100) + '...' : titleText;
+            }
+        }
+
         // Start generation
         async function startGeneration() {
             state.aboutYou = document.getElementById('aboutYou').value.trim();
@@ -1283,6 +1462,9 @@
             document.getElementById('homeScreen').classList.add('hidden');
             document.getElementById('generatorView').classList.add('visible');
             document.querySelector('.settings-btn').classList.remove('hidden');
+
+            // Update author info in preview
+            updateAuthorInfo();
 
             // Generate first post
             await generateNewPost();
@@ -1408,6 +1590,26 @@ OUTPUT ONLY THE POST CONTENT. Do not include any preamble, explanation, or meta-
             return data.content[0].text.trim();
         }
 
+        // Update character counter
+        function updateCharCounter() {
+            const postContent = document.getElementById('postContent');
+            const charCounter = document.getElementById('charCounter');
+            const text = postContent.textContent || '';
+            const count = text.length;
+
+            charCounter.textContent = `${count} characters`;
+
+            // LinkedIn has a 3000 character limit, but ideal is under 1300
+            charCounter.classList.remove('ok', 'warning', 'over');
+            if (count > 3000) {
+                charCounter.classList.add('over');
+            } else if (count > 1300) {
+                charCounter.classList.add('warning');
+            } else {
+                charCounter.classList.add('ok');
+            }
+        }
+
         // Display post
         function displayPost(content) {
             const postContent = document.getElementById('postContent');
@@ -1415,6 +1617,7 @@ OUTPUT ONLY THE POST CONTENT. Do not include any preamble, explanation, or meta-
             postContent.contentEditable = 'false';
             postContent.classList.remove('editing');
             document.getElementById('revertBtn').classList.remove('visible');
+            updateCharCounter();
         }
 
         // Enable editing in generator
@@ -1439,6 +1642,8 @@ OUTPUT ONLY THE POST CONTENT. Do not include any preamble, explanation, or meta-
         document.addEventListener('DOMContentLoaded', () => {
             const postContent = document.getElementById('postContent');
             postContent.addEventListener('input', () => {
+                updateCharCounter(); // Update character count
+
                 if (postContent.classList.contains('editing')) {
                     const currentContent = postContent.textContent;
                     if (currentContent !== state.originalPost) {
