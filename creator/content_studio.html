@@ -15,8 +15,8 @@
             --brand-light: #E6E6E6;
 
             /* Light Theme */
-            --bg-gradient-start: #FFDF4D;
-            --bg-gradient-end: #EF5900;
+            --bg-gradient-start: #fafafa;
+            --bg-gradient-end: #f5f5f5;
             --container-bg: #ffffff;
             --text-primary: #050505;
             --text-secondary: #999999;
@@ -24,8 +24,7 @@
             --input-bg: #ffffff;
             --input-border: #E6E6E6;
             --slider-bg: #E6E6E6;
-            --slider-gradient-start: #EF5900;
-            --slider-gradient-end: #87D156;
+            --slider-fill: #FFDF4D;
             --button-primary-bg: #EF5900;
             --button-primary-hover: #d64f00;
             --button-secondary-bg: #E6E6E6;
@@ -44,8 +43,7 @@
             --input-bg: #252525;
             --input-border: #333333;
             --slider-bg: #333333;
-            --slider-gradient-start: #EF5900;
-            --slider-gradient-end: #87D156;
+            --slider-fill: #FFDF4D;
             --button-primary-bg: #EF5900;
             --button-primary-hover: #ff6b0a;
             --button-secondary-bg: #252525;
@@ -201,9 +199,7 @@
         .logo {
             font-size: 32px;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--brand-orange) 0%, var(--brand-green) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text-primary);
             text-align: center;
             margin-bottom: 10px;
         }
@@ -288,7 +284,7 @@
         .slider-track {
             position: absolute;
             height: 6px;
-            background: linear-gradient(to right, var(--slider-gradient-start), var(--slider-gradient-end));
+            background: var(--slider-fill);
             border-radius: 3px;
             width: 50%;
             left: 0;
@@ -334,7 +330,7 @@
             position: absolute;
             top: 23px;
             height: 4px;
-            background: linear-gradient(to right, var(--slider-gradient-start), var(--slider-gradient-end));
+            background: var(--slider-fill);
             border-radius: 2px;
             pointer-events: none;
         }
@@ -1059,10 +1055,10 @@
 <body>
     <div class="container">
         <!-- Theme Toggle -->
-        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">☾</button>
 
         <!-- Settings Button -->
-        <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+        <button class="settings-btn" onclick="toggleSettings()">⚙</button>
 
         <!-- Settings Panel -->
         <div class="settings-panel" id="settingsPanel">
@@ -1173,15 +1169,12 @@
 
             <div class="generator-actions">
                 <button class="action-btn like-btn" onclick="likePost()">
-                    <span>👍</span>
                     <span>Save to Drafts</span>
                 </button>
                 <button class="action-btn comment-btn" onclick="openCommentModal()">
-                    <span>💬</span>
                     <span>Improve</span>
                 </button>
                 <button class="action-btn erase-btn" onclick="erasePost()">
-                    <span>🔄</span>
                     <span>Generate New</span>
                 </button>
             </div>
@@ -1240,6 +1233,7 @@
 
         <!-- Bottom Navigation -->
         <div class="bottom-nav">
+            <button class="nav-item active" onclick="showView('source')">Source</button>
             <button class="nav-item" onclick="showView('generator')">Generator</button>
             <button class="nav-item" onclick="showView('drafts')">Drafts</button>
             <button class="nav-item" onclick="showView('archive')">Archive</button>
@@ -1809,19 +1803,18 @@ What did you stop doing that made your business stronger?`
                 indicator.id = 'demoModeIndicator';
                 indicator.style.cssText = `
                     position: fixed;
-                    top: 10px;
-                    left: 50%;
-                    transform: translateX(-50%);
+                    top: 20px;
+                    left: 20px;
                     background: #f59e0b;
                     color: white;
                     padding: 8px 16px;
-                    border-radius: 20px;
-                    font-size: 12px;
+                    border-radius: 8px;
+                    font-size: 11px;
                     font-weight: 600;
                     z-index: 9999;
                     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
                 `;
-                indicator.textContent = '🔌 DEMO MODE - API Offline';
+                indicator.textContent = 'DEMO MODE - API Offline';
                 document.body.appendChild(indicator);
             }
         }
@@ -2029,8 +2022,8 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
         // Update navigation counts
         function updateNavCounts() {
             const navItems = document.querySelectorAll('.nav-item');
-            navItems[1].textContent = `Drafts (${state.drafts.length})`;
-            navItems[2].textContent = `Archive (${state.archive.length})`;
+            navItems[2].textContent = `Drafts (${state.drafts.length})`;
+            navItems[3].textContent = `Archive (${state.archive.length})`;
         }
         function updateDraftsList() {
             const list = document.getElementById('draftsList');
@@ -2218,18 +2211,22 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
 
             // Show selected view
             switch(view) {
+                case 'source':
+                    document.getElementById('homeScreen').classList.remove('hidden');
+                    document.querySelectorAll('.nav-item')[0].classList.add('active');
+                    break;
                 case 'generator':
                     document.getElementById('generatorView').classList.add('visible');
-                    document.querySelectorAll('.nav-item')[0].classList.add('active');
+                    document.querySelectorAll('.nav-item')[1].classList.add('active');
                     break;
                 case 'drafts':
                     document.getElementById('draftsView').classList.add('visible');
-                    document.querySelectorAll('.nav-item')[1].classList.add('active');
+                    document.querySelectorAll('.nav-item')[2].classList.add('active');
                     updateDraftsList();
                     break;
                 case 'archive':
                     document.getElementById('archiveView').classList.add('visible');
-                    document.querySelectorAll('.nav-item')[2].classList.add('active');
+                    document.querySelectorAll('.nav-item')[3].classList.add('active');
                     updateArchiveList();
                     break;
                 case 'editor':
@@ -2246,11 +2243,11 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
 
             if (currentTheme === 'dark') {
                 html.removeAttribute('data-theme');
-                themeToggle.textContent = '🌙';
+                themeToggle.textContent = '☾';
                 localStorage.setItem('theme', 'light');
             } else {
                 html.setAttribute('data-theme', 'dark');
-                themeToggle.textContent = '☀️';
+                themeToggle.textContent = '☀';
                 localStorage.setItem('theme', 'dark');
             }
         }
@@ -2262,7 +2259,7 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
 
             if (savedTheme === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
-                if (themeToggle) themeToggle.textContent = '☀️';
+                if (themeToggle) themeToggle.textContent = '☀';
             }
         }
 
