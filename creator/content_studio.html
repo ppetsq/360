@@ -1566,28 +1566,177 @@ OUTPUT ONLY THE POST CONTENT. Do not include any preamble, explanation, or meta-
             return descriptions.length > 0 ? descriptions.join(', ') : 'Neutral tone across all dimensions';
         }
 
-        // Call Claude API
+        // Demo mode state
+        let isDemoMode = false;
+        let demoPostIndex = 0;
+
+        // Sample demo posts for offline testing
+        const demoPosts = [
+            `Just wrapped up a fascinating project that completely changed how I think about content creation.
+
+Three months ago, I was spending 4-5 hours per day manually crafting social posts. The quality was inconsistent, and I was constantly second-guessing my voice.
+
+Then I built a simple system that combines AI with my personal writing principles. Not to replace creativity, but to amplify it.
+
+The results?
+→ Content production time cut by 60%
+→ Engagement up 3x across all platforms
+→ More time for strategy and relationship building
+
+The key wasn't the technology. It was getting crystal clear on my content principles first. The AI is just a really smart assistant that helps me stay consistent with those principles.
+
+Anyone else experimenting with AI-assisted workflows? What's working for you?`,
+
+            `Here's something nobody talks about when starting a consulting business: pricing.
+
+I spent my first 6 months charging way too little. €50/hour felt "safe" but it was killing my business.
+
+Then a mentor asked me a simple question: "What would happen if you doubled your rate?"
+
+I thought I'd lose all my clients. Instead, three things happened:
+
+1. I started attracting better clients who valued expertise
+2. I could focus on fewer, higher-quality projects
+3. I actually had time to deliver exceptional work
+
+Now at €100/hour, I'm booking out weeks in advance. Same skills, same work quality - just different positioning.
+
+The lesson? Your rate isn't just about money. It's a signal about the value you provide.
+
+What's been your biggest pricing lesson?`,
+
+            `Most B2B marketing advice is useless for small businesses.
+
+"Build a content calendar" - sure, but with what team?
+"Run A/B tests" - great, when you have 10K monthly visitors
+"Invest in brand awareness" - with what budget?
+
+Here's what actually works when you're small:
+
+Focus on one channel. Master it completely.
+
+For me, it's LinkedIn. I post 3x per week, engage daily, and turn conversations into clients. That's it.
+
+No fancy funnel. No automation. No growth hacks.
+
+Just consistent, valuable content + genuine relationships.
+
+Revenue from LinkedIn this year: €180K+
+
+You don't need to be everywhere. You need to be excellent somewhere.`,
+
+            `Yesterday a potential client asked me to work for equity instead of cash.
+
+"Think of the upside!" they said.
+
+Here's the thing about equity: it's worth exactly €0 until it isn't.
+
+I'm a consultant, not a co-founder. My rent doesn't accept equity. My expertise has market value right now, not in 3-5 years "when we exit."
+
+If someone can't pay your rate, one of three things is true:
+→ They can't afford you (not your ideal client)
+→ They don't value what you do (not your ideal client)
+→ You haven't demonstrated your value (work on positioning)
+
+Equity can be part of the deal. But never the whole deal.
+
+Your time and expertise are valuable today. Price accordingly.`,
+
+            `Three years ago, I was the "marketing guy" doing everything.
+
+SEO, paid ads, content, email, social, design, analytics... spreading myself thin across every channel.
+
+The result? Mediocre outcomes everywhere.
+
+Then I made a hard choice: specialize ruthlessly.
+
+Now I do one thing: AI-powered B2B marketing strategy for SaaS and hospitality.
+
+That's it.
+
+Counterintuitively, limiting my scope expanded my opportunities:
+→ I became known for something specific
+→ Clients started referring similar businesses
+→ I could charge premium rates for deep expertise
+
+The riches are in the niches isn't just a saying. It's a business strategy.
+
+What did you stop doing that made your business stronger?`
+        ];
+
+        // Call Claude API (with demo mode fallback)
         async function callClaudeAPI(prompt) {
-            const response = await fetch("https://api.anthropic.com/v1/messages", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    model: "claude-3-7-sonnet-20250219",
-                    max_tokens: 1500,
-                    messages: [
-                        { role: "user", content: prompt }
-                    ]
-                })
-            });
+            try {
+                const response = await fetch("https://api.anthropic.com/v1/messages", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        model: "claude-3-7-sonnet-20250219",
+                        max_tokens: 1500,
+                        messages: [
+                            { role: "user", content: prompt }
+                        ]
+                    })
+                });
 
-            if (!response.ok) {
-                throw new Error(`API request failed: ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status}`);
+                }
+
+                const data = await response.json();
+                isDemoMode = false;
+                hideDemoModeIndicator();
+                return data.content[0].text.trim();
+            } catch (error) {
+                // Switch to demo mode if API fails
+                console.log('API unavailable, switching to demo mode');
+                isDemoMode = true;
+                showDemoModeIndicator();
+
+                // Return a demo post
+                const post = demoPosts[demoPostIndex % demoPosts.length];
+                demoPostIndex++;
+
+                // Add a small delay to simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                return post;
             }
+        }
 
-            const data = await response.json();
-            return data.content[0].text.trim();
+        // Show demo mode indicator
+        function showDemoModeIndicator() {
+            let indicator = document.getElementById('demoModeIndicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'demoModeIndicator';
+                indicator.style.cssText = `
+                    position: fixed;
+                    top: 10px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #f59e0b;
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    z-index: 9999;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                `;
+                indicator.textContent = '🔌 DEMO MODE - API Offline';
+                document.body.appendChild(indicator);
+            }
+        }
+
+        // Hide demo mode indicator
+        function hideDemoModeIndicator() {
+            const indicator = document.getElementById('demoModeIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
         }
 
         // Update character counter
