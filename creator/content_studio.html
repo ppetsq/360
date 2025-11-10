@@ -1462,33 +1462,45 @@
             minSlider.addEventListener('input', updateSlider);
             maxSlider.addEventListener('input', updateSlider);
 
-            // Fix: Make sure the correct slider responds to mouse position
-            const container = minSlider.parentElement;
-            container.addEventListener('mousedown', (e) => {
-                const rect = container.getBoundingClientRect();
-                const clickPercent = (e.clientX - rect.left - 12) / (rect.width - 24) * 100; // Adjust for padding
-                const minPercent = ((parseInt(minSlider.value) - 20) / 480) * 100;
-                const maxPercent = ((parseInt(maxSlider.value) - 20) / 480) * 100;
-                const midPercent = (minPercent + maxPercent) / 2;
+            // Handle which slider to use based on mouse position
+            let activeSlider = null;
 
-                // Determine which slider is closer to the click
-                if (clickPercent < midPercent) {
-                    // Closer to min, disable max temporarily
-                    maxSlider.style.pointerEvents = 'none';
-                    minSlider.style.pointerEvents = 'auto';
-                } else {
-                    // Closer to max, disable min temporarily
-                    minSlider.style.pointerEvents = 'none';
-                    maxSlider.style.pointerEvents = 'auto';
-                }
+            minSlider.addEventListener('mousedown', (e) => {
+                activeSlider = 'min';
+                minSlider.style.zIndex = '3';
+                maxSlider.style.zIndex = '2';
             });
 
-            // Re-enable both after mouse up
-            document.addEventListener('mouseup', () => {
-                setTimeout(() => {
-                    minSlider.style.pointerEvents = 'auto';
-                    maxSlider.style.pointerEvents = 'auto';
-                }, 100);
+            maxSlider.addEventListener('mousedown', (e) => {
+                activeSlider = 'max';
+                maxSlider.style.zIndex = '3';
+                minSlider.style.zIndex = '2';
+            });
+
+            // Click on track to determine which slider to move
+            const container = minSlider.parentElement;
+            container.addEventListener('mousedown', (e) => {
+                if (e.target === minSlider || e.target === maxSlider) return;
+
+                const rect = container.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const containerWidth = rect.width;
+                const clickPercent = (clickX / containerWidth) * 100;
+
+                const minPercent = ((parseInt(minSlider.value) - 20) / 480) * 100;
+                const maxPercent = ((parseInt(maxSlider.value) - 20) / 480) * 100;
+
+                // Determine which thumb is closer to the click
+                const distToMin = Math.abs(clickPercent - minPercent);
+                const distToMax = Math.abs(clickPercent - maxPercent);
+
+                if (distToMin < distToMax) {
+                    minSlider.style.zIndex = '3';
+                    maxSlider.style.zIndex = '2';
+                } else {
+                    maxSlider.style.zIndex = '3';
+                    minSlider.style.zIndex = '2';
+                }
             });
 
             // Initial update
@@ -2017,9 +2029,29 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
         }
 
         // Copy to clipboard
-        function copyToClipboard(text, id) {
-            navigator.clipboard.writeText(text).then(() => {
-                const btn = document.querySelector(`[data-copy-id="${id}"]`);
+        function copyDraft(draftId) {
+            const draft = state.drafts.find(d => d.id === draftId);
+            if (!draft) return;
+
+            const content = draft.versions[draft.versionIndex];
+            navigator.clipboard.writeText(content).then(() => {
+                const btn = document.querySelector(`[data-copy-draft="${draftId}"]`);
+                if (btn) {
+                    const originalText = btn.textContent;
+                    btn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                    }, 2000);
+                }
+            });
+        }
+
+        function copyArchive(archiveId) {
+            const post = state.archive.find(p => p.id === archiveId);
+            if (!post) return;
+
+            navigator.clipboard.writeText(post.content).then(() => {
+                const btn = document.querySelector(`[data-copy-archive="${archiveId}"]`);
                 if (btn) {
                     const originalText = btn.textContent;
                     btn.textContent = 'Copied!';
@@ -2059,8 +2091,8 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
 
                 undoRedoButtons = `
                     <div class="header-undo-redo">
-                        <button class="header-undo-btn" id="undo-${draftId}" ${!canUndo ? 'disabled' : ''} onclick="event.stopPropagation(); undoDraft(${draftId})">←</button>
-                        <button class="header-redo-btn" id="redo-${draftId}" ${!canRedo ? 'disabled' : ''} onclick="event.stopPropagation(); redoDraft(${draftId})">→</button>
+                        <button class="header-undo-btn" id="undo-${draftId}" ${!canUndo ? 'disabled' : ''} onclick="event.stopPropagation(); undoDraft(${draftId})">↶</button>
+                        <button class="header-redo-btn" id="redo-${draftId}" ${!canRedo ? 'disabled' : ''} onclick="event.stopPropagation(); redoDraft(${draftId})">↷</button>
                     </div>
                 `;
             }
@@ -2108,7 +2140,7 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
                                 ${createPhoneMockup(currentVersionContent, draft.id, true)}
                             </div>
                             <div class="list-item-actions">
-                                <button class="copy-btn" data-copy-id="${draft.id}" onclick="event.stopPropagation(); copyToClipboard(\`${currentVersionContent.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`, ${draft.id})">Copy</button>
+                                <button class="copy-btn" data-copy-draft="${draft.id}" onclick="event.stopPropagation(); copyDraft(${draft.id})">Copy</button>
                                 <button class="archive-btn" onclick="event.stopPropagation(); archiveDraft(${draft.id})">Archive</button>
                             </div>
                             <div class="item-meta">Saved ${date}</div>
@@ -2116,12 +2148,20 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
                     `;
                 }).join('');
 
-                // Attach input listeners for auto-save
+                // Attach input listeners for auto-save and keydown for Enter
                 state.drafts.forEach(draft => {
                     const contentEl = document.getElementById(`draft-content-${draft.id}`);
                     if (contentEl && !contentEl.dataset.listenerAttached) {
                         contentEl.dataset.listenerAttached = 'true';
                         contentEl.addEventListener('input', () => handleDraftEdit(draft.id));
+                        contentEl.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                // Save and remove highlight
+                                contentEl.classList.remove('editing');
+                                contentEl.blur();
+                            }
+                        });
                     }
                 });
             }
@@ -2145,7 +2185,7 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
                                 ${createPhoneMockup(post.content)}
                             </div>
                             <div class="list-item-actions">
-                                <button class="copy-btn" data-copy-id="${post.id}" onclick="event.stopPropagation(); copyToClipboard(\`${post.content.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`, ${post.id})">Copy</button>
+                                <button class="copy-btn" data-copy-archive="${post.id}" onclick="event.stopPropagation(); copyArchive(${post.id})">Copy</button>
                             </div>
                             <div class="item-meta">Archived ${date}</div>
                         </div>
