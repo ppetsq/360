@@ -135,6 +135,29 @@
             border-left-color: var(--brand-orange);
         }
 
+        .count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .count-badge.drafts {
+            background: var(--brand-yellow);
+            color: var(--brand-dark);
+        }
+
+        .count-badge.archive {
+            background: var(--brand-green);
+            color: white;
+        }
+
 
         /* Main Content Area */
         .main-content {
@@ -249,7 +272,8 @@
 
         .language-selector {
             width: 100%;
-            padding: 14px 40px 14px 16px;
+            padding: 14px 16px;
+            padding-right: 40px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 10px;
@@ -258,6 +282,13 @@
             cursor: pointer;
             transition: all 0.2s;
             margin-bottom: 20px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
         }
 
         .language-selector:hover {
@@ -576,7 +607,7 @@
             gap: 8px;
         }
 
-        .header-undo-btn, .header-redo-btn, .header-emoji-btn {
+        .header-undo-btn, .header-redo-btn {
             padding: 6px 10px;
             background: #f3f2ef;
             color: #666;
@@ -588,8 +619,7 @@
         }
 
         .header-undo-btn:hover:not(:disabled),
-        .header-redo-btn:hover:not(:disabled),
-        .header-emoji-btn:hover {
+        .header-redo-btn:hover:not(:disabled) {
             background: #e0dfdc;
         }
 
@@ -1177,8 +1207,14 @@
             <button class="sidebar-item active" onclick="showView('source')">Source</button>
             <button class="sidebar-item" onclick="showView('preferences')">Preferences</button>
             <button class="sidebar-item" onclick="showView('generator')">Generator</button>
-            <button class="sidebar-item" onclick="showView('drafts')">Drafts (<span id="draftsCount"></span>)</button>
-            <button class="sidebar-item" onclick="showView('archive')">Archive (<span id="archiveCount"></span>)</button>
+            <button class="sidebar-item" onclick="showView('drafts')">
+                Drafts
+                <span id="draftsCount"></span>
+            </button>
+            <button class="sidebar-item" onclick="showView('archive')">
+                Archive
+                <span id="archiveCount"></span>
+            </button>
         </div>
     </div>
 
@@ -1503,29 +1539,6 @@
             // Update state
             state.wordLength.min = minVal;
             state.wordLength.max = maxVal;
-        }
-
-        // Open emoji picker
-        function openEmojiPicker(draftId) {
-            const contentEl = document.getElementById(`draft-content-${draftId}`);
-            if (contentEl) {
-                // Focus the content element
-                contentEl.focus();
-
-                // Try to trigger native emoji picker
-                // On Windows: Win + .
-                // On Mac: Cmd + Ctrl + Space
-                // This is a hint to the user - we can't programmatically open it
-                // But we can at least focus the field so they can use the keyboard shortcut
-
-                // Show a tooltip or notification
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = '⌨️';
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                }, 1500);
-            }
         }
 
         // Update author info in preview
@@ -2047,8 +2060,22 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
 
         // Update navigation counts
         function updateNavCounts() {
-            document.getElementById('draftsCount').textContent = state.drafts.length;
-            document.getElementById('archiveCount').textContent = state.archive.length;
+            const draftsCountEl = document.getElementById('draftsCount');
+            const archiveCountEl = document.getElementById('archiveCount');
+
+            // Update drafts badge
+            if (state.drafts.length > 0) {
+                draftsCountEl.innerHTML = `<span class="count-badge drafts">${state.drafts.length}</span>`;
+            } else {
+                draftsCountEl.innerHTML = '';
+            }
+
+            // Update archive badge
+            if (state.archive.length > 0) {
+                archiveCountEl.innerHTML = `<span class="count-badge archive">${state.archive.length}</span>`;
+            } else {
+                archiveCountEl.innerHTML = '';
+            }
         }
 
         // Copy to clipboard
@@ -2116,7 +2143,6 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
                     <div class="header-undo-redo">
                         <button class="header-undo-btn" id="undo-${draftId}" ${!canUndo ? 'disabled' : ''} onclick="event.stopPropagation(); undoDraft(${draftId})">↩</button>
                         <button class="header-redo-btn" id="redo-${draftId}" ${!canRedo ? 'disabled' : ''} onclick="event.stopPropagation(); redoDraft(${draftId})">↪</button>
-                        <button class="header-emoji-btn" onclick="event.stopPropagation(); openEmojiPicker(${draftId})">😀</button>
                     </div>
                 `;
             }
