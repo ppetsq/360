@@ -247,6 +247,29 @@
             gap: 30px;
         }
 
+        .language-selector {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .language-selector:hover {
+            border-color: var(--brand-orange);
+        }
+
+        .language-selector:focus {
+            outline: none;
+            border-color: var(--brand-orange);
+            box-shadow: 0 0 0 3px rgba(239, 89, 0, 0.1);
+        }
+
         /* About You Section */
         .about-section {
             margin-bottom: 20px;
@@ -454,7 +477,6 @@
 
         .generate-btn:hover {
             background: var(--button-primary-hover);
-            transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(239, 89, 0, 0.4);
         }
 
@@ -516,7 +538,7 @@
             gap: 8px;
         }
 
-        .header-undo-btn, .header-redo-btn {
+        .header-undo-btn, .header-redo-btn, .header-emoji-btn {
             padding: 6px 10px;
             background: #f3f2ef;
             color: #666;
@@ -528,7 +550,8 @@
         }
 
         .header-undo-btn:hover:not(:disabled),
-        .header-redo-btn:hover:not(:disabled) {
+        .header-redo-btn:hover:not(:disabled),
+        .header-emoji-btn:hover {
             background: #e0dfdc;
         }
 
@@ -697,7 +720,6 @@
 
         .revert-btn:hover {
             background: #ff5252;
-            transform: translateY(-1px);
         }
 
         .loading-indicator {
@@ -736,7 +758,6 @@
 
         .like-btn:hover {
             background: #6fb843;
-            transform: translateY(-2px);
         }
 
         .comment-btn {
@@ -746,7 +767,6 @@
 
         .comment-btn:hover {
             background: var(--button-primary-hover);
-            transform: translateY(-2px);
         }
 
         .erase-btn {
@@ -756,7 +776,6 @@
 
         .erase-btn:hover {
             background: #f0d03d;
-            transform: translateY(-2px);
         }
 
         .action-btn:disabled {
@@ -893,7 +912,6 @@
 
         .list-item-phone:hover {
             box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-            transform: translateY(-2px);
         }
 
         .list-item-actions {
@@ -916,7 +934,6 @@
 
         .copy-btn:hover {
             background: #6fb843;
-            transform: translateY(-1px);
         }
 
         .archive-btn {
@@ -934,7 +951,6 @@
 
         .archive-btn:hover {
             background: var(--button-primary-hover);
-            transform: translateY(-1px);
         }
 
 
@@ -1076,7 +1092,6 @@
 
         .finalize-btn:hover {
             background: var(--button-primary-hover);
-            transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(239, 89, 0, 0.4);
         }
 
@@ -1094,7 +1109,6 @@
 
         .delete-btn:hover {
             background: #ff5252;
-            transform: translateY(-2px);
         }
 
         @media (max-width: 768px) {
@@ -1169,6 +1183,12 @@
             <!-- Preferences View -->
             <div class="preferences-view" id="preferencesView">
                 <div class="content-row">
+                    <div class="section-title">Language</div>
+                    <select class="language-selector" id="languageSelector" onchange="updateLanguage()">
+                        <option value="english">English</option>
+                        <option value="finnish">Finnish</option>
+                    </select>
+
                     <div class="section-title">Tone of Voice</div>
                     <div class="tone-sliders" id="toneSliders"></div>
 
@@ -1290,6 +1310,7 @@
         const state = {
             aboutYou: '',
             customInstructions: '',
+            language: 'english',
             toneSettings: {
                 seriousness: 2, // 0=serious, 4=humor
                 formality: 2, // 0=formal, 4=casual
@@ -1414,6 +1435,35 @@
             }
         }
 
+        // Update language
+        function updateLanguage() {
+            const selector = document.getElementById('languageSelector');
+            state.language = selector.value;
+        }
+
+        // Open emoji picker
+        function openEmojiPicker(draftId) {
+            const contentEl = document.getElementById(`draft-content-${draftId}`);
+            if (contentEl) {
+                // Focus the content element
+                contentEl.focus();
+
+                // Try to trigger native emoji picker
+                // On Windows: Win + .
+                // On Mac: Cmd + Ctrl + Space
+                // This is a hint to the user - we can't programmatically open it
+                // But we can at least focus the field so they can use the keyboard shortcut
+
+                // Show a tooltip or notification
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '⌨️';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 1500);
+            }
+        }
+
         // Setup dual slider for word length
         function setupDualSlider(minId, maxId, rangeId, minThumbId, maxThumbId, displayId) {
             const minSlider = document.getElementById(minId);
@@ -1459,52 +1509,46 @@
                 state.wordLength.max = maxVal;
             }
 
-            minSlider.addEventListener('input', updateSlider);
-            maxSlider.addEventListener('input', updateSlider);
+            // Update z-index based on values to ensure correct slider is on top
+            function updateZIndex() {
+                const minVal = parseInt(minSlider.value);
+                const maxVal = parseInt(maxSlider.value);
 
-            // Handle which slider to use based on mouse position
-            let activeSlider = null;
-
-            minSlider.addEventListener('mousedown', (e) => {
-                activeSlider = 'min';
-                minSlider.style.zIndex = '3';
-                maxSlider.style.zIndex = '2';
-            });
-
-            maxSlider.addEventListener('mousedown', (e) => {
-                activeSlider = 'max';
-                maxSlider.style.zIndex = '3';
-                minSlider.style.zIndex = '2';
-            });
-
-            // Click on track to determine which slider to move
-            const container = minSlider.parentElement;
-            container.addEventListener('mousedown', (e) => {
-                if (e.target === minSlider || e.target === maxSlider) return;
-
-                const rect = container.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const containerWidth = rect.width;
-                const clickPercent = (clickX / containerWidth) * 100;
-
-                const minPercent = ((parseInt(minSlider.value) - 20) / 480) * 100;
-                const maxPercent = ((parseInt(maxSlider.value) - 20) / 480) * 100;
-
-                // Determine which thumb is closer to the click
-                const distToMin = Math.abs(clickPercent - minPercent);
-                const distToMax = Math.abs(clickPercent - maxPercent);
-
-                if (distToMin < distToMax) {
-                    minSlider.style.zIndex = '3';
-                    maxSlider.style.zIndex = '2';
-                } else {
-                    maxSlider.style.zIndex = '3';
+                if (minVal >= maxVal - 20) {
+                    // Values are close, put min on top so it's easier to grab
                     minSlider.style.zIndex = '2';
+                    maxSlider.style.zIndex = '1';
+                } else {
+                    // Values far apart, max on top
+                    minSlider.style.zIndex = '1';
+                    maxSlider.style.zIndex = '2';
                 }
+            }
+
+            minSlider.addEventListener('input', () => {
+                updateSlider();
+                updateZIndex();
             });
+
+            maxSlider.addEventListener('input', () => {
+                updateSlider();
+                updateZIndex();
+            });
+
+            minSlider.addEventListener('mousedown', () => {
+                minSlider.style.zIndex = '3';
+            });
+
+            maxSlider.addEventListener('mousedown', () => {
+                maxSlider.style.zIndex = '3';
+            });
+
+            minSlider.addEventListener('mouseup', updateZIndex);
+            maxSlider.addEventListener('mouseup', updateZIndex);
 
             // Initial update
             updateSlider();
+            updateZIndex();
         }
 
         // Update author info in preview
@@ -1609,6 +1653,7 @@
         function buildPrompt(sourceMaterial, previousPost) {
             const toneDescription = buildToneDescription();
             const wordRange = `${state.wordLength.min}-${state.wordLength.max}`;
+            const languageName = state.language === 'finnish' ? 'Finnish' : 'English';
 
             let prompt = `You are a LinkedIn content creator.
 
@@ -1628,6 +1673,7 @@ ${toneDescription}
 REQUIREMENTS:
 - Create ONE engaging LinkedIn post
 - Word count: ${wordRange} words
+- Output language: ${languageName}
 - Follow all content principles above
 ${state.customInstructions ? '- Follow the custom instructions provided\n' : ''}- Match the tone of voice settings
 - Use the source material as the basis
@@ -2091,8 +2137,9 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
 
                 undoRedoButtons = `
                     <div class="header-undo-redo">
-                        <button class="header-undo-btn" id="undo-${draftId}" ${!canUndo ? 'disabled' : ''} onclick="event.stopPropagation(); undoDraft(${draftId})">↶</button>
-                        <button class="header-redo-btn" id="redo-${draftId}" ${!canRedo ? 'disabled' : ''} onclick="event.stopPropagation(); redoDraft(${draftId})">↷</button>
+                        <button class="header-undo-btn" id="undo-${draftId}" ${!canUndo ? 'disabled' : ''} onclick="event.stopPropagation(); undoDraft(${draftId})">↩</button>
+                        <button class="header-redo-btn" id="redo-${draftId}" ${!canRedo ? 'disabled' : ''} onclick="event.stopPropagation(); redoDraft(${draftId})">↪</button>
+                        <button class="header-emoji-btn" onclick="event.stopPropagation(); openEmojiPicker(${draftId})">😀</button>
                     </div>
                 `;
             }
