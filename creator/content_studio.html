@@ -138,35 +138,6 @@
         .sidebar-footer {
             padding: 20px;
             border-top: 1px solid var(--border-color);
-            display: flex;
-            gap: 10px;
-        }
-
-        .sidebar-btn {
-            flex: 1;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            background: var(--button-secondary-bg);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            transition: all 0.2s;
-        }
-
-        .sidebar-btn:hover {
-            background: var(--button-secondary-hover);
-        }
-
-        .theme-toggle:hover {
-            transform: scale(1.1);
-        }
-
-        .settings-btn:hover {
-            transform: rotate(45deg);
         }
 
         /* Main Content Area */
@@ -178,6 +149,57 @@
             flex-direction: column;
         }
 
+        /* Top Header Bar */
+        .top-header {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 240px;
+            height: 60px;
+            background: var(--container-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 30px;
+            gap: 15px;
+            z-index: 50;
+        }
+
+        .theme-toggle {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: var(--button-secondary-bg);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--button-secondary-hover);
+            transform: scale(1.05);
+        }
+
+        .demo-mode-badge {
+            background: #f59e0b;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: none;
+        }
+
+        .demo-mode-badge.visible {
+            display: block;
+        }
+
         .container {
             flex: 1;
             display: flex;
@@ -185,82 +207,33 @@
             position: relative;
             background: var(--container-bg);
             transition: background 0.3s ease;
+            margin-top: 60px;
         }
 
-        /* Settings Panel */
-        .settings-panel {
-            position: fixed;
-            top: 0;
-            left: 240px;
-            right: 0;
-            bottom: 0;
-            background: var(--container-bg);
-            padding: 40px;
-            overflow-y: auto;
-            z-index: 200;
+        /* Source & Preferences Views */
+        .source-view,
+        .preferences-view {
             display: none;
+            padding: 60px 40px;
+            overflow-y: auto;
         }
 
-        .settings-panel.visible {
+        .source-view.visible,
+        .preferences-view.visible {
             display: block;
         }
 
-        .settings-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-
-        .settings-title {
+        .view-title {
             font-size: 28px;
             font-weight: 600;
             color: var(--text-primary);
+            margin-bottom: 40px;
         }
 
-        .save-settings-btn {
-            padding: 12px 24px;
-            background: var(--button-primary-bg);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .save-settings-btn:hover {
-            background: var(--button-primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(239, 89, 0, 0.4);
-        }
-
-        /* Home Screen */
-        .home-screen {
-            padding: 60px 40px;
+        .content-row {
             display: flex;
             flex-direction: column;
             gap: 30px;
-        }
-
-        .home-screen.hidden {
-            display: none;
-        }
-
-        .logo {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--text-primary);
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .tagline {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 16px;
-            margin-bottom: 20px;
         }
 
         /* About You Section */
@@ -885,38 +858,79 @@
             flex: 1;
             overflow-y: auto;
             padding: 20px 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-content: flex-start;
         }
 
-        .list-item {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
+        .list-item-card {
+            width: calc(50% - 10px);
+            min-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .list-item-phone {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
             cursor: pointer;
             transition: all 0.2s;
-            border: 2px solid transparent;
         }
 
-        .list-item:hover {
-            background: var(--card-hover);
-            border-color: var(--brand-orange);
-            transform: translateX(5px);
+        .list-item-phone:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
         }
 
-        .item-preview {
+        .list-item-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .copy-btn {
+            flex: 1;
+            padding: 12px;
+            background: var(--brand-green);
+            color: white;
+            border: none;
+            border-radius: 10px;
             font-size: 14px;
-            line-height: 1.5;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #6fb843;
+            transform: translateY(-1px);
+        }
+
+        .edit-draft-btn {
+            flex: 1;
+            padding: 12px;
+            background: var(--button-secondary-bg);
             color: var(--text-primary);
-            margin-bottom: 10px;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .edit-draft-btn:hover {
+            background: var(--button-secondary-hover);
+            transform: translateY(-1px);
         }
 
         .item-meta {
             font-size: 12px;
             color: var(--text-secondary);
+            text-align: center;
         }
 
         .empty-state {
@@ -1089,88 +1103,67 @@
 
         <div class="sidebar-nav">
             <button class="sidebar-item active" onclick="showView('source')">Source</button>
+            <button class="sidebar-item" onclick="showView('preferences')">Preferences</button>
             <button class="sidebar-item" onclick="showView('generator')">Generator</button>
             <button class="sidebar-item" onclick="showView('drafts')">Drafts (<span id="draftsCount">0</span>)</button>
             <button class="sidebar-item" onclick="showView('archive')">Archive (<span id="archiveCount">0</span>)</button>
         </div>
 
-        <div class="sidebar-footer">
-            <button class="sidebar-btn theme-toggle" id="themeToggle" onclick="toggleTheme()">☾</button>
-            <button class="sidebar-btn settings-btn" onclick="toggleSettings()">⚙</button>
-        </div>
+        <div class="sidebar-footer"></div>
     </div>
 
     <!-- Main Content Area -->
     <div class="main-content">
+        <!-- Top Header -->
+        <div class="top-header">
+            <div class="demo-mode-badge" id="demoModeBadge">Demo Mode - API Offline</div>
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">☾</button>
+        </div>
+
         <div class="container">
-            <!-- Settings Panel -->
-        <div class="settings-panel" id="settingsPanel">
-            <div class="settings-header">
-                <div class="settings-title">Settings</div>
-                <button class="save-settings-btn" onclick="saveSettings()">Save Settings</button>
-            </div>
+            <!-- Source View -->
+            <div class="source-view visible" id="sourceView">
+                <div class="view-title">Source</div>
+                <div class="content-row">
+                    <div class="about-section">
+                        <div class="section-title">About You</div>
+                        <textarea class="about-input" id="aboutYou" placeholder="Add context about yourself: your background, expertise, positioning, industry, or any relevant information that should inform the content style..."></textarea>
+                    </div>
 
-            <div class="about-section">
-                <div class="section-title">About You</div>
-                <textarea class="about-input" id="settingsAbout" placeholder="Add context about yourself (background, expertise, positioning, etc.)"></textarea>
-            </div>
+                    <div class="about-section">
+                        <div class="section-title">Source Material</div>
+                        <textarea class="source-input" id="sourceMaterial" placeholder="Paste your ideas, notes, or any content you want to transform into a LinkedIn post..."></textarea>
+                    </div>
 
-            <div class="section-title">Tone of Voice</div>
-            <div class="tone-sliders" id="settingsToneSliders"></div>
-
-            <div class="word-length-section">
-                <div class="section-title">Word Length</div>
-                <div class="dual-slider-container" id="settingsWordLengthContainer">
-                    <div class="dual-slider-track"></div>
-                    <div class="dual-slider-range" id="settingsWordRange"></div>
-                    <input type="range" min="20" max="500" value="100" class="dual-slider-input" id="settingsMinSlider">
-                    <input type="range" min="20" max="500" value="300" class="dual-slider-input" id="settingsMaxSlider">
-                    <div class="dual-thumb" id="settingsMinThumb"></div>
-                    <div class="dual-thumb" id="settingsMaxThumb"></div>
+                    <button class="generate-btn" onclick="startGeneration()">Generate Posts</button>
                 </div>
-                <div class="dual-labels">
-                    <span>20 words</span>
-                    <span>500 words</span>
-                </div>
-                <div class="word-count-display" id="settingsWordDisplay">100-300 words</div>
-            </div>
-        </div>
-
-        <!-- Home Screen -->
-        <div class="home-screen" id="homeScreen">
-            <div class="logo">LinkedIn Content Studio</div>
-            <div class="tagline">Transform ideas into engaging posts</div>
-
-            <div class="about-section">
-                <div class="section-title">About You</div>
-                <textarea class="about-input" id="aboutYou" placeholder="Add context about yourself: your background, expertise, positioning, industry, or any relevant information that should inform the content style..."></textarea>
             </div>
 
-            <div class="section-title">Tone of Voice</div>
-            <div class="tone-sliders" id="toneSliders"></div>
+            <!-- Preferences View -->
+            <div class="preferences-view" id="preferencesView">
+                <div class="view-title">Preferences</div>
+                <div class="content-row">
+                    <div class="section-title">Tone of Voice</div>
+                    <div class="tone-sliders" id="toneSliders"></div>
 
-            <div class="word-length-section">
-                <div class="section-title">Word Length</div>
-                <div class="dual-slider-container" id="wordLengthContainer">
-                    <div class="dual-slider-track"></div>
-                    <div class="dual-slider-range" id="wordRange"></div>
-                    <input type="range" min="20" max="500" value="100" class="dual-slider-input" id="minSlider">
-                    <input type="range" min="20" max="500" value="300" class="dual-slider-input" id="maxSlider">
-                    <div class="dual-thumb" id="minThumb"></div>
-                    <div class="dual-thumb" id="maxThumb"></div>
+                    <div class="word-length-section">
+                        <div class="section-title">Length</div>
+                        <div class="dual-slider-container" id="wordLengthContainer">
+                            <div class="dual-slider-track"></div>
+                            <div class="dual-slider-range" id="wordRange"></div>
+                            <input type="range" min="20" max="500" value="100" class="dual-slider-input" id="minSlider">
+                            <input type="range" min="20" max="500" value="300" class="dual-slider-input" id="maxSlider">
+                            <div class="dual-thumb" id="minThumb"></div>
+                            <div class="dual-thumb" id="maxThumb"></div>
+                        </div>
+                        <div class="dual-labels">
+                            <span>20 words</span>
+                            <span>500 words</span>
+                        </div>
+                        <div class="word-count-display" id="wordDisplay">100-300 words</div>
+                    </div>
                 </div>
-                <div class="dual-labels">
-                    <span>20 words</span>
-                    <span>500 words</span>
-                </div>
-                <div class="word-count-display" id="wordDisplay">100-300 words</div>
             </div>
-
-            <div class="section-title">Source Material</div>
-            <textarea class="source-input" id="sourceMaterial" placeholder="Paste your ideas, notes, or any content you want to transform into a LinkedIn post..."></textarea>
-
-            <button class="generate-btn" onclick="startGeneration()">Generate Posts</button>
-        </div>
 
         <!-- Generator View -->
         <div class="generator-view" id="generatorView">
@@ -1359,58 +1352,45 @@
         function init() {
             renderToneSliders();
             setupDualSlider('minSlider', 'maxSlider', 'wordRange', 'minThumb', 'maxThumb', 'wordDisplay');
-            setupDualSlider('settingsMinSlider', 'settingsMaxSlider', 'settingsWordRange', 'settingsMinThumb', 'settingsMaxThumb', 'settingsWordDisplay');
         }
 
         // Render tone sliders
         function renderToneSliders() {
-            const containers = ['toneSliders', 'settingsToneSliders'];
-            containers.forEach(containerId => {
-                const container = document.getElementById(containerId);
-                container.innerHTML = toneSliders.map(slider => `
-                    <div class="slider-group">
-                        <div class="slider-labels">
-                            <span>${slider.left}</span>
-                            <span>${slider.right}</span>
-                        </div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="4" value="${state.toneSettings[slider.key]}" 
-                                   class="slider" id="${containerId}-${slider.key}"
-                                   oninput="updateToneSlider('${slider.key}', this.value, '${containerId}')">
-                            <div class="slider-track" id="${containerId}-${slider.key}-track"></div>
-                            <div class="slider-thumb" id="${containerId}-${slider.key}-thumb"></div>
-                        </div>
+            const container = document.getElementById('toneSliders');
+            container.innerHTML = toneSliders.map(slider => `
+                <div class="slider-group">
+                    <div class="slider-labels">
+                        <span>${slider.left}</span>
+                        <span>${slider.right}</span>
                     </div>
-                `).join('');
+                    <div class="slider-container">
+                        <input type="range" min="0" max="4" value="${state.toneSettings[slider.key]}"
+                               class="slider" id="toneSliders-${slider.key}"
+                               oninput="updateToneSlider('${slider.key}', this.value)">
+                        <div class="slider-track" id="toneSliders-${slider.key}-track"></div>
+                        <div class="slider-thumb" id="toneSliders-${slider.key}-thumb"></div>
+                    </div>
+                </div>
+            `).join('');
 
-                // Initialize slider positions
-                toneSliders.forEach(slider => {
-                    updateSliderVisuals(slider.key, state.toneSettings[slider.key], containerId);
-                });
+            // Initialize slider positions
+            toneSliders.forEach(slider => {
+                updateSliderVisuals(slider.key, state.toneSettings[slider.key]);
             });
         }
 
         // Update tone slider
-        function updateToneSlider(key, value, containerId) {
+        function updateToneSlider(key, value) {
             state.toneSettings[key] = parseInt(value);
-            updateSliderVisuals(key, value, containerId);
-            
-            // Sync between home and settings
-            if (containerId === 'toneSliders') {
-                document.getElementById('settingsToneSliders-' + key).value = value;
-                updateSliderVisuals(key, value, 'settingsToneSliders');
-            } else {
-                document.getElementById('toneSliders-' + key).value = value;
-                updateSliderVisuals(key, value, 'toneSliders');
-            }
+            updateSliderVisuals(key, value);
         }
 
         // Update slider visuals
-        function updateSliderVisuals(key, value, containerId) {
+        function updateSliderVisuals(key, value) {
             const percentage = (value / 4) * 100;
-            const track = document.getElementById(`${containerId}-${key}-track`);
-            const thumb = document.getElementById(`${containerId}-${key}-thumb`);
-            
+            const track = document.getElementById(`toneSliders-${key}-track`);
+            const thumb = document.getElementById(`toneSliders-${key}-thumb`);
+
             if (track && thumb) {
                 track.style.width = percentage + '%';
                 thumb.style.left = percentage + '%';
@@ -1460,9 +1440,6 @@
                 // Update state
                 state.wordLength.min = minVal;
                 state.wordLength.max = maxVal;
-
-                // Sync between home and settings
-                syncWordLengthSliders(minId, minVal, maxVal);
             }
 
             minSlider.addEventListener('input', updateSlider);
@@ -1499,73 +1476,6 @@
 
             // Initial update
             updateSlider();
-        }
-
-        // Sync word length between home and settings
-        function syncWordLengthSliders(sourceId, minVal, maxVal) {
-            let targetMinId, targetMaxId, targetRangeId, targetMinThumbId, targetMaxThumbId, targetDisplayId;
-            
-            if (sourceId === 'minSlider') {
-                // Syncing from home to settings
-                targetMinId = 'settingsMinSlider';
-                targetMaxId = 'settingsMaxSlider';
-                targetRangeId = 'settingsWordRange';
-                targetMinThumbId = 'settingsMinThumb';
-                targetMaxThumbId = 'settingsMaxThumb';
-                targetDisplayId = 'settingsWordDisplay';
-            } else if (sourceId === 'settingsMinSlider') {
-                // Syncing from settings to home
-                targetMinId = 'minSlider';
-                targetMaxId = 'maxSlider';
-                targetRangeId = 'wordRange';
-                targetMinThumbId = 'minThumb';
-                targetMaxThumbId = 'maxThumb';
-                targetDisplayId = 'wordDisplay';
-            } else {
-                return; // No syncing needed
-            }
-
-            const targetMin = document.getElementById(targetMinId);
-            const targetMax = document.getElementById(targetMaxId);
-            const targetRange = document.getElementById(targetRangeId);
-            const targetMinThumb = document.getElementById(targetMinThumbId);
-            const targetMaxThumb = document.getElementById(targetMaxThumbId);
-            const targetDisplay = document.getElementById(targetDisplayId);
-
-            if (targetMin && targetMax && targetRange && targetMinThumb && targetMaxThumb && targetDisplay) {
-                targetMin.value = minVal;
-                targetMax.value = maxVal;
-
-                const minPercent = ((minVal - 20) / 480) * 100;
-                const maxPercent = ((maxVal - 20) / 480) * 100;
-
-                targetRange.style.left = minPercent + '%';
-                targetRange.style.width = (maxPercent - minPercent) + '%';
-                targetMinThumb.style.left = `calc(${minPercent}% - 10px)`;
-                targetMaxThumb.style.left = `calc(${maxPercent}% - 10px)`;
-                targetDisplay.textContent = `${minVal}-${maxVal} words`;
-            }
-        }
-
-        // Settings panel
-        function toggleSettings() {
-            const panel = document.getElementById('settingsPanel');
-            if (panel.classList.contains('visible')) {
-                panel.classList.remove('visible');
-            } else {
-                // Load current state into settings
-                document.getElementById('settingsAbout').value = state.aboutYou;
-                panel.classList.add('visible');
-            }
-        }
-
-        function saveSettings() {
-            // Save settings from panel to state
-            state.aboutYou = document.getElementById('settingsAbout').value;
-            document.getElementById('aboutYou').value = state.aboutYou;
-            
-            // Close panel
-            document.getElementById('settingsPanel').classList.remove('visible');
         }
 
         // Update author info in preview
@@ -1613,10 +1523,8 @@
                 return;
             }
 
-            // Hide home screen, show generator
-            document.getElementById('homeScreen').classList.add('hidden');
-            document.getElementById('generatorView').classList.add('visible');
-            document.querySelector('.settings-btn').classList.remove('hidden');
+            // Show generator view
+            showView('generator');
 
             // Update author info in preview
             updateAuthorInfo();
@@ -1863,33 +1771,17 @@ What did you stop doing that made your business stronger?`
 
         // Show demo mode indicator
         function showDemoModeIndicator() {
-            let indicator = document.getElementById('demoModeIndicator');
-            if (!indicator) {
-                indicator = document.createElement('div');
-                indicator.id = 'demoModeIndicator';
-                indicator.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    left: 20px;
-                    background: #f59e0b;
-                    color: white;
-                    padding: 8px 16px;
-                    border-radius: 8px;
-                    font-size: 11px;
-                    font-weight: 600;
-                    z-index: 9999;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                `;
-                indicator.textContent = 'DEMO MODE - API Offline';
-                document.body.appendChild(indicator);
+            const badge = document.getElementById('demoModeBadge');
+            if (badge) {
+                badge.classList.add('visible');
             }
         }
 
         // Hide demo mode indicator
         function hideDemoModeIndicator() {
-            const indicator = document.getElementById('demoModeIndicator');
-            if (indicator) {
-                indicator.remove();
+            const badge = document.getElementById('demoModeBadge');
+            if (badge) {
+                badge.classList.remove('visible');
             }
         }
 
@@ -1944,6 +1836,8 @@ What did you stop doing that made your business stronger?`
         // Monitor for user edits
         document.addEventListener('DOMContentLoaded', () => {
             const postContent = document.getElementById('postContent');
+
+            // Handle input changes
             postContent.addEventListener('input', () => {
                 updateCharCounter(); // Update character count
 
@@ -1956,6 +1850,18 @@ What did you stop doing that made your business stronger?`
                     } else {
                         state.hasUserEdits = false;
                         document.getElementById('revertBtn').classList.remove('visible');
+                    }
+                }
+            });
+
+            // Click outside to de-highlight editor
+            document.addEventListener('click', (e) => {
+                if (postContent.classList.contains('editing')) {
+                    const phoneFrame = document.getElementById('phoneFrame');
+                    // Check if click is outside the phone frame
+                    if (phoneFrame && !phoneFrame.contains(e.target)) {
+                        postContent.classList.remove('editing');
+                        postContent.contentEditable = 'false';
                     }
                 }
             });
@@ -2090,48 +1996,113 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
             document.getElementById('draftsCount').textContent = state.drafts.length;
             document.getElementById('archiveCount').textContent = state.archive.length;
         }
+
+        // Copy to clipboard
+        function copyToClipboard(text, id) {
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector(`[data-copy-id="${id}"]`);
+                if (btn) {
+                    const originalText = btn.textContent;
+                    btn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                    }, 2000);
+                }
+            });
+        }
+
+        // Create phone mockup HTML
+        function createPhoneMockup(content) {
+            const aboutYou = state.aboutYou || 'Your Name';
+            const lines = aboutYou.split('\n').filter(line => line.trim());
+            const firstLine = lines.length > 0 ? lines[0].trim() : 'Your Name';
+            const authorName = firstLine.length > 50 ? firstLine.substring(0, 50) + '...' : firstLine;
+
+            const words = firstLine.split(' ');
+            const initials = words.length > 1 ?
+                words[0][0].toUpperCase() + words[words.length-1][0].toUpperCase() :
+                words[0][0].toUpperCase();
+
+            const titleText = lines.length > 1 ? lines.slice(1, 3).join(' • ') : 'Your Title';
+            const authorTitle = titleText.length > 100 ? titleText.substring(0, 100) + '...' : titleText;
+
+            return `
+                <div class="linkedin-header">
+                    <div class="linkedin-logo">in</div>
+                </div>
+                <div class="post-container">
+                    <div class="post">
+                        <div class="post-header">
+                            <div class="avatar">${initials}</div>
+                            <div class="post-author">
+                                <div class="author-name">${authorName}</div>
+                                <div class="author-title">${authorTitle}</div>
+                                <div class="post-time">Just now</div>
+                            </div>
+                        </div>
+                        <div class="post-content" style="white-space: pre-wrap;">${content}</div>
+                        <div class="post-actions">
+                            <button class="linkedin-action-btn">👍 Like</button>
+                            <button class="linkedin-action-btn">💬 Comment</button>
+                            <button class="linkedin-action-btn">🔄 Repost</button>
+                            <button class="linkedin-action-btn">📤 Send</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function updateDraftsList() {
             const list = document.getElementById('draftsList');
-            
+
             if (state.drafts.length === 0) {
                 list.innerHTML = '<div class="empty-state">No drafts yet. Like posts in the generator to save them here.</div>';
             } else {
                 list.innerHTML = state.drafts.map(draft => {
-                    const preview = draft.content.substring(0, 150) + (draft.content.length > 150 ? '...' : '');
                     const date = new Date(draft.timestamp).toLocaleDateString();
-                    
+
                     return `
-                        <div class="list-item" onclick="openDraft(${draft.id})">
-                            <div class="item-preview">${preview}</div>
+                        <div class="list-item-card">
+                            <div class="list-item-phone">
+                                ${createPhoneMockup(draft.content)}
+                            </div>
+                            <div class="list-item-actions">
+                                <button class="copy-btn" data-copy-id="${draft.id}" onclick="event.stopPropagation(); copyToClipboard(\`${draft.content.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`, ${draft.id})">Copy</button>
+                                <button class="edit-draft-btn" onclick="openDraft(${draft.id})">Edit</button>
+                            </div>
                             <div class="item-meta">Saved ${date}</div>
                         </div>
                     `;
                 }).join('');
             }
-            
+
             updateNavCounts();
         }
 
         // Update archive list
         function updateArchiveList() {
             const list = document.getElementById('archiveList');
-            
+
             if (state.archive.length === 0) {
                 list.innerHTML = '<div class="empty-state">No archived posts yet. Finalize drafts to archive them.</div>';
             } else {
                 list.innerHTML = state.archive.map(post => {
-                    const preview = post.content.substring(0, 150) + (post.content.length > 150 ? '...' : '');
                     const date = new Date(post.timestamp).toLocaleDateString();
-                    
+
                     return `
-                        <div class="list-item" onclick="viewArchive(${post.id})">
-                            <div class="item-preview">${preview}</div>
+                        <div class="list-item-card">
+                            <div class="list-item-phone">
+                                ${createPhoneMockup(post.content)}
+                            </div>
+                            <div class="list-item-actions">
+                                <button class="copy-btn" data-copy-id="${post.id}" onclick="event.stopPropagation(); copyToClipboard(\`${post.content.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`, ${post.id})">Copy</button>
+                            </div>
                             <div class="item-meta">Archived ${date}</div>
                         </div>
                     `;
                 }).join('');
             }
-            
+
             updateNavCounts();
         }
 
@@ -2263,7 +2234,8 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
         // View navigation
         function showView(view) {
             // Hide all views
-            document.getElementById('homeScreen').classList.add('hidden');
+            document.getElementById('sourceView').classList.remove('visible');
+            document.getElementById('preferencesView').classList.remove('visible');
             document.getElementById('generatorView').classList.remove('visible');
             document.getElementById('draftsView').classList.remove('visible');
             document.getElementById('archiveView').classList.remove('visible');
@@ -2277,21 +2249,25 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
             // Show selected view
             switch(view) {
                 case 'source':
-                    document.getElementById('homeScreen').classList.remove('hidden');
+                    document.getElementById('sourceView').classList.add('visible');
                     document.querySelectorAll('.sidebar-item')[0].classList.add('active');
+                    break;
+                case 'preferences':
+                    document.getElementById('preferencesView').classList.add('visible');
+                    document.querySelectorAll('.sidebar-item')[1].classList.add('active');
                     break;
                 case 'generator':
                     document.getElementById('generatorView').classList.add('visible');
-                    document.querySelectorAll('.sidebar-item')[1].classList.add('active');
+                    document.querySelectorAll('.sidebar-item')[2].classList.add('active');
                     break;
                 case 'drafts':
                     document.getElementById('draftsView').classList.add('visible');
-                    document.querySelectorAll('.sidebar-item')[2].classList.add('active');
+                    document.querySelectorAll('.sidebar-item')[3].classList.add('active');
                     updateDraftsList();
                     break;
                 case 'archive':
                     document.getElementById('archiveView').classList.add('visible');
-                    document.querySelectorAll('.sidebar-item')[3].classList.add('active');
+                    document.querySelectorAll('.sidebar-item')[4].classList.add('active');
                     updateArchiveList();
                     break;
                 case 'editor':
