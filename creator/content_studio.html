@@ -155,7 +155,7 @@
 
         .count-badge.archive {
             background: var(--brand-green);
-            color: white;
+            color: var(--brand-dark);
         }
 
 
@@ -607,7 +607,7 @@
             gap: 8px;
         }
 
-        .header-undo-btn, .header-redo-btn {
+        .header-undo-btn, .header-redo-btn, .header-delete-btn {
             padding: 6px 10px;
             background: #f3f2ef;
             color: #666;
@@ -618,8 +618,13 @@
             transition: all 0.2s;
         }
 
+        .header-delete-btn {
+            color: #ff5252;
+        }
+
         .header-undo-btn:hover:not(:disabled),
-        .header-redo-btn:hover:not(:disabled) {
+        .header-redo-btn:hover:not(:disabled),
+        .header-delete-btn:hover {
             background: #e0dfdc;
         }
 
@@ -1043,6 +1048,85 @@
             color: var(--text-secondary);
         }
 
+        /* Delete Confirmation Modal */
+        .delete-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .delete-modal.visible {
+            display: flex;
+        }
+
+        .delete-modal-content {
+            background: var(--container-bg);
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .delete-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+
+        .delete-modal-message {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .delete-modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .delete-modal-cancel {
+            padding: 10px 20px;
+            background: var(--button-secondary-bg);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .delete-modal-cancel:hover {
+            background: var(--button-secondary-hover);
+        }
+
+        .delete-modal-confirm {
+            padding: 10px 20px;
+            background: #ff5252;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .delete-modal-confirm:hover {
+            background: #ff3838;
+        }
+
         /* Editor */
         .editor-view {
             display: none;
@@ -1376,6 +1460,18 @@
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="delete-modal" id="deleteModal">
+        <div class="delete-modal-content">
+            <div class="delete-modal-title">Delete Post</div>
+            <div class="delete-modal-message">Are you sure you want to delete this post? This action cannot be undone.</div>
+            <div class="delete-modal-actions">
+                <button class="delete-modal-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="delete-modal-confirm" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // State Management
         const state = {
@@ -1402,7 +1498,8 @@
             drafts: [],
             archive: [],
             currentDraftId: null,
-            editingDraftId: null
+            editingDraftId: null,
+            deleteTarget: null // { type: 'draft'|'archive', id: number }
         };
 
         // Tone slider configuration
@@ -2113,7 +2210,7 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
         }
 
         // Create phone mockup HTML
-        function createPhoneMockup(content, draftId = null, isEditable = false) {
+        function createPhoneMockup(content, draftId = null, isEditable = false, isDraft = true) {
             const aboutYou = state.aboutYou || 'Your Name';
             const lines = aboutYou.split('\n').filter(line => line.trim());
             const firstLine = lines.length > 0 ? lines[0].trim() : 'Your Name';
@@ -2132,25 +2229,35 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
             const contentId = isEditable ? `draft-content-${draftId}` : '';
             const onClick = isEditable ? `onclick="enableDraftEditing(${draftId})"` : '';
 
-            // Add undo/redo buttons for editable drafts
-            let undoRedoButtons = '';
-            if (isEditable && draftId !== null) {
-                const draft = state.drafts.find(d => d.id === draftId);
-                const canUndo = draft && draft.versionIndex > 0;
-                const canRedo = draft && draft.versionIndex < draft.versions.length - 1;
+            // Add undo/redo and delete buttons
+            let headerButtons = '';
+            if (draftId !== null) {
+                if (isEditable) {
+                    const draft = state.drafts.find(d => d.id === draftId);
+                    const canUndo = draft && draft.versionIndex > 0;
+                    const canRedo = draft && draft.versionIndex < draft.versions.length - 1;
 
-                undoRedoButtons = `
-                    <div class="header-undo-redo">
-                        <button class="header-undo-btn" id="undo-${draftId}" ${!canUndo ? 'disabled' : ''} onclick="event.stopPropagation(); undoDraft(${draftId})">↩</button>
-                        <button class="header-redo-btn" id="redo-${draftId}" ${!canRedo ? 'disabled' : ''} onclick="event.stopPropagation(); redoDraft(${draftId})">↪</button>
-                    </div>
-                `;
+                    headerButtons = `
+                        <div class="header-undo-redo">
+                            <button class="header-undo-btn" id="undo-${draftId}" ${!canUndo ? 'disabled' : ''} onclick="event.stopPropagation(); undoDraft(${draftId})">↩</button>
+                            <button class="header-redo-btn" id="redo-${draftId}" ${!canRedo ? 'disabled' : ''} onclick="event.stopPropagation(); redoDraft(${draftId})">↪</button>
+                            <button class="header-delete-btn" onclick="event.stopPropagation(); showDeleteModal('draft', ${draftId})">✕</button>
+                        </div>
+                    `;
+                } else {
+                    // Archive item - only delete button
+                    headerButtons = `
+                        <div class="header-undo-redo">
+                            <button class="header-delete-btn" onclick="event.stopPropagation(); showDeleteModal('archive', ${draftId})">✕</button>
+                        </div>
+                    `;
+                }
             }
 
             return `
                 <div class="linkedin-header">
                     <div class="linkedin-logo">in</div>
-                    ${undoRedoButtons}
+                    ${headerButtons}
                 </div>
                 <div class="post-container">
                     <div class="post">
@@ -2232,7 +2339,7 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
                     return `
                         <div class="list-item-card">
                             <div class="list-item-phone">
-                                ${createPhoneMockup(post.content)}
+                                ${createPhoneMockup(post.content, post.id, false, false)}
                             </div>
                             <div class="list-item-actions">
                                 <button class="copy-btn" data-copy-archive="${post.id}" onclick="event.stopPropagation(); copyArchive(${post.id})">Copy</button>
@@ -2585,6 +2692,35 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
                 state.editingDraftId = null;
             }
         });
+
+        // Delete modal functions
+        function showDeleteModal(type, id) {
+            state.deleteTarget = { type, id };
+            document.getElementById('deleteModal').classList.add('visible');
+        }
+
+        function closeDeleteModal() {
+            state.deleteTarget = null;
+            document.getElementById('deleteModal').classList.remove('visible');
+        }
+
+        function confirmDelete() {
+            if (!state.deleteTarget) return;
+
+            const { type, id } = state.deleteTarget;
+
+            if (type === 'draft') {
+                // Delete from drafts
+                state.drafts = state.drafts.filter(d => d.id !== id);
+                updateDraftsList();
+            } else if (type === 'archive') {
+                // Delete from archive
+                state.archive = state.archive.filter(a => a.id !== id);
+                updateArchiveList();
+            }
+
+            closeDeleteModal();
+        }
 
         // Initialize on load
         loadTheme();
