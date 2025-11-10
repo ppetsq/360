@@ -60,92 +60,144 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            background: var(--container-bg);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
             transition: background 0.3s ease;
         }
 
-        .container {
+        /* Left Sidebar Navigation */
+        .sidebar {
+            width: 240px;
             background: var(--container-bg);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 800px;
-            min-height: 600px;
+            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            position: relative;
-            transition: background 0.3s ease;
+            padding: 20px 0;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 100;
         }
 
-        /* Theme Toggle */
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 70px;
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .sidebar-tagline {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: none;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .sidebar-item.active {
+            color: var(--brand-orange);
+            background: var(--card-bg);
+            border-left-color: var(--brand-orange);
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+        }
+
+        .sidebar-btn {
+            flex: 1;
             width: 40px;
             height: 40px;
-            border-radius: 50%;
+            border-radius: 8px;
             background: var(--button-secondary-bg);
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
             transition: all 0.2s;
-            z-index: 100;
+        }
+
+        .sidebar-btn:hover {
+            background: var(--button-secondary-hover);
         }
 
         .theme-toggle:hover {
-            background: var(--button-secondary-hover);
             transform: scale(1.1);
         }
 
-        /* Settings Button */
-        .settings-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--button-secondary-bg);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            transition: all 0.2s;
-            z-index: 100;
-        }
-
         .settings-btn:hover {
-            background: var(--button-secondary-hover);
             transform: rotate(45deg);
         }
 
-        .settings-btn.hidden {
-            display: none;
+        /* Main Content Area */
+        .main-content {
+            margin-left: 240px;
+            flex: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: var(--container-bg);
+            transition: background 0.3s ease;
         }
 
         /* Settings Panel */
         .settings-panel {
-            position: absolute;
+            position: fixed;
             top: 0;
-            left: 0;
+            left: 240px;
             right: 0;
             bottom: 0;
             background: var(--container-bg);
-            border-radius: 20px;
             padding: 40px;
             overflow-y: auto;
-            z-index: 99;
+            z-index: 200;
             display: none;
         }
 
@@ -343,7 +395,11 @@
             height: 20px;
             opacity: 0;
             cursor: pointer;
-            z-index: 5;
+            pointer-events: auto;
+        }
+
+        .dual-slider-input:focus {
+            outline: none;
         }
 
         .dual-thumb {
@@ -801,36 +857,7 @@
             background: var(--button-secondary-hover);
         }
 
-        /* Navigation */
-        .bottom-nav {
-            display: flex;
-            border-top: 2px solid var(--border-color);
-            background: var(--container-bg);
-            border-radius: 0 0 20px 20px;
-        }
-
-        .nav-item {
-            flex: 1;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-            background: none;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        .nav-item:hover {
-            background: var(--card-bg);
-            color: var(--brand-orange);
-        }
-
-        .nav-item.active {
-            color: var(--brand-orange);
-            border-top: 3px solid var(--brand-orange);
-        }
+        /* Remove old bottom navigation - now using sidebar */
 
         /* Drafts & Archive */
         .content-list {
@@ -1053,14 +1080,30 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Theme Toggle -->
-        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">☾</button>
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">Content Studio</div>
+            <div class="sidebar-tagline">LinkedIn Post Generator</div>
+        </div>
 
-        <!-- Settings Button -->
-        <button class="settings-btn" onclick="toggleSettings()">⚙</button>
+        <div class="sidebar-nav">
+            <button class="sidebar-item active" onclick="showView('source')">Source</button>
+            <button class="sidebar-item" onclick="showView('generator')">Generator</button>
+            <button class="sidebar-item" onclick="showView('drafts')">Drafts (<span id="draftsCount">0</span>)</button>
+            <button class="sidebar-item" onclick="showView('archive')">Archive (<span id="archiveCount">0</span>)</button>
+        </div>
 
-        <!-- Settings Panel -->
+        <div class="sidebar-footer">
+            <button class="sidebar-btn theme-toggle" id="themeToggle" onclick="toggleTheme()">☾</button>
+            <button class="sidebar-btn settings-btn" onclick="toggleSettings()">⚙</button>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Settings Panel -->
         <div class="settings-panel" id="settingsPanel">
             <div class="settings-header">
                 <div class="settings-title">Settings</div>
@@ -1231,12 +1274,6 @@
             </div>
         </div>
 
-        <!-- Bottom Navigation -->
-        <div class="bottom-nav">
-            <button class="nav-item active" onclick="showView('source')">Source</button>
-            <button class="nav-item" onclick="showView('generator')">Generator</button>
-            <button class="nav-item" onclick="showView('drafts')">Drafts</button>
-            <button class="nav-item" onclick="showView('archive')">Archive</button>
         </div>
     </div>
 
@@ -1430,6 +1467,35 @@
 
             minSlider.addEventListener('input', updateSlider);
             maxSlider.addEventListener('input', updateSlider);
+
+            // Fix: Make sure the correct slider responds to mouse position
+            const container = minSlider.parentElement;
+            container.addEventListener('mousedown', (e) => {
+                const rect = container.getBoundingClientRect();
+                const clickPercent = (e.clientX - rect.left - 12) / (rect.width - 24) * 100; // Adjust for padding
+                const minPercent = ((parseInt(minSlider.value) - 20) / 480) * 100;
+                const maxPercent = ((parseInt(maxSlider.value) - 20) / 480) * 100;
+                const midPercent = (minPercent + maxPercent) / 2;
+
+                // Determine which slider is closer to the click
+                if (clickPercent < midPercent) {
+                    // Closer to min, disable max temporarily
+                    maxSlider.style.pointerEvents = 'none';
+                    minSlider.style.pointerEvents = 'auto';
+                } else {
+                    // Closer to max, disable min temporarily
+                    minSlider.style.pointerEvents = 'none';
+                    maxSlider.style.pointerEvents = 'auto';
+                }
+            });
+
+            // Re-enable both after mouse up
+            document.addEventListener('mouseup', () => {
+                setTimeout(() => {
+                    minSlider.style.pointerEvents = 'auto';
+                    maxSlider.style.pointerEvents = 'auto';
+                }, 100);
+            });
 
             // Initial update
             updateSlider();
@@ -2021,9 +2087,8 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
 
         // Update navigation counts
         function updateNavCounts() {
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems[2].textContent = `Drafts (${state.drafts.length})`;
-            navItems[3].textContent = `Archive (${state.archive.length})`;
+            document.getElementById('draftsCount').textContent = state.drafts.length;
+            document.getElementById('archiveCount').textContent = state.archive.length;
         }
         function updateDraftsList() {
             const list = document.getElementById('draftsList');
@@ -2204,8 +2269,8 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
             document.getElementById('archiveView').classList.remove('visible');
             document.getElementById('editorView').classList.remove('visible');
 
-            // Remove active state from all nav items
-            document.querySelectorAll('.nav-item').forEach(item => {
+            // Remove active state from all sidebar items
+            document.querySelectorAll('.sidebar-item').forEach(item => {
                 item.classList.remove('active');
             });
 
@@ -2213,20 +2278,20 @@ OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
             switch(view) {
                 case 'source':
                     document.getElementById('homeScreen').classList.remove('hidden');
-                    document.querySelectorAll('.nav-item')[0].classList.add('active');
+                    document.querySelectorAll('.sidebar-item')[0].classList.add('active');
                     break;
                 case 'generator':
                     document.getElementById('generatorView').classList.add('visible');
-                    document.querySelectorAll('.nav-item')[1].classList.add('active');
+                    document.querySelectorAll('.sidebar-item')[1].classList.add('active');
                     break;
                 case 'drafts':
                     document.getElementById('draftsView').classList.add('visible');
-                    document.querySelectorAll('.nav-item')[2].classList.add('active');
+                    document.querySelectorAll('.sidebar-item')[2].classList.add('active');
                     updateDraftsList();
                     break;
                 case 'archive':
                     document.getElementById('archiveView').classList.add('visible');
-                    document.querySelectorAll('.nav-item')[3].classList.add('active');
+                    document.querySelectorAll('.sidebar-item')[3].classList.add('active');
                     updateArchiveList();
                     break;
                 case 'editor':
