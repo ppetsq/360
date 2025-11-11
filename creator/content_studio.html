@@ -284,8 +284,8 @@
         }
 
         .language-selector {
-            width: 100%;
-            padding: 14px 16px;
+            max-width: 150px;
+            padding: 12px 14px;
             padding-right: 40px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -1364,21 +1364,15 @@
 
                         <div class="preference-item">
                             <div class="section-title">Emojis</div>
-                            <div class="theme-toggle-wrapper" style="justify-content: flex-start;">
-                                <span class="theme-toggle-label">Use Emojis</span>
-                                <div class="theme-toggle" id="emojiToggle" onclick="toggleEmojis()">
-                                    <div class="theme-toggle-thumb"></div>
-                                </div>
+                            <div class="theme-toggle" id="emojiToggle" onclick="toggleEmojis()">
+                                <div class="theme-toggle-thumb"></div>
                             </div>
                         </div>
 
                         <div class="preference-item">
                             <div class="section-title">Creativity</div>
-                            <div class="theme-toggle-wrapper" style="justify-content: flex-start;">
-                                <span class="theme-toggle-label">Creative Mode</span>
-                                <div class="theme-toggle dark" id="creativeModeToggle" onclick="toggleCreativeMode()">
-                                    <div class="theme-toggle-thumb"></div>
-                                </div>
+                            <div class="theme-toggle dark" id="creativeModeToggle" onclick="toggleCreativeMode()">
+                                <div class="theme-toggle-thumb"></div>
                             </div>
                         </div>
                     </div>
