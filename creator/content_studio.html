@@ -2849,6 +2849,21 @@ Write the revised LinkedIn post now:`;
             }
         });
 
+        // Click outside draft to unfocus and save
+        document.addEventListener('click', (e) => {
+            // Find all editing draft content elements
+            const editingElements = document.querySelectorAll('.draft-post-content.editing');
+
+            editingElements.forEach(element => {
+                // Check if click is outside this editing element
+                if (!element.contains(e.target)) {
+                    // Save and remove highlight
+                    element.classList.remove('editing');
+                    element.blur();
+                }
+            });
+        });
+
         // Delete modal functions
         function showDeleteModal(type, id) {
             state.deleteTarget = { type, id };
