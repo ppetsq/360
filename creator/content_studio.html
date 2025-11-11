@@ -1380,6 +1380,10 @@
                 <div class="phone-frame" id="phoneFrame">
                     <div class="linkedin-header">
                         <div class="linkedin-logo">in</div>
+                        <div class="header-undo-redo">
+                            <button class="header-undo-btn" id="generatorUndoBtn" disabled onclick="undoGenerator()">↩</button>
+                            <button class="header-redo-btn" id="generatorRedoBtn" disabled onclick="redoGenerator()">↪</button>
+                        </div>
                     </div>
                     <div class="post-container">
                         <div class="post">
@@ -1500,6 +1504,8 @@
             hasUserEdits: false,
             reservePost: null,
             isGenerating: false,
+            generatorHistory: [],
+            generatorHistoryIndex: -1,
             drafts: [],
             archive: [],
             currentDraftId: null,
@@ -1716,14 +1722,20 @@
             postContent.innerHTML = '<div class="loading-indicator">Generating post...</div>';
             disableActions(true);
 
+            // Reset history for new generation session
+            resetGeneratorHistory();
+
             try {
                 const prompt = buildPrompt(state.sourceMaterial, null);
                 const content = await callClaudeAPI(prompt);
-                
+
                 state.currentPost = content;
                 state.originalPost = content;
                 state.hasUserEdits = false;
-                
+
+                // Add to history
+                addToGeneratorHistory(content);
+
                 displayPost(content);
                 disableActions(false);
 
@@ -1999,6 +2011,65 @@ What did you stop doing that made your business stronger?`
             postContent.classList.remove('editing');
             document.getElementById('revertBtn').classList.remove('visible');
             updateCharCounter();
+            updateGeneratorUndoRedoButtons();
+        }
+
+        // Add to generator history
+        function addToGeneratorHistory(content) {
+            // Truncate history after current index
+            state.generatorHistory = state.generatorHistory.slice(0, state.generatorHistoryIndex + 1);
+
+            // Add new version
+            state.generatorHistory.push(content);
+            state.generatorHistoryIndex++;
+
+            updateGeneratorUndoRedoButtons();
+        }
+
+        // Update generator undo/redo button states
+        function updateGeneratorUndoRedoButtons() {
+            const undoBtn = document.getElementById('generatorUndoBtn');
+            const redoBtn = document.getElementById('generatorRedoBtn');
+
+            if (undoBtn) {
+                undoBtn.disabled = state.generatorHistoryIndex <= 0;
+            }
+            if (redoBtn) {
+                redoBtn.disabled = state.generatorHistoryIndex >= state.generatorHistory.length - 1;
+            }
+        }
+
+        // Undo generator
+        function undoGenerator() {
+            if (state.generatorHistoryIndex <= 0) return;
+
+            state.generatorHistoryIndex--;
+            const content = state.generatorHistory[state.generatorHistoryIndex];
+            state.currentPost = content;
+            state.originalPost = content;
+            state.hasUserEdits = false;
+
+            displayPost(content);
+        }
+
+        // Redo generator
+        function redoGenerator() {
+            if (state.generatorHistoryIndex >= state.generatorHistory.length - 1) return;
+
+            state.generatorHistoryIndex++;
+            const content = state.generatorHistory[state.generatorHistoryIndex];
+            state.currentPost = content;
+            state.originalPost = content;
+            state.hasUserEdits = false;
+
+            displayPost(content);
+        }
+
+        // Reset generator history
+        function resetGeneratorHistory() {
+            state.generatorHistory = [];
+            state.generatorHistoryIndex = -1;
+            updateGeneratorUndoRedoButtons();
         }
 
         // Enable editing in generator
@@ -2048,6 +2119,15 @@ What did you stop doing that made your business stronger?`
                     if (phoneFrame && !phoneFrame.contains(e.target)) {
                         postContent.classList.remove('editing');
                         postContent.contentEditable = 'false';
+
+                        // If user made edits, add to history
+                        if (state.hasUserEdits) {
+                            const currentContent = postContent.textContent;
+                            addToGeneratorHistory(currentContent);
+                            state.originalPost = currentContent;
+                            state.hasUserEdits = false;
+                            document.getElementById('revertBtn').classList.remove('visible');
+                        }
                     }
                 }
             });
@@ -2080,15 +2160,21 @@ What did you stop doing that made your business stronger?`
             state.drafts.push(draft);
             updateDraftsList();
 
+            // Reset history for new generation session
+            resetGeneratorHistory();
+
             // Use reserve post if available, otherwise generate new
             if (state.reservePost) {
                 state.currentPost = state.reservePost;
                 state.originalPost = state.reservePost;
                 state.hasUserEdits = false;
                 state.reservePost = null;
-                
+
+                // Add to history
+                addToGeneratorHistory(state.currentPost);
+
                 displayPost(state.currentPost);
-                
+
                 // Generate new reserve
                 generateReservePost();
             } else {
@@ -2154,11 +2240,14 @@ ${contentPrinciples}
 Write the revised LinkedIn post now:`;
 
                 const content = await callClaudeAPI(prompt);
-                
+
                 state.currentPost = content;
                 state.originalPost = content;
                 state.hasUserEdits = false;
-                
+
+                // Add improved version to history
+                addToGeneratorHistory(content);
+
                 displayPost(content);
                 disableActions(false);
 
@@ -2179,13 +2268,46 @@ Write the revised LinkedIn post now:`;
                 state.originalPost = state.reservePost;
                 state.hasUserEdits = false;
                 state.reservePost = null;
-                
+
+                // Add new post to history
+                addToGeneratorHistory(state.currentPost);
+
                 displayPost(state.currentPost);
-                
+
                 // Generate new reserve
                 generateReservePost();
             } else {
-                await generateNewPost();
+                // Generate new post (this already handles history)
+                if (state.isGenerating) return;
+
+                state.isGenerating = true;
+                const postContent = document.getElementById('postContent');
+                postContent.innerHTML = '<div class="loading-indicator">Generating post...</div>';
+                disableActions(true);
+
+                try {
+                    const prompt = buildPrompt(state.sourceMaterial, state.currentPost);
+                    const content = await callClaudeAPI(prompt);
+
+                    state.currentPost = content;
+                    state.originalPost = content;
+                    state.hasUserEdits = false;
+
+                    // Add to history
+                    addToGeneratorHistory(content);
+
+                    displayPost(content);
+                    disableActions(false);
+
+                    // Generate reserve post in background
+                    generateReservePost();
+                } catch (error) {
+                    console.error('Generation error:', error);
+                    postContent.innerHTML = '<div class="loading-indicator">Error generating post. Please try again.</div>';
+                    disableActions(false);
+                }
+
+                state.isGenerating = false;
             }
         }
 
