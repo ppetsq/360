@@ -1347,6 +1347,14 @@
                         <option value="finnish">Finnish</option>
                     </select>
 
+                    <div class="section-title">Emojis</div>
+                    <div class="theme-toggle-wrapper" style="justify-content: flex-start; margin-bottom: 20px;">
+                        <span class="theme-toggle-label">Use Emojis</span>
+                        <div class="theme-toggle" id="emojiToggle" onclick="toggleEmojis()">
+                            <div class="theme-toggle-thumb"></div>
+                        </div>
+                    </div>
+
                     <div class="section-title">Tone of Voice</div>
                     <div class="tone-sliders" id="toneSliders"></div>
 
@@ -1478,15 +1486,12 @@
             aboutYou: '',
             customInstructions: '',
             language: 'english',
+            useEmojis: false,
             toneSettings: {
                 seriousness: 2, // 0=serious, 4=humor
                 formality: 2, // 0=formal, 4=casual
-                focus: 2, // 0=company, 4=personal
                 length: 2, // 0=elaborate, 4=concise
-                language: 2, // 0=formal, 4=spoken
-                transparency: 2, // 0=secrecy, 4=transparency
-                swearing: 0, // 0=no swearing, 4=swearing
-                emojis: 2 // 0=no emojis, 4=using emojis
+                language: 2 // 0=formal, 4=spoken
             },
             wordLength: { min: 100, max: 300 },
             sourceMaterial: '',
@@ -1506,12 +1511,8 @@
         const toneSliders = [
             { key: 'seriousness', left: 'Serious', right: 'Humor' },
             { key: 'formality', left: 'Formal', right: 'Casual' },
-            { key: 'focus', left: 'Company Focus', right: 'Personal Focus' },
             { key: 'length', left: 'Elaborate', right: 'Concise' },
-            { key: 'language', left: 'Formal Language', right: 'Spoken Language' },
-            { key: 'transparency', left: 'Secrecy', right: 'Transparency' },
-            { key: 'swearing', left: 'No Swearing', right: 'Swearing' },
-            { key: 'emojis', left: 'No Emojis', right: 'Using Emojis' }
+            { key: 'language', left: 'Formal Language', right: 'Spoken Language' }
         ];
 
         // Generic Content Principles (no personal info)
@@ -1606,6 +1607,18 @@
         function updateLanguage() {
             const selector = document.getElementById('languageSelector');
             state.language = selector.value;
+        }
+
+        // Toggle emojis
+        function toggleEmojis() {
+            state.useEmojis = !state.useEmojis;
+            const toggle = document.getElementById('emojiToggle');
+
+            if (state.useEmojis) {
+                toggle.classList.add('dark');
+            } else {
+                toggle.classList.remove('dark');
+            }
         }
 
         // Update word length from inputs
@@ -1738,59 +1751,68 @@
 
         // Build prompt for API
         function buildPrompt(sourceMaterial, previousPost) {
-            const toneDescription = buildToneDescription();
             const wordRange = `${state.wordLength.min}-${state.wordLength.max}`;
             const languageName = state.language === 'finnish' ? 'Finnish' : 'English';
+            const toneGuidance = buildToneGuidance();
 
-            let prompt = `You are a LinkedIn content creator.
+            let prompt = `<task>Create a LinkedIn post in ${languageName}</task>
 
-ABOUT THE AUTHOR:
+<author_context>
 ${state.aboutYou}
+</author_context>
 
-${state.customInstructions ? `CUSTOM INSTRUCTIONS:\n${state.customInstructions}\n` : ''}
-SOURCE MATERIAL:
+${state.customInstructions ? `<custom_instructions>\n${state.customInstructions}\n</custom_instructions>\n\n` : ''}<source_material>
 ${sourceMaterial}
+</source_material>
 
-CONTENT PRINCIPLES:
+<tone_and_style>
+${toneGuidance}
+${state.useEmojis ? '- Use emojis where appropriate to add emotion and engagement' : '- Do not use any emojis'}
+</tone_and_style>
+
+<content_principles>
 ${contentPrinciples}
+</content_principles>
 
-TONE OF VOICE:
-${toneDescription}
+<strict_requirements>
+- MUST write in ${languageName} language
+- MUST be ${wordRange} words (count carefully and stay within this range)
+- MUST be ONE complete LinkedIn post
+- MUST follow the tone and style guidance above
+${state.customInstructions ? '- MUST follow all custom instructions\n' : ''}${previousPost ? '- MUST create a DIFFERENT angle than previous post\n' : ''}- Output ONLY the post content (no preamble or meta-commentary)
+</strict_requirements>
 
-REQUIREMENTS:
-- Create ONE engaging LinkedIn post
-- Word count: ${wordRange} words
-- Output language: ${languageName}
-- Follow all content principles above
-${state.customInstructions ? '- Follow the custom instructions provided\n' : ''}- Match the tone of voice settings
-- Use the source material as the basis
-- Be specific, show examples when possible
-${previousPost ? '\n- Create a DIFFERENT angle/approach than the previous post\n- Vary structure and style significantly' : ''}
-
-${previousPost ? `\nPREVIOUS POST (create something DIFFERENT):\n${previousPost}` : ''}
-
-OUTPUT ONLY THE POST CONTENT. Do not include any preamble, explanation, or meta-commentary.`;
+${previousPost ? `<previous_post>\nAlready written - create something DIFFERENT:\n${previousPost}\n</previous_post>\n\n` : ''}Write the LinkedIn post now:`;
 
             return prompt;
         }
 
-        // Build tone description from sliders
-        function buildToneDescription() {
-            const levels = ['Very', 'Somewhat', 'Neutral', 'Somewhat', 'Very'];
+        // Build tone guidance from sliders
+        function buildToneGuidance() {
+            const t = state.toneSettings;
             const descriptions = [];
 
-            toneSliders.forEach(slider => {
-                const value = state.toneSettings[slider.key];
-                const level = levels[value];
-                
-                if (value < 2) {
-                    descriptions.push(`${level} ${slider.left.toLowerCase()}`);
-                } else if (value > 2) {
-                    descriptions.push(`${level} ${slider.right.toLowerCase()}`);
-                }
-            });
+            // Seriousness (0=serious, 4=humor)
+            if (t.seriousness <= 1) descriptions.push('- Professional and serious tone');
+            else if (t.seriousness >= 3) descriptions.push('- Lighthearted with tasteful humor');
+            else descriptions.push('- Balanced, engaging tone');
 
-            return descriptions.length > 0 ? descriptions.join(', ') : 'Neutral tone across all dimensions';
+            // Formality (0=formal, 4=casual)
+            if (t.formality <= 1) descriptions.push('- Highly formal and polished');
+            else if (t.formality >= 3) descriptions.push('- Casual and approachable');
+            else descriptions.push('- Conversational but professional');
+
+            // Length style (0=elaborate, 4=concise)
+            if (t.length <= 1) descriptions.push('- Detailed explanations with depth');
+            else if (t.length >= 3) descriptions.push('- Concise and to-the-point');
+            else descriptions.push('- Balanced level of detail');
+
+            // Language (0=formal business, 4=spoken)
+            if (t.language <= 1) descriptions.push('- Formal business language');
+            else if (t.language >= 3) descriptions.push('- Natural, spoken-style language');
+            else descriptions.push('- Clear, accessible language');
+
+            return descriptions.join('\n');
         }
 
         // Demo mode state
@@ -2097,27 +2119,39 @@ What did you stop doing that made your business stronger?`
             disableActions(true);
 
             try {
-                const prompt = `You are revising a LinkedIn post based on user feedback.
+                const wordRange = `${state.wordLength.min}-${state.wordLength.max}`;
+                const languageName = state.language === 'finnish' ? 'Finnish' : 'English';
+                const toneGuidance = buildToneGuidance();
 
-ORIGINAL POST:
+                const prompt = `<task>Revise a LinkedIn post based on user feedback</task>
+
+<original_post>
 ${state.currentPost}
+</original_post>
 
-USER FEEDBACK:
+<user_feedback>
 ${feedback}
+</user_feedback>
 
-CONTENT PRINCIPLES:
+<tone_and_style>
+${toneGuidance}
+${state.useEmojis ? '- Use emojis where appropriate to add emotion and engagement' : '- Do not use any emojis'}
+</tone_and_style>
+
+<content_principles>
 ${contentPrinciples}
+</content_principles>
 
-TONE OF VOICE:
-${buildToneDescription()}
+<strict_requirements>
+- MUST incorporate the user's feedback
+- MUST write in ${languageName} language
+- MUST be ${wordRange} words (count carefully and stay within this range)
+- MUST maintain the core message but adjust as requested
+- MUST follow all content principles and tone guidance
+- Output ONLY the revised post (no preamble or meta-commentary)
+</strict_requirements>
 
-REQUIREMENTS:
-- Revise the post incorporating the user's feedback
-- Word count: ${state.wordLength.min}-${state.wordLength.max} words
-- Maintain the core message but adjust as requested
-- Follow all content principles
-
-OUTPUT ONLY THE REVISED POST. No preamble or explanation.`;
+Write the revised LinkedIn post now:`;
 
                 const content = await callClaudeAPI(prompt);
                 
