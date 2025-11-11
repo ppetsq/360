@@ -1355,6 +1355,14 @@
                         </div>
                     </div>
 
+                    <div class="section-title">Creativity</div>
+                    <div class="theme-toggle-wrapper" style="justify-content: flex-start; margin-bottom: 20px;">
+                        <span class="theme-toggle-label">Creative Mode</span>
+                        <div class="theme-toggle dark" id="creativeModeToggle" onclick="toggleCreativeMode()">
+                            <div class="theme-toggle-thumb"></div>
+                        </div>
+                    </div>
+
                     <div class="section-title">Tone of Voice</div>
                     <div class="tone-sliders" id="toneSliders"></div>
 
@@ -1491,11 +1499,11 @@
             customInstructions: '',
             language: 'english',
             useEmojis: false,
+            useCreativeMode: true,
             toneSettings: {
                 seriousness: 2, // 0=serious, 4=humor
                 formality: 2, // 0=formal, 4=casual
-                length: 2, // 0=elaborate, 4=concise
-                language: 2 // 0=formal, 4=spoken
+                length: 2 // 0=elaborate, 4=concise
             },
             wordLength: { min: 100, max: 300 },
             sourceMaterial: '',
@@ -1517,8 +1525,7 @@
         const toneSliders = [
             { key: 'seriousness', left: 'Serious', right: 'Humor' },
             { key: 'formality', left: 'Formal', right: 'Casual' },
-            { key: 'length', left: 'Elaborate', right: 'Concise' },
-            { key: 'language', left: 'Formal Language', right: 'Spoken Language' }
+            { key: 'length', left: 'Elaborate', right: 'Concise' }
         ];
 
         // Generic Content Principles (no personal info)
@@ -1621,6 +1628,18 @@
             const toggle = document.getElementById('emojiToggle');
 
             if (state.useEmojis) {
+                toggle.classList.add('dark');
+            } else {
+                toggle.classList.remove('dark');
+            }
+        }
+
+        // Toggle creative mode
+        function toggleCreativeMode() {
+            state.useCreativeMode = !state.useCreativeMode;
+            const toggle = document.getElementById('creativeModeToggle');
+
+            if (state.useCreativeMode) {
                 toggle.classList.add('dark');
             } else {
                 toggle.classList.remove('dark');
@@ -1819,11 +1838,6 @@ ${previousPost ? `<previous_post>\nAlready written - create something DIFFERENT:
             else if (t.length >= 3) descriptions.push('- Concise and to-the-point');
             else descriptions.push('- Balanced level of detail');
 
-            // Language (0=formal business, 4=spoken)
-            if (t.language <= 1) descriptions.push('- Formal business language');
-            else if (t.language >= 3) descriptions.push('- Natural, spoken-style language');
-            else descriptions.push('- Clear, accessible language');
-
             return descriptions.join('\n');
         }
 
@@ -1928,6 +1942,9 @@ What did you stop doing that made your business stronger?`
         // Call Claude API (with demo mode fallback)
         async function callClaudeAPI(prompt) {
             try {
+                // Temperature: 1.0 for creative mode, 0.7 for consistent mode
+                const temperature = state.useCreativeMode ? 1.0 : 0.7;
+
                 const response = await fetch("https://api.anthropic.com/v1/messages", {
                     method: "POST",
                     headers: {
@@ -1936,6 +1953,7 @@ What did you stop doing that made your business stronger?`
                     body: JSON.stringify({
                         model: "claude-3-7-sonnet-20250219",
                         max_tokens: 1500,
+                        temperature: temperature,
                         messages: [
                             { role: "user", content: prompt }
                         ]
