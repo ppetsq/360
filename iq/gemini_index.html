@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IQ Sähkö | Premium Älykotiratkaisut</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* --- CORE BRAND VARIABLES & RESET --- */
+        :root {
+            --color-primary: #FFA854; /* Warm LED Amber */
+            --color-primary-dark: #2D2D2D; /* Charcoal Concrete */
+            --color-base: #F8F6F2; /* Warm White */
+            --color-accent: #B8956A; /* Brushed Brass */
+            --color-accent-dark: #1A1A1A; /* Carbon Black */
+            --color-neutral: #E8E3DB; /* Stone Gray */
+            
+            --font-headline: 'Outfit', sans-serif;
+            --font-body: 'Work Sans', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-body);
+            background: var(--color-base);
+            color: var(--color-primary-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-headline);
+            font-weight: 300; /* Default to lighter weights per guidelines */
+        }
+
+        /* Utility Classes */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .text-amber { color: var(--color-primary); }
+        .bg-dark { background: var(--color-primary-dark); color: var(--color-base); }
+        .bg-carbon { background: var(--color-accent-dark); color: var(--color-base); }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            border-radius: 4px;
+            font-family: var(--font-headline);
+            font-weight: 600;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: var(--color-accent-dark);
+            box-shadow: 0 4px 20px rgba(255, 168, 84, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 168, 84, 0.5);
+        }
+
+        .btn-outline-light {
+            border-color: var(--color-base);
+            color: var(--color-base);
+        }
+
+        .btn-outline-light:hover {
+            background: var(--color-base);
+            color: var(--color-primary-dark);
+        }
+
+        /* --- HEADER & NAV --- */
+        .header {
+            background: var(--color-primary-dark);
+            padding: 24px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--color-base);
+        }
+
+        .brand-icon {
+            width: 40px; height: 40px;
+            border: 2px solid var(--color-primary);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-headline); font-weight: 600; color: var(--color-primary);
+            box-shadow: 0 0 15px rgba(255, 168, 84, 0.2);
+        }
+
+        .brand-text {
+            font-family: var(--font-headline);
+            font-size: 20px;
+            letter-spacing: 2px;
+        }
+
+        .nav-links a {
+            color: var(--color-base);
+            text-decoration: none;
+            margin-left: 32px;
+            font-family: var(--font-headline);
+            font-weight: 400;
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero-section {
+            /* Simulating the moody architectural photography vibe with gradients */
+            background: linear-gradient(135deg, var(--color-accent-dark) 0%, var(--color-primary-dark) 100%);
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding-top: 100px;
+            overflow: hidden;
+        }
+
+        /* The "Amber Glow" effect as a background element */
+        .hero-glow-effect {
+            position: absolute;
+            top: 20%;
+            right: 10%;
+            width: 40vw;
+            height: 40vw;
+            background: radial-gradient(circle, rgba(255,168,84,0.2) 0%, rgba(29,29,29,0) 70%);
+            pointer-events: none;
+        }
+        
+        /* Architectural line accent */
+        .hero-line-accent {
+            position: absolute;
+            bottom: 15%;
+            left: 0;
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, var(--color-primary) 50%, transparent 100%);
+            box-shadow: 0 0 20px var(--color-primary);
+            opacity: 0.7;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 700px;
+        }
+
+        .hero-subtitle {
+            color: var(--color-primary);
+            font-family: var(--font-headline);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        h1.hero-title {
+            color: var(--color-base);
+            font-size: 64px;
+            line-height: 1.1;
+            margin-bottom: 32px;
+            letter-spacing: -1px;
+        }
+
+        .hero-description {
+            color: var(--color-neutral);
+            font-size: 18px;
+            margin-bottom: 48px;
+            max-width: 500px;
+        }
+
+        /* --- SERVICES / VALUE PROP --- */
+        .section-padding {
+            padding: 120px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 80px auto;
+        }
+
+        .section-header h2 {
+            font-size: 40px;
+            margin-bottom: 24px;
+        }
+
+        .section-header p {
+            color: #666;
+            font-size: 18px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .service-card {
+            background: white;
+            padding: 48px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            border-top: 3px solid transparent;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            border-top-color: var(--color-primary);
+        }
+
+        .service-icon {
+            font-size: 32px;
+            color: var(--color-primary);
+            margin-bottom: 24px;
+            /* Minimalist geometric icon representation */
+            width: 64px; height: 64px;
+            background: var(--color-base);
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px;
+        }
+
+        .service-card h3 {
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        /* --- FEATURE SECTION (The "Glow" Vibe) --- */
+        .feature-section {
+            position: relative;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 80px;
+        }
+
+        .feature-visual {
+            height: 600px;
+            background: var(--color-accent-dark);
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            /* Simulating an architectural detail shot with warm lighting */
+            background: linear-gradient(45deg, #1a1a1a, #2d2d2d);
+        }
+
+        /* Simulating the LED strip glow accent described in guidelines */
+        .led-strip-simulation {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            right: 10%;
+            height: 4px;
+            background: var(--color-primary);
+            box-shadow: 0 0 40px var(--color-primary), 0 0 20px var(--color-primary) inset;
+            border-radius: 2px;
+            opacity: 0.9;
+        }
+        .led-strip-vertical {
+             position: absolute;
+             top: 10%;
+             bottom: 10%;
+             left: 70%;
+             width: 4px;
+             background: var(--color-primary);
+             box-shadow: 0 0 40px var(--color-primary), 0 0 20px var(--color-primary) inset;
+             border-radius: 2px;
+             opacity: 0.6;
+        }
+
+        .feature-content h2 {
+            color: var(--color-base);
+            font-size: 48px;
+            margin-bottom: 32px;
+        }
+
+        .feature-content p {
+             color: var(--color-neutral);
+             font-size: 18px;
+             margin-bottom: 40px;
+        }
+
+        .tech-partners {
+            display: flex;
+            gap: 24px;
+            margin-top: 40px;
+            padding-top: 32px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tech-tag {
+            font-family: var(--font-headline);
+            font-size: 14px;
+            color: var(--color-primary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* --- FOOTER --- */
+        .footer {
+            padding: 80px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 80px;
+            margin-bottom: 64px;
+        }
+
+        .footer-about p {
+            color: var(--color-neutral);
+            margin-top: 24px;
+            max-width: 400px;
+        }
+
+        .footer-links h4 {
+            color: var(--color-base);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .footer-links ul { list-style: none; }
+        .footer-links li { margin-bottom: 16px; }
+        .footer-links a {
+            color: var(--color-neutral);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover { color: var(--color-primary); }
+
+        .footer-bottom {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="container nav-container">
+            <a href="#" class="brand-logo">
+                <div class="brand-icon">IQ</div>
+                <span class="brand-text">SÄHKÖ</span>
+            </a>
+            <nav class="nav-links">
+                <a href="#palvelut">Palvelut</a>
+                <a href="#ratkaisut">Ratkaisut</a>
+                <a href="#referenssit">Referenssit</a>
+                <a href="#ota-yhteytta" class="btn btn-primary" style="margin-left: 40px;">Ota Yhteyttä</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="hero-glow-effect"></div>
+        <div class="hero-line-accent"></div>
+        <div class="container">
+            <div class="hero-content">
+                <span class="hero-subtitle">Premium Älykotiratkaisut</span>
+                <h1 class="hero-title">Koe asumisen<br>uusi valo.</h1>
+                <p class="hero-description">
+                    Suunnittelemme ja toteutamme yksilöllisiä älykoteja, joissa teknologia palvelee tunnelmaa. Luotettavaa laatua suunnittelusta asennukseen.
+                </p>
+                <div style="display: flex; gap: 16px;">
+                    <a href="#ota-yhteytta" class="btn btn-primary">Pyydä Tarjous</a>
+                    <a href="#palvelut" class="btn btn-outline-light">Tutustu Palveluihin</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="palvelut" class="section-padding" style="background: var(--color-base);">
+        <div class="container">
+            <div class="section-header">
+                <h2>Kokonaisvaltainen Palvelu</h2>
+                <p>Emme vain asenna laitteita – luomme koteja, jotka ennakoivat tarpeesi. Puolueeton asiantuntemuksemme varmistaa parhaan ratkaisun.</p>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        □
+                    </div>
+                    <h3>Suunnittelu & Konsultointi</h3>
+                    <p>Määrittelemme tarpeesi ja suunnittelemme juuri sinun kotiisi sopivan järjestelmäkokonaisuuden. Selkeät kuvat ja dokumentaatio.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        △
+                    </div>
+                    <h3>Sähköurakointi & Asennus</h3>
+                    <p>Ammattitaitoinen ja sertifioitu asennus. Integroimme sähkö- ja älyjärjestelmät saumattomaksi kokonaisuudeksi.</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        ○
+                    </div>
+                    <h3>Ohjelmointi & Käyttöönotto</h3>
+                    <p>Luomme intuitiiviset käyttöliittymät ja tunnelmavalaistukset. Varmistamme, että kotisi toimii juuri kuten haluat.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="ratkaisut" class="section-padding bg-dark">
+        <div class="container">
+            <div class="feature-grid">
+                <div class="feature-content">
+                    <span class="text-amber" style="font-family: var(--font-headline); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 16px;">Allekirjoituksemme</span>
+                    <h2>Lämmin tunnelma kohtaa huipputeknologian.</h2>
+                    <p>
+                        Erikoisosaamisemme on korkealaatuisten valaistusratkaisujen integrointi osaksi älykotia. Luomme tiloja, joissa lämmin valo (2700K) korostaa arkkitehtuuria ja materiaaleja. 
+                    </p>
+                    <p>
+                        Käytämme vain luotettavimpia, avoimia järjestelmiä varmistaaksemme kotisi pitkäikäisyyden.
+                    </p>
+                    
+                    <div class="tech-partners">
+                        <span class="tech-tag">KNX</span>
+                        <span class="tech-tag">Loxone</span>
+                        <span class="tech-tag">Free@Home</span>
+                    </div>
+                </div>
+                
+                <div class="feature-visual">
+                    <div class="led-strip-simulation"></div>
+                    <div class="led-strip-vertical"></div>
+                    <div style="position: absolute; bottom: 40px; left: 40px; color: var(--color-neutral); font-family: var(--font-headline);">
+                        <div style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #666;">Visualisointi</div>
+                        <div style="font-size: 24px;">Integroitu LED-valaistus</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="ota-yhteytta" class="section-padding bg-carbon" style="text-align: center;">
+        <div class="container">
+            <h2 style="color: var(--color-base); font-size: 48px; margin-bottom: 24px;">Aloita unelmakotisi suunnittelu</h2>
+            <p style="color: var(--color-neutral); font-size: 20px; margin-bottom: 48px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                Ota yhteyttä, niin kartoitetaan toiveesi ja luodaan koti, joka palvelee sinua nyt ja tulevaisuudessa.
+            </p>
+            <a href="#" class="btn btn-primary">Varaa Maksuton Kartoitus</a>
+        </div>
+    </section>
+
+    <footer class="footer bg-dark">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <a href="#" class="brand-logo">
+                        <div class="brand-icon" style="width: 32px; height: 32px; font-size: 14px;">IQ</div>
+                        <span class="brand-text" style="font-size: 18px;">SÄHKÖ</span>
+                    </a>
+                    <p>Premium-tason älykotiratkaisut ja sähköurakointi vaativiin kohteisiin. Luomme toimivia ja tunnelmallisia koteja intohimolla.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Yhteystiedot</h4>
+                    <ul>
+                        <li><a href="mailto:info@iqsahko.fi">info@iqsahko.fi</a></li>
+                        <li><a href="tel:+3580000000">+358 40 123 4567</a></li>
+                        <li style="color: var(--color-neutral);">Helsinki, Suomi</li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Pikalinkit</h4>
+                    <ul>
+                        <li><a href="#palvelut">Palvelut</a></li>
+                        <li><a href="#ratkaisut">Ratkaisut</a></li>
+                        <li><a href="#">Tietosuojaseloste</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                © 2025 IQ Sähkö. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
