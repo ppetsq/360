@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Close on background click
     modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
+        if (e.target === modal || e.target.classList.contains('modal-content')) {
             closeModal();
         }
     });
@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Close on background click
     imageModal.addEventListener('click', function(e) {
-        if (e.target === imageModal) {
+        if (e.target === imageModal || e.target.classList.contains('modal-content')) {
             closeImageModal();
         }
     });
