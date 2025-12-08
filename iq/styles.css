@@ -87,22 +87,53 @@ body {
     overflow-y: auto;
 }
 
-/* Radial glow effect for sidebar */
+/* Moodboard image background for sidebar */
 .sidebar::before {
     content: '';
     position: fixed;
-    top: 20%;
-    left: 140px;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(255,168,84,0.15) 0%, transparent 70%);
+    bottom: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100%;
+    background-image: url('https://files.petsq.works/iq/003-wires.jpg');
+    background-size: cover;
+    background-position: center bottom;
+    opacity: 0.5;
     pointer-events: none;
     z-index: 99;
+    -webkit-mask-image: linear-gradient(to top,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0.95) 10%,
+        rgba(0, 0, 0, 0.9) 15%,
+        rgba(0, 0, 0, 0.8) 20%,
+        rgba(0, 0, 0, 0.7) 25%,
+        rgba(0, 0, 0, 0.6) 30%,
+        rgba(0, 0, 0, 0.5) 35%,
+        rgba(0, 0, 0, 0.4) 40%,
+        rgba(0, 0, 0, 0.3) 45%,
+        rgba(0, 0, 0, 0.2) 50%,
+        rgba(0, 0, 0, 0.1) 55%,
+        rgba(0, 0, 0, 0.05) 60%,
+        rgba(0, 0, 0, 0) 65%);
+    mask-image: linear-gradient(to top,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0.95) 10%,
+        rgba(0, 0, 0, 0.9) 15%,
+        rgba(0, 0, 0, 0.8) 20%,
+        rgba(0, 0, 0, 0.7) 25%,
+        rgba(0, 0, 0, 0.6) 30%,
+        rgba(0, 0, 0, 0.5) 35%,
+        rgba(0, 0, 0, 0.4) 40%,
+        rgba(0, 0, 0, 0.3) 45%,
+        rgba(0, 0, 0, 0.2) 50%,
+        rgba(0, 0, 0, 0.1) 55%,
+        rgba(0, 0, 0, 0.05) 60%,
+        rgba(0, 0, 0, 0) 65%);
 }
 
 .sidebar > * {
     position: relative;
-    z-index: 100;
+    z-index: 101;
 }
 
 .logo-section {
@@ -550,67 +581,157 @@ body {
     margin-bottom: 60px;
 }
 
-/* Rotating background images */
+/* Rotating background images - positioned on right side */
+/* Layer 1 - shows images 1 and 3 */
 .text-hierarchy-example::before {
     content: '';
     position: absolute;
     top: 0;
-    left: 0;
     right: 0;
-    bottom: 0;
+    width: 50%;
+    height: 100%;
     background-image: url('https://files.petsq.works/iq/001-circuit.jpg');
     background-size: cover;
-    background-position: center;
+    background-position: center right;
     opacity: 0;
-    animation: bgRotate1 15s infinite;
+    animation: bgRotateLayer1 30s infinite;
     z-index: 0;
+    -webkit-mask-image: linear-gradient(to left,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0.95) 10%,
+        rgba(0, 0, 0, 0.9) 15%,
+        rgba(0, 0, 0, 0.85) 20%,
+        rgba(0, 0, 0, 0.8) 25%,
+        rgba(0, 0, 0, 0.75) 30%,
+        rgba(0, 0, 0, 0.7) 35%,
+        rgba(0, 0, 0, 0.65) 40%,
+        rgba(0, 0, 0, 0.6) 45%,
+        rgba(0, 0, 0, 0.5) 50%,
+        rgba(0, 0, 0, 0.4) 55%,
+        rgba(0, 0, 0, 0.3) 60%,
+        rgba(0, 0, 0, 0.2) 65%,
+        rgba(0, 0, 0, 0.1) 70%,
+        rgba(0, 0, 0, 0.05) 75%,
+        rgba(0, 0, 0, 0) 80%);
+    mask-image: linear-gradient(to left,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0.95) 10%,
+        rgba(0, 0, 0, 0.9) 15%,
+        rgba(0, 0, 0, 0.85) 20%,
+        rgba(0, 0, 0, 0.8) 25%,
+        rgba(0, 0, 0, 0.75) 30%,
+        rgba(0, 0, 0, 0.7) 35%,
+        rgba(0, 0, 0, 0.65) 40%,
+        rgba(0, 0, 0, 0.6) 45%,
+        rgba(0, 0, 0, 0.5) 50%,
+        rgba(0, 0, 0, 0.4) 55%,
+        rgba(0, 0, 0, 0.3) 60%,
+        rgba(0, 0, 0, 0.2) 65%,
+        rgba(0, 0, 0, 0.1) 70%,
+        rgba(0, 0, 0, 0.05) 75%,
+        rgba(0, 0, 0, 0) 80%);
 }
 
+/* Layer 2 - shows image 2 */
 .text-hierarchy-example::after {
     content: '';
     position: absolute;
     top: 0;
-    left: 0;
     right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(26, 26, 26, 0.85) 0%, rgba(45, 45, 45, 0.9) 100%);
-    z-index: 1;
+    width: 50%;
+    height: 100%;
+    background-image: url('https://files.petsq.works/iq/002-concrete.jpg');
+    background-size: cover;
+    background-position: center right;
+    opacity: 0;
+    animation: bgRotateLayer2 30s infinite;
+    z-index: 0;
+    -webkit-mask-image: linear-gradient(to left,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0.95) 10%,
+        rgba(0, 0, 0, 0.9) 15%,
+        rgba(0, 0, 0, 0.85) 20%,
+        rgba(0, 0, 0, 0.8) 25%,
+        rgba(0, 0, 0, 0.75) 30%,
+        rgba(0, 0, 0, 0.7) 35%,
+        rgba(0, 0, 0, 0.65) 40%,
+        rgba(0, 0, 0, 0.6) 45%,
+        rgba(0, 0, 0, 0.5) 50%,
+        rgba(0, 0, 0, 0.4) 55%,
+        rgba(0, 0, 0, 0.3) 60%,
+        rgba(0, 0, 0, 0.2) 65%,
+        rgba(0, 0, 0, 0.1) 70%,
+        rgba(0, 0, 0, 0.05) 75%,
+        rgba(0, 0, 0, 0) 80%);
+    mask-image: linear-gradient(to left,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0.95) 10%,
+        rgba(0, 0, 0, 0.9) 15%,
+        rgba(0, 0, 0, 0.85) 20%,
+        rgba(0, 0, 0, 0.8) 25%,
+        rgba(0, 0, 0, 0.75) 30%,
+        rgba(0, 0, 0, 0.7) 35%,
+        rgba(0, 0, 0, 0.65) 40%,
+        rgba(0, 0, 0, 0.6) 45%,
+        rgba(0, 0, 0, 0.5) 50%,
+        rgba(0, 0, 0, 0.4) 55%,
+        rgba(0, 0, 0, 0.3) 60%,
+        rgba(0, 0, 0, 0.2) 65%,
+        rgba(0, 0, 0, 0.1) 70%,
+        rgba(0, 0, 0, 0.05) 75%,
+        rgba(0, 0, 0, 0) 80%);
 }
 
-@keyframes bgRotate1 {
-    0%, 100% {
+/* Layer 1 animation: circuit (0-10s) then wires (20-30s) */
+@keyframes bgRotateLayer1 {
+    0% {
         background-image: url('https://files.petsq.works/iq/001-circuit.jpg');
-        opacity: 0.3;
+        opacity: 0.5;
     }
-    30% {
+    26% {
         background-image: url('https://files.petsq.works/iq/001-circuit.jpg');
-        opacity: 0.3;
+        opacity: 0.5;
     }
     33% {
-        background-image: url('https://files.petsq.works/iq/002-concrete.jpg');
+        background-image: url('https://files.petsq.works/iq/001-circuit.jpg');
         opacity: 0;
     }
-    35% {
-        background-image: url('https://files.petsq.works/iq/002-concrete.jpg');
-        opacity: 0.3;
-    }
-    63% {
-        background-image: url('https://files.petsq.works/iq/002-concrete.jpg');
-        opacity: 0.3;
-    }
-    66% {
+    60% {
         background-image: url('https://files.petsq.works/iq/003-wires.jpg');
         opacity: 0;
     }
-    68% {
+    67% {
         background-image: url('https://files.petsq.works/iq/003-wires.jpg');
-        opacity: 0.3;
+        opacity: 0.5;
     }
-    96% {
+    93% {
         background-image: url('https://files.petsq.works/iq/003-wires.jpg');
-        opacity: 0.3;
+        opacity: 0.5;
     }
-    98% {
+    100% {
+        background-image: url('https://files.petsq.works/iq/003-wires.jpg');
+        opacity: 0;
+    }
+}
+
+/* Layer 2 animation: concrete (10-20s) */
+@keyframes bgRotateLayer2 {
+    0% {
+        opacity: 0;
+    }
+    26% {
+        opacity: 0;
+    }
+    33% {
+        opacity: 0.5;
+    }
+    60% {
+        opacity: 0.5;
+    }
+    67% {
+        opacity: 0;
+    }
+    100% {
         opacity: 0;
     }
 }
@@ -1171,7 +1292,6 @@ body {
     background: rgba(255, 255, 255, 0.1);
     border: 2px solid rgba(255, 255, 255, 0.3);
     color: var(--white);
-    font-size: 48px;
     width: 80px;
     height: 80px;
     display: flex;
@@ -1181,23 +1301,50 @@ body {
     transition: all 0.3s;
     z-index: 10001;
     border-radius: 50%;
-    font-weight: 300;
     backdrop-filter: blur(10px);
+    padding: 0;
 }
 
 .modal-nav:hover {
     background: rgba(255, 168, 84, 0.3);
     border-color: var(--amber);
-    color: var(--amber);
     box-shadow: 0 0 30px rgba(255, 168, 84, 0.5);
+}
+
+.modal-prev:hover::after {
+    border-right-color: var(--amber);
+}
+
+.modal-next:hover::after {
+    border-left-color: var(--amber);
 }
 
 .modal-prev {
     left: 60px;
 }
 
+.modal-prev::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 11px solid var(--white);
+    transition: border-color 0.3s;
+}
+
 .modal-next {
     right: 60px;
+}
+
+.modal-next::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 11px solid var(--white);
+    transition: border-color 0.3s;
 }
 
 /* Dark modal backgrounds */
@@ -1526,7 +1673,16 @@ body {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    transition: box-shadow 0.3s;
+    transition: box-shadow 0.3s, transform 0.2s;
+}
+
+.image-card.clickable {
+    cursor: pointer;
+}
+
+.image-card.clickable:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    transform: scale(1.02);
 }
 
 .image-card:hover {
@@ -1621,6 +1777,48 @@ body {
     pointer-events: none;
 }
 
+/* ===== IMAGE MODAL ===== */
+.image-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-modal.active {
+    display: flex;
+}
+
+.modal-image {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90vw;
+    max-height: 90vh;
+}
+
+.modal-image.active {
+    display: block;
+}
+
+.modal-image img {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+}
+
 /* ===== MOBILE MENU TOGGLE - REDESIGNED ===== */
 .mobile-menu-toggle {
     display: none;
@@ -1706,25 +1904,28 @@ body {
         width: 100vw;
         height: 100vh;
         top: 0;
-        right: -100vw;
-        left: auto;
+        right: 0;
+        left: 0;
         z-index: 10001;
-        transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+        transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s;
         overflow-y: auto;
         display: flex;
         justify-content: center;
         align-items: center;
         padding: 80px 40px;
         opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
     }
 
     .sidebar::before {
-        display: none; /* Hide glow effect on mobile */
+        display: none; /* Hide background image on mobile */
     }
 
     .sidebar.mobile-active {
-        right: 0;
         opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
     }
 
     .sidebar .logo-section {
@@ -1745,13 +1946,13 @@ body {
         width: 100%;
         margin-bottom: 0;
         opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
+        transform: translateY(20px) scale(0.95);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .sidebar.mobile-active .nav-menu li {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 
     .sidebar.mobile-active .nav-menu li:nth-child(1) { transition-delay: 0.1s; }
@@ -1840,12 +2041,13 @@ body {
 
     /* Text Hierarchy Example */
     .text-hierarchy-example {
-        padding: 40px 20px;
+        padding: 40px 30px;
         overflow-wrap: break-word;
     }
 
     .text-hierarchy-example::before {
         background-size: cover;
+        width: 55%;
     }
 
     .example-title {
@@ -1910,14 +2112,18 @@ body {
 
 @media (max-width: 480px) {
     .mobile-menu-toggle {
-        top: 15px;
-        right: 15px;
-        width: 36px;
-        height: 36px;
+        top: 16px;
+        right: 16px;
+        width: 44px;
+        height: 44px;
     }
 
     .mobile-menu-toggle span {
-        width: 18px;
+        width: 20px;
+    }
+
+    .text-hierarchy-example::before {
+        width: 60%;
     }
 
     .content {

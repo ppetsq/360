@@ -212,3 +212,73 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// ===== IMAGE MODAL FUNCTIONALITY =====
+document.addEventListener('DOMContentLoaded', function() {
+    const imageModal = document.getElementById('imageModal');
+    if (!imageModal) return; // Exit if modal doesn't exist
+
+    const clickableImageCards = document.querySelectorAll('.image-card.clickable');
+    const imageModalClose = imageModal.querySelector('.modal-close');
+    const imageModalPrev = imageModal.querySelector('.modal-prev');
+    const imageModalNext = imageModal.querySelector('.modal-next');
+    const modalImages = imageModal.querySelectorAll('.modal-image');
+    let currentImageIndex = 0;
+
+    // Show modal image at specific index
+    function showModalImage(index) {
+        modalImages.forEach(img => img.classList.remove('active'));
+        modalImages[index].classList.add('active');
+        currentImageIndex = index;
+    }
+
+    // Open image modal
+    clickableImageCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const index = parseInt(this.getAttribute('data-image-index'));
+            imageModal.classList.add('active');
+            showModalImage(index);
+            document.body.style.overflow = 'hidden'; // Prevent background scroll
+        });
+    });
+
+    // Close image modal
+    function closeImageModal() {
+        imageModal.classList.remove('active');
+        document.body.style.overflow = ''; // Restore scroll
+    }
+
+    imageModalClose.addEventListener('click', closeImageModal);
+
+    // Close on background click
+    imageModal.addEventListener('click', function(e) {
+        if (e.target === imageModal) {
+            closeImageModal();
+        }
+    });
+
+    // Previous image
+    imageModalPrev.addEventListener('click', function() {
+        const newIndex = (currentImageIndex - 1 + modalImages.length) % modalImages.length;
+        showModalImage(newIndex);
+    });
+
+    // Next image
+    imageModalNext.addEventListener('click', function() {
+        const newIndex = (currentImageIndex + 1) % modalImages.length;
+        showModalImage(newIndex);
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (!imageModal.classList.contains('active')) return;
+
+        if (e.key === 'Escape') {
+            closeImageModal();
+        } else if (e.key === 'ArrowLeft') {
+            imageModalPrev.click();
+        } else if (e.key === 'ArrowRight') {
+            imageModalNext.click();
+        }
+    });
+});

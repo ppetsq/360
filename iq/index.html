@@ -78,8 +78,8 @@
                 <div class="concept-card clickable" data-logo-index="2">
                     <div class="concept-preview light">
                         <div class="brand-logo-display stacked">
-                            <div class="brand-icon stacked-version">IQ</div>
-                            <span class="brand-text stacked-version">SÄHKÖ</span>
+                            <div class="brand-icon stacked-version light-version">IQ</div>
+                            <span class="brand-text stacked-version light-version">SÄHKÖ</span>
                         </div>
                     </div>
                 </div>
@@ -98,8 +98,8 @@
             <!-- Logo Modal Overlay -->
             <div id="logoModal" class="logo-modal">
                 <button class="modal-close">&times;</button>
-                <button class="modal-nav modal-prev">‹</button>
-                <button class="modal-nav modal-next">›</button>
+                <button class="modal-nav modal-prev"></button>
+                <button class="modal-nav modal-next"></button>
                 <div class="modal-content">
                     <!-- Dark Horizontal -->
                     <div class="modal-logo" data-modal-index="0">
@@ -118,8 +118,8 @@
                     <!-- Stacked Light -->
                     <div class="modal-logo" data-modal-index="2">
                         <div class="brand-logo-display stacked modal-size">
-                            <div class="brand-icon stacked-version modal-icon">IQ</div>
-                            <span class="brand-text stacked-version modal-text">SÄHKÖ</span>
+                            <div class="brand-icon stacked-version light-version modal-icon">IQ</div>
+                            <span class="brand-text stacked-version light-version modal-text">SÄHKÖ</span>
                         </div>
                     </div>
                     <!-- Stacked Dark -->
@@ -270,16 +270,34 @@
             </div>
 
             <div class="images-grid">
-                <div class="image-card">
+                <div class="image-card clickable" data-image-index="0">
                     <img src="https://files.petsq.works/iq/001-circuit.jpg" alt="Circuit detail" class="inspiration-image">
                 </div>
 
-                <div class="image-card">
+                <div class="image-card clickable" data-image-index="1">
                     <img src="https://files.petsq.works/iq/002-concrete.jpg" alt="Concrete texture" class="inspiration-image">
                 </div>
 
-                <div class="image-card">
+                <div class="image-card clickable" data-image-index="2">
                     <img src="https://files.petsq.works/iq/003-wires.jpg" alt="Wire details" class="inspiration-image">
+                </div>
+            </div>
+
+            <!-- Image Modal Overlay -->
+            <div id="imageModal" class="image-modal">
+                <button class="modal-close">&times;</button>
+                <button class="modal-nav modal-prev"></button>
+                <button class="modal-nav modal-next"></button>
+                <div class="modal-content">
+                    <div class="modal-image" data-modal-index="0">
+                        <img src="https://files.petsq.works/iq/001-circuit.jpg" alt="Circuit detail">
+                    </div>
+                    <div class="modal-image" data-modal-index="1">
+                        <img src="https://files.petsq.works/iq/002-concrete.jpg" alt="Concrete texture">
+                    </div>
+                    <div class="modal-image" data-modal-index="2">
+                        <img src="https://files.petsq.works/iq/003-wires.jpg" alt="Wire details">
+                    </div>
                 </div>
             </div>
         </section>
@@ -291,7 +309,6 @@
             </div>
 
             <div class="text-hierarchy-example">
-                <span class="example-label">Text Hierarchy Example</span>
                 <span class="example-subtitle">Premium Älykotiratkaisut</span>
                 <h1 class="example-title">Teknologia joka palvelee tunnelmaa.</h1>
                 <p class="example-description">
