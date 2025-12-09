@@ -235,6 +235,20 @@ p {
     display: flex;
     align-items: center;
     gap: 12px;
+    margin-right: var(--spacing-lg);
+    transition: all 0.3s ease;
+}
+
+.nav-logo:hover .brand-icon {
+    border-color: var(--color-white);
+    color: var(--color-white);
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 168, 84, 0.4);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.nav-logo:hover .brand-text {
+    color: var(--color-white);
+    opacity: 1;
 }
 
 .nav-logo .brand-icon {
@@ -242,12 +256,14 @@ p {
     height: 36px;
     font-size: 11px;
     border-width: 2px;
+    transition: all 0.3s ease;
 }
 
 .nav-logo .brand-text {
     font-size: 18px;
     letter-spacing: 2.5px;
     font-weight: 400;
+    transition: all 0.3s ease;
 }
 
 .nav-menu {
@@ -360,7 +376,6 @@ p {
 }
 
 .nav-cta {
-    margin-left: var(--spacing-sm);
     padding: 8px 24px;
     font-size: 12px;
     background: linear-gradient(135deg, var(--color-amber), #E89440);
@@ -1147,8 +1162,14 @@ p {
 
 /* Small Hero for Subpages */
 .hero-small {
-    height: 70vh;
-    min-height: 500px;
+    height: 75vh;
+    min-height: 550px;
+    padding-top: 120px;
+}
+
+.hero-small .hero-content {
+    max-width: 800px;
+    padding-top: var(--spacing-2xl);
 }
 
 /* Content Section */
@@ -1592,7 +1613,8 @@ p {
     }
 
     .hero-small {
-        height: 60vh;
-        min-height: 450px;
+        height: 65vh;
+        min-height: 500px;
+        padding-top: 100px;
     }
 }
