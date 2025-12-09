@@ -682,27 +682,27 @@ body {
         rgba(0, 0, 0, 0) 80%);
 }
 
-/* Layer 1 animation: circuit (0-10s) then wires (20-30s) */
+/* Layer 1 animation: circuit (10-20s) then wires (20-30s) */
 @keyframes bgRotateLayer1 {
     0% {
         background-image: url('https://files.petsq.works/iq/001-circuit.jpg');
-        opacity: 0.5;
+        opacity: 0;
     }
     26% {
         background-image: url('https://files.petsq.works/iq/001-circuit.jpg');
-        opacity: 0.5;
+        opacity: 0;
     }
     33% {
         background-image: url('https://files.petsq.works/iq/001-circuit.jpg');
-        opacity: 0;
+        opacity: 0.5;
     }
     60% {
-        background-image: url('https://files.petsq.works/iq/003-wires.jpg');
-        opacity: 0;
+        background-image: url('https://files.petsq.works/iq/001-circuit.jpg');
+        opacity: 0.5;
     }
     67% {
         background-image: url('https://files.petsq.works/iq/003-wires.jpg');
-        opacity: 0.5;
+        opacity: 0;
     }
     93% {
         background-image: url('https://files.petsq.works/iq/003-wires.jpg');
@@ -714,19 +714,19 @@ body {
     }
 }
 
-/* Layer 2 animation: concrete (10-20s) */
+/* Layer 2 animation: concrete (0-10s) */
 @keyframes bgRotateLayer2 {
     0% {
-        opacity: 0;
+        opacity: 0.5;
     }
     26% {
-        opacity: 0;
+        opacity: 0.5;
     }
     33% {
-        opacity: 0.5;
+        opacity: 0;
     }
     60% {
-        opacity: 0.5;
+        opacity: 0;
     }
     67% {
         opacity: 0;
@@ -1015,10 +1015,10 @@ body {
 .brand-icon.hero-icon {
     width: 80px;
     height: 80px;
-    font-size: 28px;
+    font-size: 24px;
     border-width: 3px;
-    padding-right: 1.5px;
-    padding-bottom: 1.5px;
+    padding-left: 2.5px;
+    padding-bottom: 0px;
 }
 
 .brand-text.hero-text {
@@ -1056,11 +1056,11 @@ body {
     justify-content: center;
     font-family: var(--font-primary);
     font-weight: 600;
-    font-size: 16px;
+    font-size: 15px;
     color: var(--amber);
     box-shadow: 0 0 15px rgba(255, 168, 84, 0.2);
-    padding-right: 1px;
-    padding-bottom: 1px;
+    padding-left: 1.5px;
+    padding-bottom: 0px;
 }
 
 .brand-text {
@@ -1236,8 +1236,8 @@ body {
     width: 60px;
     height: 60px;
     font-size: 18px;
-    padding-right: 1.2px;
-    padding-bottom: 1.2px;
+    padding-left: 2px;
+    padding-bottom: 0px;
 }
 
 .brand-text.stacked-version {
@@ -1249,19 +1249,19 @@ body {
 .brand-icon.standalone {
     width: 80px;
     height: 80px;
-    font-size: 28px;
+    font-size: 24px;
     border-width: 3px;
-    padding-right: 1.5px;
-    padding-bottom: 1.5px;
+    padding-left: 2.5px;
+    padding-bottom: 0px;
 }
 
 .brand-icon.standalone.modal-icon {
     width: 140px;
     height: 140px;
-    font-size: 48px;
+    font-size: 42px;
     border-width: 4px;
-    padding-right: 2.5px;
-    padding-bottom: 2.5px;
+    padding-left: 4px;
+    padding-bottom: 0px;
 }
 
 .concept-card {
@@ -1354,10 +1354,10 @@ body {
 .brand-icon.modal-icon {
     width: 120px;
     height: 120px;
-    font-size: 42px;
+    font-size: 36px;
     border-width: 4px;
-    padding-right: 2px;
-    padding-bottom: 2px;
+    padding-left: 3.5px;
+    padding-bottom: 0px;
 }
 
 .brand-text.modal-text {
@@ -1372,7 +1372,9 @@ body {
 .brand-logo-display.stacked .brand-icon.modal-icon {
     width: 140px;
     height: 140px;
-    font-size: 48px;
+    font-size: 42px;
+    padding-left: 4px;
+    padding-bottom: 0px;
 }
 
 .brand-logo-display.stacked .brand-text.modal-text {
@@ -2187,7 +2189,9 @@ body {
     .brand-icon.hero-icon {
         width: 60px;
         height: 60px;
-        font-size: 22px;
+        font-size: 18px;
+        padding-left: 2px;
+        padding-bottom: 0px;
     }
 
     .brand-text.hero-text {
@@ -2272,7 +2276,9 @@ body {
     .brand-icon.modal-icon {
         width: 80px;
         height: 80px;
-        font-size: 28px;
+        font-size: 24px;
+        padding-left: 2.5px;
+        padding-bottom: 0px;
     }
 
     .brand-text.modal-text {
@@ -2333,7 +2339,9 @@ body {
     .brand-icon.hero-icon {
         width: 50px;
         height: 50px;
-        font-size: 18px;
+        font-size: 15px;
+        padding-left: 1.5px;
+        padding-bottom: 0px;
     }
 
     .brand-text.hero-text {
@@ -2393,7 +2401,9 @@ body {
     .brand-logo-display.stacked .brand-icon.modal-icon {
         width: 100px;
         height: 100px;
-        font-size: 36px;
+        font-size: 30px;
+        padding-left: 3px;
+        padding-bottom: 0px;
     }
 
     .brand-logo-display.stacked .brand-text.modal-text {
