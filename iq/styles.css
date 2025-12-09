@@ -2277,6 +2277,10 @@ body {
         right: 20px;
     }
 
+    .brand-logo-display.modal-size {
+        gap: 16px;
+    }
+
     .brand-icon.modal-icon {
         width: 80px;
         height: 80px;
@@ -2384,6 +2388,10 @@ body {
 
     .type-sample.large {
         font-size: 28px;
+    }
+
+    .brand-logo-display.modal-size {
+        gap: 12px;
     }
 
     .brand-text.modal-text {
