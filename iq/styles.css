@@ -2186,6 +2186,10 @@ body {
         padding: 30px 20px;
     }
 
+    .brand-logo-display.hero-size {
+        gap: 12px;
+    }
+
     .brand-icon.hero-icon {
         width: 60px;
         height: 60px;
@@ -2334,6 +2338,10 @@ body {
 
     .logo-concepts {
         grid-template-columns: 1fr;
+    }
+
+    .brand-logo-display.hero-size {
+        gap: 12px;
     }
 
     .brand-icon.hero-icon {
