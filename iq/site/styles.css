@@ -497,6 +497,10 @@ p {
    Benefits Section
    ================================================================= */
 
+.benefits {
+    background-color: var(--color-stone);
+}
+
 .benefits-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -546,6 +550,38 @@ p {
 /* =================================================================
    Services Section
    ================================================================= */
+
+.services {
+    position: relative;
+    background-image: url('https://files.petsq.works/iq/002-concrete.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.services::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        rgba(45, 45, 45, 0.92) 0%,
+        rgba(26, 26, 26, 0.95) 100%
+    );
+    z-index: 0;
+}
+
+.services .container {
+    position: relative;
+    z-index: 1;
+}
+
+.services .section-title {
+    color: var(--color-white);
+}
 
 .services-grid {
     display: grid;
@@ -617,18 +653,22 @@ p {
 
 .process {
     background-color: var(--color-stone);
+    overflow: visible;
 }
 
 .process-timeline {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: var(--spacing-lg);
+    overflow: visible;
 }
 
 .process-step {
     position: relative;
     padding: var(--spacing-lg);
+    padding-top: calc(var(--spacing-lg) + 10px);
     text-align: center;
+    overflow: visible;
 }
 
 .process-number {
@@ -637,13 +677,66 @@ p {
     justify-content: center;
     width: 60px;
     height: 60px;
-    background-color: var(--color-amber);
-    color: var(--color-white-pure);
+    background-color: transparent;
+    color: var(--color-amber);
     font-family: var(--font-primary);
     font-size: var(--font-size-xl);
     font-weight: 700;
+    border: 3px solid var(--color-amber);
     border-radius: 50%;
     margin-bottom: var(--spacing-md);
+}
+
+/* Repeating pattern: Circle - Square - Hexagon */
+
+/* Circle (1, 4, 7, 10...) */
+.process-step-vertical:nth-child(3n+1) .process-number,
+.process-step:nth-child(3n+1) .process-number {
+    border-radius: 50%;
+}
+
+/* Square (2, 5, 8, 11...) */
+.process-step-vertical:nth-child(3n+2) .process-number,
+.process-step:nth-child(3n+2) .process-number {
+    border-radius: 0;
+}
+
+/* Hexagon (3, 6, 9, 12...) */
+.process-step-vertical:nth-child(3n) .process-number,
+.process-step:nth-child(3n) .process-number {
+    border: none;
+    position: relative;
+}
+
+.process-step-vertical:nth-child(3n) .process-number::before,
+.process-step:nth-child(3n) .process-number::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-amber);
+    clip-path: polygon(50% 0%, 93.3% 25%, 93.3% 75%, 50% 100%, 6.7% 75%, 6.7% 25%);
+    z-index: -1;
+}
+
+.process-step-vertical:nth-child(3n) .process-number::after,
+.process-step:nth-child(3n) .process-number::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-background);
+    clip-path: polygon(50% 5%, 88.3% 28%, 88.3% 72%, 50% 95%, 11.7% 72%, 11.7% 28%);
+    z-index: -1;
+}
+
+/* Hexagon inner fill for stone background sections */
+.process .process-step:nth-child(3n) .process-number::after {
+    background-color: var(--color-stone);
 }
 
 .process-title {
@@ -804,7 +897,7 @@ p {
    ================================================================= */
 
 .footer {
-    background-color: var(--color-charcoal);
+    background-color: #1a1a1a;
     color: var(--color-white);
     padding: var(--spacing-2xl) 0 var(--spacing-lg) 0;
     position: relative;
@@ -818,10 +911,10 @@ p {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('https://files.petsq.works/iq/003-wires.jpg');
-    background-size: 150%;
+    background-image: url('https://files.petsq.works/iq/001-circuit.jpg');
+    background-size: 120%;
     background-position: center bottom;
-    opacity: 0.08;
+    opacity: 0.15;
     z-index: 0;
     -webkit-mask-image: linear-gradient(to top,
         rgba(0, 0, 0, 1) 0%,
@@ -868,9 +961,19 @@ p {
 
 .footer-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--spacing-xl);
+    grid-template-columns: 1fr 2fr;
+    gap: var(--spacing-3xl);
     margin-bottom: var(--spacing-xl);
+    align-items: start;
+}
+
+.footer-info-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+    justify-self: end;
+    width: 100%;
+    max-width: 800px;
 }
 
 .footer-logo {
@@ -881,14 +984,17 @@ p {
 }
 
 .footer-logo .brand-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 12px;
+    width: 80px;
+    height: 80px;
+    font-size: 24px;
+    border-width: 3px;
+    animation: logoPulse 3s ease-in-out infinite;
+    flex-shrink: 0;
 }
 
 .footer-logo .brand-text {
-    font-size: 20px;
-    letter-spacing: 2px;
+    font-size: 40px;
+    letter-spacing: 4px;
 }
 
 .footer-tagline {
@@ -1136,6 +1242,10 @@ p {
 
     .hero-title {
         font-size: var(--font-size-3xl);
+    }
+
+    .services {
+        background-attachment: scroll;
     }
 
     .benefits-grid,
@@ -1471,6 +1581,7 @@ p {
 .process-vertical {
     max-width: 800px;
     margin: 0 auto;
+    overflow: visible;
 }
 
 .process-step-vertical {
@@ -1479,14 +1590,15 @@ p {
     gap: var(--spacing-lg);
     margin-bottom: var(--spacing-xl);
     position: relative;
+    overflow: visible;
 }
 
 .process-step-vertical:not(:last-child)::after {
     content: '';
     position: absolute;
     left: 30px;
-    top: 60px;
-    bottom: -40px;
+    top: 75px;
+    bottom: -25px;
     width: 2px;
     background-color: var(--color-gray-light);
 }
@@ -1740,6 +1852,12 @@ p {
         margin: 0 auto var(--spacing-md);
     }
 
+    /* Triangle mobile - keep centered */
+    .process-step-vertical:nth-child(3n) .process-number,
+    .process-step:nth-child(3n) .process-number {
+        margin: 0 auto var(--spacing-md);
+    }
+
     .process-step-vertical::after {
         display: none;
     }
@@ -1748,5 +1866,34 @@ p {
         height: 65vh;
         min-height: 500px;
         padding-top: 100px;
+    }
+
+    .footer-brand {
+        text-align: center;
+    }
+
+    .footer-logo {
+        justify-content: center;
+    }
+
+    .footer-tagline {
+        text-align: center;
+    }
+
+    .footer-contact,
+    .footer-area,
+    .footer-certs {
+        text-align: center;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-xl);
+    }
+
+    .footer-info-group {
+        grid-template-columns: 1fr;
+        justify-self: center;
+        max-width: 100%;
     }
 }
