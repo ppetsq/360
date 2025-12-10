@@ -401,6 +401,11 @@ p {
     border-color: var(--color-amber);
 }
 
+/* Mobile Menu Logo (hidden on desktop) */
+.mobile-menu-logo {
+    display: none;
+}
+
 /* Mobile Menu Toggle */
 .nav-toggle {
     display: none;
@@ -802,6 +807,63 @@ p {
     background-color: var(--color-charcoal);
     color: var(--color-white);
     padding: var(--spacing-2xl) 0 var(--spacing-lg) 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://files.petsq.works/iq/003-wires.jpg');
+    background-size: 150%;
+    background-position: center bottom;
+    opacity: 0.08;
+    z-index: 0;
+    -webkit-mask-image: linear-gradient(to top,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0.95) 10%,
+        rgba(0, 0, 0, 0.9) 15%,
+        rgba(0, 0, 0, 0.85) 20%,
+        rgba(0, 0, 0, 0.8) 25%,
+        rgba(0, 0, 0, 0.75) 30%,
+        rgba(0, 0, 0, 0.7) 35%,
+        rgba(0, 0, 0, 0.65) 40%,
+        rgba(0, 0, 0, 0.6) 45%,
+        rgba(0, 0, 0, 0.5) 50%,
+        rgba(0, 0, 0, 0.4) 55%,
+        rgba(0, 0, 0, 0.3) 60%,
+        rgba(0, 0, 0, 0.2) 65%,
+        rgba(0, 0, 0, 0.15) 70%,
+        rgba(0, 0, 0, 0.1) 75%,
+        rgba(0, 0, 0, 0.05) 80%,
+        rgba(0, 0, 0, 0) 85%);
+    mask-image: linear-gradient(to top,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0.95) 10%,
+        rgba(0, 0, 0, 0.9) 15%,
+        rgba(0, 0, 0, 0.85) 20%,
+        rgba(0, 0, 0, 0.8) 25%,
+        rgba(0, 0, 0, 0.75) 30%,
+        rgba(0, 0, 0, 0.7) 35%,
+        rgba(0, 0, 0, 0.65) 40%,
+        rgba(0, 0, 0, 0.6) 45%,
+        rgba(0, 0, 0, 0.5) 50%,
+        rgba(0, 0, 0, 0.4) 55%,
+        rgba(0, 0, 0, 0.3) 60%,
+        rgba(0, 0, 0, 0.2) 65%,
+        rgba(0, 0, 0, 0.15) 70%,
+        rgba(0, 0, 0, 0.1) 75%,
+        rgba(0, 0, 0, 0.05) 80%,
+        rgba(0, 0, 0, 0) 85%);
+}
+
+.footer > * {
+    position: relative;
+    z-index: 1;
 }
 
 .footer-grid {
@@ -855,7 +917,6 @@ p {
 .footer-bottom {
     text-align: center;
     padding-top: var(--spacing-lg);
-    border-top: 1px solid var(--color-charcoal-light);
     color: var(--color-gray-light);
     font-size: var(--font-size-sm);
 }
@@ -912,6 +973,31 @@ p {
         opacity: 1;
         visibility: visible;
         transition: opacity 0.3s ease, visibility 0s linear 0s;
+    }
+
+    /* Mobile Menu Logo (visible on mobile) */
+    .mobile-menu-logo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: var(--spacing-2xl);
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .mobile-menu-logo .mobile-logo-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 18px;
+        border-width: 3px;
+        animation: logoPulse 3s ease-in-out infinite;
+    }
+
+    .mobile-menu-logo .mobile-logo-text {
+        font-size: 22px;
+        letter-spacing: 3px;
+        font-weight: 400;
     }
 
     .nav-list {
@@ -1016,11 +1102,7 @@ p {
     }
 
     .nav-cta {
-        margin: var(--spacing-lg) 0 0 0;
-        padding: 16px 48px;
-        font-size: 13px;
-        letter-spacing: 2px;
-        box-shadow: 0 8px 30px rgba(255, 168, 84, 0.3);
+        display: none;
     }
 
     .nav-toggle {
@@ -1107,6 +1189,13 @@ p {
 
     .news-grid {
         grid-template-columns: 1fr;
+    }
+
+    .system-card .system-logo {
+        min-width: 200px;
+        min-height: 200px;
+        max-width: 170px;
+        max-height: 100px;
     }
 }
 
@@ -1275,6 +1364,29 @@ p {
     border-color: var(--color-amber);
     transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.system-card .system-logo {
+    max-width: 200px;
+    max-height: 120px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto var(--spacing-lg);
+    display: block;
+    padding: var(--spacing-2xl);
+    border: 2px solid var(--color-amber);
+    border-radius: 50%;
+    background-color: rgba(255, 168, 84, 0.05);
+    box-shadow: 0 0 20px rgba(255, 168, 84, 0.15);
+    transition: all 0.3s ease;
+    min-width: 240px;
+    min-height: 240px;
+}
+
+.system-card:hover .system-logo {
+    box-shadow: 0 0 30px rgba(255, 168, 84, 0.3);
+    transform: scale(1.05);
 }
 
 .system-badge {
