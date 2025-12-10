@@ -1312,6 +1312,11 @@ p {
     text-align: center;
 }
 
+.content-left {
+    margin-bottom: var(--spacing-xl);
+    text-align: left;
+}
+
 .lead-text {
     font-size: var(--font-size-lg);
     color: var(--color-gray);
@@ -1729,6 +1734,10 @@ p {
     .process-step-vertical {
         grid-template-columns: 1fr;
         text-align: center;
+    }
+
+    .process-step-vertical .process-number {
+        margin: 0 auto var(--spacing-md);
     }
 
     .process-step-vertical::after {
