@@ -1445,6 +1445,32 @@ p {
     padding: var(--spacing-lg);
     border-radius: var(--border-radius);
     border-left: 3px solid var(--color-amber);
+    transition: var(--transition);
+}
+
+.feature-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.feature-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background-color: rgba(255, 168, 84, 0.1);
+    border-radius: 50%;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-amber);
+    border: 2px solid rgba(255, 168, 84, 0.3);
+    transition: var(--transition);
+}
+
+.feature-item:hover .feature-icon {
+    background-color: rgba(255, 168, 84, 0.15);
+    border-color: var(--color-amber);
+    transform: scale(1.05);
 }
 
 .feature-item h4 {
