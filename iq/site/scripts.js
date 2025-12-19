@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initScrollAnimations();
     initSmoothScroll();
     initParallax();
+    initFAQ();
+    initModals();
 });
 
 /* =================================================================
@@ -186,4 +188,93 @@ function initParallax() {
 
     // Initial call
     updateParallax();
+}
+
+/* =================================================================
+   FAQ Accordion
+   ================================================================= */
+
+function initFAQ() {
+    const faqItems = document.querySelectorAll('.faq-item');
+
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        const icon = question.querySelector('.faq-icon');
+
+        // Set initial icon
+        if (!icon.textContent) {
+            icon.textContent = '+';
+        }
+
+        question.addEventListener('click', () => {
+            const isActive = item.classList.contains('active');
+
+            // Sulje kaikki muut
+            faqItems.forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.classList.remove('active');
+                }
+            });
+
+            // Avaa/sulje klikattu
+            if (!isActive) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    });
+}
+
+/* =================================================================
+   Modal Functionality
+   ================================================================= */
+
+function initModals() {
+    const modalTriggers = document.querySelectorAll('[data-modal]');
+    const modals = document.querySelectorAll('.modal');
+
+    // Avaa modal
+    modalTriggers.forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            const modalId = trigger.getAttribute('data-modal');
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    });
+
+    // Sulje modal
+    modals.forEach(modal => {
+        const closeBtn = modal.querySelector('.modal-close');
+
+        // Sulje X-napista
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        }
+
+        // Sulje klikkaamalla taustaa
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    });
+
+    // Sulje ESC-näppäimellä
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            modals.forEach(modal => {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        }
+    });
 }
