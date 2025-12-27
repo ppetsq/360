@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lintuhavainnot – Hallinta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #f8f6f3;
+      --color-bg-card: #ffffff;
+      --color-text: #2d3a2e;
+      --color-text-muted: #6b7c6c;
+      --color-accent: #3d5a47;
+      --color-accent-light: #e8ede9;
+      --color-border: #d4ddd5;
+      --color-success: #4a7c59;
+      --color-error: #c44536;
+      --font-body: 'Outfit', system-ui, sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Login Screen */
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .login-box {
+      background: var(--color-bg-card);
+      padding: 3rem;
+      border-radius: 16px;
+      border: 1px solid var(--color-border);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-box h1 {
+      font-size: 1.5rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .login-box p {
+      color: var(--color-text-muted);
+      margin-bottom: 2rem;
+    }
+
+    /* Header */
+    header {
+      background: var(--color-bg-card);
+      border-bottom: 1px solid var(--color-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-family: var(--font-body);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--color-accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2d4535;
+    }
+
+    .btn-secondary {
+      background: var(--color-accent-light);
+      color: var(--color-accent);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-border);
+    }
+
+    .btn-danger {
+      background: #fde8e6;
+      color: var(--color-error);
+    }
+
+    .btn-danger:hover {
+      background: #f9d1cd;
+    }
+
+    .btn-small {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    /* Main Content */
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Form */
+    .form-section {
+      background: var(--color-bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-section h2 {
+      font-size: 1.25rem;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    input, select, textarea {
+      padding: 0.875rem 1rem;
+      font-size: 1rem;
+      font-family: var(--font-body);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background: var(--color-bg);
+      color: var(--color-text);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px var(--color-accent-light);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* Image Upload */
+    .image-upload-area {
+      border: 2px dashed var(--color-border);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .image-upload-area:hover {
+      border-color: var(--color-accent);
+      background: var(--color-accent-light);
+    }
+
+    .image-upload-area.has-image {
+      border-style: solid;
+      padding: 1rem;
+    }
+
+    .image-upload-area img {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+    }
+
+    .image-upload-area p {
+      color: var(--color-text-muted);
+      margin-top: 0.5rem;
+    }
+
+    .upload-icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Table */
+    .table-section {
+      background: var(--color-bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .table-header h2 {
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    .search-box input {
+      width: 300px;
+      max-width: 100%;
+    }
+
+    .sightings-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .sightings-table th,
+    .sightings-table td {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .sightings-table th {
+      background: var(--color-bg);
+      font-weight: 500;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+    }
+
+    .sightings-table tr:hover {
+      background: var(--color-accent-light);
+    }
+
+    .sightings-table .species-cell {
+      font-weight: 500;
+    }
+
+    .sightings-table .latin-cell {
+      font-style: italic;
+      color: var(--color-text-muted);
+    }
+
+    .sightings-table .actions-cell {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .image-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-success);
+      margin-left: 0.5rem;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: var(--color-bg-card);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--color-text-muted);
+    }
+
+    .modal-body {
+      padding: 2rem;
+    }
+
+    .modal-footer {
+      padding: 1.5rem 2rem;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+
+    /* Messages */
+    .message {
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .message-success {
+      background: #e8f5e9;
+      color: var(--color-success);
+    }
+
+    .message-error {
+      background: #fde8e6;
+      color: var(--color-error);
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: var(--color-text-muted);
+    }
+
+    /* Hidden */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .table-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .search-box input {
+        width: 100%;
+      }
+
+      .sightings-table th:nth-child(3),
+      .sightings-table td:nth-child(3),
+      .sightings-table th:nth-child(4),
+      .sightings-table td:nth-child(4) {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-box">
+      <h1>🐦 Lintuhavainnot</h1>
+      <p>Kirjaudu hallintapaneeliin</p>
+      <div class="form-group">
+        <input type="password" id="passwordInput" placeholder="Salasana" onkeypress="if(event.key === 'Enter') login()">
+      </div>
+      <br>
+      <button class="btn btn-primary" onclick="login()" style="width: 100%;">Kirjaudu</button>
+      <p id="loginError" class="hidden" style="color: var(--color-error); margin-top: 1rem;"></p>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="mainApp" class="hidden">
+    <header>
+      <h1>🐦 Lintuhavainnot – Hallinta</h1>
+      <div class="header-actions">
+        <a href="./index.html" class="btn btn-secondary btn-small">← Julkinen sivu</a>
+        <button class="btn btn-secondary btn-small" onclick="logout()">Kirjaudu ulos</button>
+      </div>
+    </header>
+
+    <main>
+      <div id="message" class="hidden"></div>
+
+      <!-- Add New Form -->
+      <div class="form-section">
+        <h2>➕ Lisää uusi havainto</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="species">Laji *</label>
+            <input type="text" id="species" placeholder="esim. Talitiainen" required>
+          </div>
+          <div class="form-group">
+            <label for="latinName">Tieteellinen nimi</label>
+            <input type="text" id="latinName" placeholder="esim. Parus major">
+          </div>
+          <div class="form-group">
+            <label for="date">Päivämäärä *</label>
+            <input type="date" id="date" required>
+          </div>
+          <div class="form-group">
+            <label for="location">Paikka</label>
+            <input type="text" id="location" placeholder="esim. Yyteri">
+          </div>
+          <div class="form-group full-width">
+            <label for="notes">Muistiinpanot</label>
+            <textarea id="notes" placeholder="Lisätietoja havainnosta..."></textarea>
+          </div>
+          <div class="form-group full-width">
+            <label>Kuva</label>
+            <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('imageInput').click()">
+              <div id="imagePreview">
+                <div class="upload-icon">📷</div>
+                <p>Klikkaa valitaksesi kuva</p>
+              </div>
+            </div>
+            <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
+          </div>
+        </div>
+        <br>
+        <button class="btn btn-primary" onclick="addSighting()">Tallenna havainto</button>
+      </div>
+
+      <!-- Sightings List -->
+      <div class="table-section">
+        <div class="table-header">
+          <h2>📋 Kaikki havainnot</h2>
+          <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Hae lajia tai paikkaa..." oninput="filterTable()">
+          </div>
+        </div>
+        <div id="tableContainer">
+          <div class="loading">Ladataan havaintoja...</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Muokkaa havaintoa</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editId">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="editSpecies">Laji *</label>
+            <input type="text" id="editSpecies" required>
+          </div>
+          <div class="form-group">
+            <label for="editLatinName">Tieteellinen nimi</label>
+            <input type="text" id="editLatinName">
+          </div>
+          <div class="form-group">
+            <label for="editDate">Päivämäärä *</label>
+            <input type="date" id="editDate" required>
+          </div>
+          <div class="form-group">
+            <label for="editLocation">Paikka</label>
+            <input type="text" id="editLocation">
+          </div>
+          <div class="form-group full-width">
+            <label for="editNotes">Muistiinpanot</label>
+            <textarea id="editNotes"></textarea>
+          </div>
+          <div class="form-group full-width">
+            <label>Kuva</label>
+            <div class="image-upload-area" id="editImageUploadArea" onclick="document.getElementById('editImageInput').click()">
+              <div id="editImagePreview">
+                <div class="upload-icon">📷</div>
+                <p>Klikkaa valitaksesi kuva</p>
+              </div>
+            </div>
+            <input type="file" id="editImageInput" accept="image/*" class="hidden" onchange="handleEditImageSelect(event)">
+            <input type="hidden" id="editImageUrl">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">Peruuta</button>
+        <button class="btn btn-primary" onclick="saveSighting()">Tallenna</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration
+    const API_URL = 'https://linnut-api.spetteri92.workers.dev';
+    let authToken = localStorage.getItem('linnut_token') || '';
+    let sightings = [];
+    let pendingImageUrl = null;
+    let editPendingImageUrl = null;
+
+    // Check if already logged in
+    if (authToken) {
+      checkAuth();
+    }
+
+    async function checkAuth() {
+      try {
+        const response = await fetch(`${API_URL}/api/sightings`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (response.ok) {
+          showMainApp();
+          loadSightings();
+        } else {
+          logout();
+        }
+      } catch (e) {
+        logout();
+      }
+    }
+
+    async function login() {
+      const password = document.getElementById('passwordInput').value;
+      if (!password) {
+        showLoginError('Syötä salasana');
+        return;
+      }
+
+      try {
+        // Test the password by making an authenticated request
+        const response = await fetch(`${API_URL}/api/sightings`, {
+          headers: { 'Authorization': `Bearer ${password}` }
+        });
+
+        if (response.ok) {
+          authToken = password;
+          localStorage.setItem('linnut_token', authToken);
+          showMainApp();
+          loadSightings();
+        } else {
+          showLoginError('Väärä salasana');
+        }
+      } catch (e) {
+        showLoginError('Yhteysvirhe');
+      }
+    }
+
+    function logout() {
+      authToken = '';
+      localStorage.removeItem('linnut_token');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('mainApp').classList.add('hidden');
+      document.getElementById('passwordInput').value = '';
+    }
+
+    function showLoginError(msg) {
+      const el = document.getElementById('loginError');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+
+    function showMainApp() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('mainApp').classList.remove('hidden');
+    }
+
+    function showMessage(text, type = 'success') {
+      const el = document.getElementById('message');
+      el.className = `message message-${type}`;
+      el.innerHTML = `<span>${type === 'success' ? '✓' : '✗'}</span> ${text}`;
+      el.classList.remove('hidden');
+      setTimeout(() => el.classList.add('hidden'), 5000);
+    }
+
+    async function loadSightings() {
+      try {
+        const response = await fetch(`${API_URL}/api/sightings`);
+        sightings = await response.json();
+        renderTable();
+      } catch (e) {
+        showMessage('Virhe ladattaessa havaintoja', 'error');
+      }
+    }
+
+    function renderTable() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = sightings.filter(s => 
+        s.species.toLowerCase().includes(searchTerm) ||
+        (s.latin_name && s.latin_name.toLowerCase().includes(searchTerm)) ||
+        (s.location && s.location.toLowerCase().includes(searchTerm))
+      );
+
+      const container = document.getElementById('tableContainer');
+      
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="loading">Ei havaintoja</div>';
+        return;
+      }
+
+      container.innerHTML = `
+        <table class="sightings-table">
+          <thead>
+            <tr>
+              <th>Laji</th>
+              <th>Tieteellinen nimi</th>
+              <th>Päivämäärä</th>
+              <th>Paikka</th>
+              <th>Toiminnot</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filtered.map(s => `
+              <tr>
+                <td class="species-cell">
+                  ${s.species}
+                  ${s.image_url ? '<span class="image-indicator" title="Kuva lisätty"></span>' : ''}
+                </td>
+                <td class="latin-cell">${s.latin_name || '–'}</td>
+                <td>${formatDate(s.date)}</td>
+                <td>${s.location || '–'}</td>
+                <td class="actions-cell">
+                  <button class="btn btn-secondary btn-small" onclick="editSighting(${s.id})">Muokkaa</button>
+                  <button class="btn btn-danger btn-small" onclick="deleteSighting(${s.id}, '${s.species}')">Poista</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function filterTable() {
+      renderTable();
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '–';
+      const [year, month, day] = dateStr.split('-');
+      return `${parseInt(day)}.${parseInt(month)}.${year}`;
+    }
+
+    // Image handling
+    async function handleImageSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const preview = document.getElementById('imagePreview');
+      const area = document.getElementById('imageUploadArea');
+      
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.innerHTML = `<img src="${e.target.result}" alt="Esikatselu">`;
+        area.classList.add('has-image');
+      };
+      reader.readAsDataURL(file);
+
+      // Upload to R2
+      try {
+        preview.innerHTML += '<p>Ladataan...</p>';
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch(`${API_URL}/api/upload`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${authToken}` },
+          body: formData
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          pendingImageUrl = result.url;
+          preview.innerHTML = `<img src="${result.url}" alt="Ladattu kuva"><p>✓ Kuva ladattu</p>`;
+        } else {
+          throw new Error(result.error);
+        }
+      } catch (e) {
+        preview.innerHTML = `<p style="color: var(--color-error);">Virhe: ${e.message}</p>`;
+        pendingImageUrl = null;
+      }
+    }
+
+    async function handleEditImageSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const preview = document.getElementById('editImagePreview');
+      const area = document.getElementById('editImageUploadArea');
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.innerHTML = `<img src="${e.target.result}" alt="Esikatselu">`;
+        area.classList.add('has-image');
+      };
+      reader.readAsDataURL(file);
+
+      try {
+        preview.innerHTML += '<p>Ladataan...</p>';
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch(`${API_URL}/api/upload`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${authToken}` },
+          body: formData
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          editPendingImageUrl = result.url;
+          document.getElementById('editImageUrl').value = result.url;
+          preview.innerHTML = `<img src="${result.url}" alt="Ladattu kuva"><p>✓ Kuva ladattu</p>`;
+        } else {
+          throw new Error(result.error);
+        }
+      } catch (e) {
+        preview.innerHTML = `<p style="color: var(--color-error);">Virhe: ${e.message}</p>`;
+      }
+    }
+
+    // Add new sighting
+    async function addSighting() {
+      const species = document.getElementById('species').value.trim();
+      const date = document.getElementById('date').value;
+
+      if (!species || !date) {
+        showMessage('Täytä pakolliset kentät (laji ja päivämäärä)', 'error');
+        return;
+      }
+
+      const data = {
+        species,
+        latin_name: document.getElementById('latinName').value.trim() || null,
+        date,
+        location: document.getElementById('location').value.trim() || null,
+        notes: document.getElementById('notes').value.trim() || null,
+        image_url: pendingImageUrl
+      };
+
+      try {
+        const response = await fetch(`${API_URL}/api/sightings`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          showMessage('Havainto lisätty!');
+          clearForm();
+          loadSightings();
+        } else {
+          throw new Error(result.error);
+        }
+      } catch (e) {
+        showMessage(`Virhe: ${e.message}`, 'error');
+      }
+    }
+
+    function clearForm() {
+      document.getElementById('species').value = '';
+      document.getElementById('latinName').value = '';
+      document.getElementById('date').value = '';
+      document.getElementById('location').value = '';
+      document.getElementById('notes').value = '';
+      document.getElementById('imageInput').value = '';
+      document.getElementById('imagePreview').innerHTML = `
+        <div class="upload-icon">📷</div>
+        <p>Klikkaa valitaksesi kuva</p>
+      `;
+      document.getElementById('imageUploadArea').classList.remove('has-image');
+      pendingImageUrl = null;
+    }
+
+    // Edit sighting
+    function editSighting(id) {
+      const sighting = sightings.find(s => s.id === id);
+      if (!sighting) return;
+
+      document.getElementById('editId').value = id;
+      document.getElementById('editSpecies').value = sighting.species;
+      document.getElementById('editLatinName').value = sighting.latin_name || '';
+      document.getElementById('editDate').value = sighting.date;
+      document.getElementById('editLocation').value = sighting.location || '';
+      document.getElementById('editNotes').value = sighting.notes || '';
+      document.getElementById('editImageUrl').value = sighting.image_url || '';
+      
+      const preview = document.getElementById('editImagePreview');
+      const area = document.getElementById('editImageUploadArea');
+      
+      if (sighting.image_url) {
+        preview.innerHTML = `<img src="${sighting.image_url}" alt="${sighting.species}">`;
+        area.classList.add('has-image');
+      } else {
+        preview.innerHTML = `
+          <div class="upload-icon">📷</div>
+          <p>Klikkaa valitaksesi kuva</p>
+        `;
+        area.classList.remove('has-image');
+      }
+      
+      editPendingImageUrl = null;
+      document.getElementById('editModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('editModal').classList.add('hidden');
+    }
+
+    async function saveSighting() {
+      const id = document.getElementById('editId').value;
+      const species = document.getElementById('editSpecies').value.trim();
+      const date = document.getElementById('editDate').value;
+
+      if (!species || !date) {
+        showMessage('Täytä pakolliset kentät', 'error');
+        return;
+      }
+
+      const data = {
+        species,
+        latin_name: document.getElementById('editLatinName').value.trim() || null,
+        date,
+        location: document.getElementById('editLocation').value.trim() || null,
+        notes: document.getElementById('editNotes').value.trim() || null,
+        image_url: editPendingImageUrl || document.getElementById('editImageUrl').value || null
+      };
+
+      try {
+        const response = await fetch(`${API_URL}/api/sightings/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          showMessage('Havainto päivitetty!');
+          closeModal();
+          loadSightings();
+        } else {
+          throw new Error(result.error);
+        }
+      } catch (e) {
+        showMessage(`Virhe: ${e.message}`, 'error');
+      }
+    }
+
+    // Delete sighting
+    async function deleteSighting(id, species) {
+      if (!confirm(`Haluatko varmasti poistaa havainnon "${species}"?`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/api/sightings/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          showMessage('Havainto poistettu');
+          loadSightings();
+        } else {
+          throw new Error(result.error);
+        }
+      } catch (e) {
+        showMessage(`Virhe: ${e.message}`, 'error');
+      }
+    }
+  </script>
+</body>
+</html>
