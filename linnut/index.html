@@ -385,7 +385,6 @@ async function fetchSightings() {
   try {
     const response = await fetch(`${API_URL}/api/sightings`);
     const data = await response.json();
-    // Map API field names to match our existing code
     sightings = data.map(s => ({
       id: s.id,
       date: s.date,
@@ -394,6 +393,7 @@ async function fetchSightings() {
       location: s.location,
       image: s.image_url
     }));
+    filteredSightings = [...sightings];  // ← add this line
     populateFilters();
     updateStats();
     renderSightings();
@@ -401,7 +401,7 @@ async function fetchSightings() {
     console.error('Error loading sightings:', e);
   }
 }
-    let filteredSightings = [...sightings];
+    let filteredSightings = [];
 
     // DOM elements
     const searchInput = document.getElementById('searchInput');
