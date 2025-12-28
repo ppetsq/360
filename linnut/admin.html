@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lintuhavainnot – Hallinta</title>
+  <link rel="icon" type="image/x-icon" href="https://pub-a9fe856f6ccb42b886d01627a9bf9021.r2.dev/favikon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -142,6 +143,67 @@
       padding: 2rem;
     }
 
+    /* Stats/Progress Section */
+    .stats-section {
+      background: var(--color-bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-progress {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--color-accent-light);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--color-accent);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .stat-numbers {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text);
+      white-space: nowrap;
+    }
+
+    .stat-numbers .current {
+      color: var(--color-accent);
+    }
+
     /* Form */
     .form-section {
       background: var(--color-bg-card);
@@ -210,6 +272,7 @@
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
+      position: relative;
     }
 
     .image-upload-area:hover {
@@ -236,6 +299,55 @@
     .upload-icon {
       font-size: 3rem;
       margin-bottom: 0.5rem;
+    }
+
+    /* Image overlay for replace action */
+    .image-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(45, 58, 46, 0.7);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .image-overlay span {
+      color: white;
+      font-weight: 500;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .image-upload-area.has-image:hover .image-overlay {
+      opacity: 1;
+    }
+
+    /* Image actions (remove button) */
+    .image-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 0.75rem;
+    }
+
+    .image-actions .btn-remove {
+      background: none;
+      border: none;
+      color: var(--color-error);
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      transition: opacity 0.2s;
+    }
+
+    .image-actions .btn-remove:hover {
+      opacity: 0.7;
     }
 
     /* Table */
@@ -273,9 +385,19 @@
 
     .sightings-table th,
     .sightings-table td {
-      padding: 1rem 1.5rem;
+      padding: 0.875rem 1rem;
       text-align: left;
       border-bottom: 1px solid var(--color-border);
+    }
+
+    .sightings-table th:first-child,
+    .sightings-table td:first-child {
+      padding-left: 1.5rem;
+    }
+
+    .sightings-table th:last-child,
+    .sightings-table td:last-child {
+      padding-right: 1.5rem;
     }
 
     .sightings-table th {
@@ -287,8 +409,21 @@
       color: var(--color-text-muted);
     }
 
-    .sightings-table tr:hover {
+    .sightings-table tbody tr {
+      cursor: pointer;
+    }
+
+    .sightings-table tbody tr:hover {
       background: var(--color-accent-light);
+    }
+
+    .sightings-table .species-cell,
+    .sightings-table .latin-cell,
+    .sightings-table .location-cell {
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .sightings-table .species-cell {
@@ -300,18 +435,42 @@
       color: var(--color-text-muted);
     }
 
-    .sightings-table .actions-cell {
-      display: flex;
-      gap: 0.5rem;
+    .sightings-table .image-cell {
+      width: 48px;
+      text-align: center;
+      padding-left: 1.5rem;
+      padding-right: 0.5rem;
+    }
+
+    .sightings-table .image-cell svg {
+      width: 16px;
+      height: 16px;
+      color: var(--color-text-muted);
+      opacity: 0.5;
     }
 
     .image-indicator {
       display: inline-block;
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: var(--color-success);
+    }
+
+    /* Sortable column headers */
+    .sightings-table th.sortable {
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .sightings-table th.sortable:hover {
+      background: var(--color-accent-light);
+    }
+
+    .sort-arrow {
       margin-left: 0.5rem;
+      opacity: 0.7;
     }
 
     /* Modal */
@@ -367,7 +526,13 @@
       padding: 1.5rem 2rem;
       border-top: 1px solid var(--color-border);
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .modal-footer-right {
+      display: flex;
       gap: 1rem;
     }
 
@@ -420,11 +585,27 @@
         width: 100%;
       }
 
-      .sightings-table th:nth-child(3),
-      .sightings-table td:nth-child(3),
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .stats-section {
+        padding: 1.25rem 1.5rem;
+      }
+
+      /* Hide date and location columns on mobile (columns 4 and 5) */
       .sightings-table th:nth-child(4),
-      .sightings-table td:nth-child(4) {
+      .sightings-table td:nth-child(4),
+      .sightings-table th:nth-child(5),
+      .sightings-table td:nth-child(5) {
         display: none;
+      }
+
+      /* Always show image overlay on mobile */
+      .image-upload-area.has-image .image-overlay {
+        opacity: 1;
+        background: rgba(45, 58, 46, 0.5);
       }
     }
   </style>
@@ -456,6 +637,34 @@
 
     <main>
       <div id="message" class="hidden"></div>
+
+      <!-- Stats Section -->
+      <div class="stats-section">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-label">Suomessa havaitut linnut</span>
+            <div class="stat-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="speciesProgress" style="width: 0%"></div>
+              </div>
+              <span class="stat-numbers">
+                <span class="current" id="speciesCount">0</span> / 489
+              </span>
+            </div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Kuva lisätty</span>
+            <div class="stat-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="imageProgress" style="width: 0%"></div>
+              </div>
+              <span class="stat-numbers">
+                <span class="current" id="imageCount">0</span> / <span id="totalCount">0</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Add New Form -->
       <div class="form-section">
@@ -548,6 +757,10 @@
                 <div class="upload-icon">📷</div>
                 <p>Klikkaa valitaksesi kuva</p>
               </div>
+              <div class="image-overlay"><span>Korvaa</span></div>
+            </div>
+            <div class="image-actions hidden" id="editImageActions">
+              <button type="button" class="btn-remove" onclick="removeEditImage(event)">✕ Poista kuva</button>
             </div>
             <input type="file" id="editImageInput" accept="image/*" class="hidden" onchange="handleEditImageSelect(event)">
             <input type="hidden" id="editImageUrl">
@@ -555,8 +768,11 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal()">Peruuta</button>
-        <button class="btn btn-primary" onclick="saveSighting()">Tallenna</button>
+        <button class="btn btn-danger" onclick="deleteCurrentSighting()">Poista</button>
+        <div class="modal-footer-right">
+          <button class="btn btn-secondary" onclick="closeModal()">Peruuta</button>
+          <button class="btn btn-primary" onclick="saveSighting()">Tallenna</button>
+        </div>
       </div>
     </div>
   </div>
@@ -586,6 +802,57 @@
     let sightings = [];
     let pendingImageUrl = null;
     let editPendingImageUrl = null;
+
+    // Sorting state: { column: string, direction: 'asc' | 'desc' | null }
+    let sortState = { column: null, direction: null };
+
+    // ====================
+    // SORTING FUNCTIONS
+    // ====================
+    function toggleSort(column) {
+      if (sortState.column === column) {
+        // Cycle: asc -> desc -> null
+        if (sortState.direction === 'asc') {
+          sortState.direction = 'desc';
+        } else if (sortState.direction === 'desc') {
+          sortState.column = null;
+          sortState.direction = null;
+        }
+      } else {
+        sortState.column = column;
+        sortState.direction = 'asc';
+      }
+      renderTable();
+    }
+
+    function getSortArrow(column) {
+      if (sortState.column !== column) return '';
+      if (sortState.direction === 'asc') return '<span class="sort-arrow">↑</span>';
+      if (sortState.direction === 'desc') return '<span class="sort-arrow">↓</span>';
+      return '';
+    }
+
+    function sortSightings(list) {
+      if (!sortState.column || !sortState.direction) return list;
+
+      return [...list].sort((a, b) => {
+        let aVal = a[sortState.column] || '';
+        let bVal = b[sortState.column] || '';
+
+        // Handle date sorting
+        if (sortState.column === 'date') {
+          aVal = new Date(aVal);
+          bVal = new Date(bVal);
+        } else {
+          aVal = String(aVal).toLowerCase();
+          bVal = String(bVal).toLowerCase();
+        }
+
+        if (aVal < bVal) return sortState.direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortState.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
 
     // ====================
     // BUTTON LOADING STATES
@@ -695,21 +962,46 @@
         const response = await fetch(`${API_URL}/api/sightings`);
         sightings = await response.json();
         renderTable();
+        updateStats();
       } catch (e) {
         showMessage('Virhe ladattaessa havaintoja', 'error');
       }
     }
 
+    function updateStats() {
+      // Count unique species
+      const uniqueSpecies = new Set(sightings.map(s => s.species.toLowerCase().trim()));
+      const speciesCount = uniqueSpecies.size;
+      const totalPossible = 489;
+      const speciesPercent = Math.round((speciesCount / totalPossible) * 100);
+
+      // Count entries with images
+      const withImages = sightings.filter(s => s.image_url).length;
+      const totalEntries = sightings.length;
+      const imagePercent = totalEntries > 0 ? Math.round((withImages / totalEntries) * 100) : 0;
+
+      // Update DOM
+      document.getElementById('speciesCount').textContent = speciesCount;
+      document.getElementById('speciesProgress').style.width = speciesPercent + '%';
+
+      document.getElementById('imageCount').textContent = withImages;
+      document.getElementById('totalCount').textContent = totalEntries;
+      document.getElementById('imageProgress').style.width = imagePercent + '%';
+    }
+
     function renderTable() {
       const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-      const filtered = sightings.filter(s => 
+      const filteredList = sightings.filter(s =>
         s.species.toLowerCase().includes(searchTerm) ||
         (s.latin_name && s.latin_name.toLowerCase().includes(searchTerm)) ||
         (s.location && s.location.toLowerCase().includes(searchTerm))
       );
 
+      // Apply sorting
+      const filtered = sortSightings(filteredList);
+
       const container = document.getElementById('tableContainer');
-      
+
       if (filtered.length === 0) {
         container.innerHTML = '<div class="loading">Ei havaintoja</div>';
         return;
@@ -719,27 +1011,29 @@
         <table class="sightings-table">
           <thead>
             <tr>
-              <th>Laji</th>
-              <th>Tieteellinen nimi</th>
-              <th>Päivämäärä</th>
-              <th>Paikka</th>
-              <th>Toiminnot</th>
+              <th class="image-cell">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+              </th>
+              <th class="sortable" onclick="toggleSort('species')">Laji${getSortArrow('species')}</th>
+              <th class="sortable" onclick="toggleSort('latin_name')">Tieteellinen nimi${getSortArrow('latin_name')}</th>
+              <th class="sortable" onclick="toggleSort('date')">Päivämäärä${getSortArrow('date')}</th>
+              <th class="sortable" onclick="toggleSort('location')">Paikka${getSortArrow('location')}</th>
             </tr>
           </thead>
           <tbody>
             ${filtered.map(s => `
-              <tr>
-                <td class="species-cell">
-                  ${escapeHtml(s.species)}
+              <tr onclick="editSighting(${s.id})">
+                <td class="image-cell">
                   ${s.image_url ? '<span class="image-indicator" title="Kuva lisätty"></span>' : ''}
                 </td>
-                <td class="latin-cell">${escapeHtml(s.latin_name) || '–'}</td>
+                <td class="species-cell" title="${escapeHtml(s.species)}">${escapeHtml(s.species)}</td>
+                <td class="latin-cell" title="${escapeHtml(s.latin_name) || ''}">${escapeHtml(s.latin_name) || '–'}</td>
                 <td>${formatDate(s.date)}</td>
-                <td>${escapeHtml(s.location) || '–'}</td>
-                <td class="actions-cell">
-                  <button class="btn btn-secondary btn-small" onclick="editSighting(${s.id})">Muokkaa</button>
-                  <button class="btn btn-danger btn-small" onclick="deleteSighting(${s.id}, '${escapeHtml(s.species).replace(/'/g, "\\'")}')">Poista</button>
-                </td>
+                <td class="location-cell" title="${escapeHtml(s.location) || ''}">${escapeHtml(s.location) || '–'}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -881,12 +1175,34 @@
 
       const preview = document.getElementById('editImagePreview');
       const area = document.getElementById('editImageUploadArea');
+      const actions = document.getElementById('editImageActions');
 
       const url = await uploadImage(file, preview, area);
       if (url) {
         editPendingImageUrl = url;
         document.getElementById('editImageUrl').value = url;
+        actions.classList.remove('hidden');
       }
+    }
+
+    // Remove image from edit modal
+    function removeEditImage(event) {
+      event.stopPropagation(); // Prevent triggering file input
+
+      const preview = document.getElementById('editImagePreview');
+      const area = document.getElementById('editImageUploadArea');
+      const actions = document.getElementById('editImageActions');
+
+      preview.innerHTML = `
+        <div class="upload-icon">📷</div>
+        <p>Klikkaa valitaksesi kuva</p>
+      `;
+      area.classList.remove('has-image');
+      actions.classList.add('hidden');
+
+      editPendingImageUrl = null;
+      document.getElementById('editImageUrl').value = '';
+      document.getElementById('editImageInput').value = '';
     }
 
     // Add new sighting
@@ -967,19 +1283,22 @@
       document.getElementById('editLocation').value = sighting.location || '';
       document.getElementById('editNotes').value = sighting.notes || '';
       document.getElementById('editImageUrl').value = sighting.image_url || '';
-      
+
       const preview = document.getElementById('editImagePreview');
       const area = document.getElementById('editImageUploadArea');
-      
+      const actions = document.getElementById('editImageActions');
+
       if (sighting.image_url) {
         preview.innerHTML = `<img src="${escapeHtml(sighting.image_url)}" alt="${escapeHtml(sighting.species)}">`;
         area.classList.add('has-image');
+        actions.classList.remove('hidden');
       } else {
         preview.innerHTML = `
           <div class="upload-icon">📷</div>
           <p>Klikkaa valitaksesi kuva</p>
         `;
         area.classList.remove('has-image');
+        actions.classList.add('hidden');
       }
       
       editPendingImageUrl = null;
@@ -1042,6 +1361,14 @@
     }
 
     // Delete sighting
+    // Delete from edit modal
+    async function deleteCurrentSighting() {
+      const id = document.getElementById('editId').value;
+      const species = document.getElementById('editSpecies').value;
+      await deleteSighting(id, species);
+      closeModal();
+    }
+
     async function deleteSighting(id, species) {
       if (!confirm(`Haluatko varmasti poistaa havainnon "${species}"?`)) {
         return;
