@@ -22,6 +22,12 @@
 			"bucket_name": "linnut-images",
 			"binding": "linnut_images"
 		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "rate_limit_kv",
+			"id": "ee4e01d7cde74e9da3ec733e701b134a"
+		}
 	]
 	/**
 	 * Smart Placement

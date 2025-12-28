@@ -362,6 +362,56 @@
       color: var(--color-accent);
     }
 
+    /* Modal Navigation Arrows */
+    .modal-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s, opacity 0.2s;
+      z-index: 1001;
+      box-shadow: 0 4px 12px rgba(45, 58, 46, 0.15);
+    }
+
+    .modal-nav:hover {
+      background: var(--color-accent-light);
+    }
+
+    .modal-nav:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+
+    .modal-nav:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .modal-nav:disabled:hover {
+      background: var(--color-bg-card);
+    }
+
+    .modal-nav svg {
+      width: 24px;
+      height: 24px;
+      color: var(--color-accent);
+    }
+
+    .modal-nav-prev {
+      left: 1rem;
+    }
+
+    .modal-nav-next {
+      right: 1rem;
+    }
+
     .modal-body {
       padding: 2rem;
     }
@@ -503,6 +553,23 @@
       .modal-image-container {
         max-height: 300px;
       }
+
+      /* Mobile navigation arrows - inside modal at bottom */
+      .modal-nav {
+        top: auto;
+        bottom: 1rem;
+        transform: none;
+        width: 44px;
+        height: 44px;
+      }
+
+      .modal-nav-prev {
+        left: 1rem;
+      }
+
+      .modal-nav-next {
+        right: 1rem;
+      }
     }
   </style>
 </head>
@@ -554,6 +621,12 @@
       <h3>Ei tuloksia</h3>
       <p>Kokeile eri hakuehtoja</p>
     </div>
+
+    <div id="loadMoreContainer" style="text-align: center; margin-top: 2rem; display: none;">
+      <button id="loadMoreBtn" class="reset-btn" onclick="loadMore()" style="padding: 1rem 2rem; font-size: 1rem;">
+        Lataa lisää
+      </button>
+    </div>
   </main>
 
   <footer>
@@ -563,6 +636,17 @@
   <!-- Detail Modal -->
   <div id="detailModal" class="modal hidden">
     <div class="modal-overlay"></div>
+    <!-- Navigation Arrows -->
+    <button class="modal-nav modal-nav-prev" onclick="navigateSighting(-1)" aria-label="Edellinen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+    <button class="modal-nav modal-nav-next" onclick="navigateSighting(1)" aria-label="Seuraava">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="9 6 15 12 9 18"/>
+      </svg>
+    </button>
     <div class="modal-content">
       <button class="modal-close" onclick="closeDetailModal()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -614,15 +698,55 @@ function escapeHtml(unsafe) {
     .replace(/'/g, "&#039;");
 }
 
-// Fetch live data from API
-const API_URL = 'https://linnut-api.spetteri92.workers.dev';
-let sightings = [];
+// Configuration - Environment-aware API URL
+const API_URL = (() => {
+  const hostname = window.location.hostname;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:4000';
+  }
+  return 'https://linnut-api.spetteri92.workers.dev';
+})();
 
-async function fetchSightings() {
+// Pagination settings
+const PAGE_SIZE = 50;
+let currentPage = 1;
+let totalPages = 1;
+let hasMore = false;
+let isLoading = false;
+
+let sightings = [];
+let currentSightingId = null; // Track currently viewed sighting for navigation
+
+async function fetchSightings(page = 1, append = false) {
+  if (isLoading) return;
+  isLoading = true;
+
+  // Update load more button state
+  const loadMoreBtn = document.getElementById('loadMoreBtn');
+  if (loadMoreBtn) {
+    loadMoreBtn.textContent = 'Ladataan...';
+    loadMoreBtn.disabled = true;
+  }
+
   try {
-    const response = await fetch(`${API_URL}/api/sightings`);
-    const data = await response.json();
-    sightings = data.map(s => ({
+    const response = await fetch(`${API_URL}/api/sightings?page=${page}&limit=${PAGE_SIZE}`);
+    const result = await response.json();
+
+    // Handle paginated response
+    let data;
+    if (result.data && result.pagination) {
+      // Paginated response
+      data = result.data;
+      currentPage = result.pagination.page;
+      totalPages = result.pagination.totalPages;
+      hasMore = result.pagination.hasNext;
+    } else {
+      // Backwards compatible: array response (all data)
+      data = result;
+      hasMore = false;
+    }
+
+    const newSightings = data.map(s => ({
       id: s.id,
       date: s.date,
       species: s.species,
@@ -631,12 +755,31 @@ async function fetchSightings() {
       image: s.image_url,
       notes: s.notes
     }));
-    filteredSightings = [...sightings];  // ← add this line
+
+    if (append) {
+      sightings = [...sightings, ...newSightings];
+    } else {
+      sightings = newSightings;
+    }
+
+    filteredSightings = [...sightings];
     populateFilters();
     updateStats();
     renderSightings();
   } catch (e) {
     console.error('Error loading sightings:', e);
+  } finally {
+    isLoading = false;
+    if (loadMoreBtn) {
+      loadMoreBtn.textContent = 'Lataa lisää';
+      loadMoreBtn.disabled = false;
+    }
+  }
+}
+
+function loadMore() {
+  if (hasMore && !isLoading) {
+    fetchSightings(currentPage + 1, true);
   }
 }
     let filteredSightings = [];
@@ -723,10 +866,41 @@ function init() {
       return `${day}.${month}.${year}`;
     }
 
+    // Get sorted list of currently displayed sightings (matches render order)
+    function getSortedSightings() {
+      return [...filteredSightings].sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+
+    // Update navigation button states
+    function updateNavButtons() {
+      const sorted = getSortedSightings();
+      const currentIndex = sorted.findIndex(s => s.id === currentSightingId);
+
+      const prevBtn = document.querySelector('.modal-nav-prev');
+      const nextBtn = document.querySelector('.modal-nav-next');
+
+      if (prevBtn) prevBtn.disabled = currentIndex <= 0;
+      if (nextBtn) nextBtn.disabled = currentIndex >= sorted.length - 1;
+    }
+
+    // Navigate to previous/next sighting
+    function navigateSighting(direction) {
+      const sorted = getSortedSightings();
+      const currentIndex = sorted.findIndex(s => s.id === currentSightingId);
+      const newIndex = currentIndex + direction;
+
+      if (newIndex >= 0 && newIndex < sorted.length) {
+        openDetailModal(sorted[newIndex].id);
+      }
+    }
+
     // Open detail modal
     function openDetailModal(sightingId) {
       const sighting = sightings.find(s => s.id === sightingId);
       if (!sighting) return;
+
+      // Track current sighting for navigation
+      currentSightingId = sightingId;
 
       // Populate modal content
       document.getElementById('modalSpecies').textContent = sighting.species;
@@ -764,6 +938,9 @@ function init() {
       // Show modal
       document.getElementById('detailModal').classList.remove('hidden');
       document.body.style.overflow = 'hidden'; // Prevent background scroll
+
+      // Update navigation button states
+      updateNavButtons();
     }
 
     // Close detail modal
@@ -778,7 +955,14 @@ function init() {
       const sorted = [...filteredSightings].sort((a, b) => new Date(b.date) - new Date(a.date));
 
       // Update results info
-      resultsInfo.textContent = `Näytetään ${sorted.length} / ${sightings.length} havaintoa`;
+      const totalText = hasMore ? `${sightings.length}+` : sightings.length;
+      resultsInfo.textContent = `Näytetään ${sorted.length} / ${totalText} havaintoa`;
+
+      // Show/hide load more button
+      const loadMoreContainer = document.getElementById('loadMoreContainer');
+      if (loadMoreContainer) {
+        loadMoreContainer.style.display = hasMore ? 'block' : 'none';
+      }
 
       // Show/hide empty state
       if (sorted.length === 0) {
@@ -844,10 +1028,66 @@ function init() {
         modalOverlay.addEventListener('click', closeDetailModal);
       }
 
-      // Close modal with Escape key
+      // Touch swipe navigation for modal
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchEndX = 0;
+      let touchEndY = 0;
+
+      const modalContent = document.querySelector('.modal-content');
+      if (modalContent) {
+        modalContent.addEventListener('touchstart', (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+          touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        modalContent.addEventListener('touchend', (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          touchEndY = e.changedTouches[0].screenY;
+          handleSwipe();
+        }, { passive: true });
+      }
+
+      function handleSwipe() {
+        const diffX = touchEndX - touchStartX;
+        const diffY = touchEndY - touchStartY;
+        const minSwipeDistance = 50;
+
+        // Only trigger if horizontal swipe is greater than vertical (not scrolling)
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > minSwipeDistance) {
+          const modal = document.getElementById('detailModal');
+          const isModalOpen = modal && !modal.classList.contains('hidden');
+
+          if (isModalOpen) {
+            if (diffX > 0) {
+              // Swipe right -> previous
+              navigateSighting(-1);
+            } else {
+              // Swipe left -> next
+              navigateSighting(1);
+            }
+          }
+        }
+      }
+
+      // Keyboard navigation for modal
       document.addEventListener('keydown', (e) => {
+        const modal = document.getElementById('detailModal');
+        const isModalOpen = modal && !modal.classList.contains('hidden');
+
         if (e.key === 'Escape') {
           closeDetailModal();
+        }
+
+        // Arrow key navigation when modal is open
+        if (isModalOpen) {
+          if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            navigateSighting(-1);
+          } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            navigateSighting(1);
+          }
         }
       });
     }
