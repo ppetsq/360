@@ -562,6 +562,17 @@
   </div>
 
   <script>
+    // HTML escape function to prevent XSS
+    function escapeHtml(unsafe) {
+      if (unsafe == null) return '';
+      return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     // Configuration
     const API_URL = 'https://linnut-api.spetteri92.workers.dev';
     let authToken = localStorage.getItem('linnut_token') || '';
@@ -598,13 +609,17 @@
       }
 
       try {
-        // Test the password by making an authenticated request
-        const response = await fetch(`${API_URL}/api/sightings`, {
-          headers: { 'Authorization': `Bearer ${password}` }
+        // Call login endpoint to get JWT token
+        const response = await fetch(`${API_URL}/api/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
         });
 
-        if (response.ok) {
-          authToken = password;
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          authToken = result.token;
           localStorage.setItem('linnut_token', authToken);
           showMainApp();
           loadSightings();
@@ -683,15 +698,15 @@
             ${filtered.map(s => `
               <tr>
                 <td class="species-cell">
-                  ${s.species}
+                  ${escapeHtml(s.species)}
                   ${s.image_url ? '<span class="image-indicator" title="Kuva lisätty"></span>' : ''}
                 </td>
-                <td class="latin-cell">${s.latin_name || '–'}</td>
+                <td class="latin-cell">${escapeHtml(s.latin_name) || '–'}</td>
                 <td>${formatDate(s.date)}</td>
-                <td>${s.location || '–'}</td>
+                <td>${escapeHtml(s.location) || '–'}</td>
                 <td class="actions-cell">
                   <button class="btn btn-secondary btn-small" onclick="editSighting(${s.id})">Muokkaa</button>
-                  <button class="btn btn-danger btn-small" onclick="deleteSighting(${s.id}, '${s.species}')">Poista</button>
+                  <button class="btn btn-danger btn-small" onclick="deleteSighting(${s.id}, '${escapeHtml(s.species).replace(/'/g, "\\'")}')">Poista</button>
                 </td>
               </tr>
             `).join('')}
@@ -764,6 +779,18 @@ async function handleImageSelect(event) {
   const preview = document.getElementById('imagePreview');
   const area = document.getElementById('imageUploadArea');
 
+  // CLIENT-SIDE FILE VALIDATION
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+  if (!allowedTypes.includes(file.type)) {
+    preview.innerHTML = `<p style="color: var(--color-error);">Virheellinen tiedostotyyppi. Sallitut: JPEG, PNG, WebP, GIF</p>`;
+    return;
+  }
+
+  if (file.size > 50 * 1024 * 1024) {
+    preview.innerHTML = `<p style="color: var(--color-error);">Tiedosto liian suuri (max 50MB)</p>`;
+    return;
+  }
+
   // Show original preview immediately
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -809,6 +836,18 @@ async function handleImageSelect(event) {
 
   const preview = document.getElementById('editImagePreview');
   const area = document.getElementById('editImageUploadArea');
+
+  // CLIENT-SIDE FILE VALIDATION
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+  if (!allowedTypes.includes(file.type)) {
+    preview.innerHTML = `<p style="color: var(--color-error);">Virheellinen tiedostotyyppi. Sallitut: JPEG, PNG, WebP, GIF</p>`;
+    return;
+  }
+
+  if (file.size > 50 * 1024 * 1024) {
+    preview.innerHTML = `<p style="color: var(--color-error);">Tiedosto liian suuri (max 50MB)</p>`;
+    return;
+  }
 
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -881,7 +920,11 @@ async function handleImageSelect(event) {
           clearForm();
           loadSightings();
         } else {
-          throw new Error(result.error);
+          let errorMessage = result.error || 'Tuntematon virhe';
+          if (result.details && Array.isArray(result.details)) {
+            errorMessage = result.details.join(', ');
+          }
+          throw new Error(errorMessage);
         }
       } catch (e) {
         showMessage(`Virhe: ${e.message}`, 'error');
@@ -920,7 +963,7 @@ async function handleImageSelect(event) {
       const area = document.getElementById('editImageUploadArea');
       
       if (sighting.image_url) {
-        preview.innerHTML = `<img src="${sighting.image_url}" alt="${sighting.species}">`;
+        preview.innerHTML = `<img src="${escapeHtml(sighting.image_url)}" alt="${escapeHtml(sighting.species)}">`;
         area.classList.add('has-image');
       } else {
         preview.innerHTML = `
@@ -973,7 +1016,11 @@ async function handleImageSelect(event) {
           closeModal();
           loadSightings();
         } else {
-          throw new Error(result.error);
+          let errorMessage = result.error || 'Tuntematon virhe';
+          if (result.details && Array.isArray(result.details)) {
+            errorMessage = result.details.join(', ');
+          }
+          throw new Error(errorMessage);
         }
       } catch (e) {
         showMessage(`Virhe: ${e.message}`, 'error');
