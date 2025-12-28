@@ -280,6 +280,174 @@
       color: var(--color-text);
     }
 
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(45, 58, 46, 0.75);
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-content {
+      position: relative;
+      background: var(--color-bg-card);
+      border-radius: 16px;
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(45, 58, 46, 0.3);
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      z-index: 10;
+    }
+
+    .modal-close:hover {
+      background: var(--color-accent-light);
+      transform: rotate(90deg);
+    }
+
+    .modal-close svg {
+      width: 20px;
+      height: 20px;
+      color: var(--color-accent);
+    }
+
+    .modal-body {
+      padding: 2rem;
+    }
+
+    .modal-image-container {
+      width: 100%;
+      max-height: 500px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--color-accent-light);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .modal-image-container.no-image {
+      padding: 4rem;
+      text-align: center;
+      color: var(--color-text-muted);
+      font-size: 4rem;
+      opacity: 0.3;
+    }
+
+    .modal-species {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 0.5rem;
+      line-height: 1.2;
+    }
+
+    .modal-latin-name {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.25rem;
+      color: var(--color-text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .modal-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1rem;
+      color: var(--color-text-muted);
+    }
+
+    .modal-notes {
+      line-height: 1.8;
+    }
+
+    .modal-notes h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--color-accent);
+      margin-bottom: 1rem;
+    }
+
+    .modal-notes p {
+      color: var(--color-text);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .modal-notes.hidden {
+      display: none;
+    }
+
     /* Footer */
     footer {
       text-align: center;
@@ -318,6 +486,22 @@
 
       .stats {
         gap: 2rem;
+      }
+
+      .modal-body {
+        padding: 1.5rem;
+      }
+
+      .modal-species {
+        font-size: 2rem;
+      }
+
+      .modal-latin-name {
+        font-size: 1.1rem;
+      }
+
+      .modal-image-container {
+        max-height: 300px;
       }
     }
   </style>
@@ -376,6 +560,48 @@
     <p>Tehty rakkaudella lintuharrastukselle</p>
   </footer>
 
+  <!-- Detail Modal -->
+  <div id="detailModal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeDetailModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+      <div class="modal-body">
+        <div id="modalImageContainer" class="modal-image-container"></div>
+        <div class="modal-info">
+          <h2 id="modalSpecies" class="modal-species"></h2>
+          <p id="modalLatinName" class="modal-latin-name"></p>
+          <div class="modal-meta">
+            <div class="modal-meta-item">
+              <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              <span id="modalDate"></span>
+            </div>
+            <div class="modal-meta-item" id="modalLocationContainer">
+              <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span id="modalLocation"></span>
+            </div>
+          </div>
+          <div id="modalNotesContainer" class="modal-notes">
+            <h3>Muistiinpanot</h3>
+            <p id="modalNotes"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
 // HTML escape function to prevent XSS
 function escapeHtml(unsafe) {
@@ -402,7 +628,8 @@ async function fetchSightings() {
       species: s.species,
       latinName: s.latin_name,
       location: s.location,
-      image: s.image_url
+      image: s.image_url,
+      notes: s.notes
     }));
     filteredSightings = [...sightings];  // ← add this line
     populateFilters();
@@ -496,6 +723,55 @@ function init() {
       return `${day}.${month}.${year}`;
     }
 
+    // Open detail modal
+    function openDetailModal(sightingId) {
+      const sighting = sightings.find(s => s.id === sightingId);
+      if (!sighting) return;
+
+      // Populate modal content
+      document.getElementById('modalSpecies').textContent = sighting.species;
+      document.getElementById('modalLatinName').textContent = sighting.latinName || '–';
+      document.getElementById('modalDate').textContent = formatDate(sighting.date);
+
+      // Location (hide if empty)
+      const locationContainer = document.getElementById('modalLocationContainer');
+      if (sighting.location) {
+        document.getElementById('modalLocation').textContent = sighting.location;
+        locationContainer.style.display = 'flex';
+      } else {
+        locationContainer.style.display = 'none';
+      }
+
+      // Image
+      const imageContainer = document.getElementById('modalImageContainer');
+      if (sighting.image) {
+        imageContainer.innerHTML = `<img src="${escapeHtml(sighting.image)}" alt="${escapeHtml(sighting.species)}">`;
+        imageContainer.classList.remove('no-image');
+      } else {
+        imageContainer.innerHTML = '🐦';
+        imageContainer.classList.add('no-image');
+      }
+
+      // Notes (hide section if empty)
+      const notesContainer = document.getElementById('modalNotesContainer');
+      if (sighting.notes && sighting.notes.trim()) {
+        document.getElementById('modalNotes').textContent = sighting.notes;
+        notesContainer.classList.remove('hidden');
+      } else {
+        notesContainer.classList.add('hidden');
+      }
+
+      // Show modal
+      document.getElementById('detailModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden'; // Prevent background scroll
+    }
+
+    // Close detail modal
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.add('hidden');
+      document.body.style.overflow = ''; // Restore scroll
+    }
+
     // Render sightings
     function renderSightings() {
       // Sort by date (newest first)
@@ -514,7 +790,7 @@ function init() {
 
       // Render cards
       sightingsGrid.innerHTML = sorted.map(s => `
-        <article class="sighting-card">
+        <article class="sighting-card" onclick="openDetailModal(${s.id})" style="cursor: pointer;">
           <div class="card-image">
             ${s.image
               ? `<img src="${escapeHtml(s.image)}" alt="${escapeHtml(s.species)}">`
@@ -554,12 +830,25 @@ function init() {
       searchInput.addEventListener('input', filterSightings);
       yearFilter.addEventListener('change', filterSightings);
       locationFilter.addEventListener('change', filterSightings);
-      
+
       resetBtn.addEventListener('click', () => {
         searchInput.value = '';
         yearFilter.value = '';
         locationFilter.value = '';
         filterSightings();
+      });
+
+      // Close modal when clicking overlay
+      const modalOverlay = document.querySelector('.modal-overlay');
+      if (modalOverlay) {
+        modalOverlay.addEventListener('click', closeDetailModal);
+      }
+
+      // Close modal with Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeDetailModal();
+        }
       });
     }
 
