@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS sightings (
   location TEXT,
   date TEXT NOT NULL,
   image_url TEXT,
+  is_original_image INTEGER DEFAULT 0,
   notes TEXT,
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now'))

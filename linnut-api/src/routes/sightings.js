@@ -90,10 +90,10 @@ export async function createSighting(request, env, corsHeaders) {
 
 	const result = await env.linnut_db
 		.prepare(
-			`INSERT INTO sightings (species, latin_name, location, date, image_url, notes)
-       VALUES (?, ?, ?, ?, ?, ?)`
+			`INSERT INTO sightings (species, latin_name, location, date, image_url, is_original_image, notes)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
 		)
-		.bind(data.species, data.latin_name, data.location, data.date, data.image_url, data.notes)
+		.bind(data.species, data.latin_name, data.location, data.date, data.image_url, data.is_original_image, data.notes)
 		.run();
 
 	return Response.json({ success: true, id: result.meta.last_row_id }, { headers: corsHeaders });
@@ -129,10 +129,10 @@ export async function updateSighting(id, request, env, corsHeaders) {
 	await env.linnut_db
 		.prepare(
 			`UPDATE sightings SET
-       species = ?, latin_name = ?, location = ?, date = ?, image_url = ?, notes = ?, updated_at = datetime('now')
+       species = ?, latin_name = ?, location = ?, date = ?, image_url = ?, is_original_image = ?, notes = ?, updated_at = datetime('now')
        WHERE id = ?`
 		)
-		.bind(data.species, data.latin_name, data.location, data.date, data.image_url, data.notes, id)
+		.bind(data.species, data.latin_name, data.location, data.date, data.image_url, data.is_original_image, data.notes, id)
 		.run();
 
 	return Response.json({ success: true }, { headers: corsHeaders });

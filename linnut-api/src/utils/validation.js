@@ -92,6 +92,7 @@ export function sanitizeSightingData(data) {
 		location: data.location?.trim() || null,
 		date: data.date,
 		image_url: data.image_url?.trim() || null,
+		is_original_image: data.is_original_image ? 1 : 0,
 		notes: data.notes?.trim() || null,
 	};
 }

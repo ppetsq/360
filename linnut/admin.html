@@ -95,13 +95,19 @@
       padding: 0.75rem 1.5rem;
       font-size: 1rem;
       font-family: var(--font-body);
+      font-weight: 400;
+      line-height: 1;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 0.5rem;
+      text-decoration: none;
+      white-space: nowrap;
+      box-sizing: border-box;
     }
 
     .btn-primary {
@@ -301,6 +307,23 @@
       margin-bottom: 0.5rem;
     }
 
+    .checkbox-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--color-text);
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--color-accent);
+      cursor: pointer;
+    }
+
     /* Image overlay for replace action */
     .image-overlay {
       position: absolute;
@@ -457,6 +480,12 @@
       background: var(--color-success);
     }
 
+    .original-indicator {
+      color: #f5a623;
+      font-size: 0.9rem;
+      margin-left: 0.25rem;
+    }
+
     /* Sortable column headers */
     .sightings-table th.sortable {
       cursor: pointer;
@@ -536,14 +565,24 @@
       gap: 1rem;
     }
 
-    /* Messages */
+    /* Toast Messages */
     .message {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
       padding: 1rem 1.5rem;
       border-radius: 8px;
-      margin-bottom: 1.5rem;
       display: flex;
       align-items: center;
       gap: 0.75rem;
+      z-index: 3000;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      animation: toastSlideIn 0.3s ease;
+    }
+
+    @keyframes toastSlideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
     }
 
     .message-success {
@@ -574,6 +613,7 @@
         flex-direction: column;
         gap: 1rem;
         text-align: center;
+        position: static;
       }
 
       .table-header {
@@ -594,7 +634,9 @@
         padding: 1.25rem 1.5rem;
       }
 
-      /* Hide date and location columns on mobile (columns 4 and 5) */
+      /* Hide latin name, date, location columns on mobile (columns 3, 4, 5) */
+      .sightings-table th:nth-child(3),
+      .sightings-table td:nth-child(3),
       .sightings-table th:nth-child(4),
       .sightings-table td:nth-child(4),
       .sightings-table th:nth-child(5),
@@ -607,6 +649,73 @@
         opacity: 1;
         background: rgba(45, 58, 46, 0.5);
       }
+    }
+
+    /* Fullscreen Image Overlay */
+    .fullscreen-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .fullscreen-overlay.hidden {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .fullscreen-overlay img {
+      max-width: 95vw;
+      max-height: 95vh;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .fullscreen-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    .fullscreen-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .fullscreen-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+
+    /* Make edit modal image preview clickable */
+    .image-upload-area.has-image #editImagePreview img {
+      cursor: zoom-in;
     }
   </style>
 </head>
@@ -628,16 +737,14 @@
   <!-- Main App -->
   <div id="mainApp" class="hidden">
     <header>
-      <h1>🐦 Lintuhavainnot – Hallinta</h1>
+      <h1>🐦 Hallintapaneeli</h1>
       <div class="header-actions">
-        <a href="./index.html" class="btn btn-secondary btn-small">← Julkinen sivu</a>
-        <button class="btn btn-secondary btn-small" onclick="logout()">Kirjaudu ulos</button>
+        <a href="./index.html" class="btn btn-secondary btn-small">Lintuhavainnot</a>
+        <button type="button" class="btn btn-danger btn-small" onclick="logout()">Kirjaudu ulos</button>
       </div>
     </header>
 
     <main>
-      <div id="message" class="hidden"></div>
-
       <!-- Stats Section -->
       <div class="stats-section">
         <div class="stats-grid">
@@ -699,6 +806,10 @@
               </div>
             </div>
             <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
+            <label class="checkbox-label">
+              <input type="checkbox" id="isOriginalImage">
+              <span>Oma kuva</span>
+            </label>
           </div>
         </div>
         <br>
@@ -764,6 +875,10 @@
             </div>
             <input type="file" id="editImageInput" accept="image/*" class="hidden" onchange="handleEditImageSelect(event)">
             <input type="hidden" id="editImageUrl">
+            <label class="checkbox-label">
+              <input type="checkbox" id="editIsOriginalImage">
+              <span>Oma kuva</span>
+            </label>
           </div>
         </div>
       </div>
@@ -775,6 +890,13 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Fullscreen Image Overlay -->
+  <div id="fullscreenOverlay" class="fullscreen-overlay hidden" onclick="closeFullscreen()">
+    <button class="fullscreen-close" onclick="closeFullscreen()">✕</button>
+    <img id="fullscreenImage" src="" alt="">
+    <span class="fullscreen-hint">Klikkaa sulkeaksesi</span>
   </div>
 
   <script>
@@ -950,11 +1072,11 @@
     }
 
     function showMessage(text, type = 'success') {
-      const el = document.getElementById('message');
+      const el = document.createElement('div');
       el.className = `message message-${type}`;
       el.innerHTML = `<span>${type === 'success' ? '✓' : '✗'}</span> ${text}`;
-      el.classList.remove('hidden');
-      setTimeout(() => el.classList.add('hidden'), 5000);
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
     }
 
     async function loadSightings() {
@@ -1028,7 +1150,7 @@
             ${filtered.map(s => `
               <tr onclick="editSighting(${s.id})">
                 <td class="image-cell">
-                  ${s.image_url ? '<span class="image-indicator" title="Kuva lisätty"></span>' : ''}
+                  ${s.is_original_image ? '<span class="original-indicator" title="Oma kuva">★</span>' : s.image_url ? '<span class="image-indicator" title="Kuva netistä"></span>' : ''}
                 </td>
                 <td class="species-cell" title="${escapeHtml(s.species)}">${escapeHtml(s.species)}</td>
                 <td class="latin-cell" title="${escapeHtml(s.latin_name) || ''}">${escapeHtml(s.latin_name) || '–'}</td>
@@ -1224,7 +1346,8 @@
         date,
         location: document.getElementById('location').value.trim() || null,
         notes: document.getElementById('notes').value.trim() || null,
-        image_url: pendingImageUrl
+        image_url: pendingImageUrl,
+        is_original_image: document.getElementById('isOriginalImage').checked
       };
 
       try {
@@ -1263,6 +1386,7 @@
       document.getElementById('location').value = '';
       document.getElementById('notes').value = '';
       document.getElementById('imageInput').value = '';
+      document.getElementById('isOriginalImage').checked = false;
       document.getElementById('imagePreview').innerHTML = `
         <div class="upload-icon">📷</div>
         <p>Klikkaa valitaksesi kuva</p>
@@ -1283,13 +1407,14 @@
       document.getElementById('editLocation').value = sighting.location || '';
       document.getElementById('editNotes').value = sighting.notes || '';
       document.getElementById('editImageUrl').value = sighting.image_url || '';
+      document.getElementById('editIsOriginalImage').checked = sighting.is_original_image === 1;
 
       const preview = document.getElementById('editImagePreview');
       const area = document.getElementById('editImageUploadArea');
       const actions = document.getElementById('editImageActions');
 
       if (sighting.image_url) {
-        preview.innerHTML = `<img src="${escapeHtml(sighting.image_url)}" alt="${escapeHtml(sighting.species)}">`;
+        preview.innerHTML = `<img src="${escapeHtml(sighting.image_url)}" alt="${escapeHtml(sighting.species)}" onclick="openFullscreen('${escapeHtml(sighting.image_url)}', '${escapeHtml(sighting.species)}'); event.stopPropagation();">`;
         area.classList.add('has-image');
         actions.classList.remove('hidden');
       } else {
@@ -1307,6 +1432,20 @@
 
     function closeModal() {
       document.getElementById('editModal').classList.add('hidden');
+    }
+
+    // Open fullscreen image overlay
+    function openFullscreen(imageUrl, altText) {
+      const overlay = document.getElementById('fullscreenOverlay');
+      const img = document.getElementById('fullscreenImage');
+      img.src = imageUrl;
+      img.alt = altText;
+      overlay.classList.remove('hidden');
+    }
+
+    // Close fullscreen image overlay
+    function closeFullscreen() {
+      document.getElementById('fullscreenOverlay').classList.add('hidden');
     }
 
     async function saveSighting() {
@@ -1328,7 +1467,8 @@
         date,
         location: document.getElementById('editLocation').value.trim() || null,
         notes: document.getElementById('editNotes').value.trim() || null,
-        image_url: editPendingImageUrl || document.getElementById('editImageUrl').value || null
+        image_url: editPendingImageUrl || document.getElementById('editImageUrl').value || null,
+        is_original_image: document.getElementById('editIsOriginalImage').checked
       };
 
       try {
@@ -1391,6 +1531,16 @@
         showMessage(`Virhe: ${e.message}`, 'error');
       }
     }
+
+    // Keyboard support for fullscreen
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+        if (fullscreenOverlay && !fullscreenOverlay.classList.contains('hidden')) {
+          closeFullscreen();
+        }
+      }
+    });
   </script>
 </body>
 </html>

@@ -144,7 +144,7 @@
     }
 
     .filter-group select {
-      padding: 0.875rem 1rem;
+      padding: 0.875rem 2.5rem 0.875rem 1rem;
       font-size: 0.95rem;
       font-family: var(--font-body);
       border: 1px solid var(--color-border);
@@ -153,6 +153,11 @@
       color: var(--color-text);
       cursor: pointer;
       min-width: 140px;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7c6c' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
     }
 
     .filter-group select:focus {
@@ -211,6 +216,7 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      position: relative;
     }
 
     .card-image img {
@@ -223,6 +229,22 @@
       color: var(--color-text-muted);
       font-size: 3rem;
       opacity: 0.3;
+    }
+
+    .original-badge {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      background: rgba(255, 255, 255, 0.9);
+      color: #f5a623;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
 
     .card-content {
@@ -418,6 +440,7 @@
     }
 
     .modal-image-container {
+      position: relative;
       width: 100%;
       max-height: 500px;
       border-radius: 12px;
@@ -427,6 +450,26 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .modal-original-badge {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: rgba(255, 255, 255, 0.95);
+      color: #f5a623;
+      padding: 0.5rem 0.75rem;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .modal-original-badge .star {
+      font-size: 1rem;
     }
 
     .modal-image-container img {
@@ -572,6 +615,77 @@
         right: 1rem;
       }
     }
+
+    /* Fullscreen Image Overlay */
+    .fullscreen-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .fullscreen-overlay.hidden {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .fullscreen-overlay img {
+      max-width: 95vw;
+      max-height: 95vh;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .fullscreen-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .fullscreen-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .fullscreen-close svg {
+      width: 24px;
+      height: 24px;
+      color: white;
+    }
+
+    .fullscreen-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+
+    /* Make modal image clickable */
+    .modal-image-container img {
+      cursor: zoom-in;
+    }
   </style>
 </head>
 <body>
@@ -687,6 +801,18 @@
     </div>
   </div>
 
+  <!-- Fullscreen Image Overlay -->
+  <div id="fullscreenOverlay" class="fullscreen-overlay hidden" onclick="closeFullscreen()">
+    <button class="fullscreen-close" onclick="closeFullscreen()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+    <img id="fullscreenImage" src="" alt="">
+    <span class="fullscreen-hint">Klikkaa sulkeaksesi</span>
+  </div>
+
   <script>
 // HTML escape function to prevent XSS
 function escapeHtml(unsafe) {
@@ -754,6 +880,7 @@ async function fetchSightings(page = 1, append = false) {
       latinName: s.latin_name,
       location: s.location,
       image: s.image_url,
+      isOriginal: s.is_original_image,
       notes: s.notes
     }));
 
@@ -919,8 +1046,9 @@ function init() {
 
       // Image
       const imageContainer = document.getElementById('modalImageContainer');
+      const originalBadge = sighting.isOriginal ? '<span class="modal-original-badge"><span class="star">★</span> Oma kuva</span>' : '';
       if (sighting.image) {
-        imageContainer.innerHTML = `<img src="${escapeHtml(sighting.image)}" alt="${escapeHtml(sighting.species)}">`;
+        imageContainer.innerHTML = `<img src="${escapeHtml(sighting.image)}" alt="${escapeHtml(sighting.species)}" onclick="openFullscreen('${escapeHtml(sighting.image)}', '${escapeHtml(sighting.species)}')">${originalBadge}`;
         imageContainer.classList.remove('no-image');
       } else {
         imageContainer.innerHTML = '🐦';
@@ -948,6 +1076,20 @@ function init() {
     function closeDetailModal() {
       document.getElementById('detailModal').classList.add('hidden');
       document.body.style.overflow = ''; // Restore scroll
+    }
+
+    // Open fullscreen image overlay
+    function openFullscreen(imageUrl, altText) {
+      const overlay = document.getElementById('fullscreenOverlay');
+      const img = document.getElementById('fullscreenImage');
+      img.src = imageUrl;
+      img.alt = altText;
+      overlay.classList.remove('hidden');
+    }
+
+    // Close fullscreen image overlay
+    function closeFullscreen() {
+      document.getElementById('fullscreenOverlay').classList.add('hidden');
     }
 
     // Render sightings
@@ -981,6 +1123,7 @@ function init() {
               ? `<img src="${escapeHtml(s.image)}" alt="${escapeHtml(s.species)}">`
               : `<span class="placeholder">🐦</span>`
             }
+            ${s.isOriginal ? '<span class="original-badge" title="Oma kuva">★</span>' : ''}
           </div>
           <div class="card-content">
             <h2 class="species-name">${escapeHtml(s.species)}</h2>
@@ -1074,14 +1217,21 @@ function init() {
       // Keyboard navigation for modal
       document.addEventListener('keydown', (e) => {
         const modal = document.getElementById('detailModal');
+        const fullscreenOverlay = document.getElementById('fullscreenOverlay');
         const isModalOpen = modal && !modal.classList.contains('hidden');
+        const isFullscreenOpen = fullscreenOverlay && !fullscreenOverlay.classList.contains('hidden');
 
         if (e.key === 'Escape') {
-          closeDetailModal();
+          // Close fullscreen first if open, otherwise close modal
+          if (isFullscreenOpen) {
+            closeFullscreen();
+          } else {
+            closeDetailModal();
+          }
         }
 
-        // Arrow key navigation when modal is open
-        if (isModalOpen) {
+        // Arrow key navigation when modal is open (but not in fullscreen)
+        if (isModalOpen && !isFullscreenOpen) {
           if (e.key === 'ArrowLeft') {
             e.preventDefault();
             navigateSighting(-1);
