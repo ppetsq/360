@@ -736,12 +736,6 @@
       <h3>Ei tuloksia</h3>
       <p>Kokeile eri hakuehtoja</p>
     </div>
-
-    <div id="loadMoreContainer" style="text-align: center; margin-top: 2rem; display: none;">
-      <button id="loadMoreBtn" class="reset-btn" onclick="loadMore()" style="padding: 1rem 2rem; font-size: 1rem;">
-        Lataa lisää
-      </button>
-    </div>
   </main>
 
   <footer>
@@ -834,46 +828,15 @@ const API_URL = (() => {
   return 'https://linnut-api.spetteri92.workers.dev';
 })();
 
-// Pagination settings
-const PAGE_SIZE = 50;
-let currentPage = 1;
-let totalPages = 1;
-let hasMore = false;
-let isLoading = false;
-
 let sightings = [];
 let currentSightingId = null; // Track currently viewed sighting for navigation
 
-async function fetchSightings(page = 1, append = false) {
-  if (isLoading) return;
-  isLoading = true;
-
-  // Update load more button state
-  const loadMoreBtn = document.getElementById('loadMoreBtn');
-  if (loadMoreBtn) {
-    loadMoreBtn.textContent = 'Ladataan...';
-    loadMoreBtn.disabled = true;
-  }
-
+async function fetchSightings() {
   try {
-    const response = await fetch(`${API_URL}/api/sightings?page=${page}&limit=${PAGE_SIZE}`);
-    const result = await response.json();
+    const response = await fetch(`${API_URL}/api/sightings`);
+    const data = await response.json();
 
-    // Handle paginated response
-    let data;
-    if (result.data && result.pagination) {
-      // Paginated response
-      data = result.data;
-      currentPage = result.pagination.page;
-      totalPages = result.pagination.totalPages;
-      hasMore = result.pagination.hasNext;
-    } else {
-      // Backwards compatible: array response (all data)
-      data = result;
-      hasMore = false;
-    }
-
-    const newSightings = data.map(s => ({
+    sightings = data.map(s => ({
       id: s.id,
       date: s.date,
       species: s.species,
@@ -884,30 +847,12 @@ async function fetchSightings(page = 1, append = false) {
       notes: s.notes
     }));
 
-    if (append) {
-      sightings = [...sightings, ...newSightings];
-    } else {
-      sightings = newSightings;
-    }
-
     filteredSightings = [...sightings];
     populateFilters();
     updateStats();
     renderSightings();
   } catch (e) {
     console.error('Error loading sightings:', e);
-  } finally {
-    isLoading = false;
-    if (loadMoreBtn) {
-      loadMoreBtn.textContent = 'Lataa lisää';
-      loadMoreBtn.disabled = false;
-    }
-  }
-}
-
-function loadMore() {
-  if (hasMore && !isLoading) {
-    fetchSightings(currentPage + 1, true);
   }
 }
     let filteredSightings = [];
@@ -1098,14 +1043,7 @@ function init() {
       const sorted = [...filteredSightings].sort((a, b) => new Date(b.date) - new Date(a.date));
 
       // Update results info
-      const totalText = hasMore ? `${sightings.length}+` : sightings.length;
-      resultsInfo.textContent = `Näytetään ${sorted.length} / ${totalText} havaintoa`;
-
-      // Show/hide load more button
-      const loadMoreContainer = document.getElementById('loadMoreContainer');
-      if (loadMoreContainer) {
-        loadMoreContainer.style.display = hasMore ? 'block' : 'none';
-      }
+      resultsInfo.textContent = `Näytetään ${sorted.length} / ${sightings.length} havaintoa`;
 
       // Show/hide empty state
       if (sorted.length === 0) {
