@@ -165,6 +165,42 @@
       border-color: var(--color-accent);
     }
 
+    .filter-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.875rem 1rem;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background: var(--color-bg);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .filter-toggle input[type="checkbox"] {
+      display: none;
+    }
+
+    .filter-toggle svg {
+      width: 20px;
+      height: 20px;
+      color: var(--color-text-muted);
+      transition: color 0.2s;
+    }
+
+    .filter-toggle:hover {
+      border-color: var(--color-accent);
+    }
+
+    .filter-toggle:has(input:checked) {
+      background: var(--color-accent-light);
+      border-color: var(--color-accent);
+    }
+
+    .filter-toggle:has(input:checked) svg {
+      color: var(--color-accent);
+    }
+
     .reset-btn {
       padding: 0.875rem 1.25rem;
       font-size: 0.9rem;
@@ -712,6 +748,13 @@
       <div class="search-box">
         <input type="text" id="searchInput" placeholder="Hae lajia tai paikkaa...">
       </div>
+      <label class="filter-toggle" title="Näytä vain kuvatut">
+        <input type="checkbox" id="imageFilter">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+      </label>
       <div class="filter-group">
         <label for="yearFilter">Vuosi:</label>
         <select id="yearFilter">
@@ -860,6 +903,7 @@ async function fetchSightings() {
     const searchInput = document.getElementById('searchInput');
     const yearFilter = document.getElementById('yearFilter');
     const locationFilter = document.getElementById('locationFilter');
+    const imageFilter = document.getElementById('imageFilter');
     const resetBtn = document.getElementById('resetBtn');
     const sightingsGrid = document.getElementById('sightingsGrid');
     const resultsInfo = document.getElementById('resultsInfo');
@@ -908,10 +952,11 @@ function init() {
       const searchTerm = searchInput.value.toLowerCase().trim();
       const selectedYear = yearFilter.value;
       const selectedLocation = locationFilter.value;
+      const showOnlyWithImages = imageFilter.checked;
 
       filteredSightings = sightings.filter(s => {
         // Search filter
-        const matchesSearch = !searchTerm || 
+        const matchesSearch = !searchTerm ||
           s.species.toLowerCase().includes(searchTerm) ||
           (s.latinName && s.latinName.toLowerCase().includes(searchTerm)) ||
           (s.location && s.location.toLowerCase().includes(searchTerm));
@@ -923,7 +968,10 @@ function init() {
         // Location filter
         const matchesLocation = !selectedLocation || s.location === selectedLocation;
 
-        return matchesSearch && matchesYear && matchesLocation;
+        // Image filter
+        const matchesImage = !showOnlyWithImages || s.image;
+
+        return matchesSearch && matchesYear && matchesLocation && matchesImage;
       });
 
       renderSightings();
@@ -1095,11 +1143,13 @@ function init() {
       searchInput.addEventListener('input', filterSightings);
       yearFilter.addEventListener('change', filterSightings);
       locationFilter.addEventListener('change', filterSightings);
+      imageFilter.addEventListener('change', filterSightings);
 
       resetBtn.addEventListener('click', () => {
         searchInput.value = '';
         yearFilter.value = '';
         locationFilter.value = '';
+        imageFilter.checked = false;
         filterSightings();
       });
 
