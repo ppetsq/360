@@ -459,10 +459,19 @@
     }
 
     .sightings-table .image-cell {
-      width: 48px;
+      width: 56px;
       text-align: center;
-      padding-left: 1.5rem;
-      padding-right: 0.5rem;
+      padding-left: 0.75rem !important;
+      padding-right: 0.75rem !important;
+    }
+
+    .sightings-table th.image-cell {
+      display: table-cell;
+    }
+
+    .sightings-table th.image-cell > * {
+      display: inline-block;
+      vertical-align: middle;
     }
 
     .sightings-table .image-cell svg {
@@ -498,8 +507,9 @@
     }
 
     .sort-arrow {
-      margin-left: 0.5rem;
+      margin-left: 0.25rem;
       opacity: 0.7;
+      font-size: 0.75rem;
     }
 
     /* Modal */
@@ -965,6 +975,10 @@
         if (sortState.column === 'date') {
           aVal = new Date(aVal);
           bVal = new Date(bVal);
+        // Handle image_url sorting (boolean: has image vs no image)
+        } else if (sortState.column === 'image_url') {
+          aVal = a.image_url ? 1 : 0;
+          bVal = b.image_url ? 1 : 0;
         } else {
           aVal = String(aVal).toLowerCase();
           bVal = String(bVal).toLowerCase();
@@ -1133,12 +1147,13 @@
         <table class="sightings-table">
           <thead>
             <tr>
-              <th class="image-cell">
+              <th class="image-cell sortable" onclick="toggleSort('image_url')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                   <circle cx="8.5" cy="8.5" r="1.5"/>
                   <polyline points="21 15 16 10 5 21"/>
                 </svg>
+                ${getSortArrow('image_url')}
               </th>
               <th class="sortable" onclick="toggleSort('species')">Laji${getSortArrow('species')}</th>
               <th class="sortable" onclick="toggleSort('latin_name')">Tieteellinen nimi${getSortArrow('latin_name')}</th>
