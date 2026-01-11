@@ -352,6 +352,14 @@
       opacity: 1;
     }
 
+    /* Drag and drop state */
+    .image-upload-area.drag-over {
+      border-color: var(--color-accent);
+      background-color: var(--color-accent-light);
+      transform: scale(1.02);
+      border-style: dashed;
+    }
+
     /* Image actions (remove button) */
     .image-actions {
       display: flex;
@@ -812,7 +820,7 @@
             <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('imageInput').click()">
               <div id="imagePreview">
                 <div class="upload-icon">📷</div>
-                <p>Klikkaa valitaksesi kuva</p>
+                <p>Raahaa kuva tähän tai klikkaa valitaksesi</p>
               </div>
             </div>
             <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
@@ -876,7 +884,7 @@
             <div class="image-upload-area" id="editImageUploadArea" onclick="document.getElementById('editImageInput').click()">
               <div id="editImagePreview">
                 <div class="upload-icon">📷</div>
-                <p>Klikkaa valitaksesi kuva</p>
+                <p>Raahaa kuva tähän tai klikkaa valitaksesi</p>
               </div>
               <div class="image-overlay"><span>Korvaa</span></div>
             </div>
@@ -1332,7 +1340,7 @@
 
       preview.innerHTML = `
         <div class="upload-icon">📷</div>
-        <p>Klikkaa valitaksesi kuva</p>
+        <p>Raahaa kuva tähän tai klikkaa valitaksesi</p>
       `;
       area.classList.remove('has-image');
       actions.classList.add('hidden');
@@ -1404,7 +1412,7 @@
       document.getElementById('isOriginalImage').checked = false;
       document.getElementById('imagePreview').innerHTML = `
         <div class="upload-icon">📷</div>
-        <p>Klikkaa valitaksesi kuva</p>
+        <p>Raahaa kuva tähän tai klikkaa valitaksesi</p>
       `;
       document.getElementById('imageUploadArea').classList.remove('has-image');
       pendingImageUrl = null;
@@ -1435,7 +1443,7 @@
       } else {
         preview.innerHTML = `
           <div class="upload-icon">📷</div>
-          <p>Klikkaa valitaksesi kuva</p>
+          <p>Raahaa kuva tähän tai klikkaa valitaksesi</p>
         `;
         area.classList.remove('has-image');
         actions.classList.add('hidden');
@@ -1556,6 +1564,46 @@
         }
       }
     });
+
+    // ====================
+    // DRAG AND DROP
+    // ====================
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    function setupDragAndDrop(uploadAreaId, handleSelectFn) {
+      const uploadArea = document.getElementById(uploadAreaId);
+      if (!uploadArea) return;
+
+      // Prevent default drag behaviors
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults);
+      });
+
+      // Highlight on drag over
+      ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, () => uploadArea.classList.add('drag-over'));
+      });
+
+      // Remove highlight on drag leave/drop
+      ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('drag-over'));
+      });
+
+      // Handle dropped files
+      uploadArea.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          handleSelectFn({ target: { files: files } });
+        }
+      });
+    }
+
+    // Initialize drag and drop for both upload areas
+    setupDragAndDrop('imageUploadArea', handleImageSelect);
+    setupDragAndDrop('editImageUploadArea', handleEditImageSelect);
   </script>
 </body>
 </html>
