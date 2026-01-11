@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/heic2any@0.0.4/dist/heic2any.min.js"></script>
   <style>
     :root {
       --color-bg: #f8f6f3;
@@ -823,7 +824,7 @@
                 <p>Raahaa kuva tähän tai klikkaa valitaksesi</p>
               </div>
             </div>
-            <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
+            <input type="file" id="imageInput" accept="image/*,.heic,.heif" class="hidden" onchange="handleImageSelect(event)">
             <label class="checkbox-label">
               <input type="checkbox" id="isOriginalImage">
               <span>Oma kuva</span>
@@ -891,7 +892,7 @@
             <div class="image-actions hidden" id="editImageActions">
               <button type="button" class="btn-remove" onclick="removeEditImage(event)">✕ Poista kuva</button>
             </div>
-            <input type="file" id="editImageInput" accept="image/*" class="hidden" onchange="handleEditImageSelect(event)">
+            <input type="file" id="editImageInput" accept="image/*,.heic,.heif" class="hidden" onchange="handleEditImageSelect(event)">
             <input type="hidden" id="editImageUrl">
             <label class="checkbox-label">
               <input type="checkbox" id="editIsOriginalImage">
@@ -1247,12 +1248,34 @@
       });
     }
 
+    // Check if file is HEIC/HEIF format
+    function isHeicFile(file) {
+      const heicTypes = ['image/heic', 'image/heif'];
+      if (heicTypes.includes(file.type)) return true;
+      // Also check file extension as some browsers don't set MIME type correctly
+      const ext = file.name.toLowerCase().split('.').pop();
+      return ext === 'heic' || ext === 'heif';
+    }
+
+    // Convert HEIC to JPEG
+    async function convertHeicToJpeg(file) {
+      const blob = await heic2any({
+        blob: file,
+        toType: 'image/jpeg',
+        quality: 0.92
+      });
+      // heic2any can return array for multi-image HEIC, we take the first
+      const resultBlob = Array.isArray(blob) ? blob[0] : blob;
+      return new File([resultBlob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+    }
+
     // Shared image upload function - returns uploaded URL or null
     async function uploadImage(file, previewEl, areaEl) {
       // Validate file type
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
-      if (!allowedTypes.includes(file.type)) {
-        previewEl.innerHTML = `<p style="color: var(--color-error);">Virheellinen tiedostotyyppi. Sallitut: JPEG, PNG, WebP, GIF</p>`;
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif'];
+      const isHeic = isHeicFile(file);
+      if (!allowedTypes.includes(file.type) && !isHeic) {
+        previewEl.innerHTML = `<p style="color: var(--color-error);">Virheellinen tiedostotyyppi. Sallitut: JPEG, PNG, WebP, GIF, HEIC</p>`;
         return null;
       }
 
@@ -1262,18 +1285,30 @@
         return null;
       }
 
-      // Show original preview immediately
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        previewEl.innerHTML = `<img src="${e.target.result}" alt="Esikatselu"><p>Pakataan kuvaa...</p>`;
-        areaEl.classList.add('has-image');
-      };
-      reader.readAsDataURL(file);
+      // Show loading state for HEIC, preview for others
+      areaEl.classList.add('has-image');
+      if (isHeic) {
+        previewEl.innerHTML = `<div class="upload-icon">📷</div><p>Muunnetaan HEIC-kuvaa...</p>`;
+      } else {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewEl.innerHTML = `<img src="${e.target.result}" alt="Esikatselu"><p>Pakataan kuvaa...</p>`;
+        };
+        reader.readAsDataURL(file);
+      }
 
       try {
-        // Compress the image
         const originalSize = (file.size / 1024 / 1024).toFixed(1);
-        const compressedFile = await compressImage(file);
+
+        // Convert HEIC to JPEG if needed
+        let processedFile = file;
+        if (isHeic) {
+          processedFile = await convertHeicToJpeg(file);
+          previewEl.innerHTML = `<img src="${URL.createObjectURL(processedFile)}" alt="Esikatselu"><p>Pakataan kuvaa...</p>`;
+        }
+
+        // Compress the image
+        const compressedFile = await compressImage(processedFile);
         const compressedSize = (compressedFile.size / 1024 / 1024).toFixed(1);
 
         previewEl.innerHTML = `<img src="${URL.createObjectURL(compressedFile)}" alt="Esikatselu"><p>Ladataan... (${originalSize}MB → ${compressedSize}MB)</p>`;
