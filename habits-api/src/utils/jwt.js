@@ -51,14 +51,23 @@ export async function verifyJWT(token, secret) {
 	}
 }
 
-// Check if request is authorized
-export async function isAuthorized(request, env) {
+// Check if request is authorized and return user info
+export async function getAuthUser(request, env) {
 	const authHeader = request.headers.get('Authorization');
-	if (!authHeader) return false;
+	if (!authHeader) return null;
 
 	const token = authHeader.replace('Bearer ', '');
-	const payload = await verifyJWT(token, env.HABITS_ADMIN_PASSWORD);
-	return payload !== null && payload.role === 'admin';
+	const payload = await verifyJWT(token, env.USER_PETTERI_PASSWORD);
+
+	if (!payload || payload.role !== 'admin') return null;
+
+	return { userId: payload.userId, name: payload.name };
+}
+
+// Check if request is authorized (backwards compatible)
+export async function isAuthorized(request, env) {
+	const user = await getAuthUser(request, env);
+	return user !== null;
 }
 
 // HMAC SHA-256 signing

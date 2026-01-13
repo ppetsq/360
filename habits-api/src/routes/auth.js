@@ -33,23 +33,35 @@ export async function handleLogin(request, env, corsHeaders) {
 		);
 	}
 
+	// Define users
+	const users = [
+		{ id: 1, name: 'Petteri', passwordKey: 'USER_PETTERI_PASSWORD' },
+		{ id: 2, name: 'Riikka', passwordKey: 'USER_RIIKKA_PASSWORD' },
+	];
+
 	try {
 		const { password } = await request.json();
 
-		if (!password || password !== env.HABITS_ADMIN_PASSWORD) {
+		// Find matching user
+		const user = users.find((u) => password && env[u.passwordKey] && password === env[u.passwordKey]);
+
+		if (!user) {
 			// Record failed attempt
 			await recordLoginAttempt(clientIP, env);
-
 			return Response.json({ error: 'Invalid password' }, { status: 401, headers: corsHeaders });
 		}
 
 		// Clear rate limit on successful login
 		await clearRateLimit(clientIP, env);
 
-		// Generate JWT token valid for 24 hours
-		const token = await generateJWT({ role: 'admin' }, env.HABITS_ADMIN_PASSWORD, 24);
+		// Generate JWT token with user info, valid for 7 days
+		const token = await generateJWT(
+			{ userId: user.id, name: user.name, role: 'admin' },
+			env.USER_PETTERI_PASSWORD, // Use first user's password as JWT secret
+			168 // 7 days
+		);
 
-		return Response.json({ success: true, token }, { headers: corsHeaders });
+		return Response.json({ success: true, token, user: { id: user.id, name: user.name } }, { headers: corsHeaders });
 	} catch (e) {
 		return Response.json({ error: 'Login failed' }, { status: 500, headers: corsHeaders });
 	}

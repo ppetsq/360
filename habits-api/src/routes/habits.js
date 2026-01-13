@@ -2,7 +2,7 @@
 // HABITS ROUTES
 // ====================
 
-import { isAuthorized } from '../utils/jwt.js';
+import { getAuthUser } from '../utils/jwt.js';
 
 /**
  * Calculate current streak for a habit
@@ -61,7 +61,8 @@ function formatDate(date) {
  */
 export async function getAllHabits(request, env, corsHeaders) {
 	// Require authentication
-	if (!(await isAuthorized(request, env))) {
+	const user = await getAuthUser(request, env);
+	if (!user) {
 		return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
 	}
 
@@ -76,14 +77,21 @@ export async function getAllHabits(request, env, corsHeaders) {
 		startDate.setDate(startDate.getDate() - days);
 		const startDateStr = formatDate(startDate);
 
-		// Get all habits
-		const habits = await env.habits_db.prepare('SELECT * FROM habits ORDER BY sort_order ASC, id ASC').all();
-
-		// Get completions for all habits within date range
-		const completions = await env.habits_db
-			.prepare('SELECT habit_id, completed_date FROM completions WHERE completed_date >= ? ORDER BY completed_date DESC')
-			.bind(startDateStr)
+		// Get habits for this user
+		const habits = await env.habits_db
+			.prepare('SELECT * FROM habits WHERE user_id = ? ORDER BY sort_order ASC, id ASC')
+			.bind(user.userId)
 			.all();
+
+		// Get completions for user's habits within date range
+		const habitIds = habits.results.map((h) => h.id);
+		let completions = { results: [] };
+		if (habitIds.length > 0) {
+			completions = await env.habits_db
+				.prepare(`SELECT habit_id, completed_date FROM completions WHERE habit_id IN (${habitIds.join(',')}) AND completed_date >= ? ORDER BY completed_date DESC`)
+				.bind(startDateStr)
+				.all();
+		}
 
 		// Group completions by habit
 		const completionsByHabit = {};
@@ -119,7 +127,8 @@ export async function getAllHabits(request, env, corsHeaders) {
  * Create a new habit
  */
 export async function createHabit(request, env, corsHeaders) {
-	if (!(await isAuthorized(request, env))) {
+	const user = await getAuthUser(request, env);
+	if (!user) {
 		return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
 	}
 
@@ -134,13 +143,16 @@ export async function createHabit(request, env, corsHeaders) {
 			return Response.json({ error: 'Name must be 100 characters or less' }, { status: 400, headers: corsHeaders });
 		}
 
-		// Get max sort_order
-		const maxOrder = await env.habits_db.prepare('SELECT MAX(sort_order) as max_order FROM habits').first();
+		// Get max sort_order for this user
+		const maxOrder = await env.habits_db
+			.prepare('SELECT MAX(sort_order) as max_order FROM habits WHERE user_id = ?')
+			.bind(user.userId)
+			.first();
 		const sortOrder = (maxOrder?.max_order || 0) + 1;
 
 		const result = await env.habits_db
-			.prepare('INSERT INTO habits (name, description, sort_order) VALUES (?, ?, ?)')
-			.bind(name.trim(), description?.trim() || null, sortOrder)
+			.prepare('INSERT INTO habits (name, description, sort_order, user_id) VALUES (?, ?, ?, ?)')
+			.bind(name.trim(), description?.trim() || null, sortOrder, user.userId)
 			.run();
 
 		return Response.json({ success: true, id: result.meta.last_row_id }, { headers: corsHeaders });
@@ -155,15 +167,19 @@ export async function createHabit(request, env, corsHeaders) {
  * Update a habit
  */
 export async function updateHabit(id, request, env, corsHeaders) {
-	if (!(await isAuthorized(request, env))) {
+	const user = await getAuthUser(request, env);
+	if (!user) {
 		return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
 	}
 
 	try {
 		const { name, description, sort_order } = await request.json();
 
-		// Check habit exists
-		const habit = await env.habits_db.prepare('SELECT * FROM habits WHERE id = ?').bind(id).first();
+		// Check habit exists and belongs to user
+		const habit = await env.habits_db
+			.prepare('SELECT * FROM habits WHERE id = ? AND user_id = ?')
+			.bind(id, user.userId)
+			.first();
 		if (!habit) {
 			return Response.json({ error: 'Habit not found' }, { status: 404, headers: corsHeaders });
 		}
@@ -212,13 +228,17 @@ export async function updateHabit(id, request, env, corsHeaders) {
  * Delete a habit and all its completions
  */
 export async function deleteHabit(id, request, env, corsHeaders) {
-	if (!(await isAuthorized(request, env))) {
+	const user = await getAuthUser(request, env);
+	if (!user) {
 		return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
 	}
 
 	try {
-		// Check habit exists
-		const habit = await env.habits_db.prepare('SELECT * FROM habits WHERE id = ?').bind(id).first();
+		// Check habit exists and belongs to user
+		const habit = await env.habits_db
+			.prepare('SELECT * FROM habits WHERE id = ? AND user_id = ?')
+			.bind(id, user.userId)
+			.first();
 		if (!habit) {
 			return Response.json({ error: 'Habit not found' }, { status: 404, headers: corsHeaders });
 		}
@@ -241,7 +261,8 @@ export async function deleteHabit(id, request, env, corsHeaders) {
  * Toggle completion for a specific date
  */
 export async function toggleCompletion(id, request, env, corsHeaders) {
-	if (!(await isAuthorized(request, env))) {
+	const user = await getAuthUser(request, env);
+	if (!user) {
 		return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
 	}
 
@@ -259,8 +280,11 @@ export async function toggleCompletion(id, request, env, corsHeaders) {
 			return Response.json({ error: 'Cannot mark future dates as complete' }, { status: 400, headers: corsHeaders });
 		}
 
-		// Check habit exists
-		const habit = await env.habits_db.prepare('SELECT * FROM habits WHERE id = ?').bind(id).first();
+		// Check habit exists and belongs to user
+		const habit = await env.habits_db
+			.prepare('SELECT * FROM habits WHERE id = ? AND user_id = ?')
+			.bind(id, user.userId)
+			.first();
 		if (!habit) {
 			return Response.json({ error: 'Habit not found' }, { status: 404, headers: corsHeaders });
 		}

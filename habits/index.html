@@ -528,7 +528,7 @@
   <!-- Main App -->
   <div id="mainApp" class="hidden">
     <header>
-      <h1>Habits</h1>
+      <h1 id="headerTitle">Habits</h1>
       <button type="button" class="btn btn-ghost btn-small" onclick="logout()">Log out</button>
     </header>
 
@@ -593,6 +593,7 @@
     })();
 
     let authToken = localStorage.getItem('habits_token') || '';
+    let userName = localStorage.getItem('habits_user_name') || '';
     let habits = [];
     let editingHabitCompletions = new Set();
 
@@ -666,7 +667,9 @@
 
         if (response.ok && result.success) {
           authToken = result.token;
+          userName = result.user?.name || '';
           localStorage.setItem('habits_token', authToken);
+          localStorage.setItem('habits_user_name', userName);
           showMainApp();
           loadHabits();
         } else if (response.status === 429) {
@@ -684,7 +687,9 @@
 
     function logout() {
       authToken = '';
+      userName = '';
       localStorage.removeItem('habits_token');
+      localStorage.removeItem('habits_user_name');
       document.getElementById('loginScreen').classList.remove('hidden');
       document.getElementById('mainApp').classList.add('hidden');
       document.getElementById('passwordInput').value = '';
@@ -699,6 +704,7 @@
     function showMainApp() {
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('mainApp').classList.remove('hidden');
+      document.getElementById('headerTitle').textContent = userName ? `Hi, ${userName}` : 'Habits';
     }
 
     function showMessage(text, type = 'success') {
