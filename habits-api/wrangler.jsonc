@@ -1,0 +1,22 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "habits-api",
+	"main": "src/index.js",
+	"compatibility_date": "2025-01-12",
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "habits_db",
+			"database_name": "habits-db",
+			"database_id": "47bb7fb7-328a-47d8-9f68-15035adad0a4"
+		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "rate_limit_kv",
+			"id": "ee4e01d7cde74e9da3ec733e701b134a"
+		}
+	]
+}

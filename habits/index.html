@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Habits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #f5f5f5;
+      --color-bg-card: #ffffff;
+      --color-text: #1a1a1a;
+      --color-text-muted: #737373;
+      --color-text-light: #a3a3a3;
+      --color-border: #e5e5e5;
+      --color-border-dark: #d4d4d4;
+      --color-accent: #22c55e;
+      --color-accent-dark: #16a34a;
+      --color-empty: #e5e5e5;
+      --font-body: 'Outfit', system-ui, sans-serif;
+      --cell-size: 14px;
+      --cell-gap: 3px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Login Screen */
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .login-box {
+      background: var(--color-bg-card);
+      padding: 3rem;
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+
+    .login-box h1 {
+      font-size: 1.5rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .login-box p {
+      color: var(--color-text-muted);
+      margin-bottom: 2rem;
+    }
+
+    /* Header */
+    header {
+      background: var(--color-bg-card);
+      border-bottom: 1px solid var(--color-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.625rem 1.25rem;
+      font-size: 0.9rem;
+      font-family: var(--font-body);
+      font-weight: 400;
+      line-height: 1;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--color-accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-accent-dark);
+    }
+
+    .btn-primary:disabled {
+      background: var(--color-border-dark);
+      cursor: default;
+    }
+
+    .btn-secondary {
+      background: var(--color-bg);
+      color: var(--color-text-muted);
+      border: 1px solid var(--color-border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-border);
+      color: var(--color-text);
+    }
+
+    .btn-ghost {
+      background: none;
+      color: var(--color-text-muted);
+      padding: 0.5rem;
+    }
+
+    .btn-ghost:hover {
+      color: var(--color-text);
+    }
+
+    .btn-danger {
+      background: none;
+      color: #dc2626;
+    }
+
+    .btn-danger:hover {
+      background: #fef2f2;
+    }
+
+    .btn-small {
+      padding: 0.5rem 0.875rem;
+      font-size: 0.8rem;
+    }
+
+    /* Main Content */
+    main {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Form */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    label {
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+    }
+
+    input, textarea {
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      font-family: var(--font-body);
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      background: var(--color-bg);
+      color: var(--color-text);
+      transition: border-color 0.15s;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--color-border-dark);
+    }
+
+    /* Habit Cards */
+    .habits-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .habit-card {
+      background: var(--color-bg-card);
+      border-radius: 10px;
+      border: 1px solid var(--color-border);
+      padding: 1.25rem 1.5rem;
+    }
+
+    .habit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .habit-info {
+      flex: 1;
+    }
+
+    .habit-name {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .habit-meta {
+      font-size: 0.8rem;
+      color: var(--color-text-light);
+    }
+
+    .habit-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .done-btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-family: var(--font-body);
+      font-weight: 500;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--color-accent);
+      color: white;
+    }
+
+    .done-btn:hover {
+      background: var(--color-accent-dark);
+    }
+
+    .done-btn.completed {
+      background: var(--color-border);
+      color: var(--color-text-muted);
+    }
+
+    .done-btn.completed:hover {
+      background: var(--color-border-dark);
+    }
+
+    .edit-btn {
+      background: none;
+      border: none;
+      color: var(--color-text-light);
+      cursor: pointer;
+      padding: 0.5rem;
+      font-size: 0.85rem;
+      transition: color 0.15s;
+    }
+
+    .edit-btn:hover {
+      color: var(--color-text-muted);
+    }
+
+    /* Streak Display */
+    .streak-display {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .streak-count {
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--color-accent);
+      line-height: 1;
+    }
+
+    .streak-label {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+
+    /* Grid */
+    .habit-grid-container {
+      overflow-x: auto;
+      padding: 0.25rem 0;
+    }
+
+    .habit-grid {
+      display: flex;
+      gap: var(--cell-gap);
+    }
+
+    .habit-cell {
+      width: var(--cell-size);
+      height: var(--cell-size);
+      border-radius: 3px;
+      background: var(--color-empty);
+      flex-shrink: 0;
+    }
+
+    .habit-cell.completed {
+      background: var(--color-accent);
+    }
+
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--color-text-muted);
+    }
+
+    .empty-state p {
+      margin-bottom: 1.5rem;
+    }
+
+    /* Add Habit */
+    .add-section {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: var(--color-bg-card);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      cursor: pointer;
+      color: var(--color-text-light);
+      padding: 0.25rem;
+    }
+
+    .modal-close:hover {
+      color: var(--color-text-muted);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .modal-body .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-body .form-group:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .modal-footer {
+      padding: 1.25rem 1.5rem;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .modal-footer-right {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    /* Edit Grid in Modal */
+    .edit-grid-section {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .edit-grid-label {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .edit-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .edit-cell {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: var(--color-empty);
+      cursor: pointer;
+      transition: transform 0.1s;
+      position: relative;
+    }
+
+    .edit-cell:hover {
+      transform: scale(1.2);
+    }
+
+    .edit-cell.completed {
+      background: var(--color-accent);
+    }
+
+    .edit-cell::before {
+      content: attr(data-date);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-text);
+      color: white;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      margin-bottom: 4px;
+      z-index: 10;
+    }
+
+    .edit-cell:hover::before {
+      opacity: 1;
+    }
+
+    /* Toast Messages */
+    .message {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      padding: 0.875rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      z-index: 3000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      animation: toastSlideIn 0.2s ease;
+    }
+
+    @keyframes toastSlideIn {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .message-success {
+      background: var(--color-text);
+      color: white;
+    }
+
+    .message-error {
+      background: #dc2626;
+      color: white;
+    }
+
+    /* Hidden */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 500px) {
+      main {
+        padding: 1.5rem 1rem;
+      }
+
+      .habit-card {
+        padding: 1rem 1.25rem;
+      }
+
+      .streak-count {
+        font-size: 1.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-box">
+      <h1>Habits</h1>
+      <p>Track your daily habits</p>
+      <div class="form-group">
+        <input type="password" id="passwordInput" placeholder="Password" onkeypress="if(event.key === 'Enter') login()">
+      </div>
+      <br>
+      <button class="btn btn-primary" onclick="login()" style="width: 100%;">Log in</button>
+      <p id="loginError" class="hidden" style="color: #dc2626; margin-top: 1rem; font-size: 0.9rem;"></p>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="mainApp" class="hidden">
+    <header>
+      <h1>Habits</h1>
+      <button type="button" class="btn btn-ghost btn-small" onclick="logout()">Log out</button>
+    </header>
+
+    <main>
+      <div id="habitsList" class="habits-list">
+        <!-- Habit cards rendered here -->
+      </div>
+
+      <div class="add-section">
+        <button class="btn btn-secondary" onclick="openAddModal()">+ Add habit</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add/Edit Habit Modal -->
+  <div id="habitModal" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add Habit</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="habitId">
+        <div class="form-group">
+          <label for="habitName">Name</label>
+          <input type="text" id="habitName" placeholder="e.g., Morning pages">
+        </div>
+        <div id="editGridSection" class="edit-grid-section hidden">
+          <div class="edit-grid-label">Edit past entries (last 30 days)</div>
+          <div id="editGrid" class="edit-grid"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="deleteBtn" class="btn btn-danger hidden" onclick="deleteHabit()">Delete</button>
+        <div class="modal-footer-right">
+          <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveHabit()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // HTML escape function
+    function escapeHtml(unsafe) {
+      if (unsafe == null) return '';
+      return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // API URL
+    const API_URL = (() => {
+      const hostname = window.location.hostname;
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:4001';
+      }
+      return 'https://habits-api.spetteri92.workers.dev';
+    })();
+
+    let authToken = localStorage.getItem('habits_token') || '';
+    let habits = [];
+    let editingHabitCompletions = new Set();
+
+    // ====================
+    // DATE UTILITIES
+    // ====================
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function formatDisplayDate(dateStr) {
+      const [year, month, day] = dateStr.split('-');
+      return `${parseInt(day)}.${parseInt(month)}.${year}`;
+    }
+
+    function formatShortDate(dateStr) {
+      const [year, month, day] = dateStr.split('-');
+      return `${parseInt(day)}.${parseInt(month)}`;
+    }
+
+    function getToday() {
+      return formatDate(new Date());
+    }
+
+    // ====================
+    // AUTH
+    // ====================
+    if (authToken) {
+      checkAuth();
+    }
+
+    async function checkAuth() {
+      try {
+        const response = await fetch(`${API_URL}/api/habits`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (response.ok) {
+          showMainApp();
+          loadHabits();
+        } else {
+          logout();
+        }
+      } catch (e) {
+        logout();
+      }
+    }
+
+    async function login() {
+      const password = document.getElementById('passwordInput').value;
+      const loginBtn = document.querySelector('.login-box .btn-primary');
+
+      if (!password) {
+        showLoginError('Enter password');
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Loading...';
+
+      try {
+        const response = await fetch(`${API_URL}/api/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          authToken = result.token;
+          localStorage.setItem('habits_token', authToken);
+          showMainApp();
+          loadHabits();
+        } else if (response.status === 429) {
+          showLoginError(`Too many attempts. Wait ${result.retryAfter || 60}s.`);
+        } else {
+          showLoginError('Wrong password');
+        }
+      } catch (e) {
+        showLoginError('Connection error');
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Log in';
+      }
+    }
+
+    function logout() {
+      authToken = '';
+      localStorage.removeItem('habits_token');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('mainApp').classList.add('hidden');
+      document.getElementById('passwordInput').value = '';
+    }
+
+    function showLoginError(msg) {
+      const el = document.getElementById('loginError');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+
+    function showMainApp() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('mainApp').classList.remove('hidden');
+    }
+
+    function showMessage(text, type = 'success') {
+      const el = document.createElement('div');
+      el.className = `message message-${type}`;
+      el.textContent = text;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2500);
+    }
+
+    // ====================
+    // DATA
+    // ====================
+    async function loadHabits() {
+      try {
+        const response = await fetch(`${API_URL}/api/habits?weeks=52`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const data = await response.json();
+        habits = data.habits || [];
+        renderHabits();
+      } catch (e) {
+        showMessage('Error loading habits', 'error');
+      }
+    }
+
+    async function toggleToday(habitId) {
+      const today = getToday();
+      await toggleCompletion(habitId, today);
+    }
+
+    async function toggleCompletion(habitId, date) {
+      try {
+        const response = await fetch(`${API_URL}/api/habits/${habitId}/toggle`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ date })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          // Update local state
+          const habit = habits.find(h => h.id === habitId);
+          if (habit) {
+            if (result.completed) {
+              habit.completions.unshift(date);
+              habit.completions.sort((a, b) => b.localeCompare(a));
+            } else {
+              habit.completions = habit.completions.filter(d => d !== date);
+            }
+            habit.streak = calculateStreak(habit.completions);
+          }
+          renderHabits();
+          return result.completed;
+        }
+      } catch (e) {
+        showMessage('Error', 'error');
+      }
+      return null;
+    }
+
+    function calculateStreak(completions) {
+      if (completions.length === 0) return 0;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      const todayStr = formatDate(today);
+      const yesterdayStr = formatDate(yesterday);
+
+      const firstCompletion = completions[0];
+      if (firstCompletion !== todayStr && firstCompletion !== yesterdayStr) {
+        return 0;
+      }
+
+      let streak = 0;
+      let expectedDate = new Date(firstCompletion + 'T00:00:00');
+
+      for (const dateStr of completions) {
+        const expectedStr = formatDate(expectedDate);
+
+        if (dateStr === expectedStr) {
+          streak++;
+          expectedDate.setDate(expectedDate.getDate() - 1);
+        } else if (dateStr < expectedStr) {
+          break;
+        }
+      }
+
+      return streak;
+    }
+
+    function getStreakStartDate(completions, streak) {
+      if (streak === 0 || completions.length === 0) return null;
+      // The streak start is `streak` days back from the most recent completion
+      const mostRecent = new Date(completions[0] + 'T00:00:00');
+      mostRecent.setDate(mostRecent.getDate() - streak + 1);
+      return formatDate(mostRecent);
+    }
+
+    // ====================
+    // RENDERING
+    // ====================
+    function renderHabits() {
+      const container = document.getElementById('habitsList');
+      const today = getToday();
+
+      if (habits.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <p>No habits yet.<br>Start tracking something!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = habits.map(habit => {
+        const completionsSet = new Set(habit.completions);
+        const isTodayDone = completionsSet.has(today);
+        const streakStart = getStreakStartDate(habit.completions, habit.streak);
+
+        // Generate grid cells from streak start to today
+        let gridHtml = '';
+        if (habit.streak > 0 && streakStart) {
+          const startDate = new Date(streakStart + 'T00:00:00');
+          const endDate = new Date(today + 'T00:00:00');
+          const currentDate = new Date(startDate);
+
+          while (currentDate <= endDate) {
+            const dateStr = formatDate(currentDate);
+            const isCompleted = completionsSet.has(dateStr);
+            const isToday = dateStr === today;
+            const classes = ['habit-cell'];
+            if (isCompleted) classes.push('completed');
+            if (isToday) classes.push('today');
+            gridHtml += `<div class="${classes.join(' ')}"></div>`;
+            currentDate.setDate(currentDate.getDate() + 1);
+          }
+        }
+
+        return `
+          <div class="habit-card">
+            <div class="habit-header">
+              <div class="habit-info">
+                <div class="habit-name">${escapeHtml(habit.name)}</div>
+                ${streakStart ? `<div class="habit-meta">Started ${formatDisplayDate(streakStart)}</div>` : '<div class="habit-meta">No active streak</div>'}
+              </div>
+              <div class="habit-actions">
+                <button class="done-btn ${isTodayDone ? 'completed' : ''}" onclick="toggleToday(${habit.id})">
+                  ${isTodayDone ? 'Done' : 'Done'}
+                </button>
+                <button class="edit-btn" onclick="openEditModal(${habit.id})">Edit</button>
+              </div>
+            </div>
+            <div class="streak-display">
+              <span class="streak-count">${habit.streak}</span>
+              <span class="streak-label">day${habit.streak !== 1 ? 's' : ''}</span>
+            </div>
+            ${gridHtml ? `<div class="habit-grid-container"><div class="habit-grid">${gridHtml}</div></div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ====================
+    // MODAL
+    // ====================
+    function openAddModal() {
+      document.getElementById('modalTitle').textContent = 'Add Habit';
+      document.getElementById('habitId').value = '';
+      document.getElementById('habitName').value = '';
+      document.getElementById('deleteBtn').classList.add('hidden');
+      document.getElementById('editGridSection').classList.add('hidden');
+      document.getElementById('habitModal').classList.remove('hidden');
+      document.getElementById('habitName').focus();
+    }
+
+    function openEditModal(id) {
+      const habit = habits.find(h => h.id === id);
+      if (!habit) return;
+
+      document.getElementById('modalTitle').textContent = 'Edit Habit';
+      document.getElementById('habitId').value = id;
+      document.getElementById('habitName').value = habit.name;
+      document.getElementById('deleteBtn').classList.remove('hidden');
+
+      // Setup edit grid
+      editingHabitCompletions = new Set(habit.completions);
+      renderEditGrid();
+      document.getElementById('editGridSection').classList.remove('hidden');
+
+      document.getElementById('habitModal').classList.remove('hidden');
+    }
+
+    function renderEditGrid() {
+      const container = document.getElementById('editGrid');
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      let html = '';
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - i);
+        const dateStr = formatDate(date);
+        const isCompleted = editingHabitCompletions.has(dateStr);
+        const classes = ['edit-cell'];
+        if (isCompleted) classes.push('completed');
+
+        html += `<div class="${classes.join(' ')}" data-date="${formatShortDate(dateStr)}" onclick="toggleEditCell('${dateStr}')"></div>`;
+      }
+
+      container.innerHTML = html;
+    }
+
+    async function toggleEditCell(dateStr) {
+      const habitId = document.getElementById('habitId').value;
+      const result = await toggleCompletion(habitId, dateStr);
+
+      if (result !== null) {
+        if (result) {
+          editingHabitCompletions.add(dateStr);
+        } else {
+          editingHabitCompletions.delete(dateStr);
+        }
+        renderEditGrid();
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('habitModal').classList.add('hidden');
+    }
+
+    async function saveHabit() {
+      const id = document.getElementById('habitId').value;
+      const name = document.getElementById('habitName').value.trim();
+
+      if (!name) {
+        showMessage('Name is required', 'error');
+        return;
+      }
+
+      try {
+        const isEdit = !!id;
+        const url = isEdit ? `${API_URL}/api/habits/${id}` : `${API_URL}/api/habits`;
+        const method = isEdit ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          showMessage(isEdit ? 'Updated' : 'Added');
+          closeModal();
+          loadHabits();
+        } else {
+          throw new Error(result.error);
+        }
+      } catch (e) {
+        showMessage('Error', 'error');
+      }
+    }
+
+    async function deleteHabit() {
+      const id = document.getElementById('habitId').value;
+      const name = document.getElementById('habitName').value;
+
+      if (!confirm(`Delete "${name}"?`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/api/habits/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          showMessage('Deleted');
+          closeModal();
+          loadHabits();
+        } else {
+          throw new Error(result.error);
+        }
+      } catch (e) {
+        showMessage('Error', 'error');
+      }
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('habitModal');
+        if (!modal.classList.contains('hidden')) {
+          closeModal();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
