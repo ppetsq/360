@@ -110,8 +110,10 @@ export async function getAllHabits(request, env, corsHeaders) {
 				name: habit.name,
 				description: habit.description,
 				sort_order: habit.sort_order,
+				type: habit.type || 'daily',
 				completions: habitCompletions,
 				streak: calculateStreak(habitCompletions),
+				total_count: habitCompletions.length,
 			};
 		});
 
@@ -133,7 +135,7 @@ export async function createHabit(request, env, corsHeaders) {
 	}
 
 	try {
-		const { name, description } = await request.json();
+		const { name, description, type } = await request.json();
 
 		if (!name || typeof name !== 'string' || name.trim().length === 0) {
 			return Response.json({ error: 'Name is required' }, { status: 400, headers: corsHeaders });
@@ -143,6 +145,9 @@ export async function createHabit(request, env, corsHeaders) {
 			return Response.json({ error: 'Name must be 100 characters or less' }, { status: 400, headers: corsHeaders });
 		}
 
+		// Validate type
+		const habitType = type === 'occasional' ? 'occasional' : 'daily';
+
 		// Get max sort_order for this user
 		const maxOrder = await env.habits_db
 			.prepare('SELECT MAX(sort_order) as max_order FROM habits WHERE user_id = ?')
@@ -151,8 +156,8 @@ export async function createHabit(request, env, corsHeaders) {
 		const sortOrder = (maxOrder?.max_order || 0) + 1;
 
 		const result = await env.habits_db
-			.prepare('INSERT INTO habits (name, description, sort_order, user_id) VALUES (?, ?, ?, ?)')
-			.bind(name.trim(), description?.trim() || null, sortOrder, user.userId)
+			.prepare('INSERT INTO habits (name, description, sort_order, user_id, type) VALUES (?, ?, ?, ?, ?)')
+			.bind(name.trim(), description?.trim() || null, sortOrder, user.userId, habitType)
 			.run();
 
 		return Response.json({ success: true, id: result.meta.last_row_id }, { headers: corsHeaders });
@@ -173,7 +178,7 @@ export async function updateHabit(id, request, env, corsHeaders) {
 	}
 
 	try {
-		const { name, description, sort_order } = await request.json();
+		const { name, description, sort_order, type } = await request.json();
 
 		// Check habit exists and belongs to user
 		const habit = await env.habits_db
@@ -207,6 +212,12 @@ export async function updateHabit(id, request, env, corsHeaders) {
 		if (sort_order !== undefined) {
 			updates.push('sort_order = ?');
 			values.push(sort_order);
+		}
+
+		if (type !== undefined) {
+			const habitType = type === 'occasional' ? 'occasional' : 'daily';
+			updates.push('type = ?');
+			values.push(habitType);
 		}
 
 		if (updates.length === 0) {

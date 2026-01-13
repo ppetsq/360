@@ -18,6 +18,8 @@
       --color-border-dark: #d4d4d4;
       --color-accent: #22c55e;
       --color-accent-dark: #16a34a;
+      --color-occasional: #f97316;
+      --color-occasional-dark: #ea580c;
       --color-empty: #e5e5e5;
       --font-body: 'Outfit', system-ui, sans-serif;
       --cell-size: 14px;
@@ -152,6 +154,12 @@
       max-width: 600px;
       margin: 0 auto;
       padding: 2rem 1.5rem;
+    }
+
+    @media (min-width: 800px) {
+      main {
+        max-width: 900px;
+      }
     }
 
     /* Form */
@@ -308,6 +316,63 @@
       background: var(--color-accent);
     }
 
+    .habit-card.occasional .habit-cell.completed {
+      background: var(--color-occasional);
+    }
+
+    .habit-card.occasional .streak-count {
+      color: var(--color-occasional);
+    }
+
+    .habit-card.occasional .done-btn {
+      background: var(--color-occasional);
+    }
+
+    .habit-card.occasional .done-btn:hover {
+      background: var(--color-occasional-dark);
+    }
+
+    .habit-card.occasional .done-btn.completed {
+      background: var(--color-border);
+      color: var(--color-text-muted);
+    }
+
+    .habit-card.occasional .done-btn.completed:hover {
+      background: var(--color-border-dark);
+    }
+
+    /* Category Layout */
+    .habits-container {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .habits-category {
+      flex: 1;
+    }
+
+    .category-heading {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--color-text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+    }
+
+    @media (min-width: 800px) {
+      .habits-container.two-columns {
+        flex-direction: row;
+        gap: 1.5rem;
+      }
+
+      .habits-container.two-columns .habits-category {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+
 
     /* Empty State */
     .empty-state {
@@ -400,6 +465,41 @@
     .modal-footer-right {
       display: flex;
       gap: 0.75rem;
+    }
+
+    /* Type Selector */
+    .type-selector {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .type-btn {
+      flex: 1;
+      padding: 0.625rem 1rem;
+      font-size: 0.85rem;
+      font-family: var(--font-body);
+      font-weight: 400;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      background: var(--color-bg);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .type-btn:hover {
+      border-color: var(--color-border-dark);
+    }
+
+    .type-btn.selected {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: white;
+    }
+
+    .type-btn[data-type="occasional"].selected {
+      background: var(--color-occasional);
+      border-color: var(--color-occasional);
     }
 
     /* Edit Grid in Modal */
@@ -554,7 +654,14 @@
         <input type="hidden" id="habitId">
         <div class="form-group">
           <label for="habitName">Name</label>
-          <input type="text" id="habitName" placeholder="e.g., Morning pages">
+          <input type="text" id="habitName" placeholder="e.g., Morning pages" onkeypress="if(event.key === 'Enter') saveHabit()">
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <div class="type-selector">
+            <button type="button" class="type-btn selected" data-type="daily" onclick="selectType('daily')">Daily</button>
+            <button type="button" class="type-btn" data-type="occasional" onclick="selectType('occasional')">Occasional</button>
+          </div>
         </div>
         <div id="editGridSection" class="edit-grid-section hidden">
           <div class="edit-grid-label">Edit past entries (last 30 days)</div>
@@ -596,6 +703,7 @@
     let userName = localStorage.getItem('habits_user_name') || '';
     let habits = [];
     let editingHabitCompletions = new Set();
+    let selectedHabitType = 'daily';
 
     // ====================
     // DATE UTILITIES
@@ -814,6 +922,85 @@
     // ====================
     // RENDERING
     // ====================
+    function renderHabitCard(habit, today) {
+      const completionsSet = new Set(habit.completions);
+      const isTodayDone = completionsSet.has(today);
+      const isOccasional = habit.type === 'occasional';
+
+      let gridHtml = '';
+      let metaText = '';
+      let countValue = 0;
+      let countLabel = '';
+
+      if (isOccasional) {
+        // Occasional: show only completed days (no gaps), like a streak but without enforcement
+        const totalCount = habit.total_count || habit.completions.length;
+
+        if (totalCount > 0) {
+          // Get earliest completion date for "Started" text
+          const sortedCompletions = [...habit.completions].sort();
+          const firstCompletion = sortedCompletions[0];
+          metaText = `Started ${formatDisplayDate(firstCompletion)}`;
+
+          // Show one cell per completion (all filled, no gaps)
+          for (let i = 0; i < totalCount; i++) {
+            gridHtml += `<div class="habit-cell completed"></div>`;
+          }
+        } else {
+          metaText = 'Not started yet';
+        }
+
+        countValue = totalCount;
+        countLabel = `time${countValue !== 1 ? 's' : ''}`;
+      } else {
+        // Daily: show from streak start
+        const streakStart = getStreakStartDate(habit.completions, habit.streak);
+
+        if (habit.streak > 0 && streakStart) {
+          const startDate = new Date(streakStart + 'T00:00:00');
+          const endDate = new Date(today + 'T00:00:00');
+          const currentDate = new Date(startDate);
+
+          while (currentDate <= endDate) {
+            const dateStr = formatDate(currentDate);
+            const isCompleted = completionsSet.has(dateStr);
+            const classes = ['habit-cell'];
+            if (isCompleted) classes.push('completed');
+            gridHtml += `<div class="${classes.join(' ')}"></div>`;
+            currentDate.setDate(currentDate.getDate() + 1);
+          }
+          metaText = `Started ${formatDisplayDate(streakStart)}`;
+        } else {
+          metaText = 'No active streak';
+        }
+
+        countValue = habit.streak;
+        countLabel = `day${countValue !== 1 ? 's' : ''}`;
+      }
+
+      return `
+        <div class="habit-card ${isOccasional ? 'occasional' : ''}">
+          <div class="habit-header">
+            <div class="habit-info">
+              <div class="habit-name">${escapeHtml(habit.name)}</div>
+              <div class="habit-meta">${metaText}</div>
+            </div>
+            <div class="habit-actions">
+              <button class="done-btn ${isTodayDone ? 'completed' : ''}" onclick="toggleToday(${habit.id})">
+                ${isTodayDone ? 'Done' : 'Done'}
+              </button>
+              <button class="edit-btn" onclick="openEditModal(${habit.id})">Edit</button>
+            </div>
+          </div>
+          <div class="streak-display">
+            <span class="streak-count">${countValue}</span>
+            <span class="streak-label">${countLabel}</span>
+          </div>
+          ${gridHtml ? `<div class="habit-grid-container"><div class="habit-grid">${gridHtml}</div></div>` : ''}
+        </div>
+      `;
+    }
+
     function renderHabits() {
       const container = document.getElementById('habitsList');
       const today = getToday();
@@ -827,63 +1014,59 @@
         return;
       }
 
-      container.innerHTML = habits.map(habit => {
-        const completionsSet = new Set(habit.completions);
-        const isTodayDone = completionsSet.has(today);
-        const streakStart = getStreakStartDate(habit.completions, habit.streak);
+      // Group habits by type
+      const dailyHabits = habits.filter(h => h.type !== 'occasional');
+      const occasionalHabits = habits.filter(h => h.type === 'occasional');
 
-        // Generate grid cells from streak start to today
-        let gridHtml = '';
-        if (habit.streak > 0 && streakStart) {
-          const startDate = new Date(streakStart + 'T00:00:00');
-          const endDate = new Date(today + 'T00:00:00');
-          const currentDate = new Date(startDate);
+      const hasDaily = dailyHabits.length > 0;
+      const hasOccasional = occasionalHabits.length > 0;
+      const hasBoth = hasDaily && hasOccasional;
 
-          while (currentDate <= endDate) {
-            const dateStr = formatDate(currentDate);
-            const isCompleted = completionsSet.has(dateStr);
-            const isToday = dateStr === today;
-            const classes = ['habit-cell'];
-            if (isCompleted) classes.push('completed');
-            if (isToday) classes.push('today');
-            gridHtml += `<div class="${classes.join(' ')}"></div>`;
-            currentDate.setDate(currentDate.getDate() + 1);
-          }
-        }
+      let html = `<div class="habits-container ${hasBoth ? 'two-columns' : ''}">`;
 
-        return `
-          <div class="habit-card">
-            <div class="habit-header">
-              <div class="habit-info">
-                <div class="habit-name">${escapeHtml(habit.name)}</div>
-                ${streakStart ? `<div class="habit-meta">Started ${formatDisplayDate(streakStart)}</div>` : '<div class="habit-meta">No active streak</div>'}
-              </div>
-              <div class="habit-actions">
-                <button class="done-btn ${isTodayDone ? 'completed' : ''}" onclick="toggleToday(${habit.id})">
-                  ${isTodayDone ? 'Done' : 'Done'}
-                </button>
-                <button class="edit-btn" onclick="openEditModal(${habit.id})">Edit</button>
-              </div>
+      if (hasDaily) {
+        html += `
+          <div class="habits-category">
+            <div class="category-heading">Daily</div>
+            <div class="habits-list">
+              ${dailyHabits.map(h => renderHabitCard(h, today)).join('')}
             </div>
-            <div class="streak-display">
-              <span class="streak-count">${habit.streak}</span>
-              <span class="streak-label">day${habit.streak !== 1 ? 's' : ''}</span>
-            </div>
-            ${gridHtml ? `<div class="habit-grid-container"><div class="habit-grid">${gridHtml}</div></div>` : ''}
           </div>
         `;
-      }).join('');
+      }
+
+      if (hasOccasional) {
+        html += `
+          <div class="habits-category">
+            <div class="category-heading">Occasional</div>
+            <div class="habits-list">
+              ${occasionalHabits.map(h => renderHabitCard(h, today)).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      html += '</div>';
+      container.innerHTML = html;
     }
 
     // ====================
     // MODAL
     // ====================
+    function selectType(type) {
+      selectedHabitType = type;
+      document.querySelectorAll('.type-btn').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.type === type);
+      });
+    }
+
     function openAddModal() {
       document.getElementById('modalTitle').textContent = 'Add Habit';
       document.getElementById('habitId').value = '';
       document.getElementById('habitName').value = '';
       document.getElementById('deleteBtn').classList.add('hidden');
       document.getElementById('editGridSection').classList.add('hidden');
+      selectType('daily');
       document.getElementById('habitModal').classList.remove('hidden');
       document.getElementById('habitName').focus();
     }
@@ -896,6 +1079,7 @@
       document.getElementById('habitId').value = id;
       document.getElementById('habitName').value = habit.name;
       document.getElementById('deleteBtn').classList.remove('hidden');
+      selectType(habit.type || 'daily');
 
       // Setup edit grid
       editingHabitCompletions = new Set(habit.completions);
@@ -963,7 +1147,7 @@
             'Authorization': `Bearer ${authToken}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ name })
+          body: JSON.stringify({ name, type: selectedHabitType })
         });
 
         const result = await response.json();
