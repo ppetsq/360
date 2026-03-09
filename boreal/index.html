@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>boreal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Calistoga&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --white: #f5f3f0;
+      --dim: rgba(245, 243, 240, 0.55);
+      --faint: rgba(245, 243, 240, 0.12);
+    }
+
+    html, body {
+      background: #000;
+      color: var(--white);
+      cursor: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── custom cursor: crosshair ── */
+    #cursor {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+    }
+
+    #cursor::before,
+    #cursor::after {
+      content: '';
+      position: absolute;
+      background: rgba(245, 243, 240, 0.65);
+    }
+
+    #cursor::before {
+      width: 1px;
+      height: 16px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #cursor::after {
+      width: 16px;
+      height: 1px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* ── grain ── */
+    #grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 200;
+    }
+
+    /* ── vignette ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.7) 100%);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ── layout ── */
+    .page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 24px 120px;
+      position: relative;
+      z-index: 5;
+      min-height: 100vh;
+    }
+
+    .logo {
+      width: min(800px, 90vw);
+      display: block;
+      margin-bottom: 32px;
+    }
+
+    .logo img {
+      width: min(18vw, 200px);
+      min-width: 120px;
+      display: block;
+    }
+
+    /* ── video ── */
+    .video-wrap {
+      width: min(800px, 90vw);
+      aspect-ratio: 16 / 9;
+      position: relative;
+    }
+
+    .video-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* ── caption row below video ── */
+    .caption {
+      width: min(800px, 90vw);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-top: 16px;
+      gap: 24px;
+    }
+
+    .set-title {
+      font-family: 'Calistoga', serif;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      color: var(--white);
+      flex-shrink: 0;
+    }
+
+    .set-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.55rem, 1vw, 0.63rem);
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: var(--dim);
+      line-height: 2;
+      text-align: right;
+      text-transform: lowercase;
+    }
+
+    /* ── footer ── */
+    .tagline {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 300;
+      letter-spacing: 0.14em;
+      color: var(--faint);
+      text-align: center;
+      position: fixed;
+      bottom: 36px;
+      left: 0;
+      right: 0;
+      z-index: 5;
+    }
+
+    .credits {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      color: rgba(245, 243, 240, 0.08);
+      text-align: center;
+      position: fixed;
+      bottom: 16px;
+      left: 0;
+      right: 0;
+      z-index: 5;
+    }
+
+    /* ── mobile ── */
+    @media (max-width: 600px) {
+      .logo img { width: 100%; }
+      .page { padding-top: 60px; padding-bottom: 100px; }
+      #cursor { display: none; }
+      html, body { cursor: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cursor"></div>
+  <canvas id="grain"></canvas>
+
+  <div class="page">
+    <div class="logo">
+      <img src="boreal.jpeg" alt="boreal">
+    </div>
+
+    <div class="video-wrap">
+      <iframe
+        src="https://www.youtube.com/embed/ABPIZK9na9I?rel=0&modestbranding=1&color=white"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+
+    <div class="caption">
+      <h1 class="set-title">boreal_01 percy thrills</h1>
+      <div class="set-meta">
+        rotterdam noord<br>
+        06.03.2026
+      </div>
+    </div>
+  </div>
+
+  <p class="tagline">dj sets. striking locations. ongoing.</p>
+  <p class="credits">by percy thrills &amp; petsq</p>
+
+  <script>
+    // ── cursor ──
+    const cursor = document.getElementById('cursor');
+    let mx = -100, my = -100;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX;
+      my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top  = my + 'px';
+    });
+
+    // ── film grain ──
+    const canvas = document.getElementById('grain');
+    const ctx    = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    let lastGrain = 0;
+    function drawGrain(ts) {
+      if (ts - lastGrain > 50) {
+        lastGrain = ts;
+        const id   = ctx.createImageData(canvas.width, canvas.height);
+        const data = id.data;
+        for (let i = 0; i < data.length; i += 4) {
+          const v = Math.random() * 255 | 0;
+          data[i] = data[i+1] = data[i+2] = v;
+          data[i+3] = 18;
+        }
+        ctx.putImageData(id, 0, 0);
+      }
+      requestAnimationFrame(drawGrain);
+    }
+    requestAnimationFrame(drawGrain);
+  </script>
+</body>
+</html>
