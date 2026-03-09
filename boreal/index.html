@@ -11,45 +11,13 @@
     :root {
       --white: #f5f3f0;
       --dim: rgba(245, 243, 240, 0.55);
-      --faint: rgba(245, 243, 240, 0.12);
+      --faint: rgba(245, 243, 240, 0.45);
     }
 
     html, body {
       background: #000;
       color: var(--white);
-      cursor: none;
       -webkit-font-smoothing: antialiased;
-    }
-
-    /* ── custom cursor: crosshair ── */
-    #cursor {
-      position: fixed;
-      pointer-events: none;
-      z-index: 9999;
-      transform: translate(-50%, -50%);
-    }
-
-    #cursor::before,
-    #cursor::after {
-      content: '';
-      position: absolute;
-      background: rgba(245, 243, 240, 0.65);
-    }
-
-    #cursor::before {
-      width: 1px;
-      height: 16px;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    #cursor::after {
-      width: 16px;
-      height: 1px;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
     }
 
     /* ── grain ── */
@@ -75,7 +43,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 60px 24px 120px;
+      padding: 60px 24px 24px;
       position: relative;
       z-index: 5;
       min-height: 100vh;
@@ -83,8 +51,9 @@
 
     .logo {
       width: min(800px, 90vw);
-      display: block;
-      margin-bottom: 32px;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 64px;
     }
 
     .logo img {
@@ -138,7 +107,37 @@
       text-transform: lowercase;
     }
 
+    /* ── tags ── */
+    .tags {
+      width: min(800px, 90vw);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.55rem;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      color: var(--dim);
+      border: 1px solid rgba(245, 243, 240, 0.2);
+      padding: 4px 10px;
+      border-radius: 0;
+    }
+
     /* ── footer ── */
+    .footer {
+      margin-top: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 48px;
+    }
+
     .tagline {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.6rem;
@@ -146,11 +145,6 @@
       letter-spacing: 0.14em;
       color: var(--faint);
       text-align: center;
-      position: fixed;
-      bottom: 36px;
-      left: 0;
-      right: 0;
-      z-index: 5;
     }
 
     .credits {
@@ -158,27 +152,19 @@
       font-size: 0.58rem;
       font-weight: 300;
       letter-spacing: 0.1em;
-      color: rgba(245, 243, 240, 0.08);
+      color: rgba(245, 243, 240, 0.35);
       text-align: center;
-      position: fixed;
-      bottom: 16px;
-      left: 0;
-      right: 0;
-      z-index: 5;
     }
 
     /* ── mobile ── */
     @media (max-width: 600px) {
       .logo img { width: 100%; }
       .page { padding-top: 60px; padding-bottom: 100px; }
-      #cursor { display: none; }
-      html, body { cursor: auto; }
     }
   </style>
 </head>
 <body>
 
-  <div id="cursor"></div>
   <canvas id="grain"></canvas>
 
   <div class="page">
@@ -202,6 +188,12 @@
       </div>
     </div>
 
+    <div class="tags">
+      <span class="tag">disco</span>
+      <span class="tag">house</span>
+      <span class="tag">soul</span>
+    </div>
+
     <div class="video-wrap" style="margin-top: 80px;">
       <iframe
         src="https://www.youtube.com/embed/xJumw5alUSc?rel=0&modestbranding=1&color=white"
@@ -217,23 +209,21 @@
         06.03.2026
       </div>
     </div>
+
+    <div class="tags">
+      <span class="tag">electronica</span>
+      <span class="tag">house</span>
+      <span class="tag">ambient</span>
+    </div>
+
+    <div class="footer">
+      <p class="tagline">dj sets. striking locations. ongoing.</p>
+      <p class="credits">by percy thrills &amp; petsq</p>
+      <img src="boreal_footer.jpeg" alt="boreal" style="width: 300px; margin-top: 24px; opacity: 0.7;">
+    </div>
   </div>
 
-  <p class="tagline">dj sets. striking locations. ongoing.</p>
-  <p class="credits">by percy thrills &amp; petsq</p>
-
   <script>
-    // ── cursor ──
-    const cursor = document.getElementById('cursor');
-    let mx = -100, my = -100;
-
-    document.addEventListener('mousemove', e => {
-      mx = e.clientX;
-      my = e.clientY;
-      cursor.style.left = mx + 'px';
-      cursor.style.top  = my + 'px';
-    });
-
     // ── film grain ──
     const canvas = document.getElementById('grain');
     const ctx    = canvas.getContext('2d');
@@ -254,7 +244,7 @@
         for (let i = 0; i < data.length; i += 4) {
           const v = Math.random() * 255 | 0;
           data[i] = data[i+1] = data[i+2] = v;
-          data[i+3] = 18;
+          data[i+3] = 8;
         }
         ctx.putImageData(id, 0, 0);
       }
