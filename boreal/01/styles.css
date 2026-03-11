@@ -246,7 +246,6 @@
   letter-spacing: 0.2em;
   color: var(--faint);
   z-index: 30;
-  animation: stack-appear 1s 1.5s both;
   transition: opacity 0.4s;
 }
 

@@ -164,7 +164,7 @@
       window.addEventListener('scroll', () => {
         const y = window.scrollY;
         header.classList.toggle('is-scrolled', y > 20);
-        if (y > 60) scrollHint.classList.add('is-hidden');
+        if (y > 5) scrollHint.classList.add('is-hidden');
 
         if (!ticking) {
           requestAnimationFrame(() => {
