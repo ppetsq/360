@@ -35,15 +35,6 @@ html, body {
   z-index: 200;
 }
 
-/* ── vignette ── */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
-  pointer-events: none;
-  z-index: 10;
-}
 
 /* ── skip to content link ── */
 .skip-link {
