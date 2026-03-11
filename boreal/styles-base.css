@@ -6,8 +6,8 @@
   --bg:       #0d0d0d;
   --surface:  #111111;
   --white:    #f5f3f0;
-  --dim:      rgba(245,243,240,0.55);
-  --faint:    rgba(245,243,240,0.35);
+  --dim:      rgba(245,243,240,0.7);
+  --faint:    rgba(245,243,240,0.5);
   --muted:    rgba(245,243,240,0.2);
   --orange:   #e8620a;
   --green:    #39e87a;
@@ -43,6 +43,31 @@ body::after {
   background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
   pointer-events: none;
   z-index: 10;
+}
+
+/* ── skip to content link ── */
+.skip-link {
+  position: absolute;
+  top: -9999px;
+  left: var(--gutter);
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 300;
+  border: 1px solid var(--muted);
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 8px; }
+
+/* ── disabled nav links ── */
+.nav-link--disabled {
+  opacity: 0.3;
+  pointer-events: none;
+  cursor: default;
 }
 
 /* ── visually hidden (SEO) ── */
