@@ -3,163 +3,215 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>boreal</title>
+  <title>boreal — dj set archive</title>
+  <meta name="description" content="boreal — DJ sets filmed in striking locations. Rotterdam Noord and beyond.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Calistoga&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles-base.css">
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --white: #f5f3f0;
-      --dim: rgba(245, 243, 240, 0.55);
-      --faint: rgba(245, 243, 240, 0.45);
-    }
-
-    html, body {
-      background: #000;
-      color: var(--white);
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* ── grain ── */
-    #grain {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 200;
-    }
-
-    /* ── vignette ── */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.7) 100%);
-      pointer-events: none;
-      z-index: 10;
-    }
-
-    /* ── layout ── */
-    .page {
+    /* ── collection page layout ── */
+    .collection-page {
+      min-height: 100vh;
+      padding: var(--header-h) var(--gutter) 80px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 60px 24px 24px;
       position: relative;
       z-index: 5;
-      min-height: 100vh;
     }
 
-    .logo {
-      width: min(800px, 90vw);
+    .collection-header {
+      width: min(var(--content-max), 100%);
       display: flex;
-      justify-content: center;
-      margin-bottom: 64px;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 0 56px;
+      gap: 12px;
     }
 
-    .logo img {
-      width: min(18vw, 200px);
-      min-width: 120px;
-      display: block;
+    .collection-title {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: var(--white);
     }
 
-    /* ── video ── */
-    .video-wrap {
-      width: min(800px, 90vw);
-      aspect-ratio: 16 / 9;
-      position: relative;
+    .collection-tagline {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      color: var(--faint);
+    }
+    .collection-tagline em {
+      font-style: italic;
+      color: var(--dim);
+    }
+    @media (max-width: 600px) {
+      .collection-tagline { text-align: center; }
     }
 
-    .video-wrap iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    /* ── caption row below video ── */
-    .caption {
-      width: min(800px, 90vw);
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-top: 16px;
+    /* ── cards grid ── */
+    .cards-grid {
+      width: min(var(--content-max), 100%);
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
       gap: 24px;
     }
 
-    .set-title {
-      font-family: 'Calistoga', serif;
-      font-size: clamp(1rem, 2vw, 1.25rem);
+    /* ── edition card ── */
+    .edition-card {
+      display: block;
+      text-decoration: none;
+      position: relative;
+    }
+
+    .edition-card.is-soon {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .card-artwork {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      position: relative;
+      overflow: hidden;
+      background-color: #080808;
+    }
+
+    /* Cover photo (boreal_01 only) */
+    .card-photo {
+      position: absolute;
+      inset: 0;
+      background-image: url('boreal_01_cover.jpg');
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.6s var(--ease-out-expo);
+    }
+
+    .edition-card:not(.is-soon):hover .card-photo {
+      transform: scale(1.03);
+    }
+
+    /* ─────────────────────────────────────────────────
+       GLOW LAYERS — same PNGs as edition hero, heavily
+       zoomed + blurred to create abstract color blobs.
+       mix-blend-mode: screen makes them additive light.
+    ───────────────────────────────────────────────── */
+    .card-glow {
+      position: absolute;
+      inset: -50px; /* overshoot to hide blur edge fade */
+      background-size: 450%;
+      background-repeat: no-repeat;
+      filter: blur(38px) saturate(2.4);
+      mix-blend-mode: screen;
+      will-change: opacity;
+    }
+
+    .card-glow--green  { background-image: url('boreal_hero/05_glow green.png');  background-position: 28% 38%; }
+    .card-glow--blue   { background-image: url('boreal_hero/06_glow blue.png');   background-position: 72% 62%; }
+    .card-glow--orange { background-image: url('boreal_hero/07_glow orange.png'); background-position: 50% 50%; }
+
+    /* Different periods + negative delays → mid-cycle start, never sync */
+    @keyframes card-glow-a {
+      0%, 100% { opacity: 0.08; }
+      50%       { opacity: 1.00; }
+    }
+    @keyframes card-glow-b {
+      0%, 100% { opacity: 0.10; }
+      50%       { opacity: 1.00; }
+    }
+    @keyframes card-glow-c {
+      0%, 100% { opacity: 0.06; }
+      50%       { opacity: 0.95; }
+    }
+
+    .card-glow--green  { animation: card-glow-a 5200ms -2600ms ease-in-out infinite; }
+    .card-glow--blue   { animation: card-glow-b 6800ms -1700ms ease-in-out infinite; }
+    .card-glow--orange { animation: card-glow-c 4000ms -1000ms ease-in-out infinite; }
+
+    /* ── card body ── */
+    .card-body {
+      padding: 16px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-label {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
       font-weight: 400;
       letter-spacing: -0.01em;
       color: var(--white);
-      flex-shrink: 0;
     }
 
-    .set-meta {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: clamp(0.55rem, 1vw, 0.63rem);
+    .card-meta {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
       font-weight: 300;
-      letter-spacing: 0.08em;
-      color: var(--dim);
-      line-height: 2;
-      text-align: right;
+      letter-spacing: 0.1em;
+      color: var(--faint);
       text-transform: lowercase;
     }
 
-    /* ── tags ── */
-    .tags {
-      width: min(800px, 90vw);
+    .card-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 2px;
+      gap: 5px;
     }
 
-    .tag {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.55rem;
-      font-weight: 300;
-      letter-spacing: 0.12em;
-      text-transform: lowercase;
-      color: var(--dim);
-      border: 1px solid rgba(245, 243, 240, 0.2);
-      padding: 4px 10px;
-      border-radius: 0;
-    }
-
-    /* ── footer ── */
-    .footer {
-      margin-top: 80px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      padding-bottom: 48px;
-    }
-
-    .tagline {
-      font-family: 'JetBrains Mono', monospace;
+    .card-soon-label {
+      font-family: var(--font-mono);
       font-size: 0.6rem;
       font-weight: 300;
       letter-spacing: 0.14em;
       color: var(--faint);
-      text-align: center;
+      text-transform: lowercase;
     }
 
-    .credits {
-      font-family: 'JetBrains Mono', monospace;
+    /* ── footer ── */
+    .collection-footer {
+      width: min(var(--content-max), 100%);
+      margin-top: 80px;
+      padding-top: 32px;
+      border-top: 1px solid var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 24px;
+    }
+
+    .footer-tagline {
+      font-family: var(--font-mono);
       font-size: 0.58rem;
       font-weight: 300;
-      letter-spacing: 0.1em;
-      color: rgba(245, 243, 240, 0.35);
-      text-align: center;
+      letter-spacing: 0.14em;
+      color: var(--faint);
+      text-transform: lowercase;
     }
 
-    /* ── mobile ── */
+    .footer-credits {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      color: rgba(245,243,240,0.25);
+      text-transform: lowercase;
+    }
+
+    .footer-link {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: color 0.2s;
+    }
+    .footer-link:hover { color: var(--white); }
+
     @media (max-width: 600px) {
-      .logo img { width: 100%; }
-      .page { padding-top: 60px; padding-bottom: 100px; }
+      .collection-footer { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
@@ -167,74 +219,91 @@
 
   <canvas id="grain"></canvas>
 
-  <div class="page">
-    <div class="logo">
-      <img src="boreal.jpeg" alt="boreal">
+  <header id="site-header">
+    <a href="/boreal/" class="header-logo">boreal</a>
+    <nav>
+      <a href="/boreal/01/" class="active">_01</a>
+      <a href="#" style="opacity:0.3;pointer-events:none">_02</a>
+      <a href="#" style="opacity:0.3;pointer-events:none">_03</a>
+    </nav>
+  </header>
+
+  <main class="collection-page" role="main">
+    <div class="collection-header">
+      <h1 class="collection-title">boreal</h1>
+      <p class="collection-tagline">/ˈbɔːrɪəl/ &nbsp;·&nbsp; <em>adj.</em> &nbsp;·&nbsp; of the north or northern regions.</p>
     </div>
 
-    <div class="video-wrap">
-      <iframe
-        src="https://www.youtube.com/embed/ABPIZK9na9I?rel=0&modestbranding=1&color=white"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen>
-      </iframe>
-    </div>
+    <div class="cards-grid">
 
-    <div class="caption">
-      <h1 class="set-title">boreal_01 percy thrills</h1>
-      <div class="set-meta">
-        rotterdam noord<br>
-        06.03.2026
+      <!-- boreal_01 — cover photo + glow overlay -->
+      <a href="01/" class="edition-card">
+        <div class="card-artwork">
+          <div class="card-photo"></div>
+          <div class="card-glow card-glow--green"></div>
+          <div class="card-glow card-glow--blue"></div>
+          <div class="card-glow card-glow--orange"></div>
+        </div>
+        <div class="card-body">
+          <div class="card-label">boreal_01</div>
+          <div class="card-meta">rotterdam noord — 06.03.2026</div>
+          <div class="card-tags">
+            <span class="tag">percy thrills</span>
+            <span class="tag">petsq</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- boreal_02 — coming soon -->
+      <div class="edition-card is-soon" aria-hidden="true">
+        <div class="card-artwork">
+          <div class="card-glow card-glow--green"  style="animation-delay:-900ms"></div>
+          <div class="card-glow card-glow--blue"   style="animation-delay:-4300ms"></div>
+          <div class="card-glow card-glow--orange" style="animation-delay:-2100ms"></div>
+        </div>
+        <div class="card-body">
+          <div class="card-label">boreal_02</div>
+          <div class="card-meta">—</div>
+          <div class="card-tags">
+            <span class="card-soon-label">soon</span>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="tags">
-      <span class="tag">disco</span>
-      <span class="tag">house</span>
-      <span class="tag">soul</span>
-    </div>
-
-    <div class="video-wrap" style="margin-top: 80px;">
-      <iframe
-        src="https://www.youtube.com/embed/QZ7tWhQMsgs?rel=0&modestbranding=1&color=white"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen>
-      </iframe>
-    </div>
-
-    <div class="caption">
-      <h1 class="set-title">boreal_02 petsq</h1>
-      <div class="set-meta">
-        rotterdam noord<br>
-        06.03.2026
+      <!-- boreal_03 — coming soon -->
+      <div class="edition-card is-soon" aria-hidden="true">
+        <div class="card-artwork">
+          <div class="card-glow card-glow--green"  style="animation-delay:-3800ms"></div>
+          <div class="card-glow card-glow--blue"   style="animation-delay:-700ms"></div>
+          <div class="card-glow card-glow--orange" style="animation-delay:-3100ms"></div>
+        </div>
+        <div class="card-body">
+          <div class="card-label">boreal_03</div>
+          <div class="card-meta">—</div>
+          <div class="card-tags">
+            <span class="card-soon-label">soon</span>
+          </div>
+        </div>
       </div>
+
     </div>
 
-    <div class="tags">
-      <span class="tag">electronica</span>
-      <span class="tag">house</span>
-      <span class="tag">ambient</span>
-    </div>
-
-    <div class="footer">
-      <p class="tagline">dj sets. striking locations. ongoing.</p>
-      <p class="credits">by percy thrills &amp; petsq</p>
-      <img src="boreal_footer.jpeg" alt="boreal" style="width: 300px; margin-top: 24px; opacity: 0.7;">
-    </div>
-  </div>
+    <footer class="collection-footer">
+      <p class="footer-tagline">by <a href="https://www.instagram.com/percythrillz/" target="_blank" rel="noopener" class="footer-link">percy thrills</a> &amp; <a href="https://www.instagram.com/petsq010/" target="_blank" rel="noopener" class="footer-link">petsq</a></p>
+      <p class="footer-credits">boreal music © 2026</p>
+    </footer>
+  </main>
 
   <script>
     // ── film grain ──
     const canvas = document.getElementById('grain');
     const ctx    = canvas.getContext('2d');
-
-    function resize() {
+    function resizeGrain() {
       canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
     }
-    resize();
-    window.addEventListener('resize', resize);
-
+    resizeGrain();
+    window.addEventListener('resize', resizeGrain);
     let lastGrain = 0;
     function drawGrain(ts) {
       if (ts - lastGrain > 50) {
@@ -251,6 +320,12 @@
       requestAnimationFrame(drawGrain);
     }
     requestAnimationFrame(drawGrain);
+
+    // ── header scroll state ──
+    const header = document.getElementById('site-header');
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('is-scrolled', window.scrollY > 20);
+    }, { passive: true });
   </script>
 </body>
 </html>
