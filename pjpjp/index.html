@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perhe ja Perintö J. Pakarinen Oy — Perhe- ja perintöoikeuden asiantuntija Helsingissä</title>
+<meta name="description" content="Helsinkiläinen lakitoimisto erikoistunut perhe- ja perintöoikeudellisiin asioihin yli 30 vuoden kokemuksella. Testamentit, avioehtosopimukset, edunvalvontavaltuutukset.">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS
+   ═══════════════════════════════════════════ */
+:root {
+  /* Gold — brand identity */
+  --gold:           #B8962E;
+  --gold-accent:    #C9A43A;
+  --gold-pale:      #E4CC84;
+  --gold-wash:      #F0EAD8;
+
+  --ink:            #16140F;
+  --text:           #252420;
+  --text-sec:       #4A4640;
+  --text-cap:       #706A5E;
+
+  --white:          #FDFCFA;
+  --cream:          #F5F2EA;
+  --parchment:      #EBE6DC;
+  --border:         #D8D2C6;
+
+  --crimson:        #B81832;
+  --crimson-deep:   #8E1228;
+  --crimson-wash:   #FBF0F1;
+
+  --sage:           #3A7A6A;
+  --sage-wash:      #EEF7F4;
+
+  --display:        'Fraunces', Georgia, serif;
+  --body:           'Source Sans 3', 'Segoe UI', system-ui, sans-serif;
+  --ease:           cubic-bezier(0.22, 1, 0.36, 1);
+
+  --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.065'/%3E%3C/svg%3E");
+}
+
+/* ═══════════════════════════════════════════
+   RESET
+   ═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 18px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--body); color: var(--text); background: var(--white); line-height: 1.8; }
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+button { font-family: inherit; cursor: pointer; }
+
+:focus-visible { outline: 3px solid var(--gold-accent); outline-offset: 3px; border-radius: 2px; }
+
+.skip-link {
+  position: absolute; top: -100%; left: 16px;
+  background: var(--ink); color: var(--white);
+  padding: 12px 24px; font-size: 1rem; font-weight: 600;
+  z-index: 9999; border-radius: 0 0 6px 6px; text-decoration: none;
+}
+.skip-link:focus { top: 0; }
+
+.container { max-width: 1280px; margin: 0 auto; padding-left: 40px; padding-right: 40px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+/* ═══════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════ */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(253,252,250,0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Top utility bar */
+.header__top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 40px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.78rem;
+  max-height: 48px;
+  overflow: hidden;
+  transition: max-height 0.35s var(--ease), padding 0.35s var(--ease), opacity 0.3s var(--ease), border-color 0.35s var(--ease);
+}
+
+.header--scrolled-down .header__top {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  border-color: transparent;
+}
+
+.header__phone {
+  display: flex; align-items: center; gap: 6px;
+  font-weight: 500; color: var(--text); letter-spacing: 0.02em;
+  text-decoration: none; transition: color 0.25s;
+}
+.header__phone svg { width: 13px; height: 13px; color: var(--gold); flex-shrink: 0; }
+.header__phone:hover { color: var(--gold); }
+
+.header__lang { display: flex; gap: 2px; }
+.header__lang button {
+  background: none; border: 1px solid transparent; padding: 3px 10px;
+  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--text-cap);
+  border-radius: 3px; transition: all 0.25s;
+}
+.header__lang button:hover { color: var(--text); }
+.header__lang button.active { color: var(--gold); border-color: var(--gold-pale); background: var(--gold-wash); }
+
+/* Main nav bar */
+.header__main {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 40px;
+}
+
+.header__logo { display: flex; align-items: center; text-decoration: none; }
+.header__logo-img { height: 34px; width: auto; }
+
+.header__nav { display: flex; align-items: center; gap: 36px; }
+
+.header__nav-link {
+  font-size: 0.88rem; font-weight: 400; color: var(--text-sec);
+  text-decoration: none; letter-spacing: 0.01em;
+  position: relative; padding-bottom: 2px;
+  transition: color 0.3s var(--ease);
+}
+.header__nav-link::after {
+  content: ''; position: absolute; bottom: -2px; left: 0;
+  width: 0; height: 1.5px; background: var(--gold);
+  transition: width 0.4s var(--ease);
+}
+.header__nav-link:hover { color: var(--ink); }
+.header__nav-link:hover::after { width: 100%; }
+.header__nav-link[aria-current="page"] { color: var(--ink); font-weight: 500; }
+.header__nav-link[aria-current="page"]::after { width: 100%; }
+
+.header__cta {
+  font-size: 0.83rem; font-weight: 500; letter-spacing: 0.03em;
+  color: var(--white); background: var(--gold); border: none;
+  padding: 10px 24px; border-radius: 5px; text-decoration: none;
+  transition: all 0.3s var(--ease);
+}
+.header__cta:hover { background: var(--gold-accent); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(184,150,46,0.3); }
+
+.header__toggle { display: none; background: none; border: none; padding: 8px; color: var(--ink); }
+.header__toggle svg { width: 26px; height: 26px; }
+
+/* ═══════════════════════════════════════════
+   HERO — full-bleed image with overlay
+   ═══════════════════════════════════════════ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-bottom: 14vh;
+  overflow: hidden;
+}
+
+
+/* Background image — blurred, with parallax */
+.hero__bg {
+  position: absolute;
+  inset: -20px;
+  z-index: 0;
+  will-change: transform;
+}
+
+.hero__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  filter: saturate(1.15) brightness(1.08);
+  transform: scale(1.04);
+  display: block;
+}
+
+/* Blurred right half — fades in from center via mask */
+.hero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('images (not final, just for reference)/WhatsApp Image 2026-03-28 at 11.01.53.jpeg');
+  background-size: cover;
+  background-position: center 40%;
+  filter: blur(12px) saturate(1.15) brightness(1.08);
+  -webkit-mask-image: linear-gradient(to right, transparent 30%, black 65%);
+  mask-image: linear-gradient(to right, transparent 30%, black 65%);
+}
+
+/* Warm gradient overlay — readable text throughout, seamless bottom merge */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(
+      175deg,
+      rgba(245,242,234,0.55) 0%,
+      rgba(245,242,234,0.68) 20%,
+      rgba(245,242,234,0.82) 40%,
+      rgba(245,242,234,0.94) 62%,
+      rgba(245,242,234,1.00) 80%,
+      rgba(245,242,234,1.00) 100%
+    );
+}
+
+/* Warm color accents */
+.hero__overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 75% 20%, rgba(201,164,58,0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 15% 70%, rgba(42,138,122,0.06) 0%, transparent 45%);
+}
+
+/* Subtle grain texture for print-quality feel */
+.hero__overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* Content positioned at bottom */
+.hero__content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 40px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero__label {
+  font-family: var(--body);
+  font-size: 0.83rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(253,252,250,0.95);
+  text-shadow: 0 2px 18px rgba(0,0,0,0.65), 0 1px 4px rgba(0,0,0,0.4);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  opacity: 0;
+  animation: slideIn 0.6s var(--ease) 0.3s both;
+}
+
+.hero__title {
+  font-family: var(--display);
+  font-size: clamp(2rem, 3.8vw, 3.4rem);
+  font-weight: 300;
+  font-variation-settings: 'opsz' 72, 'SOFT' 50;
+  line-height: 1.06;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  max-width: 800px;
+  margin-bottom: 0;
+  opacity: 0;
+  animation: fadeUp 0.9s var(--ease) 0.45s both;
+}
+
+.hero__title i {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--gold);
+}
+
+.hero__sub {
+  font-size: 1.11rem;
+  line-height: 1.7;
+  color: var(--text);
+  max-width: 520px;
+  margin-bottom: 36px;
+  opacity: 0;
+  animation: fadeUp 0.8s var(--ease) 0.65s both;
+}
+
+.hero__actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 0.7s var(--ease) 0.85s both;
+}
+
+.hero__divider {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0 24px;
+  opacity: 0;
+  animation: fadeIn 0.7s var(--ease) 0.6s both;
+}
+.hero__divider img {
+  width: 52px;
+  height: 52px;
+  display: block;
+}
+
+
+/* ═══════════════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════════════ */
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--body); font-weight: 600; text-decoration: none;
+  border: none; border-radius: 6px; transition: background 0.3s var(--ease), color 0.3s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s var(--ease); line-height: 1;
+}
+.btn svg { width: 18px; height: 18px; transition: transform 0.3s var(--ease); }
+
+.btn--lg { font-size: 1rem; padding: 16px 32px; }
+.btn--md { font-size: 0.88rem; padding: 13px 26px; }
+.btn--sm { font-size: 0.83rem; padding: 11px 20px; }
+
+.btn--primary { background: var(--crimson); color: var(--white); }
+.btn--primary:hover { background: var(--crimson-deep); transform: translateY(-1px); }
+.btn--primary:hover svg { transform: translateX(3px); }
+
+.btn--outline {
+  background: rgba(253,252,250,0.7);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  color: var(--text); border: 2px solid var(--border);
+}
+.btn--outline:hover { border-color: var(--ink); color: var(--ink); background: rgba(253,252,250,0.9); }
+
+.btn--warm { background: var(--gold-wash); color: var(--gold); border: 1px solid var(--gold-pale); }
+.btn--warm:hover { background: var(--gold-pale); color: var(--ink); }
+
+.btn--print { background: var(--cream); color: var(--text-sec); border: 1px solid var(--border); }
+.btn--print:hover { background: var(--parchment); color: var(--ink); }
+
+/* Floating print button — always visible bottom-right */
+.print-fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--body);
+  font-size: 0.77rem;
+  font-weight: 600;
+  color: var(--text-sec);
+  background: rgba(253,252,250,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  padding: 12px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s var(--ease), background 0.3s var(--ease), color 0.3s var(--ease);
+}
+
+.print-fab.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.print-fab:hover {
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06);
+  transform: translateY(-2px);
+}
+
+.print-fab svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+.btn--icon-arrow::after {
+  content: '→';
+  font-size: 1.1em;
+  transition: transform 0.3s var(--ease);
+  display: inline-block;
+}
+.btn--icon-arrow:hover::after { transform: translateX(4px); }
+
+/* ═══════════════════════════════════════════
+   SECTIONS
+   ═══════════════════════════════════════════ */
+.section { padding: 100px 0; }
+.section--cream {
+  background-color: var(--cream);
+  background-image: var(--grain);
+  background-size: 256px;
+  background-repeat: repeat;
+}
+.section--warm {
+  background-color: var(--gold-wash);
+  background-image: var(--grain);
+  background-size: 256px;
+  background-repeat: repeat;
+}
+
+.section__eyebrow {
+  font-family: var(--body); font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px;
+}
+
+.section__title {
+  font-family: var(--display); font-size: 2.8rem; font-weight: 300;
+  font-variation-settings: 'opsz' 48, 'SOFT' 40;
+  line-height: 1.12; color: var(--ink); margin-bottom: 16px;
+}
+
+.section__subtitle {
+  font-size: 1.05rem; color: var(--text-sec); line-height: 1.7; max-width: 560px;
+}
+
+/* ═══════════════════════════════════════════
+   SERVICES
+   ═══════════════════════════════════════════ */
+.services-intro {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
+  align-items: end; margin-bottom: 56px;
+}
+
+.services-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+
+.service {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 36px 32px 32px;
+  transition: all 0.4s var(--ease);
+  display: flex;
+  flex-direction: column;
+}
+
+.service:hover {
+  border-color: var(--crimson);
+  box-shadow: 0 14px 44px rgba(184,24,50,0.10), 0 4px 16px rgba(0,0,0,0.05);
+  transform: translateY(-5px);
+}
+
+.service__illustration {
+  margin-bottom: 18px;
+}
+.service__illustration svg {
+  height: 54px;
+  width: auto;
+  display: block;
+  color: var(--gold-pale);
+  transition: color 0.4s var(--ease);
+}
+.service:hover .service__illustration svg {
+  color: var(--gold-accent);
+}
+
+.service__number {
+  font-family: var(--display); font-size: 3.2rem; font-style: italic;
+  color: var(--gold-pale); line-height: 1; margin-bottom: 20px;
+  transition: color 0.3s var(--ease);
+}
+
+.service:hover .service__number {
+  color: var(--gold-accent);
+}
+
+.service__name {
+  font-family: var(--display); font-size: 1.55rem;
+  color: var(--ink); margin-bottom: 12px; line-height: 1.2;
+}
+
+.service__desc {
+  font-size: 0.88rem; line-height: 1.75; color: var(--text-sec);
+  flex: 1; margin-bottom: 28px;
+}
+
+.service__price {
+  border-top: 1px solid var(--border); padding-top: 20px;
+  display: flex; align-items: baseline; justify-content: space-between;
+}
+
+.service__price-label {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-cap);
+}
+
+.service__price-amount { font-family: var(--display); font-size: 2rem; color: var(--gold); }
+.service__price-vat { font-family: var(--body); font-size: 0.72rem; color: var(--text-cap); margin-left: 4px; }
+
+/* ═══════════════════════════════════════════
+   EDITORIAL IMAGE BREAK
+   ═══════════════════════════════════════════ */
+.image-strip {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr 1fr;
+  gap: 6px;
+  height: 400px;
+  overflow: hidden;
+}
+
+.image-strip__item { overflow: hidden; }
+
+.image-strip__item img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.7s var(--ease);
+}
+
+.image-strip__item:hover img { transform: scale(1.04); }
+
+/* ═══════════════════════════════════════════
+   QUOTE — light, warm
+   ═══════════════════════════════════════════ */
+.quote {
+  padding: 88px 0;
+  background:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E") 0 0 / 256px 256px repeat,
+    linear-gradient(135deg, var(--gold-wash) 0%, #F8F3E6 60%, var(--crimson-wash) 100%);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.quote::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 900px;
+  height: 900px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.15) 45%, transparent 70%);
+  pointer-events: none;
+  animation: quoteDot 12s ease-in-out infinite;
+}
+
+@keyframes quoteDot {
+  0%   { transform: translate(-50%, -50%) scale(1);    opacity: 0.85; }
+  33%  { transform: translate(-38%, -62%) scale(1.18); opacity: 1;    }
+  66%  { transform: translate(-62%, -40%) scale(0.88); opacity: 0.7;  }
+  100% { transform: translate(-50%, -50%) scale(1);    opacity: 0.85; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quote::before { animation: none; }
+}
+
+.quote__text {
+  font-family: var(--display);
+  font-size: 2.2rem;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.35;
+  max-width: 720px;
+  margin: 0 auto;
+  position: relative;
+  padding-top: 0.5em;
+}
+
+.quote__text::before {
+  content: '\201C';
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: normal;
+  font-size: 5.5rem;
+  line-height: 0;
+  color: var(--gold-accent);
+  opacity: 0.7;
+  position: absolute;
+  top: 0.55em;
+  left: -0.28em;
+  user-select: none;
+}
+
+.quote__text::after {
+  content: '\201D';
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: normal;
+  font-size: 5.5rem;
+  line-height: 0;
+  color: var(--gold-accent);
+  opacity: 0.7;
+  vertical-align: -0.5em;
+  margin-left: 0.1em;
+  user-select: none;
+}
+
+
+
+/* ═══════════════════════════════════════════
+   ABOUT — editorial asymmetric
+   ═══════════════════════════════════════════ */
+.about__grid {
+  display: grid; grid-template-columns: minmax(0, 280px) 1fr; gap: 64px; align-items: center;
+}
+
+.about__image-wrap { position: relative; max-width: 280px; }
+
+.about__image {
+  border-radius: 8px; overflow: hidden; aspect-ratio: 3 / 4; max-height: 360px;
+}
+
+.about__image img { width: 100%; height: 100%; object-fit: cover; }
+
+.about__logo-badge {
+  position: absolute;
+  bottom: -18px;
+  right: -18px;
+  width: 72px;
+  height: auto;
+  display: block;
+  pointer-events: none;
+}
+
+.about__eyebrow { font-family: var(--display); font-style: italic; font-weight: 400; font-size: 1.3rem; color: var(--gold); margin-bottom: 4px; margin-left: -20px; }
+.about__name { font-family: var(--display); font-size: 2.4rem; font-weight: 300; font-variation-settings: 'opsz' 40, 'SOFT' 40; color: var(--ink); margin-bottom: 20px; line-height: 1.15; }
+.about__text { font-size: 1rem; line-height: 1.85; color: var(--text-sec); margin-bottom: 20px; }
+
+.about__credentials {
+  display: flex; gap: 48px; flex-wrap: wrap;
+  margin-top: 28px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.credential {
+  display: flex; flex-direction: column; align-items: flex-start;
+  background: none; border: none; padding: 0; border-radius: 0;
+}
+
+.credential__abbr {
+  font-family: var(--body); font-size: 0.94rem; font-weight: 600;
+  letter-spacing: 0.04em; color: var(--ink); line-height: 1.3;
+}
+
+.credential__year {
+  font-size: 0.72rem; color: var(--text-cap); margin-top: 1px;
+}
+
+/* ═══════════════════════════════════════════
+   MORE SERVICES — warm, not dark
+   ═══════════════════════════════════════════ */
+.more-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px;
+}
+
+.more-item {
+  display: flex; gap: 20px; padding: 24px 28px;
+  text-decoration: none;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: all 0.3s var(--ease);
+  align-items: flex-start;
+}
+
+.more-item:hover {
+  border-color: var(--gold-pale);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+  transform: translateY(-2px);
+}
+
+.more-item__arrow {
+  margin-left: auto; padding-left: 8px; flex-shrink: 0;
+  color: var(--gold-pale); font-size: 1.1rem; align-self: center;
+  transition: transform 0.3s var(--ease), color 0.3s var(--ease);
+}
+.more-item:hover .more-item__arrow { transform: translateX(4px); color: var(--gold); }
+
+.more-item__icon {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--gold-wash); border: 1px solid var(--gold-pale);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--gold);
+}
+
+.more-item__icon svg { width: 18px; height: 18px; }
+
+.more-item__name { font-family: var(--display); font-size: 1.22rem; color: var(--ink); margin-bottom: 4px; }
+.more-item__desc { font-size: 0.83rem; color: var(--text-sec); line-height: 1.6; }
+
+/* ═══════════════════════════════════════════
+   CONTACT
+   ═══════════════════════════════════════════ */
+.contact__grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--white);
+}
+
+.contact__info {
+  background: var(--cream);
+  padding: 56px;
+  border-right: 1px solid var(--border);
+}
+
+.contact__heading { font-family: var(--display); font-size: 2rem; margin-bottom: 8px; line-height: 1.2; color: var(--ink); }
+.contact__heading i { font-style: italic; color: var(--gold); }
+.contact__sub { font-size: 0.88rem; color: var(--text-cap); margin-bottom: 36px; }
+
+.contact-item { display: flex; gap: 16px; margin-bottom: 28px; align-items: flex-start; }
+
+.contact-item__icon {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--gold-wash); border: 1px solid var(--gold-pale);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--gold);
+}
+.contact-item__icon svg { width: 18px; height: 18px; }
+
+.contact-item__label {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-cap); margin-bottom: 4px;
+}
+
+.contact-item__value { font-size: 1.05rem; font-weight: 500; color: var(--text); line-height: 1.5; overflow-wrap: break-word; word-break: break-all; }
+.contact-item__value a { color: var(--crimson); text-decoration: none; transition: color 0.2s; }
+.contact-item__value a:hover { color: var(--crimson-deep); }
+.contact-item__note { font-size: 0.77rem; color: var(--text-cap); margin-top: 2px; }
+
+.contact__print-cta { margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--border); }
+
+.contact__form { padding: 56px; }
+
+.form__title { font-family: var(--display); font-size: 1.55rem; color: var(--ink); margin-bottom: 8px; }
+.form__subtitle { font-size: 0.88rem; color: var(--text-cap); margin-bottom: 32px; }
+
+.form-group { margin-bottom: 18px; }
+.form-label { display: block; font-size: 0.77rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-sec); margin-bottom: 6px; }
+
+.form-input,
+.form-textarea {
+  width: 100%; border: 2px solid var(--border); background: var(--white);
+  padding: 14px 18px; font-family: var(--body); font-size: 1rem;
+  color: var(--text); border-radius: 6px; transition: all 0.25s var(--ease); outline: none;
+}
+
+.form-input::placeholder, .form-textarea::placeholder { color: var(--text-cap); }
+.form-input:focus, .form-textarea:focus { border-color: var(--gold-accent); box-shadow: 0 0 0 3px rgba(184,150,46,0.12); }
+.form-textarea { min-height: 120px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* ═══════════════════════════════════════════
+   FOOTER — light, warm
+   ═══════════════════════════════════════════ */
+.footer {
+  background: var(--cream);
+  border-top: 1px solid var(--border);
+  padding-top: 72px;
+}
+
+.footer__grid {
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 48px; padding: 0 40px 48px;
+  max-width: 1280px; margin: 0 auto;
+}
+
+.footer__brand-text { font-family: var(--display); font-size: 1.2rem; color: var(--ink); margin-bottom: 12px; }
+.footer__motto { font-family: var(--body); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-cap); margin-top: 8px; }
+
+.footer__col-title {
+  font-size: 0.61rem; font-weight: 600; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 18px;
+}
+
+.footer__links { list-style: none; }
+.footer__links li { margin-bottom: 12px; }
+.footer__links a { font-size: 0.88rem; color: var(--text-sec); text-decoration: none; transition: color 0.2s; }
+.footer__links a:hover { color: var(--crimson); }
+
+.footer__bottom {
+  border-top: 1px solid var(--border); padding: 20px 40px;
+  display: flex; justify-content: space-between; align-items: center;
+  max-width: 1280px; margin: 0 auto;
+  font-size: 0.72rem; color: var(--text-cap);
+}
+
+.footer__bottom a { color: var(--text-cap); text-decoration: none; }
+.footer__bottom a:hover { color: var(--gold); }
+
+/* ═══════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.reveal {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal--d1 { transition-delay: 0.1s; }
+.reveal--d2 { transition-delay: 0.2s; }
+.reveal--d3 { transition-delay: 0.3s; }
+
+/* ═══════════════════════════════════════════
+   PRINT
+   ═══════════════════════════════════════════ */
+@media print {
+  @page {
+    margin: 1.5cm 2cm 2cm;
+    size: A4 portrait;
+  }
+
+  html { font-size: 10.5pt; }
+
+  body {
+    background: white !important;
+    color: #16140F !important;
+    line-height: 1.6;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── Hide screen-only elements ── */
+  .header, .hero__bg, .hero__overlay,
+  .image-strip, .contact__form,
+  .footer, .btn, .header__toggle, .print-fab,
+  .more-item__icon, .contact-item__icon,
+  .service__number, .service__illustration,
+  .about__logo-badge, .contact__print-cta,
+  .hero__divider, .hero__actions { display: none !important; }
+
+  /* Unlock animated elements */
+  .reveal, .hero__title, .hero__sub {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .container { padding: 0; max-width: 100%; }
+  .section { padding: 16pt 0; }
+  .section--cream, .section--warm { background: white; }
+
+  /* ── Branded print header ── */
+  .print-header {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 12pt;
+    margin-bottom: 16pt;
+    border-bottom: 2pt solid #B8962E;
+  }
+
+  .print-header__logo { height: 34pt; width: auto; }
+
+  .print-header__contact {
+    text-align: right;
+    font-style: normal;
+    font-size: 8.5pt;
+    line-height: 1.7;
+    color: #4A4640;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .print-header__name { font-weight: 600; color: #16140F; }
+
+  /* ── Hero as intro ── */
+  .hero { min-height: auto; background: white; padding: 0 0 14pt; display: block; }
+  .hero__content { padding: 0; text-align: left; align-items: flex-start; }
+  .hero__title { font-size: 20pt; color: #16140F; line-height: 1.18; margin-bottom: 6pt; max-width: 100%; }
+  .hero__title i { color: #B8962E; }
+  .hero__sub { font-size: 9.5pt; color: #4A4640; max-width: 100%; opacity: 1 !important; margin-bottom: 0; }
+
+  /* ── Section headings ── */
+  .section__eyebrow { font-size: 7pt; color: #B8962E; margin-bottom: 4pt; }
+  .section__title { font-size: 14pt; color: #16140F; margin-bottom: 6pt; }
+  .section__subtitle { font-size: 9pt; max-width: 100%; color: #4A4640; }
+  .services-intro { display: block; margin-bottom: 12pt; }
+
+  /* ── Service cards ── */
+  .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8pt; }
+  .service {
+    border: 1pt solid #B8962E;
+    border-radius: 4pt;
+    padding: 10pt 10pt 8pt;
+    box-shadow: none;
+    transform: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .service__name { font-size: 11pt; color: #16140F; margin-bottom: 6pt; }
+  .service__desc { font-size: 8pt; color: #4A4640; margin-bottom: 8pt; line-height: 1.5; }
+  .service__price { border-top: 0.5pt solid #D8D2C6; padding-top: 6pt; }
+  .service__price-label { font-size: 6.5pt; }
+  .service__price-amount { font-size: 14pt; color: #B8962E; }
+  .service__price-vat { font-size: 6.5pt; }
+
+  /* ── Quote — show it, it's the firm's motto ── */
+  .quote {
+    display: block !important;
+    background: white !important;
+    padding: 14pt 0;
+    text-align: center;
+    border-top: 0.5pt solid #D8D2C6;
+    border-bottom: 0.5pt solid #D8D2C6;
+  }
+  .quote::before { display: none; }
+  .quote__text { font-size: 12pt; color: #252420; padding-top: 0; }
+  .quote__text::before { font-size: 3rem; color: #B8962E; top: 0.4em; left: -0.22em; }
+  .quote__text::after  { font-size: 3rem; color: #B8962E; }
+
+  /* ── About ── */
+  .about__grid { grid-template-columns: 110pt 1fr; gap: 16pt; }
+  .about__image { max-height: 160pt; border-radius: 4pt; }
+  .about__eyebrow { font-size: 10pt; color: #B8962E; margin-left: 0; margin-bottom: 2pt; }
+  .about__name { font-size: 14pt; margin-bottom: 8pt; line-height: 1.2; }
+  .about__text { font-size: 9pt; line-height: 1.6; margin-bottom: 6pt; color: #4A4640; }
+  .about__credentials { margin-top: 10pt; padding-top: 8pt; gap: 24pt; }
+  .credential__abbr { font-size: 8.5pt; }
+  .credential__year { font-size: 7.5pt; color: #706A5E; }
+
+  /* ── More services ── */
+  .more-grid { display: block; margin-top: 12pt; }
+  .more-item {
+    display: flex;
+    gap: 8pt;
+    border: none;
+    border-bottom: 0.5pt solid #EBE6DC;
+    padding: 5pt 0;
+    box-shadow: none;
+    transform: none !important;
+  }
+  .more-item__name { font-size: 10pt; color: #16140F; margin-bottom: 2pt; }
+  .more-item__desc { font-size: 8pt; color: #4A4640; }
+  .more-item__arrow { display: none; }
+
+  /* ── Contact ── */
+  .contact__grid { display: block; border: 1.5pt solid #B8962E; border-radius: 4pt; box-shadow: none; }
+  .contact__info { background: white; border: none; padding: 12pt 14pt; }
+  .contact__heading { font-size: 13pt; margin-bottom: 4pt; }
+  .contact__heading i { color: #B8962E; }
+  .contact__sub { font-size: 8.5pt; margin-bottom: 14pt; }
+  .contact-item { margin-bottom: 10pt; }
+  .contact-item__label { font-size: 7pt; }
+  .contact-item__value { font-size: 10pt; }
+  .contact-item__value a { color: #16140F; text-decoration: underline; }
+  .contact-item__note { font-size: 7.5pt; }
+
+  a[href^="tel"]::after { content: none; }
+
+  /* ── Page breaks ── */
+  .services-grid, .about__grid, .contact__grid {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
+
+.print-header { display: none; }
+
+/* ═══════════════════════════════════════════
+   MOBILE MENU
+   ═══════════════════════════════════════════ */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+}
+
+.mobile-menu.is-open { display: block; }
+
+.mobile-menu__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(22,20,15,0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+}
+
+.mobile-menu.is-open .mobile-menu__backdrop { opacity: 1; }
+
+.mobile-menu__drawer {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: min(340px, 88vw);
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.4s var(--ease);
+  box-shadow: -8px 0 48px rgba(0,0,0,0.14);
+}
+
+.mobile-menu.is-open .mobile-menu__drawer { transform: translateX(0); }
+
+.mobile-menu__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.mobile-menu__logo-img { height: 28px; width: auto; }
+
+.mobile-menu__close {
+  background: none; border: none; padding: 6px;
+  color: var(--text-sec); cursor: pointer;
+  transition: color 0.2s;
+}
+.mobile-menu__close:hover { color: var(--ink); }
+.mobile-menu__close svg { width: 22px; height: 22px; display: block; }
+
+.mobile-menu__nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 24px;
+  gap: 4px;
+}
+
+.mobile-menu__link {
+  font-family: var(--display);
+  font-size: 1.7rem;
+  font-weight: 300;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  transition: color 0.2s;
+  letter-spacing: -0.01em;
+}
+.mobile-menu__link:last-of-type { border-bottom: none; }
+.mobile-menu__link:hover { color: var(--gold); }
+
+.mobile-menu__footer {
+  padding: 24px;
+  border-top: 1px solid var(--border);
+  background: var(--cream);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mobile-menu__cta {
+  display: block; text-align: center;
+  font-family: var(--body); font-size: 0.94rem; font-weight: 500;
+  color: var(--white); background: var(--gold);
+  padding: 14px 24px; border-radius: 6px;
+  text-decoration: none; transition: background 0.2s;
+}
+.mobile-menu__cta:hover { background: var(--gold-accent); }
+
+.mobile-menu__phone {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: 0.94rem; font-weight: 500; color: var(--text);
+  text-decoration: none; transition: color 0.2s;
+}
+.mobile-menu__phone svg { width: 15px; height: 15px; color: var(--gold); }
+.mobile-menu__phone:hover { color: var(--gold); }
+
+.mobile-menu__print {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; background: none; border: 1px solid var(--border);
+  border-radius: 6px; padding: 11px 20px;
+  font-size: 0.83rem; font-weight: 500; color: var(--text-sec);
+  cursor: pointer; transition: background 0.2s, color 0.2s;
+}
+.mobile-menu__print svg { width: 15px; height: 15px; }
+.mobile-menu__print:hover { background: var(--cream); color: var(--ink); }
+
+.mobile-menu__lang {
+  display: flex; justify-content: center; gap: 4px;
+}
+.mobile-menu__lang button {
+  background: none; border: 1px solid transparent;
+  padding: 4px 14px; font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-cap); border-radius: 3px; transition: all 0.2s;
+}
+.mobile-menu__lang button.active { color: var(--gold); border-color: var(--gold-pale); background: var(--gold-wash); }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .image-strip { height: 320px; }
+}
+
+@media (max-width: 768px) {
+  html { font-size: 16px; }
+  .container { padding-left: 20px; padding-right: 20px; }
+
+  /* Header */
+  .header__top { display: none; }
+  .header__main { padding: 12px 20px; }
+  .header__nav { display: none; }
+  .header__toggle { display: block; }
+  .print-fab { display: none; }
+
+  /* Hero */
+  .hero { min-height: 85vh; min-height: 85svh; padding-bottom: 0; }
+  .hero__content { padding: 18vh 20px 52px; }
+  .hero__title { font-size: 1.9rem; }
+  .hero__sub { font-size: 0.94rem; max-width: 100%; }
+  .hero__actions { flex-direction: column; align-items: stretch; gap: 10px; }
+  .hero__actions .btn { justify-content: center; }
+  /* Quote mark — pull it in-flow on narrow screens */
+  .quote__text::before { left: 0; font-size: 4rem; top: 0.3em; }
+  .quote__text::after  { font-size: 4rem; }
+
+  /* Sections */
+  .section { padding: 56px 0; }
+  .section__title { font-size: 2rem; }
+  .section__subtitle { font-size: 0.97rem; }
+  .services-intro { grid-template-columns: 1fr; gap: 16px; margin-bottom: 32px; }
+  .services-grid { grid-template-columns: 1fr; }
+  .service { padding: 28px 24px 24px; }
+  .service__number { font-size: 2.6rem; }
+
+  /* Image strip */
+  .image-strip { grid-template-columns: 1fr 1fr; height: 220px; }
+  .image-strip__item:last-child { display: none; }
+
+  /* Quote */
+  .quote { padding: 60px 0; }
+  .quote__text { font-size: 1.5rem; }
+
+  /* About */
+  .about__grid { grid-template-columns: 1fr; gap: 32px; }
+  .about__image-wrap { max-width: 280px; margin: 0 auto; }
+  .about__image { max-height: 360px; }
+  .about__eyebrow { margin-left: 0; }
+  .about__name { font-size: 2rem; }
+
+  /* More services */
+  .more-grid { grid-template-columns: 1fr; }
+  .more-item { overflow: hidden; }
+  .more-item__name { word-break: break-word; }
+  .more-item__arrow { display: none; }
+
+  /* Contact */
+  .contact__grid { grid-template-columns: 1fr; }
+  .contact__info { padding: 32px 24px; border-right: none; border-bottom: 1px solid var(--border); }
+  .contact__form { padding: 32px 24px; }
+  .form-row { grid-template-columns: 1fr; }
+  .contact__heading { font-size: 1.65rem; line-height: 1.3; }
+  .contact-item__value { font-size: 0.83rem; }
+
+  /* Footer */
+  .footer__grid { grid-template-columns: 1fr 1fr; gap: 28px; padding: 0 20px 32px; }
+  .footer__grid > div:first-child { grid-column: 1 / -1; text-align: center; }
+  .footer__grid > div:first-child img { margin-left: auto; margin-right: auto; }
+  .footer__bottom { flex-direction: column; gap: 8px; text-align: center; padding: 16px 20px; }
+  .footer__links a { word-break: break-all; }
+}
+
+@media (max-width: 480px) {
+  .hero__title { font-size: 1.7rem; }
+  .hero { min-height: 80vh; min-height: 80svh; }
+  .section__title { font-size: 1.75rem; }
+  .footer__grid { grid-template-columns: 1fr; text-align: center; }
+  .footer__grid img { margin-left: auto; margin-right: auto; }
+  .quote__text { font-size: 1.35rem; }
+  .service { padding: 24px 20px 20px; }
+}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-link">Siirry sisältöön</a>
+
+<svg aria-hidden="true" style="display:none">
+  <symbol id="icon-phone" viewBox="0 0 24 24">
+    <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+  </symbol>
+  <symbol id="icon-print" viewBox="0 0 24 24">
+    <polyline fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" points="6 9 6 2 18 2 18 9"/>
+    <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+    <rect fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" x="6" y="14" width="12" height="8"/>
+  </symbol>
+</svg>
+
+<!-- Print-only branded header -->
+<div class="print-header" aria-hidden="true">
+  <img src="logo/logo ja teksti dark.png" alt="Perhe ja Perintö J. Pakarinen Oy" class="print-header__logo">
+  <address class="print-header__contact">
+    <span class="print-header__name">Laura Ambagtsheer-Pakarinen, OTM LL.M. ADIT DITT</span>
+    <span>(09) 622 5930 &middot; laura.pakarinen@perhejaperinto.fi</span>
+    <span>Korkeavuorenkatu 17 A 1, 00130 Helsinki</span>
+  </address>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════ -->
+<header class="header" role="banner">
+  <!-- Top bar: phone + language -->
+  <div class="header__top">
+    <a href="tel:096225930" class="header__phone" aria-label="Soita: 09 622 5930">
+      <svg aria-hidden="true"><use href="#icon-phone"/></svg>
+      (09) 622 5930
+    </a>
+    <div class="header__lang" role="group" aria-label="Kieli">
+      <button class="active" aria-pressed="true">FI</button>
+      <button aria-pressed="false">EN</button>
+    </div>
+  </div>
+
+  <!-- Main bar: logo + nav -->
+  <div class="header__main">
+    <a href="/" class="header__logo" aria-label="Perhe ja Perintö — Etusivu">
+      <img src="logo/logo ja teksti dark.png" alt="Perhe ja Perintö J. Pakarinen Oy" class="header__logo-img">
+    </a>
+
+    <nav class="header__nav" aria-label="Päävalikko">
+      <a href="#palvelut" class="header__nav-link">Palvelut</a>
+      <a href="#" class="header__nav-link">Hinnasto</a>
+      <a href="#meista" class="header__nav-link">Tietoa meistä</a>
+      <a href="#yhteystiedot" class="header__cta">Ota yhteyttä</a>
+    </nav>
+
+    <button class="header__toggle" aria-label="Avaa valikko" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     HERO — full-bleed image with overlay + bold type
+     ═══════════════════════════════════════════ -->
+<main class="hero" id="main">
+  <div class="hero__bg" aria-hidden="true">
+    <img src="images (not final, just for reference)/WhatsApp Image 2026-03-28 at 11.01.53.jpeg" alt="" loading="eager">
+  </div>
+  <div class="hero__overlay" aria-hidden="true"></div>
+
+  <div class="hero__content">
+    <h1 class="hero__title">
+      Turvaa läheistesi tulevaisuus. <span class="hero__title-italic"><i>Inhimillisesti ja asiantuntemuksella.</i></span>
+    </h1>
+    <div class="hero__divider" aria-hidden="true">
+      <img src="logo/icon-gold.svg" alt="">
+    </div>
+    <p class="hero__sub">
+      Helsinkiläinen lakitoimisto yli 30 vuoden kokemuksella perhe- ja perintöoikeudessa — myös kansainvälisissä kysymyksissä.
+    </p>
+    <div class="hero__actions">
+      <a href="#yhteystiedot" class="btn btn--primary btn--lg btn--icon-arrow">Ota yhteyttä</a>
+      <a href="#palvelut" class="btn btn--outline btn--lg">Tutustu palveluihimme</a>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════
+     SERVICES
+     ═══════════════════════════════════════════ -->
+<section class="section section--cream" id="palvelut" aria-labelledby="svc-title">
+  <div class="container">
+    <div class="services-intro">
+      <div>
+        <p class="section__eyebrow">Palvelumme</p>
+        <h2 class="section__title" id="svc-title">Kiinteähintaiset<br>palvelut</h2>
+      </div>
+      <p class="section__subtitle">
+        Kolme yleisintä palveluamme kiinteään hintaan — tiedät aina etukäteen, mitä maksat. Kaikki hinnat sisältävät neuvottelut, selvitykset ja asiakirjojen laatimisen.
+      </p>
+    </div>
+
+    <div class="services-grid">
+      <article class="service reveal">
+        <div class="service__illustration" aria-hidden="true">
+          <svg viewBox="0 0 48 58" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <!-- Vertical bar -->
+            <line x1="24" y1="4" x2="24" y2="54"/>
+            <!-- Horizontal bar -->
+            <line x1="10" y1="18" x2="38" y2="18"/>
+          </svg>
+        </div>
+        <span class="service__number" aria-hidden="true">01</span>
+        <h3 class="service__name">Testamentti</h3>
+        <p class="service__desc">Testamentin laatiminen toiveidenne mukaan. Sisältää neuvottelut, perintöverolaskelman ja muiden perintösuunnittelun keinojen alustavan kartoituksen.</p>
+        <div class="service__price">
+          <span class="service__price-label">Kiinteä hinta</span>
+          <div>
+            <span class="service__price-amount">350 €</span>
+            <span class="service__price-vat">sis. alv</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="service reveal reveal--d1">
+        <div class="service__illustration" aria-hidden="true">
+          <svg viewBox="0 0 64 42" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <!-- Two interlocked rings — prenuptial / couple's agreement -->
+            <circle cx="21" cy="21" r="17"/>
+            <circle cx="43" cy="21" r="17"/>
+          </svg>
+        </div>
+        <span class="service__number" aria-hidden="true">02</span>
+        <h3 class="service__name">Avioehtosopimus</h3>
+        <p class="service__desc">Vaihtoehtojen selvitys, perintö- ja verovaikutusten tutkiminen, sopimuksen laatiminen ja rekisteröinti maistraattiin. Rekisteröintimaksu sisältyy.</p>
+        <div class="service__price">
+          <span class="service__price-label">Kiinteä hinta</span>
+          <div>
+            <span class="service__price-amount">390 €</span>
+            <span class="service__price-vat">sis. alv</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="service reveal reveal--d2">
+        <div class="service__illustration" aria-hidden="true">
+          <svg viewBox="0 0 48 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Shield outline — protection / power of attorney -->
+            <path d="M24 3 L43 12 V30 Q43 46 24 54 Q5 46 5 30 V12 Z"/>
+            <!-- Person: head -->
+            <circle cx="24" cy="23" r="5"/>
+            <!-- Person: shoulders arc -->
+            <path d="M14 40 Q14 32 24 32 Q34 32 34 40"/>
+          </svg>
+        </div>
+        <span class="service__number" aria-hidden="true">03</span>
+        <h3 class="service__name">Edunvalvontavaltuutus</h3>
+        <p class="service__desc">Valtuutuksen laatiminen taloudellisia ja henkilöä koskevia asioita varten. Sisältää neuvottelun ja hoitotahdon laatimisen.</p>
+        <div class="service__price">
+          <span class="service__price-label">Kiinteä hinta</span>
+          <div>
+            <span class="service__price-amount">320 €</span>
+            <span class="service__price-vat">sis. alv</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     IMAGE STRIP
+     ═══════════════════════════════════════════ -->
+<div class="image-strip" role="img" aria-label="Kuvia toimistostamme Korkeavuorenkadulta">
+  <div class="image-strip__item">
+    <img src="images (not final, just for reference)/WhatsApp Image 2026-03-28 at 11.01.54.jpeg"
+         alt="Näkymä toimiston ikkunasta" loading="lazy">
+  </div>
+  <div class="image-strip__item">
+    <img src="images (not final, just for reference)/WhatsApp Image 2026-03-28 at 11.01.54 (4).jpeg"
+         alt="Toimiston sisätilat" loading="lazy">
+  </div>
+  <div class="image-strip__item">
+    <img src="images (not final, just for reference)/WhatsApp Image 2026-03-28 at 11.01.54 (3).jpeg"
+         alt="Taidetta toimistossa" loading="lazy">
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     QUOTE
+     ═══════════════════════════════════════════ -->
+<blockquote class="quote" aria-label="Toimistomme motto">
+  <div class="container">
+    <p class="quote__text">Työmme tarkoitus on tehdä hyvää sille, jolle työtä teemme.</p>
+  </div>
+</blockquote>
+
+<!-- ═══════════════════════════════════════════
+     ABOUT
+     ═══════════════════════════════════════════ -->
+<section class="section" id="meista" aria-labelledby="about-title">
+  <div class="container">
+    <div class="about__grid">
+      <div class="about__image-wrap reveal">
+        <div class="about__image">
+          <img src="media/laura-1024x1024px.jpg"
+               alt="Laura Ambagtsheer-Pakarinen" loading="lazy">
+        </div>
+        <img class="about__logo-badge" src="logo/icon-gold.svg" alt="" aria-hidden="true">
+      </div>
+
+      <div class="reveal reveal--d1">
+        <p class="about__eyebrow">Asianajaja</p>
+        <h2 class="about__name" id="about-title">Laura Ambagtsheer-Pakarinen</h2>
+        <p class="about__text">
+          Laura jatkaa isänsä VT Jukka Pakarisen työtä perhe- ja perintöoikeuden parissa. Yli 30 vuoden kokemus alalta takaa ammattitaitoisen ja henkilökohtaisen palvelun — myös kansainvälisissä perintöasioissa.
+        </p>
+        <p class="about__text">
+          Kansainvälinen erikoisosaaminen kattaa erityisesti rajat ylittävät perintöasiat ja Suomen solmimat perintö- ja lahjaverosopimukset. Palvelemme suomeksi, ruotsiksi ja englanniksi.
+        </p>
+        <div class="about__credentials">
+          <div class="credential">
+            <span class="credential__abbr">OTM</span>
+            <span class="credential__year">2004</span>
+          </div>
+          <div class="credential">
+            <span class="credential__abbr">LL.M.</span>
+            <span class="credential__year">2006</span>
+          </div>
+          <div class="credential">
+            <span class="credential__abbr">ADIT</span>
+            <span class="credential__year">2017</span>
+          </div>
+          <div class="credential">
+            <span class="credential__abbr">DITT</span>
+            <span class="credential__year">2023</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     MORE SERVICES — warm bg instead of dark
+     ═══════════════════════════════════════════ -->
+<section class="section section--warm" aria-labelledby="more-title">
+  <div class="container">
+    <div style="text-align: center;">
+      <p class="section__eyebrow">Lisäpalvelut</p>
+      <h2 class="section__title" id="more-title" style="margin-left: auto; margin-right: auto;">Muut palvelumme</h2>
+      <p class="section__subtitle" style="margin: 12px auto 0; text-align: center;">Perintöasioiden hoitaminen ja riitojen ratkaisu — asiantuntevasti ja henkilökohtaisesti.</p>
+    </div>
+
+    <div class="more-grid reveal">
+      <a class="more-item" href="palvelut.html#avioehtosopimus">
+        <div class="more-item__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div>
+          <h3 class="more-item__name">Avioehtosopimus</h3>
+          <p class="more-item__desc">Aviovarallisuuden järjestely ja avio-oikeuden rajaaminen</p>
+        </div>
+        <span class="more-item__arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a class="more-item" href="palvelut.html#lahjavero">
+        <div class="more-item__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 12v10H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+        </div>
+        <div>
+          <h3 class="more-item__name">Lahja ja verosuunnittelu</h3>
+          <p class="more-item__desc">Lahjoitusten verovaikutusten arviointi ja varallisuuden siirto</p>
+        </div>
+        <span class="more-item__arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a class="more-item" href="palvelut.html#edunvalvontavaltuutus">
+        <div class="more-item__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div>
+          <h3 class="more-item__name">Edunvalvontavaltuutus</h3>
+          <p class="more-item__desc">Hoitotestamentti ja tulevaisuuden päätöksenteon turvaaminen</p>
+        </div>
+        <span class="more-item__arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a class="more-item" href="palvelut.html#testamentti">
+        <div class="more-item__icon" aria-hidden="true">
+          <svg viewBox="0 0 48 58" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="24" y1="4" x2="24" y2="54"/><line x1="10" y1="18" x2="38" y2="18"/></svg>
+        </div>
+        <div>
+          <h3 class="more-item__name">Testamentti ja perintösuunnittelu</h3>
+          <p class="more-item__desc">Viimeisen tahdon vahvistaminen ja omaisuuden jakautumisen ohjaus</p>
+        </div>
+        <span class="more-item__arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a class="more-item" href="palvelut.html#perunkirjoitus">
+        <div class="more-item__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div>
+          <h3 class="more-item__name">Perunkirjoitus</h3>
+          <p class="more-item__desc">Perukirjan laatiminen ja pesän selvittäminen kuoleman jälkeen</p>
+        </div>
+        <span class="more-item__arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a class="more-item" href="palvelut.html#peritoriidat">
+        <div class="more-item__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <h3 class="more-item__name">Perintöriidat</h3>
+          <p class="more-item__desc">Neuvonta ja edustaminen perintöriitatilanteissa</p>
+        </div>
+        <span class="more-item__arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="palvelut.html" class="btn btn--warm btn--md">
+        Kaikki palvelut
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     CONTACT
+     ═══════════════════════════════════════════ -->
+<section class="section" id="yhteystiedot" aria-labelledby="contact-title">
+  <div class="container">
+    <div class="contact__grid reveal">
+      <div class="contact__info">
+        <h2 class="contact__heading" id="contact-title">
+          Ota yhteyttä
+        </h2>
+        <p class="contact__sub">Soita, lähetä sähköpostia tai täytä yhteydenottolomake.</p>
+
+        <div class="contact-item">
+          <div class="contact-item__icon" aria-hidden="true">
+            <svg><use href="#icon-phone"/></svg>
+          </div>
+          <div>
+            <p class="contact-item__label">Puhelin</p>
+            <p class="contact-item__value"><a href="tel:096225930">(09) 622 5930</a></p>
+            <p class="contact-item__note">Arkisin toimistoaikana</p>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-item__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <p class="contact-item__label">Sähköposti</p>
+            <p class="contact-item__value"><a href="mailto:laura.pakarinen@perhejaperinto.fi">laura.pakarinen@perhejaperinto.fi</a></p>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-item__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div>
+            <p class="contact-item__label">Käyntiosoite</p>
+            <p class="contact-item__value">Korkeavuorenkatu 17 A 1<br>00130 Helsinki</p>
+            <p class="contact-item__note">Ovisummeri: A1 PERHE JA PERINTÖ</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="contact__form">
+        <h3 class="form__title">Lähetä viesti</h3>
+        <p class="form__subtitle">Vastaamme yhteydenottoihin yleensä saman päivän aikana.</p>
+
+        <form action="#" method="post" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="c-name">Nimi</label>
+              <input type="text" id="c-name" class="form-input" placeholder="Etunimi Sukunimi" autocomplete="name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="c-phone">Puhelin</label>
+              <input type="tel" id="c-phone" class="form-input" placeholder="040 123 4567" autocomplete="tel">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="c-email">Sähköposti</label>
+            <input type="email" id="c-email" class="form-input" placeholder="nimi@esimerkki.fi" autocomplete="email" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="c-msg">Viesti</label>
+            <textarea id="c-msg" class="form-textarea" placeholder="Kerro lyhyesti, miten voimme auttaa..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn--primary btn--lg" style="width: 100%; justify-content: center;">
+            Lähetä viesti
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer class="footer" role="contentinfo">
+  <div class="footer__grid">
+    <div>
+      <div style="display: inline-flex; flex-direction: column; align-items: center;">
+        <img src="logo/logo-horizontal.png" alt="Perhe ja Perintö J. Pakarinen Oy" style="width: 220px; height: auto; opacity: 0.75;">
+        <p class="footer__motto">est. 1999</p>
+      </div>
+    </div>
+
+    <nav aria-label="Palvelut">
+      <h4 class="footer__col-title">Palvelut</h4>
+      <ul class="footer__links">
+        <li><a href="#">Testamentti</a></li>
+        <li><a href="#">Avioehtosopimus</a></li>
+        <li><a href="#">Edunvalvontavaltuutus</a></li>
+        <li><a href="#">Perunkirjoitus</a></li>
+        <li><a href="#">Perintöriidat</a></li>
+      </ul>
+    </nav>
+
+    <nav aria-label="Tietoa">
+      <h4 class="footer__col-title">Tietoa</h4>
+      <ul class="footer__links">
+        <li><a href="#">Tietoa meistä</a></li>
+        <li><a href="#">Hinnasto</a></li>
+        <li><a href="#">Ajankohtaista</a></li>
+        <li><a href="#">In English</a></li>
+      </ul>
+    </nav>
+
+    <div>
+      <h4 class="footer__col-title">Yhteystiedot</h4>
+      <ul class="footer__links">
+        <li><a href="tel:096225930">(09) 622 5930</a></li>
+        <li><a href="mailto:laura.pakarinen@perhejaperinto.fi">laura.pakarinen@perhejaperinto.fi</a></li>
+        <li><a href="https://maps.google.com/?q=Korkeavuorenkatu+17+A+1,+00130+Helsinki" target="_blank" rel="noopener">Korkeavuorenkatu 17 A 1<br>00130 Helsinki</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <span>&copy; 2026 Perhe ja Perintö J. Pakarinen Oy &middot; Y-tunnus 1565303-9</span>
+    <a href="#">Rekisteriseloste</a>
+  </div>
+</footer>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobile-menu" aria-hidden="true" role="dialog" aria-label="Valikko">
+  <div class="mobile-menu__backdrop" id="menu-backdrop"></div>
+  <div class="mobile-menu__drawer">
+    <div class="mobile-menu__header">
+      <img src="logo/logo ja teksti dark.png" alt="Perhe ja Perintö" class="mobile-menu__logo-img">
+      <button class="mobile-menu__close" id="menu-close" aria-label="Sulje valikko">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <nav class="mobile-menu__nav">
+      <a href="#palvelut" class="mobile-menu__link">Palvelut</a>
+      <a href="#" class="mobile-menu__link">Hinnasto</a>
+      <a href="#meista" class="mobile-menu__link">Tietoa meistä</a>
+    </nav>
+    <div class="mobile-menu__footer">
+      <a href="#yhteystiedot" class="mobile-menu__cta">Ota yhteyttä</a>
+      <button class="mobile-menu__print" onclick="window.print()">
+        <svg aria-hidden="true"><use href="#icon-print"/></svg>
+        Tulosta sivu
+      </button>
+      <a href="tel:096225930" class="mobile-menu__phone">
+        <svg aria-hidden="true"><use href="#icon-phone"/></svg>
+        (09) 622 5930
+      </a>
+      <div class="mobile-menu__lang">
+        <button class="active">FI</button>
+        <button>EN</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Floating print button -->
+<button class="print-fab" onclick="window.print()" aria-label="Tulosta tämä sivu">
+  <svg aria-hidden="true"><use href="#icon-print"/></svg>
+  Tulosta sivu
+</button>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -32px 0px' });
+  reveals.forEach(el => observer.observe(el));
+
+  // Single scroll handler — header, print FAB, parallax
+  const header = document.querySelector('.header');
+  const printFab = document.querySelector('.print-fab');
+  const heroBg = document.querySelector('.hero__bg');
+  const heroEl = document.querySelector('.hero');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let lastScrollY = window.scrollY;
+  let ticking = false;
+  let headerLocked = false;
+  let fabVisible = false;
+  let viewportWide = window.innerWidth > 768;
+  const heroHeight = heroEl.offsetHeight;
+
+  window.addEventListener('resize', () => { viewportWide = window.innerWidth > 768; }, { passive: true });
+
+  window.addEventListener('scroll', () => {
+    const currentY = window.scrollY;
+    const delta = currentY - lastScrollY;
+    lastScrollY = currentY;
+
+    // Header top bar: threshold + cooldown prevent layout-shift scroll events from re-triggering
+    if (!headerLocked && Math.abs(delta) > 4) {
+      const shouldCollapse = delta > 0 && currentY > 80;
+      if (header.classList.contains('header--scrolled-down') !== shouldCollapse) {
+        header.classList.toggle('header--scrolled-down', shouldCollapse);
+        headerLocked = true;
+        setTimeout(() => { headerLocked = false; }, 450);
+      }
+    }
+
+    // Print FAB visibility — guard prevents unnecessary DOM writes
+    const shouldShow = currentY > 1;
+    if (shouldShow !== fabVisible) {
+      fabVisible = shouldShow;
+      printFab.classList.toggle('is-visible', shouldShow);
+    }
+
+    // Hero parallax — desktop only
+    if (heroBg && !reducedMotion && !ticking && viewportWide) {
+      requestAnimationFrame(() => {
+        if (currentY < heroHeight) {
+          heroBg.style.transform = `translateY(${currentY * 0.35}px)`;
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // Mobile menu
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuToggle = document.querySelector('.header__toggle');
+  const menuClose = document.getElementById('menu-close');
+  const menuBackdrop = document.getElementById('menu-backdrop');
+
+  function openMenu() {
+    mobileMenu.classList.add('is-open');
+    mobileMenu.setAttribute('aria-hidden', 'false');
+    menuToggle.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    mobileMenu.classList.remove('is-open');
+    mobileMenu.setAttribute('aria-hidden', 'true');
+    menuToggle.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  menuToggle.addEventListener('click', openMenu);
+  menuClose.addEventListener('click', closeMenu);
+  menuBackdrop.addEventListener('click', closeMenu);
+  mobileMenu.querySelectorAll('.mobile-menu__link, .mobile-menu__cta').forEach(link => {
+    link.addEventListener('click', closeMenu);
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+</script>
+
+</body>
+</html>
